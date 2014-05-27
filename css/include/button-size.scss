@@ -1,0 +1,6 @@
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
+	padding: $padding-vertical $padding-horizontal;
+	font-size: $font-size;
+	line-height: $line-height;
+	border-radius: $border-radius;
+}

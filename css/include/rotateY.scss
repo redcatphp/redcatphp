@@ -1,0 +1,6 @@
+@mixin rotateY($degrees) {
+	-webkit-transform: rotateY($degrees);
+	-ms-transform: rotateY($degrees); // IE9 only
+	-o-transform: rotateY($degrees);
+	transform: rotateY($degrees);
+}

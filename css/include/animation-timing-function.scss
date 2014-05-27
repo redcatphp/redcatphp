@@ -1,0 +1,4 @@
+@mixin animation-timing-function($timing-function) {
+	-webkit-animation-timing-function: $timing-function;
+	animation-timing-function: $timing-function;
+}

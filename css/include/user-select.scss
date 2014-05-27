@@ -1,0 +1,6 @@
+@mixin user-select($select) { // For selecting text on the page
+	-webkit-user-select: $select;
+	-moz-user-select: $select;
+	-ms-user-select: $select; // IE10+
+	user-select: $select;
+}

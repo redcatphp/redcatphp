@@ -1,0 +1,204 @@
+<?php namespace surikat\model\SQLComposer; 
+// require_once '.class.php';
+
+/**
+ * Replace
+ *
+ * A REPLACE query
+ *
+ * @package 
+ * @author Shane Smith
+ */
+class Replace extends Base {
+
+	/**
+	 * To create an REPLACE INTO ... SELECT ...
+	 *
+	 * @var Select
+	 */
+	protected $select;
+
+	/*******************
+	 **  CONSTRUCTOR  **
+	 *******************/
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string|array $table
+	 */
+	public function __construct($table = null) {
+		if (isset($table)) $this->into($table);
+	}
+
+	/**
+	 * REPLACE INTO
+	 *
+	 * @param string|array $table
+	 * @return Replace
+	 */
+	public function replace_into($table) {
+		return $this->into($table);
+	}
+
+	/**
+	 * REPLACE INTO
+	 *
+	 * @param string|array $table
+	 * @return Replace
+	 */
+	public function into($table) {
+		$this->add_table($table);
+		return $this;
+	}
+
+	/**
+	 * Set the columns for REPLACE INTO table (col1, col2, ...)
+	 *
+	 * If no columns are specified by rendering time and the first set of values
+	 * is an associative array, the array's keys will become the column names.
+	 *
+	 * @param string|array $column
+	 * @return Replace
+	 */
+	public function columns($column) {
+		$this->columns = array_merge($this->columns, (array)$column);
+		return $this;
+	}
+
+	/**
+	 * Provide a set of values to be replaced.
+	 *
+	 * If no columns are specified by rendering time and the first set of values
+	 * is an associative array, the array's keys will become the column names.
+	 *
+	 * ex:
+	 *  SQLComposer::replace_into('table')->values(array( 'id' => '25', 'name' => 'joe', 'fav_color' => 'green' ));
+	 *
+	 * will result in
+	 *
+	 *  REPLACE INTO table (id, name, fav_color) VALUES (25, 'joe', 'green')
+	 *
+	 * @param array $values
+	 * @param string $mysqli_types
+	 * @return Replace
+	 */
+	public function values(array $values, $mysqli_types = "") {
+		if (isset($this->select)) throw new Exception("Cannot use 'REPLACE INTO ... VALUES' when a SELECT is already set!");
+
+		return $this->_add_params('values', array( $values ), $mysqli_types);
+	}
+
+	/**
+	 * Return a Select object to be used in a query of the type REPLACE INTO ... SELECT ...
+	 *
+	 * @param string|array $select
+	 * @param array $params
+	 * @param string $mysqli_types
+	 * @return Select
+	 */
+	public function select($select = null, array $params = null, $mysqli_types = "") {
+		if (isset($this->params['values'])) throw new Exception("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
+
+		if (!isset($this->select)) {
+			$this->select = SQLComposer::select();
+		}
+
+		return $this->select->select($select, $params, $mysqli_types);
+	}
+
+
+	/*****************
+	 **  RENDERING  **
+	 *****************/
+
+	/**
+	 * Render the REPLACE query
+	 *
+	 * @return string
+	 */
+	public function render() {
+		$table = $this->tables[0];
+
+		$columns = $this->_get_columns();
+		$columns = empty($columns) ? "" : "(" . implode(", ", $columns) . ")";
+
+		if (isset($this->select)) {
+			$values = "\n" . $this->select->render();
+		} else {
+			$placeholders = "(" . implode(", ", array_fill(0, $this->_num_columns(), "?")) . ")";
+
+			$num_values = count($this->params['values']);
+
+			$values = "\nVALUES " . implode(", ", array_fill(0, $num_values, $placeholders));
+		}
+
+		return "REPLACE INTO {$table} {$columns} {$values}";
+	}
+
+	/**
+	 * Get the parameters array
+	 *
+	 * @return array
+	 */
+	public function getParams() {
+
+		if (isset($this->select)) {
+
+			$params = $this->select->getParams();
+
+		} else {
+
+			$params = array( );
+			$columns = $this->_get_columns();
+			$num_cols = $this->_num_columns();
+			foreach ($this->params["values"] as $values) {
+				if (SQLComposer::is_assoc($values)) {
+					foreach ($columns as $col) $params[] = $values[$col];
+				} else {
+					$params = array_merge($params, array_slice($values, 0, $num_cols));
+				}
+			}
+
+			if (!empty($this->mysqli_types['values'])) {
+				array_unshift($params, $this->mysqli_types['values']);
+			}
+
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Get the currently set columns,
+	 * or, if none set, the keys of the first values array if it is associative
+	 *
+	 * @return array
+	 */
+	protected function _get_columns() {
+		if (!empty($this->columns)) {
+			return $this->columns;
+		}
+		elseif (SQLComposer::is_assoc($this->params['values'][0])) {
+			return array_keys($this->params['values'][0]);
+		}
+		else {
+			return array();
+		}
+	}
+
+	/**
+	 * Get the number of defined columns,
+	 * or, if none defined, the number of the first values array
+	 *
+	 * @return int
+	 */
+	protected function _num_columns() {
+		if (!empty($this->columns)) {
+			return count($this->columns);
+		} else {
+			return count($this->params['values'][0]);
+		}
+	}
+
+}

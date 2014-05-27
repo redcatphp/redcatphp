@@ -1,0 +1,45 @@
+%nav-dropdown{
+	margin:auto;
+	position: relative;
+	@include clearfix();
+	ul-dropdown>li{
+		position: relative;
+		>a:focus{
+			outline: 0;
+		}
+		&.open>ul{
+			display:block;
+		}
+		>ul{
+			@extend %dropdown-menu;
+			border-radius: 4px;
+			> li{
+				> a {
+					padding: 5px 9px;
+					margin: 0 6px;
+					border-radius: 4px;
+					&:hover,
+					&:focus {
+						color: #FFF;
+						background-color: $brand-primary;
+						text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+					}
+				}
+			}
+			> .active > a{
+				color: #ffffff;
+				background: $brand-primary;
+				text-shadow: none;
+				&:hover,
+				&:focus {
+					color: #ffffff;
+					background: $brand-primary;
+					text-shadow: none;
+				}
+			}
+		}
+	}
+	>*:not(a){
+		@include clearfix();
+	}
+}

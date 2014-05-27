@@ -1,0 +1,4 @@
+@mixin transition-duration($transition-duration...) {
+	-webkit-transition-duration: $transition-duration;
+	transition-duration: $transition-duration;
+}

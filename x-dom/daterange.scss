@@ -1,0 +1,15 @@
+[is=daterange]{
+	fieldset{
+		@?include grid(	*, 	100 );
+		@?include grid(	10,		0-25-5,		0-25-5,		30, 	960px	);
+	}
+	label{
+		cursor: pointer;
+	}
+	a{
+		vertical-align: top;
+	}
+	input[type=checkbox]{
+		margin-left:0.5em;
+	}
+}

@@ -1,0 +1,4 @@
+@mixin animation-iteration-count($iteration-count) {
+	-webkit-animation-iteration-count: $iteration-count;
+	animation-iteration-count: $iteration-count;
+}

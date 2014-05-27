@@ -1,0 +1,13 @@
+<?
+global $img,$resolutions;
+if(!isset($img))
+	$img = '../img/';
+if(!isset($resolutions))
+	$resolutions = array(480,640,768,800,960,1024,1260,1366,1920);
+	$screens = $resolutions;
+	array_unshift($screens,0);
+?>
+$img: '<?=$img?>' !default;
+$resolutions: (<?=implode(',',$resolutions)?>) !default;
+$screens: (<?=implode(',',$screens)?>) !default;
+$brand-primary:				 #ff9900 !default;

@@ -1,0 +1,99 @@
+ul-dropdown {
+	&#moniddedropdown{
+		
+	}
+	height: auto;
+	padding: 0;
+	border-left: 1px solid #292929;
+	border-right: 1px solid #4A4A4A;
+	display: block;
+	width: 100%;
+	li > a{
+		display: block;
+		height: 100%;
+		padding: 0 15px;
+		//font-size: 10pt;
+		&:hover {
+			color: #fff;
+			text-decoration: none;
+		}
+	}
+	li.open > a {
+		text-decoration: none;
+	}
+	li.active > a {
+		background: #333;
+		color: $brand-primary;
+	}
+	>li{
+		width: 100%;
+		min-width: 83px;
+		height: auto;
+		padding: 0;
+		margin-bottom: 1.3em;
+		list-style: none;
+		text-align: left;
+		border: none;
+		>ul{
+			width: 100%;
+			position: relative;
+			top: 97%;
+			background-color: transparent;
+			text-align: left;
+			float:none;
+			&::before,
+			&::after {
+				position: absolute;
+				display: none;
+				
+				content: '';
+
+				border-left: 7px solid transparent;
+				border-right: 7px solid transparent;
+				border-bottom: 7px solid #CCC;
+				border-bottom-color: rgba(0, 0, 0, 0.2);
+				top: -7px;
+				left: 9px;
+			}
+			&::after {
+				border-left-width: 6px;
+				border-right-width: 6px;
+				border-bottom-width: 6px;
+				border-bottom-color: #fff;
+				top: -6px;
+				left: 10px;
+			}
+			&.active > a {
+				color: $brand-primary;
+				background: transparent;
+			}
+			a{
+				padding: 6px 12px;
+				//font-size: 1.2em;
+				&:active,
+				&:focus {
+					background: #555 !important;
+					outline: none;
+				}
+			}
+		}
+	}
+}
+
+.open {
+	> ul-dropdown {
+		display: block;
+	}
+	> a {
+		outline: 0;
+	}
+}
+
+.dropdown-backdrop { // Backdrop to catch body clicks on mobile, etc.
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	z-index: 900;
+}

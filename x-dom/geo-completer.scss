@@ -1,0 +1,57 @@
+geo-completer{
+	@?include grid(*,100);
+	@?include grid(0-55-0,2-43-0,768px);
+	@?include grid(0-65-0,2-33-0,960px);
+	>*{
+		height:16em;
+		border-radius:4px;
+		border:1px solid #555;
+		&:nth-child(2){
+			legend{
+				margin-bottom:0.5em;
+			}
+			@?include grid(*,100);
+			@?include grid(100,	50,50,	50,50,	50,50,	768px);
+			padding:0.5em;
+		}
+	}
+	input{
+		width:100%;
+		line-height: 1.2em;
+		font-size: 0.9em;
+		margin-bottom:0.3em;
+	}
+	input[name="geo"] {
+		margin-top: 16px;
+		border: 1px solid transparent;
+		border-radius: 2px 0 0 2px;
+		box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		height: 32px;
+		outline: none;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+		background-color: #fff;
+		padding: 0 11px 0 13px;
+		width: 400px;
+		font-size: 15px;
+		font-weight: 300;
+		text-overflow: ellipsis;
+		&:focus {
+			border-color: #4d90fe;
+			margin-left: -1px;
+			padding-left: 14px;  // Regular padding-left + 1.
+			width: 401px;
+		}
+	}
+	.map-canvas{
+		height:100%;
+		width:100%;
+		margin: 0;
+		padding: 0;
+	}
+	.pac-container {
+		&:after{
+			content:none !important; //from google: "Our Autocomplete services do not need to be used in conjunction with a map, but it does require a “powered by Google” logo to appear under the text field if a map isn’t shown. "
+		}
+	}
+}

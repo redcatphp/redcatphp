@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title><?=$u=view::param(0)?$u.' - ':''?>Surikat Framework - &copy; wildSurikat.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	<base href="http://<?=$_SERVER['SERVER_NAME']?>/">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
+  </head>
+<body>
+	<header>
+		
+	</header>
+	<nav>
+		
+	</nav>
+	<main></main>
+	<footer>
+		
+	</footer>
+	<script type="text/javascript" src="js/js.pack.js"></script>
+	<script type="text/javascript">
+		<?if(control::devHas(control::dev_css)):?>$css().dev=true;<?endif;?>
+		<?if(control::devHas(control::dev_js)):?>$js().dev=true;<?endif;?>
+		$js('script');
+	</script>
+</body>
+</html>

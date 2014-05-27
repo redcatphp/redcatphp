@@ -1,0 +1,38 @@
+//inspired by http://jasny.github.com/bootstrap
+.fileinput{
+	margin-bottom: 9px;
+	display: inline-block;
+	input[type=file]{
+		display:none;
+	}
+	.thumbnail {
+		float:left;
+		cursor:pointer;
+		overflow: hidden;
+		display:block;
+		margin-bottom: 0.5em;
+		margin-right: 0.5em;
+		vertical-align: middle;
+		text-align: center;
+		border: 1px outset #333333;
+		border-radius: 8px;
+		> img {
+			height: 100%;
+		}
+	}
+	.fileinput-filename{
+		float:left;
+		margin-left:0.3em;
+		@?include icon(upload);
+		font-size:1.7em;
+		cursor:pointer;
+	}
+	[data-dismiss="fileinput"]{
+		float:left;
+		margin-left:0.3em;
+		cursor:pointer;
+		font-size:1.7em;
+		@?include icon(remove);
+		display:none;
+	}
+}

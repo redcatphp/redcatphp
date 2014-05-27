@@ -1,0 +1,68 @@
+// The dropdown menu (ul)
+$dropdown-menu-expand-min-width: 768px !default;
+%dropdown-menu {
+	position: relative;
+	@media(min-width:#{$dropdown-menu-expand-min-width}){
+		position: absolute;
+	}
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	display: none; // none by default, but block on "open" of the menu
+	float: left;
+	min-width: 160px;
+	padding: 5px 0;
+	margin: 2px 0 0; // override default ul
+	list-style: none;
+	text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+	background-clip: padding-box;
+	> li > a {
+		display: block;
+		padding: 3px 20px;
+		clear: both;
+		font-weight: normal;
+		line-height: 1.428571429; // 20/14
+		color: #CCC;
+		@media (min-width: #{$dropdown-menu-expand-min-width}){
+			color: #333;
+		}
+		white-space: nowrap; // prevent links from randomly breaking onto new lines
+	}
+}
+%dropdown-menu > li > a { // Hover/Focus state
+	&:hover,&:focus {
+		text-decoration: none;
+		color: $brand-primary;
+		background-color: #f5f5f5;
+	}
+}
+%dropdown-menu > .active > a { // Active state
+	&,&:hover,&:focus {
+		color: #fff;
+		text-decoration: none;
+		outline: 0;
+		background-color: $brand-primary;
+	}
+}
+%dropdown-menu > .disabled > a { // Disabled state - Gray out text and ensure the hover/focus state remains gray
+	&,&:hover,&:focus {
+		color: #999;
+	}
+}
+%dropdown-menu > .disabled > a { // Nuke hover/focus effects
+	&:hover,&:focus {
+		text-decoration: none;
+		background-color: transparent;
+		background-image: none; // Remove CSS gradient
+		@include reset-filter();
+		cursor: not-allowed;
+	}
+}
+.open { // Open state for the dropdown
+	> %dropdown-menu { // Show the menu
+		display: block;
+	}
+	> a { // Remove the outline when :focus is triggered
+		outline: 0;
+	}
+}

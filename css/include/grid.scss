@@ -1,0 +1,54 @@
+@?mixin grid{<?
+	//var_dump($args);exit;
+	//ob_get_clean(); //4debug;)
+	$selector = is_string($e=current($args))&&!is_numeric(str_replace(array('-',',','.'),'',$e))?array_shift($args):false;
+	$mw = is_string($e=end($args))&&substr($e,-2)=='px'?array_pop($args):false;
+	$tt = 0;
+	foreach($args as $i=>$w){
+		?>
+			<?if($mw):?>
+				@media(min-width:<?=$mw?>){
+			<?endif;?>
+				<?if($selector):?>
+					><?=$selector?>{
+				<?else:?>
+					>*:nth-child(<?=$i+1?>){
+				<?endif;?>
+						<?if(!$mw):?>
+							position: relative;
+							display:block;
+							float:left;
+							min-height: 1px;
+							-webkit-box-sizing: border-box;
+							-moz-box-sizing: border-box;
+							box-sizing: border-box;
+						<?endif;?>
+						<?if($tt>=100):?>
+							<?$tt = 0;?>
+							clear:left;
+						<?else:?>
+							clear:none;
+						<?endif;?>
+						<?
+							if(is_string($w)){
+								@list($margin_left,$w,$margin_right) = explode(',',str_replace('-',',',$w));
+								if($margin_left){
+									?>margin-left:<?=$margin_left?>%;<?
+									$tt += $margin_left;
+								}
+								if($margin_right){
+									?>margin-right:<?=$margin_right?>%;<?
+									$tt += $margin_right;
+								}
+							}
+							?>width: <?=$w?$w.'%':'auto'?>;<?
+						?>
+					}
+			<?if($mw):?>
+				}
+			<?endif;?>
+		<?
+		$tt += $w;
+	}
+	//exit(print(ob_get_clean())); //4debug;)
+?>}?@

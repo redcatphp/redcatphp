@@ -1,0 +1,4 @@
+@mixin animation-fill-mode($fill-mode) {
+	-webkit-animation-fill-mode: $fill-mode;
+	animation-fill-mode: $fill-mode;
+}
