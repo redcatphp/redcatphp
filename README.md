@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-See Away, Be Lite, Run Fast
+	See Away, Be Lite, Run Fast
 
 	  ______             _ _                 
 	 / _____)           (_) |            _   
