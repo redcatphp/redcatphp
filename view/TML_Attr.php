@@ -24,7 +24,11 @@ class TML_Attr extends CALL_APL {
 							$o->attr($key,str_replace($v,'',$o->$key));
 					});
 				}
-				else
-					$apply->find($this->selector,true)->attr($k,$v);
+				else{
+					$apply->find($this->selector,true)->each(function($o)use($k,$v){
+						$v = $this->selectorCodeTHAT($o,$v);
+						$o->attr($k,$v);
+					});
+				}
 	}
 }

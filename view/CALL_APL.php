@@ -23,13 +23,15 @@ abstract class CALL_APL extends CORE{
 		$this->callback();
 	}
 	function selectorCodeTHIS($__this){
-		if(preg_match_all ('/\\{\\{this:(.*?)\\}\\}/', ($str = "$this"), $matches)){
-			$pos = 0;
+		$str = $this->selectorCodeTHAT($__this,"$this");
+		return $str===null?$this:$str;
+	}
+	function selectorCodeTHAT($__this,$str){
+		$pos = 0;
+		if(preg_match_all('/\\{\\{this:(.*?)\\}\\}/',$str, $matches))
 			foreach($matches[1] as $i=>$eve)
 				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return $__this->'.$eve.';').substr($str,$pos+strlen($matches[0][$i]));
-			return $str;
-		}
-		return $this;
+		return $str;
 	}
 	function extendLoad(){
 		$c = $this->callback();

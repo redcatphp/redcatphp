@@ -10,10 +10,7 @@
 	cursor:pointer;
 }
 sponsor-flip{
-	position:absolute;
-	left:0;
-	top:0;
-	width:100%;
+	display: block;
 	height:100%;
 	border:1px solid #ddd;	
 	background:url("#{$img}sponsor-flip-bg.jpg") no-repeat center center #f9f9f9;
@@ -24,18 +21,16 @@ sponsor-flip{
 		box-shadow:0 0 30px #999 inset;
 	}
 	img{
-		/*position:absolute;
-		top:50%;
-		left:50%;
-		margin:-70px 0 0 -70px;*/
-		/*margin: 2.6em 0px 0px 1em; glop1, but not displaying (only this!?) */
-		margin: 2% 0px 0px 2%;
-		width: 96%;
-		height: 96%;
+		display: none;
 	}
 }
 .sponsorData{
 	display:none;
+}
+.sponsorDataBg {
+    display: block;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 .sponsorDescription{
 	font-size:16px; /* 11 */

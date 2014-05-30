@@ -124,4 +124,3 @@ class TML_Form extends TML {
 		array_unshift($this->childNodes,$code);
 	}
 }
-?>

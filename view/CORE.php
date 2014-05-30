@@ -637,7 +637,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				$dom[] = '<script type="text/javascript"></script>';
 				$script = $dom->find('script:not([src]):last',0);
 			}
-			$app = "\$js('$src');";
+			$sync = isset($js->sync)&&$js->sync!='false'||$js->async=='false'?',true':'';
+			$app = "\$js('$src'$sync);";
 			if(strpos("$script",$app)===false)
 				$script->append($app);
 		}
@@ -656,7 +657,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			if(substr($href,-4)!='.css')
 				$href .= '.css';
 		}
-		if($href&&!($script=$dom->find('link[href="'.$href.'"]',0)))
-			$dom[] = '<link href="'.$href.'" rel="stylesheet" type="text/css">';
+		$media_s = $css->media?'[media="'.$css->media.'"]':'';
+		$media = $css->media?' media="'.$css->media.'"':'';
+		if($href&&!($script=$dom->find('link[href="'.$href.'"]'.$media_s,0)))
+			$dom[] = '<link href="'.$href.'" rel="stylesheet" type="text/css"'.$media.'>';
 	}
 }

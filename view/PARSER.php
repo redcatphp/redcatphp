@@ -51,6 +51,8 @@ abstract class PARSER{
 			else
 				$str .= $tid{$i};
 		}
+		if(substr($str,-3)=='=""')
+			$str = substr($str,0,-3);
 		return $str;
 	}
 	private static $short_open_tag = array(
