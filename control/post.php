@@ -20,7 +20,10 @@ class post{
 				$_SESSION[self::$key][$p] = null;
 		}
 	}
-	static function get($k,$default=null,$persistant=null,$p=null){
+	static function get_checked($k,$default=null,$persistant=null,$p=null){
+		return ($c=self::get($k,false,$persistant,$p,true)!==false?'checked':($default?$default:''))?'checked="'.$c.'"':'';
+	}
+	static function get($k,$default=null,$persistant=null,$p=null,$ifn=null){
 		self::needSession();
 		if(strpos($k,'[')!==false){
 			$x = explode('[',str_replace(']','',$k));
@@ -40,6 +43,8 @@ class post{
 			$_SESSION[self::$key] = array();
 		if($persistant&&!isset($_SESSION[self::$key][$p]))
 			$_SESSION[self::$key][$p] = array();
+		if($ifn&&!isset($_POST[$k]))
+			$_POST[$k] = false;
 		if(isset($_POST[$k]))
 			return $persistant?($_SESSION[self::$key][$p][$k] = $_POST[$k]):$_POST[$k];
 		if($persistant&&isset($_SESSION[self::$key][$p])&&isset($_SESSION[self::$key][$p][$k]))
