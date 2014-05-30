@@ -22,20 +22,21 @@ use surikat\model\R;
 use surikat\model\RedBean\OODBBean;
 class Table implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
-	function onNew(){}
-	function onCreate(){}
-	function onCreated(){}
-	function onRead(){}
-	function onUpdate(){}
-	function onUpdated(){}
-	function onValidate(){}
-	function onDelete(){}
-	function onDeleted(){}
+	//function onNew(){}
+	//function onCreate(){}
+	//function onCreated(){}
+	//function onRead(){}
+	//function onUpdate(){}
+	//function onUpdated(){}
+	//function onValidate(){}
+	//function onDelete(){}
+	//function onDeleted(){}
 	#</workflow>
 	protected $table;
 	protected $bean;
 	protected $creating;
 	protected $errors = array();
+	protected $__on = array();
 	function __construct(){
 		if(func_num_args())
 			$this->table = func_get_arg(0);
@@ -59,33 +60,48 @@ class Table implements \ArrayAccess,\IteratorAggregate{
 	function dispense(){
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
-		$this->onNew();
+		$this->trigger('new');
+	}
+	function on($f,$c){
+		if(!isset($this->__on[$f]))
+			$this->__on[$f] = array();
+		$this->__on[$f][] = $c;
+	}
+	function trigger(){
+		$args = func_get_args();
+		$f = array_shift($args);
+		$c = 'on'.ucfirst($f);
+		if(method_exists($this,$c))
+			call_user_func_array(array($this,$c),$args);
+		if(isset($this->__on[$f]))
+			foreach($this->__on[$f] as $c)
+				call_user_func($c,$this,$args);
 	}
 	function open(){
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
-		$this->onRead();
+		$this->trigger('read');
 	}
 	function update(){
-		$this->onValidate();
+		$this->trigger('validate');
 		if($this->creating)
-			$this->onCreate();
+			$this->trigger('create');
 		else
-			$this->onUpdate();
+			$this->trigger('update');
 		if(!empty($this->errors))
 			throw new Exception_Validation('Données manquantes ou erronées',$this->errors);
 	}
 	function after_update(){
 		if($this->creating)
-			$this->onCreated();
+			$this->trigger('create');
 		else
-			$this->onUpdated();
+			$this->trigger('update');
 	}
 	function delete(){
-		$this->onDelete();
+		$this->trigger('delete');
 	}
 	function after_delete(){
-		$this->onDeleted();
+		$this->trigger('deleted');
 	}
 	public function loadBean( OODBBean $bean ){
 		$this->bean = $bean;
@@ -130,4 +146,3 @@ class Table implements \ArrayAccess,\IteratorAggregate{
         return $this->bean->offsetGet($offset);
     }
 }
-?>
