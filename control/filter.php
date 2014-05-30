@@ -221,11 +221,6 @@ class filter{
 			return $date=='0000-00-00'|| (preg_match( '#^(?P<year>\d{2}|\d{4})([- /.])(?P<month>\d{1,2})\2(?P<day>\d{1,2})$#', $date, $matches )
 				   && checkdate($matches['month'],$matches['day'],$matches['year']));
 	}
-	/*
-	static function validate_date($date) {
-		return preg_match("#(\d{4})-(\d{2})-(\d{2})#",$date);
-	}
-	*/
 	static function from_datetime($datetime) {
 		list($date, $time) = explode(' ', $datetime);
 		list($year, $month, $day) = explode('-', $date);
