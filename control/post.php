@@ -22,6 +22,19 @@ class post{
 	}
 	static function get($k,$default=null,$persistant=null,$p=null){
 		self::needSession();
+		if(strpos($k,'[')!==false){
+			$x = explode('[',str_replace(']','',$k));
+			$r = self::get(($k=array_shift($x)),null,$persistant,$p);
+			foreach($x as $_x){
+				if($_x=='')
+					$_x = 0;
+				if(is_array($r)&&isset($r[$_x]))
+					$r =& $r[$_x];
+				else
+					return $default;
+			}
+			return $r;
+		}
 		$p = $p===null?sha1($_SERVER['PATH_INFO']):$p;
 		if($persistant&&!isset($_SESSION[self::$key]))
 			$_SESSION[self::$key] = array();
