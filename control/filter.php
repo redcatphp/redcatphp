@@ -1,6 +1,8 @@
 <?php namespace surikat\control; 
 use surikat\control\PasswordHash;
-class Filter{
+class filter{
+	const BASIC_TAGS = 'br,p,a,strong,b,i,em,img,blockquote,code,dd,dl,hr,h1,h2,h3,h4,h5,h6,label,ul,li,span,sub,sup';
+	const ALL_TAGS = '!--,!DOCTYPE,a,abbr,acronym,address,applet,area,article,aside,audio,b,base,basefont,bdi,bdo,big,blockquote,body,br,button,canvas,caption,center,cite,code,col,colgroup,command,datalist,dd,del,details,dfn,dialog,dir,div,dl,dt,em,embed,fieldset,figcaption,figure,font,footer,form,frame,frameset,head,header,h1>-<h6,hr,html,i,iframe,img,input,ins,kbd,keygen,label,legend,li,link,map,mark,menu,meta,meter,nav,noframes,noscript,object,ol,optgroup,option,output,p,param,pre,progress,q,rp,rt,ruby,s,samp,script,section,select,small,source,span,strike,strong,style,sub,summary,sup,table,tbody,td,textarea,tfoot,th,thead,time,title,tr,track,tt,u,ul,var,video,wbr';
 	static function trim($v){ return trim($v); }
 	static function rmpunctuation($v){
 		return preg_replace("/(?![.=$'€%-])\p{P}/u", '', $v);
@@ -26,29 +28,117 @@ class Filter{
 	static function dpToDate($v){
 		return self::dp_to_date($v);
 	}
-	static function strip_tags($v,$allow=null){
-		return strip_tags($v,$allow);
+
+	/*
+	$str = filter::strip_tags_basic('<p id="first"><b src="new-text" class=myclass><img src="test" width="120" height="100" /><test data-toto="ok" foo="bar">Hello <y>World</y></test></b></p>',
+		array(
+			'img'=>'src,width,height',
+			'test'=>'data-*',
+		)
+	);
+	*/
+	static $basic_tags_map = array(
+		'img'=>'src,width,height',
+	);
+	static $basic_attrs = array(
+		
+	);
+	static function strip_tags_basic($str,$map=null){
+		$globals_attrs = array();
+		$map = $map?array_merge($map,self::$basic_tags_map):self::$basic_tags_map;
+		return self::strip_tags($str,explode(',',self::BASIC_TAGS),self::$basic_attrs,$map);
 	}
-	static function strip_tags_content($v, $tags = '',$invert=FALSE){
-		preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trim($tags), $tags);
-		$tags = array_unique($tags[1]);
-		if(is_array($tags)&&(count($tags)>0)) return preg_replace($invert==FALSE?'@<(?!(?:'. implode('|', $tags) .')\b)(\w+)\b.*?>.*?</\1>@si':'@<('. implode('|', $tags) .')\b.*?>.*?</\1>@si','',$v);
-		elseif($invert==FALSE) return preg_replace('@<(\w+)\b.*?>.*?</\1>@si','',$v);
+	static function strip_tags($str,$tags,$globals_attrs=null,$map=null){
+		$total = strlen($str);
+		$state = 1;
+		$nstr = '';
+		if($tags&&is_string($tags))
+			$tags = explode(',',$tags);
+		if($globals_attrs&&is_string($globals_attrs))
+			$globals_attrs = explode(',',$globals_attrs);
+		if($map)
+			$tags = $tags?array_merge($tags,array_keys($map)):array_keys($map);
+		for($i=0;$i<$total;$i++){
+			$c = $str{$i};
+			if($c=='<'){
+				$tag = '';
+				while($c!='>'){
+					$c = $str{$i};
+					$tag .= $c;
+					$i++;
+					if($c=='='){
+						$sep = '';
+						while($sep!='"'&&$sep!="'"){
+							$sep = $str{$i};
+							if($sep!='"'&&$sep!="'"&&$sep!=' '){
+								$sep = ' ';
+								while($c!=$sep&&$c!='/'&&$c!='>'){
+									$c = $str{$i};
+									$tag .= $c;
+									$i++;
+								}
+								break;
+							}
+							$i++;
+						}
+						if($sep!=' '){
+							$tag .= $sep;
+							while($c!=$sep){
+								$c = $str{$i};
+								$tag .= $c;
+								$i++;
+							}
+							$i-=1;
+						}
+					}
+				}
+				$i-=1;
+				$tag = substr($tag,1,-1);
+				if(strpos($tag,'/')===0){
+					if(in_array(substr($tag,1),$tags))
+						$nstr .= "<$tag>";
+				}
+				else{
+					$e = strrpos($tag,'/')===strlen($tag)-1?'/':'';
+					if($e)
+						$tag = substr($tag,0,-1);
+					if(($pos=strpos($tag,' '))!==false){
+						$attr = substr($tag,$pos+1);
+						$tag = substr($tag,0,$pos);
+					}
+					else
+						$attr = '';
+					if(!in_array($tag,$tags))
+						continue;
+					$allowed = isset($map[$tag])?(is_string($map[$tag])?explode(',',(string)$map[$tag]):$map[$tag]):array();
+					$x = explode(' ',$attr);
+					$attr = '';
+					foreach($x as $_x){
+						@list($k,$v) = explode('=',$_x);
+						$v = trim($v,'"');
+						$v = trim($v,"'");
+						if($v)
+							$v = "=\"$v\"";
+						$ok = false;
+						if(($pos=strpos($k,'-'))!==false){
+							$key = substr($k,0,$pos+1).'*';
+							if(in_array($key,$allowed)||($globals_attrs&&in_array($key,$globals_attrs)))
+								$ok = true;
+						}
+						if(in_array($k,$allowed)||($globals_attrs&&in_array($k,$globals_attrs)))
+							$ok = true;
+						if($ok)
+							$attr .= ' '.$k.$v;
+					}
+					$nstr .= "<$tag$attr$e>";
+				}
+			}
+			else
+				$nstr .= $c;
+		}
+		return $nstr;
 	}
-	static function strip_basic_tags_content($v, $tags = '',$invert=FALSE){
-		return $this->strip_tags_content($v,self::BASIC_TAGS,$invert);
-	}
-	// static function allowAllTags($v){
-		// memo all attributes: accept accept-charset accesskey action align alt async autocomplete autofocus autoplay bgcolor border buffered challenge charset checked cite class code codebase color cols colspan content contenteditable contextmenu controls coords data data-* datetime default defer dir dirname disabled download draggable dropzone enctype for form headers height hidden high href hreflang http-equiv icon id ismap itemprop keytype kind label lang language list loop low manifest max maxlength media method min multiple name novalidate open optimum pattern ping placeholder poster preload pubdate radiogroup readonly rel required reversed rows rowspan sandbox spellcheck scope scoped seamless selected shape size sizes span src srcdoc srclang start step style summary tabindex target title type usemap value width wrap
-		// $all_tags = "<!--> <!DOCTYPE> <a> <abbr> <acronym> <address> <applet> <area> <article> <aside> <audio> <b> <base> <basefont> <bdi> <bdo> <big> <blockquote> <body> <br> <button> <canvas> <caption> <center> <cite> <code> <col> <colgroup> <command> <datalist> <dd> <del> <details> <dfn> <dialog> <dir> <div> <dl> <dt> <em> <embed> <fieldset> <figcaption> <figure> <font> <footer> <form> <frame> <frameset> <head> <header> <h1> - <h6> <hr> <html> <i> <iframe> <img> <input> <ins> <kbd> <keygen> <label> <legend> <li> <link> <map> <mark> <menu> <meta> <meter> <nav> <noframes> <noscript> <object> <ol> <optgroup> <option> <output> <p> <param> <pre> <progress> <q> <rp> <rt> <ruby> <s> <samp> <script> <section> <select> <small> <source> <span> <strike> <strong> <style> <sub> <summary> <sup> <table> <tbody> <td> <textarea> <tfoot> <th> <thead> <time> <title> <tr> <track> <tt> <u> <ul> <var> <video> <wbr>";
-		// $all_tags = explode(' ',$all_tags);
-		// $all_tags = implode('',$all_tags);
-		// return strip_tags($v, $all_tags);
-	// }
-	static function basic_tags($v){
-		//all tags: !-- !DOCTYPE a abbr acronym address applet area article aside audio b base basefont bdi bdo big blockquote body br button canvas caption center cite code col colgroup command datalist dd del details dfn dialog dir div dl dt em embed fieldset figcaption figure font footer form frame frameset head header h1 - h6 hr html i iframe img input ins kbd keygen label legend li link map mark menu meta meter nav noframes noscript object ol optgroup option output p param pre progress q rp rt ruby s samp script section select small source span strike strong style sub summary sup table tbody td textarea tfoot th thead time title tr track tt u ul var video wbr
-		return strip_tags($v,self::BASIC_TAGS);
-	}
+	
 	static function multi_bin($v){
 		if(is_array($v)){
 			$binary = 0;
@@ -152,4 +242,3 @@ class Filter{
 		return $jours[date('N',$timestamp)-1].date(' d ',$timestamp).$mois[date('n',$timestamp)-1].date(' Y',$timestamp).($time?' à '.date('H:m:s',$timestamp):'');
 	}
 }
-?>
