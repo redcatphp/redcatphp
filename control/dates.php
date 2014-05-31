@@ -8,6 +8,17 @@ class dates {
 			$dtp = mb_substr($dtp,6,10).'-'.mb_substr($dtp,3,5).'-'.mb_substr($dtp,0,2).' '.mb_substr($dtp,11,16).':00';
 		return $dtp;
 	}
+	static function dp_to_date_fr(&$dp){
+		if(is_array($dp))
+			foreach(array_keys($dp) as $k)
+				self::dp_to_date_fr($dp[$k]);
+		else{
+			$x = explode('/',$dp);
+			if(count($x)==3)
+				$dp = @$x[2].'-'.@$x[1].'-'.@$x[0];
+		}
+		return $dp;
+	}
 	static function dp_to_date(&$dp){
 		if(is_array($dp))
 			foreach(array_keys($dp) as $k)
@@ -69,6 +80,7 @@ class dates {
 			return $ok;
 		}
 		else{
+			preg_match( '#^(?P<year>\d{2}|\d{4})([- /.])(?P<month>\d{1,2})\2(?P<day>\d{1,2})$#', $date, $matches );
 			return $date=='0000-00-00'|| (preg_match( '#^(?P<year>\d{2}|\d{4})([- /.])(?P<month>\d{1,2})\2(?P<day>\d{1,2})$#', $date, $matches )
 				   && checkdate($matches['month'],$matches['day'],$matches['year']));
 		}

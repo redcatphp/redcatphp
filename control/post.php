@@ -4,12 +4,8 @@ class post{
 	static function get_text($k,$default=null,$persistant=null){
 		return htmlentities((string)self::get($k,$default,$persistant));
 	}
-	protected static function needSession(){
-		if(!session_id())
-			session_start();
-	}
 	static function clearPersistance($k=null,$p=null){
-		self::needSession();
+		session::start();
 		$p = $p===null?sha1($_SERVER['PATH_INFO']):$p;
 		if(isset($_SESSION[self::$key])&&isset($_SESSION[self::$key][$p])){
 			if($k!==null){
@@ -24,7 +20,8 @@ class post{
 		return ($c=self::get($k,false,$persistant,$p,true)!==false?'checked':($default?$default:''))?'checked="'.$c.'"':'';
 	}
 	static function get($k,$default=null,$persistant=null,$p=null,$ifn=null){
-		self::needSession();
+		if($persistant)
+			session::start();
 		if(strpos($k,'[')!==false){
 			$x = explode('[',str_replace(']','',$k));
 			$r = self::get(($k=array_shift($x)),null,$persistant,$p);

@@ -51,7 +51,8 @@ class R extends RedBean\Facade{
 					$type = lcfirst(substr($k,3));
 					$own = self::dispense($type);
 					foreach((array)$v2 as $k3=>$v3)
-						$own->$k3 = $v3;
+						if($k3!='type')
+							$own->$k3 = $v3;
 					$dataO->{$k}[] = $own;
 				}
 			}
@@ -73,4 +74,3 @@ class R extends RedBean\Facade{
 	}
 }
 R::initialize();
-?>

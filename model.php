@@ -1,5 +1,6 @@
 <?php namespace surikat;
 use surikat\model\R;
+use surikat\model\Compo;
 use surikat\model\RedBean\OODBBean;
 class model {
 	private static $AVAILABLE;
@@ -27,5 +28,14 @@ class model {
 	static function __callStatic($func,$args){
 		return call_user_func_array(array('surikat\model\Compo',$func),$args);
 	}
+	static function tableExist($table){
+		return in_array($table,Compo::listOfTables());
+	}
+	static function schemaAuto($table,$force=false){
+		if(!control::devHas(control::dev_model)&&!$force)
+			return;
+		$path = 'model/schema.'.$table.'.php';
+		if(is_file($path)&&!self::tableExist($table)&&is_array($a=include($path)))
+			R::storeMultiArray($a);
+	}
 }
-?>

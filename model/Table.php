@@ -145,4 +145,7 @@ class Table implements \ArrayAccess,\IteratorAggregate{
     function offsetGet($offset) {
         return $this->bean->offsetGet($offset);
     }
+    function getTable(){
+		return $this->table;
+	}
 }
