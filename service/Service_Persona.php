@@ -1,9 +1,9 @@
-<?php namespace surikat\service; 
+<?php namespace surikat\service;
+use surikat\control\session;
 class Service_Persona {
     protected $audience; //Scheme, hostname and port
 	static function email(){
-		if(!session_id())
-			session_start();
+		session::start();
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
@@ -26,8 +26,7 @@ class Service_Persona {
 			$response = curl_exec($ch);
 			curl_close($ch);
 			if($js = json_decode($response)){
-				if(!session_id())
-					session_start();
+				session::start();
 				if($js->status==='okay'&&$js->email)
 					$_SESSION['email'] = $js->email;
 			}
@@ -40,8 +39,7 @@ class Service_Persona {
 	}
 	static function logout(){
 		$_SESSION = array();
-		if(!session_id())
-			session_start();
+		session::start();
 		session_destroy();
 		session_write_close();
 	}
