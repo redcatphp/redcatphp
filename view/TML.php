@@ -20,6 +20,8 @@ class TML extends CORE{
 		$this->cacheForge($v);
 	}
 	protected function loadCacheStatic($v){
+		$this->load();
+		$this->preventLoad = true;
 		unset($this->metaAttribution['cacheStatic']);
 		$this->cacheForge(null,false,true);
 	}

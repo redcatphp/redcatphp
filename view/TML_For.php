@@ -1,6 +1,6 @@
 <?php namespace surikat\view; 
 class TML_For extends TML {
-	function __toString(){
+	function load(){
 		$c = $this->for;
 		if(!$c&&isset($this->attributes['i'])){
 			$c = '$i=0;$i<'.$this->attributes['i'].';$i++';
@@ -11,7 +11,8 @@ class TML_For extends TML {
 			$c = current($this->attributes);
 		if(!$c)
 			$c = key($this->attributes);
-		return '<?php for('.$c.'){?>'.(!$this->selfClosed?$this->getInnerTml().'<?php }?>':'');
+		array_unshift($this->head,'<?php for('.$c.'){?>');
+		if(!$this->selfClosed)
+			array_push($this->foot,'<?php }?>');
 	}
 }
-?>

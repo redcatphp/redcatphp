@@ -1,8 +1,12 @@
 <?php namespace surikat\view; 
 class TML_If extends TML {
-	function __toString(){
-		return '<?php if('.$this->evalSource().'){?>'.(!$this->selfClosed?$this->getInnerTml().'<?php }?>':'');
+	protected $hiddenWrap = true;
+	function load(){
+		array_unshift($this->head,'<?php if('.$this->evalSource().'){?>');
+		if(!$this->selfClosed)
+			array_push($this->foot,'<?php }?>');
 	}
+	
 	function evalSource($justCode=null){
 		return $this->e&&$this->e!=='e'?$this->e:'';
 	}
@@ -23,4 +27,3 @@ class TML_If extends TML {
 					$node->applyLoad($apply);
 	}
 }
-?>

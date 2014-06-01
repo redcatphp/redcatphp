@@ -1,6 +1,7 @@
 <?php namespace surikat\view; 
 class TML_Switch extends TML {
-	function __toString(){
+	protected $hiddenWrap = true;
+	function load(){
 		$c = $this->switch;
 		if(!$c)
 			$c = $this->key;
@@ -10,7 +11,8 @@ class TML_Switch extends TML {
 			$c = current($this->attributes);
 		if(!$c)
 			$c = key($this->attributes);
-		return '<?php switch('.$c.'){?>'.(!$this->selfClosed?$this->getInnerTml().'<?php }?>':'');
+		array_unshift($this->head,'<?php switch('.$c.'){?>');
+		if(!$this->selfClosed)
+			array_push($this->foot,'<?php }?>');
 	}
 }
-?>
