@@ -1,11 +1,11 @@
 <?php
 
-namespace RedBeanPHP\BeanHelper;
+namespace surikat\model\RedBeanPHP\BeanHelper;
 
-use RedBeanPHP\BeanHelper as BeanHelper;
-use RedBeanPHP\Facade as Facade;
-use RedBeanPHP\OODBBean as OODBBean;
-use RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
+use surikat\model\RedBeanPHP\BeanHelper as BeanHelper;
+use surikat\model\RedBeanPHP\Facade as Facade;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
 
 /**
  * Bean Helper.

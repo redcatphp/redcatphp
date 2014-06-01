@@ -1,29 +1,29 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\ToolBox as ToolBox;
-use RedBeanPHP\OODB as OODB;
-use RedBeanPHP\QueryWriter as QueryWriter;
-use RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use RedBeanPHP\AssociationManager as AssociationManager;
-use RedBeanPHP\TagManager as TagManager;
-use RedBeanPHP\DuplicationManager as DuplicationManager;
-use RedBeanPHP\LabelMaker as LabelMaker;
-use RedBeanPHP\Finder as Finder;
-use RedBeanPHP\RedException\SQL as SQL;
-use RedBeanPHP\RedException\Security as Security;
-use RedBeanPHP\Logger as Logger;
-use RedBeanPHP\Logger\RDefault as RDefault;
-use RedBeanPHP\Logger\RDefault\Debug as Debug;
-use RedBeanPHP\OODBBean as OODBBean;
-use RedBeanPHP\SimpleModel as SimpleModel;
-use RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
-use RedBeanPHP\Adapter as Adapter;
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use RedBeanPHP\RedException as RedException;
-use RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
-use RedBeanPHP\Driver\RPDO as RPDO;
+use surikat\model\RedBeanPHP\ToolBox as ToolBox;
+use surikat\model\RedBeanPHP\OODB as OODB;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\AssociationManager as AssociationManager;
+use surikat\model\RedBeanPHP\TagManager as TagManager;
+use surikat\model\RedBeanPHP\DuplicationManager as DuplicationManager;
+use surikat\model\RedBeanPHP\LabelMaker as LabelMaker;
+use surikat\model\RedBeanPHP\Finder as Finder;
+use surikat\model\RedBeanPHP\RedException\SQL as SQL;
+use surikat\model\RedBeanPHP\RedException\Security as Security;
+use surikat\model\RedBeanPHP\Logger as Logger;
+use surikat\model\RedBeanPHP\Logger\RDefault as RDefault;
+use surikat\model\RedBeanPHP\Logger\RDefault\Debug as Debug;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\SimpleModel as SimpleModel;
+use surikat\model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
+use surikat\model\RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\RedException as RedException;
+use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+use surikat\model\RedBeanPHP\Driver\RPDO as RPDO;
 
 /**
  * RedBean Facade

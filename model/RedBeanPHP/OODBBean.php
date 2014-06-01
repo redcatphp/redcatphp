@@ -1,12 +1,12 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use RedBeanPHP\BeanHelper as BeanHelper;
-use RedBeanPHP\RedException\Security as Security;
-use RedBeanPHP\RedException as RedException;
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\BeanHelper as BeanHelper;
+use surikat\model\RedBeanPHP\RedException\Security as Security;
+use surikat\model\RedBeanPHP\RedException as RedException;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * OODBBean (Object Oriented DataBase Bean)

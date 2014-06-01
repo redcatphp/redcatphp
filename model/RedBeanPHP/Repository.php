@@ -1,18 +1,18 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\OODBBean as OODBBean;
-use RedBeanPHP\Observable as Observable;
-use RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
-use RedBeanPHP\QueryWriter as QueryWriter;
-use RedBeanPHP\RedException\Security as Security;
-use RedBeanPHP\SimpleModel as SimpleModel;
-use RedBeanPHP\BeanHelper as BeanHelper;
-use RedBeanPHP\RedException\SQL as SQL;
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use RedBeanPHP\OODB as OODB;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\Observable as Observable;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\RedException\Security as Security;
+use surikat\model\RedBeanPHP\SimpleModel as SimpleModel;
+use surikat\model\RedBeanPHP\BeanHelper as BeanHelper;
+use surikat\model\RedBeanPHP\RedException\SQL as SQL;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\OODB as OODB;
 
 /**
  * Abstract Repository

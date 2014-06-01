@@ -1,11 +1,11 @@
 <?php 
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\OODB as OODB;
-use RedBeanPHP\QueryWriter as QueryWriter;
-use RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\OODB as OODB;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\Adapter as Adapter;
 
 /**
  * @file      RedBean/ToolBox.php

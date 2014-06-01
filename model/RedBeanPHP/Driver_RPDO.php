@@ -1,13 +1,13 @@
 <?php
 
-namespace RedBeanPHP\Driver;
+namespace surikat\model\RedBeanPHP\Driver;
 
-use RedBeanPHP\Driver as Driver;
-use RedBeanPHP\Logger as Logger;
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use RedBeanPHP\RedException\SQL as SQL;
-use RedBeanPHP\Logger\RDefault as RDefault;
-use RedBeanPHP\PDOCompatible as PDOCompatible;
+use surikat\model\RedBeanPHP\Driver as Driver;
+use surikat\model\RedBeanPHP\Logger as Logger;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\RedException\SQL as SQL;
+use surikat\model\RedBeanPHP\Logger\RDefault as RDefault;
+use surikat\model\RedBeanPHP\PDOCompatible as PDOCompatible;
 
 /**
  *\PDO Driver

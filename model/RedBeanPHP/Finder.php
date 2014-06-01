@@ -1,11 +1,11 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\ToolBox as ToolBox;
-use RedBeanPHP\OODB as OODB;
-use RedBeanPHP\RedException\Security as Security;
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\ToolBox as ToolBox;
+use surikat\model\RedBeanPHP\OODB as OODB;
+use surikat\model\RedBeanPHP\RedException\Security as Security;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * RedBean Finder

@@ -1,11 +1,11 @@
 <?php
 
-namespace RedBeanPHP\Logger\RDefault;
+namespace surikat\model\RedBeanPHP\Logger\RDefault;
 
-use RedBeanPHP\Logger as Logger;
-use RedBeanPHP\Logger\RDefault as RDefault;
-use RedBeanPHP\RedException as RedException;
-use RedBeanPHP\RedException\Security as Security;
+use surikat\model\RedBeanPHP\Logger as Logger;
+use surikat\model\RedBeanPHP\Logger\RDefault as RDefault;
+use surikat\model\RedBeanPHP\RedException as RedException;
+use surikat\model\RedBeanPHP\RedException\Security as Security;
 
 /**
  * Debug logger.

@@ -1,12 +1,12 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\ToolBox as ToolBox;
-use RedBeanPHP\AssociationManager as AssociationManager;
-use RedBeanPHP\OODB as OODB;
-use RedBeanPHP\OODBBean as OODBBean;
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\ToolBox as ToolBox;
+use surikat\model\RedBeanPHP\AssociationManager as AssociationManager;
+use surikat\model\RedBeanPHP\OODB as OODB;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 
 /**
  * Duplication Manager

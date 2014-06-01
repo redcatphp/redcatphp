@@ -1,9 +1,9 @@
 <?php
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\ToolBox as ToolBox;
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\ToolBox as ToolBox;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * Bean Helper Interface

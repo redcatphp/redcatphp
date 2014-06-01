@@ -1,10 +1,10 @@
 <?php 
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\ToolBox as ToolBox;
-use RedBeanPHP\AssociationManager as AssociationManager;
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\ToolBox as ToolBox;
+use surikat\model\RedBeanPHP\AssociationManager as AssociationManager;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * RedBean Tag Manager.

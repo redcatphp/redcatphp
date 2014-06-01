@@ -1,11 +1,11 @@
 <?php 
 
-namespace RedBeanPHP\QueryWriter;
+namespace surikat\model\RedBeanPHP\QueryWriter;
 
-use RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use RedBeanPHP\QueryWriter as QueryWriter;
-use RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\Adapter as Adapter;
 
 /**
  * RedBean MySQLWriter

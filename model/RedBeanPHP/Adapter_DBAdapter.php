@@ -1,10 +1,10 @@
 <?php
 
-namespace RedBeanPHP\Adapter;
+namespace surikat\model\RedBeanPHP\Adapter;
 
-use RedBeanPHP\Observable as Observable;
-use RedBeanPHP\Adapter as Adapter;
-use RedBeanPHP\Driver as Driver;
+use surikat\model\RedBeanPHP\Observable as Observable;
+use surikat\model\RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\Driver as Driver;
 
 /**
  * DBAdapter (Database Adapter)

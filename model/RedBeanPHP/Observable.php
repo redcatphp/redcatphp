@@ -1,8 +1,8 @@
 <?php 
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\Observer as Observer;
+use surikat\model\RedBeanPHP\Observer as Observer;
 
 /**
  * Observable

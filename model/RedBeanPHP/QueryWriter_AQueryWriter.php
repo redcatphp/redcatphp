@@ -1,11 +1,11 @@
 <?php
 
-namespace RedBeanPHP\QueryWriter;
+namespace surikat\model\RedBeanPHP\QueryWriter;
 
-use RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use RedBeanPHP\RedException as RedException;
-use RedBeanPHP\QueryWriter as QueryWriter;
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\RedException as RedException;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * RedBean Abstract Query Writer

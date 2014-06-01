@@ -1,7 +1,7 @@
 <?php namespace surikat;
 use surikat\model\R;
 use surikat\model\Compo;
-use surikat\model\RedBean\OODBBean;
+use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	private static $AVAILABLE;
 	static $DEBUG;

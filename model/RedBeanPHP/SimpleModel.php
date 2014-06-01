@@ -1,8 +1,8 @@
 <?php 
 
-namespace RedBeanPHP;
+namespace surikat\model\RedBeanPHP;
 
-use RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
 /**
  * SimpleModel

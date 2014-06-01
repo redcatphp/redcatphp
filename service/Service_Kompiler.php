@@ -141,10 +141,33 @@ abstract class Service_Kompiler{
 		print "Downloading $url\r\n";
 		$dir = self::getZIP($url);
 		$dir .= '/redbean-master/RedBeanPHP';
-		
 
 		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		self::namespacer($dir,$tgDir,'RedBeanPHP','surikat\\model\\RedBeanPHP')
+		$dir = realpath($dir);
+		if(!$dir)
+			throw new \Exception('Directory not noud: "'.$dir.'"');
+		error_reporting(-1);
+		ini_set('display_errors','stdout');
+		$ons = 'RedBeanPHP';
+		$namespace = 'surikat\\model\\RedBeanPHP';
+		$rep = array(
+			'namespace '.$ons=>'namespace '.$namespace,
+			'use '.$ons=>'use '.$namespace,
+		);
+		FS::recurse($dir,function($file)use($ons,$namespace,$dir,$tgDir,$rep){
+				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
+					$code = file_get_contents($file);
+					$code = str_replace(array_keys($rep),array_values($rep),$code);
+					$tgFile=$tgDir.'/'.str_replace(DIRECTORY_SEPARATOR,'_',substr($file,($l=strlen($dir))+1));
+					FS::mkdir($tgFile,true);
+					if(file_put_contents($tgFile,$code))
+						print "$tgFile\r\n";
+					else
+						throw new \Exception('Unable to write: "'.$tgFile.'"');
+				}
+					
+		});
+		
 		print 'OK';
 		print '</pre>';
 	}
@@ -270,55 +293,5 @@ abstract class Service_Kompiler{
 			throw new \Exception( 'ZipArchive Error: ' . $ErrMsg.': '.$url);
 		}
 
-	}
-	protected static function namespacer($dir,$target,$ons='',$namespace='surikat',$callback=null){
-		$dir = realpath($dir);
-		if(!$dir)
-			throw new \Exception('Directory not noud: "'.$dir.'"');
-		static $usage=array(
-			'Exception',
-			'Closure',
-			'LogicException',
-			'RuntimeException',
-			'DOMDocument',
-			'DOMImplementation',
-			'DOMNode',
-			'DOMElement',
-			'ArrayObject',
-			'ArrayAccess',
-			'Countable',
-			'ArrayIterator',
-			'IteratorAggregate',
-			'PDOException',
-			'PDO',
-			'DirectoryIterator',
-			'Traversable',
-			'ErrorException',
-		);
-		error_reporting(-1);
-		ini_set('display_errors','stdout');
-		$uses = array();
-		foreach($usage as $u)
-			foreach(array("\t","\n","\r",' ',',',';','(','{') as $s)
-				$uses[$s.$u] = $s.'\\'.$u;
-		FS::recurse($dir,function($file)use($ons,$namespace,$uses,$dir,$target,$callback){
-				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
-					$code = file_get_contents($file);
-					if($ons)
-						$code = '<?php namespace '.$namespace.'; '.substr($code,5);
-					else
-						$code = str_replace('namespace '.$ons,'namespace '.$namespace,$code);
-					$code = str_replace(array_keys($uses),array_values($uses),$code);
-					if($callback)
-						$callback($code);
-					$tgFile=$target.'/'.str_replace(DIRECTORY_SEPARATOR,'_',substr($file,($l=strlen($dir))+1));
-					FS::mkdir($tgFile,true);
-					if(file_put_contents($tgFile,$code))
-						print "$tgFile\r\n";
-					else
-						throw new \Exception('Unable to write: "'.$tgFile.'"');
-				}
-					
-		});
 	}
 }

@@ -1,13 +1,13 @@
 <?php namespace surikat\model;
 use surikat\control\Config;
-use surikat\model\RedBean\IModelFormatter;
-use surikat\model\RedBean\ModelHelper;
+use surikat\model\RedBeanPHP\IModelFormatter;
+use surikat\model\RedBeanPHP\ModelHelper;
 class ModelFormatter implements IModelFormatter{
     function formatModel($model){
 		return class_exists($c='model\\Table_'.ucfirst($model))?$c:'model\\Table';
     }
 }
-class R extends RedBean\Facade{
+class R extends RedBeanPHP\Facade{
 	static function initialize(){
 		//defined('MODEL_PREFIX','model\\');
 		ModelHelper::setModelFormatter(new ModelFormatter());
