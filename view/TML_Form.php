@@ -109,11 +109,11 @@ class TML_Form extends TML {
 						continue;
 					switch($a){
 						case 'filter':
-							$code .= ' $_POST[\''.$n.'\'] = C_Filter::'.$b.'($_POST[\''.$n.'\'],'.($v?','.var_export($v,true):'').'); ';
+							$code .= ' $_POST[\''.$n.'\'] = control\\filter::'.$b.'($_POST[\''.$n.'\'],'.($v?','.var_export($v,true):'').'); ';
 							$el->$k = null;
 						break;
 						case 'ruler':
-							$code .= ' if(($r=C_Ruler::'.$b.'($_POST[\''.$n.'\']'.($v?','.var_export($v,true):'').'))!==true) return $r; ';
+							$code .= ' if(($r=control\\ruler::'.$b.'($_POST[\''.$n.'\']'.($v?','.var_export($v,true):'').'))!==true) return $r; ';
 							$el->$k = null;
 						break;
 					}
