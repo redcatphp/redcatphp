@@ -124,13 +124,12 @@ abstract class Service_Kompiler{
 			FS::mkdir($dir.'.tmp');
 		}
 	}
-	/*
-	static function Update_RedBean(){
+	static function Update_RedBean4(){
 		ob_implicit_flush(true);
 		ob_end_flush();
 		print '<pre>';
 
-		$tgDir = control::$SURIKAT.'model/RedBean';
+		$tgDir = control::$SURIKAT.'model/RedBeanPHP';
 		print "Cleaning (with backup if is able to) $tgDir\r\n";
 		$bak = control::$TMP.'zip/RedBean'.time();
 		FS::mkdir($bak);
@@ -141,17 +140,16 @@ abstract class Service_Kompiler{
 		$url = 'https://github.com/gabordemooij/redbean/archive/master.zip';
 		print "Downloading $url\r\n";
 		$dir = self::getZIP($url);
-		$dir .= '/redbean-master/RedBean';
+		$dir .= '/redbean-master/RedBeanPHP';
 		
 
 		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		self::namespacer($dir,$tgDir,'surikat\\model\\RedBean',function(&$txt){
-			$txt = str_replace('RedBean_','',$txt);
-		});
+		self::namespacer($dir,$tgDir,'surikat\\model\\RedBeanPHP'/*,function(&$txt){
+			$txt = str_replace('RedBean_','',$txt); //in 3.5
+		}*/);
 		print 'OK';
 		print '</pre>';
 	}
-	*/
 	/*
 	static function Update_CssSelector(){
 		ob_implicit_flush(true);
