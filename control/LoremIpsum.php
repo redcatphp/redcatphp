@@ -26,6 +26,15 @@ class LoremIpsum {
 	*	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	*	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	*/
+	static function get($count=100,$wordsPerParagraph=100,$format=null,$loremipsum=null,$html=null,$mini=null){ //by surikat
+		$g = new LoremIpsum(uniqid(),$wordsPerParagraph);
+		$str = $g->getContent($count,$format,$loremipsum);
+		if($html===false)
+			$str = strip_tags($str);
+		if($mini)
+			$str = ucfirst(rtrim(trim($str),'.'));
+		return $str;
+	}
 	
 	private $words, $wordsPerParagraph, $wordsPerSentence;
 	// function __construct($wordsPer = 100)
