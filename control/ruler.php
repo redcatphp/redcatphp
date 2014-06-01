@@ -1,5 +1,5 @@
 <?php namespace surikat\control; 
-class Ruler {
+class ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
 	static function unique($v){
 		return $this->model->id||!R::findOne($this->model->tableName,' WHERE '.$this->col.'=?',array($v));
@@ -9,6 +9,9 @@ class Ruler {
 	}
 	static function contains($v,$arg){
 		return in_array(trim(strtolower($v)), explode(chr(32), trim(strtolower($arg))));
+	}
+	static function tel($v){
+		return preg_match("/^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/",$v);
 	}
 	static function email($v){
 		return filter_var($v, FILTER_VALIDATE_EMAIL);
