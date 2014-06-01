@@ -31,7 +31,7 @@ if (!function_exists('EID')) {
 
 	function EID($enumName)
 	{
-		return \RedBeanPHP\Facade::enum( $enumName )->id;
+		return \surikat\model\RedBeanPHP\Facade::enum( $enumName )->id;
 	}
 
 }
@@ -48,6 +48,6 @@ if ( !function_exists( 'dump' ) ) {
 
 	function dmp( $list )
 	{
-		print_r( \RedBeanPHP\Facade::dump( $list ) );
+		print_r( \surikat\model\RedBeanPHP\Facade::dump( $list ) );
 	}
 }

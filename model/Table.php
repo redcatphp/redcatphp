@@ -19,8 +19,9 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
 use surikat\model\R;
-use surikat\model\RedBean\OODBBean;
-class Table implements \ArrayAccess,\IteratorAggregate{
+use surikat\model\RedBeanPHP\OODBBean;
+use surikat\model\RedBeanPHP\SimpleModel;
+class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
 	//function onNew(){}
 	//function onCreate(){}
@@ -103,31 +104,31 @@ class Table implements \ArrayAccess,\IteratorAggregate{
 	function after_delete(){
 		$this->trigger('deleted');
 	}
-	public function loadBean( OODBBean $bean ){
+	function loadBean( OODBBean $bean ){
 		$this->bean = $bean;
 	}
-	public function __call($func,array $args=array()){
+	function __call($func,array $args=array()){
 		if(is_callable(array($this->bean,$func)))
 			return call_user_func_array(array($this->bean,$func),$args);
 		else
 			throw new \BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
 	}
-	public function __get($prop){
+	function __get($prop){
 		return $this->bean->$prop;
 	}
-	public function __set( $prop, $value ){
+	function __set( $prop, $value ){
 		$this->bean->$prop = $value;
 	}
-	public function __isset( $key ){
+	function __isset( $key ){
 		return isset( $this->bean->$key );
 	}
-	public function __unset( $key ){
+	function __unset( $key ){
 		unset( $this->bean->$key );
 	}
-	public function box(){
+	function box(){
 		return $this;
 	}
-	public function unbox(){
+	function unbox(){
 		return $this->bean;
 	}
 	function getIterator(){

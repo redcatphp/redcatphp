@@ -1,16 +1,16 @@
 <?php namespace surikat\model;
 use surikat\control\Config;
-use surikat\model\RedBeanPHP\IModelFormatter;
-use surikat\model\RedBeanPHP\ModelHelper;
-class ModelFormatter implements IModelFormatter{
-    function formatModel($model){
+use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+class R extends RedBeanPHP\Facade{
+    static function formatModel($model){
 		return class_exists($c='model\\Table_'.ucfirst($model))?$c:'model\\Table';
     }
-}
-class R extends RedBeanPHP\Facade{
 	static function initialize(){
 		//defined('MODEL_PREFIX','model\\');
-		ModelHelper::setModelFormatter(new ModelFormatter());
+		SimpleFacadeBeanHelper::setFactoryFunction(function($name){
+			$name = self::formatModel($name);
+			return new $name();
+		});
 		extract(Config::model());
 		$port = isset($port)&&$port?';port='.$port:'';
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);

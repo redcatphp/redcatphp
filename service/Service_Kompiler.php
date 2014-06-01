@@ -149,8 +149,15 @@ abstract class Service_Kompiler{
 		error_reporting(-1);
 		ini_set('display_errors','stdout');
 		$ons = 'RedBeanPHP';
-		$namespace = 'surikat\\model\\RedBeanPHP';
+		$ns = 'surikat\\model';
+		$namespace = $ns.'\\RedBeanPHP';
+		$_ons = str_replace('\\','\\\\',$ons);
+		$_namespace = str_replace('\\','\\\\',$namespace);
+		$_ns = str_replace('\\','\\\\',$ns);
 		$rep = array(
+			'\\\\'.$_ons=>'\\\\'.$_namespace,
+			'\\'.$ons=>'\\'.$namespace,
+			'\\\\'.$_ns.'\\\\'.$namespace=>'\\\\'.$_namespace,
 			'namespace '.$ons=>'namespace '.$namespace,
 			'use '.$ons=>'use '.$namespace,
 		);
@@ -158,7 +165,7 @@ abstract class Service_Kompiler{
 				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
 					$code = file_get_contents($file);
 					$code = str_replace(array_keys($rep),array_values($rep),$code);
-					$tgFile=$tgDir.'/'.str_replace(DIRECTORY_SEPARATOR,'_',substr($file,($l=strlen($dir))+1));
+					$tgFile=$tgDir.'/'.substr($file,($l=strlen($dir))+1);
 					FS::mkdir($tgFile,true);
 					if(file_put_contents($tgFile,$code))
 						print "$tgFile\r\n";

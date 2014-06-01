@@ -309,7 +309,7 @@ class Facade
 
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
-		$writerClass = '\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
+		$writerClass = '\\surikat\\model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
 		$writer      = new $writerClass( $adapter );
 		$redbean     = new OODB( $writer );
 

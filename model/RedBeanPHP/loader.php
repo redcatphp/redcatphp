@@ -62,8 +62,8 @@ if ( defined( 'REDBEANPHP_PLUGINS' ) ) {
 }
 
 //make some classes available for backward compatibility
-class RedBean_SimpleModel extends \RedBeanPHP\SimpleModel {};
+class RedBean_SimpleModel extends \surikat\model\RedBeanPHP\SimpleModel {};
 
 if (!class_exists('R')) {
-	class R extends \RedBeanPHP\Facade{};
+	class R extends \surikat\model\RedBeanPHP\Facade{};
 }
