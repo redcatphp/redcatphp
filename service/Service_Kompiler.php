@@ -144,9 +144,9 @@ abstract class Service_Kompiler{
 		
 
 		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		self::namespacer($dir,$tgDir,'surikat\\model\\RedBeanPHP'/*,function(&$txt){
-			$txt = str_replace('RedBean_','',$txt); //in 3.5
-		}*/);
+		self::namespacer($dir,$tgDir,'surikat\\model\\RedBeanPHP',function(&$txt){
+			$txt = str_replace('namespace RedBeanPHP','namespace surikat\\model\\RedBeanPHP',$txt);
+		});
 		print 'OK';
 		print '</pre>';
 	}
