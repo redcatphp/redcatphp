@@ -54,7 +54,8 @@ class uploader{
 	}
 	static function file($dir,$k,$mime=null,$callback=null){
 		if(isset($_FILES[$k])){
-			self::uploadFile($_FILES[$k],$dir,$mime,$callback,false,true);
+			if($_FILES[$k]['name'])
+				self::uploadFile($_FILES[$k],$dir,$mime,$callback,false,true);
 			return true;
 		}
 	}
@@ -65,7 +66,8 @@ class uploader{
 				$file = array();
 				foreach(array_keys($files) as $prop)
 					$file[$prop] =& $files[$prop][$i];
-				self::uploadFile($file,$dir,$mime,$callback,false,true);
+				if($file['name'])
+					self::uploadFile($file,$dir,$mime,$callback,false,true);
 			}
 			return true;
 		}
