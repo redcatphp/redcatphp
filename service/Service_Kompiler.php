@@ -144,9 +144,7 @@ abstract class Service_Kompiler{
 		
 
 		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		self::namespacer($dir,$tgDir,'surikat\\model\\RedBeanPHP',function(&$txt){
-			$txt = str_replace('namespace RedBeanPHP','namespace surikat\\model\\RedBeanPHP',$txt);
-		});
+		self::namespacer($dir,$tgDir,'RedBeanPHP','surikat\\model\\RedBeanPHP')
 		print 'OK';
 		print '</pre>';
 	}
@@ -273,7 +271,7 @@ abstract class Service_Kompiler{
 		}
 
 	}
-	protected static function namespacer($dir,$target,$namespace='surikat',$callback=null){
+	protected static function namespacer($dir,$target,$ons='',$namespace='surikat',$callback=null){
 		$dir = realpath($dir);
 		if(!$dir)
 			throw new \Exception('Directory not noud: "'.$dir.'"');
@@ -303,9 +301,14 @@ abstract class Service_Kompiler{
 		foreach($usage as $u)
 			foreach(array("\t","\n","\r",' ',',',';','(','{') as $s)
 				$uses[$s.$u] = $s.'\\'.$u;
-		FS::recurse($dir,function($file)use($namespace,$uses,$dir,$target,$callback){
+		FS::recurse($dir,function($file)use($ons,$namespace,$uses,$dir,$target,$callback){
 				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
-					$code = '<?php namespace '.$namespace.'; '.str_replace(array_keys($uses),array_values($uses),substr(file_get_contents($file),5));
+					$code = file_get_contents($file);
+					if($ons)
+						$code = '<?php namespace '.$namespace.'; '.substr($code,5);
+					else
+						$code = str_replace('namespace '.$ons,'namespace '.$namespace,$code);
+					$code = str_replace(array_keys($uses),array_values($uses),$code);
 					if($callback)
 						$callback($code);
 					$tgFile=$target.'/'.str_replace(DIRECTORY_SEPARATOR,'_',substr($file,($l=strlen($dir))+1));
