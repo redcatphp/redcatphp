@@ -28,10 +28,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	public function evalue(){
 		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
 	}
-	public function __destruct(){
-		// $this->delete();
-	}
-	
 	public function recursiveMethod($callback,$node=null,$args=null){
 		if(func_num_args()<2)
 			$node = &$this;
@@ -113,7 +109,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$this->vFile->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
 		if($ev)
 			$this->vFile->cacheV($h,$this->evalue());
-		$this->clean();
+		$this->clear();
 		$this->head('<?php if($__including=$this->cacheInc(\''.$h.'\''.($extra!==null?(','.(is_string($extra)?"'".str_replace("'","\'",$extra)."'":'unserialize('.serialize($extra).')')):'').'))include $__including;?>');
 	}
 	protected static function varExport($var,$singlequote=null){
@@ -154,17 +150,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		else
 			array_push($this->onLoaded,$callback);
 	}
-	//protected function load(){}
-	//protected function loaded(){}
-	protected function loaded(){
-		$this->preventLoad = true;
-		if($this->namespaceClass&&method_exists($this,$m=__FUNCTION__.ucfirst($this->namespaceClass)))
-			$this->$m();
-	}
-	protected function load(){
-		if($this->namespaceClass&&method_exists($this,$m=__FUNCTION__.ucfirst($this->namespaceClass)))
-			$this->$m();
-	}
+	protected function load(){}
+	protected function loaded(){}
 	function triggerLoaded(){
 		foreach($this->onLoaded as $callback)
 			if(is_callable($callback))
@@ -178,6 +165,46 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
 			if(method_exists($this,$m='loaded'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='loaded'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1))))
 				$this->$m($this->metaAttribution[$k],$key);
+		}
+	}
+	protected function opened(){
+		if((isset($this->metaAttribution['/'])&&$i='/')||(($i=array_search('/',$this->metaAttribution))!==false&&is_integer($i))){
+			$this->selfClosed = 2;
+			unset($this->metaAttribution[$i]);
+		}
+		foreach(array_keys($this->metaAttribution) as $k){
+			if(self::checkPIOC($this->metaAttribution[$k])){
+				$this->metaAttribution[$k] = new PHP($this,null,$this->metaAttribution[$k],$this);
+				if(!is_integer($k))
+					$this->attributes[$k] = &$this->metaAttribution[$k];
+			}
+			elseif(self::checkPIOC($k)){
+				$v = $this->metaAttribution[$k];
+				unset($this->metaAttribution[$k]);
+				$this->metaAttribution[] = new PHP($this,null,$k.'="'.$v.'"',$this);
+			}
+			elseif(!is_integer($k))
+				$this->attributes[$k] = &$this->metaAttribution[$k];		
+			else
+				$this->attributes[$this->metaAttribution[$k]] = &$this->metaAttribution[$k];
+		}
+	}
+	protected function closed(){
+		foreach($this->onLoad as $callback)
+			if(is_callable($callback))
+				call_user_func($callback);
+		if($this->preventLoad)
+			return;
+		foreach(array_keys($this->metaAttribution) as $k){
+			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
+			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
+				$this->$m($this->attributes[$k],$key);
+		}
+		if(!$this->preventLoad)
+			$this->load();
+		if(method_exists($this,'onExec')){
+			$this->head('<?php ob_start();?>');
+			$this->foot('<?php echo '.get_class($this).'::triggerExec(ob_get_clean());?>');
 		}
 	}
 	
@@ -261,10 +288,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $this->attrFind(func_get_args(),func_get_arg(0));
 	}
 
-	
-	
-
-	
 	function selector(){
 		if(!func_num_args())
 			return isset($this->selectorService)?$this->selectorService:($this->selectorService=new CssSelector($this));
@@ -465,6 +488,10 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$str .= $this->indentationTab()."</".$this->nodeName.">";
 		$str .= implode('',$this->foot);
 		return $str;
+	}
+	public function clear(){
+		$this->clean();
+		$this->clearInner();
 	}
 	public function clearInner(){
 		$this->innerHead = array();

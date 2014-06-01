@@ -141,7 +141,7 @@ class FILE {
 	}
 	protected function _cachePHP($file,$str){
 		//PHP::namespacedConcat($str,true);
-		$file = $this->cacheFile($this->path.'/'.$file,'php');
+		$file = $this->dirCache.$this->path.'/'.$file.'.php';
 		if(!control::devHas(control::dev_view))
 			$str = minPHP::minify($str);
 		return $this->compileStore($file,$str);
@@ -183,9 +183,9 @@ class FILE {
 	}
 	protected function compilePHP($file,$str){
 		foreach($this->toCachePHP as $cache)
-			$this->_CachePHP($cache[0],$cache[1]);
+			$this->_cachePHP($cache[0],$cache[1]);
 		foreach($this->toCacheV as $cache)
-			$this->_CacheV($cache[0],$cache[1]);
+			$this->_cacheV($cache[0],$cache[1]);
 		return $this->compileStore($file,$str);
 	}
 }

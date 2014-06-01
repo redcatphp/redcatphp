@@ -1,5 +1,6 @@
 <?php namespace surikat\view; 
 class TML_Foreach extends TML {
+	protected $hiddenWrap = true;
 	function getForeach(){
 		$c = $this->foreach;
 		if(!$c)
@@ -9,8 +10,9 @@ class TML_Foreach extends TML {
 		$as = strpos($c,' as ')!==false?'':' as $'.$k.'=>$'.$v;
 		return $c.$as;
 	}
-	function __toString(){
-		return '<?php foreach('.$this->getForeach().'){?>'.(!$this->selfClosed?$this->getInnerTml().'<?php }?>':'');
+	function load(){
+		array_unshift($this->head,'<?php foreach('.$this->getForeach().'){?>');
+		if(!$this->selfClosed)
+			array_push($this->foot,'<?php }?>');
 	}
 }
-?>

@@ -453,7 +453,7 @@ abstract class PARSER{
 			$h .= '&#'.ord($s{$i}).';';
 		return $h;
 	}
-	private static function checkPIOC($check){
+	protected static function checkPIOC($check){
 		return strpos($check,self::PIO)!==false&&strpos($check,self::PIC)!==false;
 	}
 
@@ -485,45 +485,6 @@ abstract class PARSER{
 		}
 		$this->currentTag[] = $node;
 		return $node;
-	}
-	private function opened(){
-		if((isset($this->metaAttribution['/'])&&$i='/')||(($i=array_search('/',$this->metaAttribution))!==false&&is_integer($i))){
-			$this->selfClosed = 2;
-			unset($this->metaAttribution[$i]);
-		}
-		foreach(array_keys($this->metaAttribution) as $k){
-			if(self::checkPIOC($this->metaAttribution[$k])){
-				$this->metaAttribution[$k] = new PHP($this,null,$this->metaAttribution[$k],$this);
-				if(!is_integer($k))
-					$this->attributes[$k] = &$this->metaAttribution[$k];
-			}
-			elseif(self::checkPIOC($k)){
-				$v = $this->metaAttribution[$k];
-				unset($this->metaAttribution[$k]);
-				$this->metaAttribution[] = new PHP($this,null,$k.'="'.$v.'"',$this);
-			}
-			elseif(!is_integer($k))
-				$this->attributes[$k] = &$this->metaAttribution[$k];		
-			else
-				$this->attributes[$this->metaAttribution[$k]] = &$this->metaAttribution[$k];
-		}
-	}
-	private function closed(){
-		foreach($this->onLoad as $callback)
-			if(is_callable($callback))
-				call_user_func($callback);
-		if($this->preventLoad)
-			return;
-		foreach(array_keys($this->metaAttribution) as $k){
-			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
-			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
-				$this->$m($this->attributes[$k],$key);
-		}
-		$this->load();
-		if(method_exists($this,'onExec')){
-			$this->head('<?php ob_start();?>');
-			$this->foot('<?php echo '.get_class($this).'::triggerExec(ob_get_clean());?>');
-		}
 	}
 	private function fireElement($name,$attributes){
 		$attributes['/'] = '';
