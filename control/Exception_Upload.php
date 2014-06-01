@@ -1,8 +1,7 @@
 <?php namespace surikat\control;
 class Exception_Upload extends Exception{
-    public function __construct($code) {
-        $message = $this->codeToMessage($code);
-        parent::__construct($message, $code);
+    public function __construct($code){
+        parent::__construct($this->codeToMessage($code));
     }
     private function codeToMessage($code){
         switch ($code) {
@@ -37,8 +36,8 @@ class Exception_Upload extends Exception{
                 $message = "Unable to write uploaded file in target directory";
             break;
             default:
-                $message = "Unknown upload error";
-                break;
+                $message = "Unknown upload error ";
+            break;
         }
         return $message;
     }
