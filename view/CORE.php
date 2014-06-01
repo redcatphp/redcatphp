@@ -35,12 +35,17 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		foreach($node->childNodes as $el)
 			$this->recursiveMethod($callback,$el,$args);
 	}
-	public function recursive($callback,$node=null){
+	public function recursive($callback,$node=null,$break=false){
 		if(func_num_args()<2)
 			$node = &$this;
-		call_user_func_array($callback,array(&$node));
-		foreach($node->childNodes as $el)
-			$this->recursive($callback,$el);
+		call_user_func_array($callback,array(&$node,&$break));
+		if($break)
+			return;
+		foreach($node->childNodes as $el){
+			$this->recursive($callback,$el,$break);
+			if($break)
+				break;
+		}
 	}
 	public function arecursive($callback,$node=null){
 		if(func_num_args()<2)
