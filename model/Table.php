@@ -94,9 +94,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function after_update(){
 		if($this->creating)
-			$this->trigger('create');
+			$this->trigger('created');
 		else
-			$this->trigger('update');
+			$this->trigger('updated');
 	}
 	function delete(){
 		$this->trigger('delete');

@@ -1,19 +1,17 @@
 <?php namespace surikat\model;
 use surikat\control\Config;
-use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
+//class SimpleFacadeBeanHelper extends RedBeanPHP\Facade{
 class R extends RedBeanPHP\Facade{
-    static function formatModel($model){
-		return class_exists($c='model\\Table_'.ucfirst($model))?$c:'model\\Table';
-    }
 	static function initialize(){
-		//defined('MODEL_PREFIX','model\\');
-		SimpleFacadeBeanHelper::setFactoryFunction(function($name){
-			$name = self::formatModel($name);
-			return new $name();
-		});
 		extract(Config::model());
 		$port = isset($port)&&$port?';port='.$port:'';
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
+	}
+	static function storeTransactional($bean){
+		return self::transaction(function()use($bean){
+			return R::store($bean);
+		});
 	}
 	static function findOrNewOne($type,$params=array()){
 		$query = array();

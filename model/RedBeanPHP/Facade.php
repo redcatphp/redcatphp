@@ -22,7 +22,7 @@ use surikat\model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\RedException as RedException;
-use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+use surikat\model\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\Driver\RPDO as RPDO;
 
 /**
