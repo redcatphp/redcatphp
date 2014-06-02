@@ -3,6 +3,7 @@ use surikat\control\PHP;
 use surikat\control\HTTP;
 use surikat\view\TML;
 class present extends TML{
+	static $final;
 	static $options;
 	static $template;
 	static $implementation;
@@ -31,6 +32,7 @@ class present extends TML{
 		static::$template = $tml;
 		 if(isset(static::$options['uri'])&&static::$options['uri']=='static'&&(count(view::param())>1||!empty($_GET)))
 			view::error(404);
+		static::$final = get_called_class();
 	}
 	private $__x;
 	protected function getX($method=null){
@@ -52,8 +54,8 @@ class present extends TML{
 		return $this->__x;
 	}
 	protected function loaded(){
+		$ns = $this->namespace.':'.$this->namespaceClass;
 		if($this->vFile->present){
-			$ns = $this->namespace.':'.$this->namespaceClass;
 			$_ns = $this->vFile->present->namespace.':'.$this->vFile->present->namespaceClass;
 			if(strpos($_ns,$ns)===0)
 				return;
@@ -68,7 +70,9 @@ class present extends TML{
 		$code = '<?php ';
 		foreach($a as $k=>$v)
 			$code .= '$'.$k.'='.var_export($v,true).';';
-			
+
+		$this->attributes['namespaces'] = explode(':',$ns);
+		
 		$code .= '\\'.get_class($this).'::execute('.var_export($this->attributes,true).',$this->path);';
 		foreach($this->getX('exec()') as $c)
 			$code .= '\\'.$c.'::exec();';
