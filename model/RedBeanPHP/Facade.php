@@ -1564,4 +1564,3 @@ class Facade
 		return call_user_func_array( self::$plugins[$pluginName], $params );
 	}
 }
-
