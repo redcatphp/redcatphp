@@ -33,6 +33,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	//function onDelete(){}
 	//function onDeleted(){}
 	#</workflow>
+	static $metaCast = array();
+	static $metaCastWrap = array();
 	protected $table;
 	protected $bean;
 	protected $creating;
@@ -61,6 +63,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function dispense(){
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
+		$c = get_class($this);
+		foreach($c::$metaCast as $k=>$cast)
+			$this->bean->setMeta('cast.'.$k,$cast); 
 		$this->trigger('new');
 	}
 	function on($f,$c){

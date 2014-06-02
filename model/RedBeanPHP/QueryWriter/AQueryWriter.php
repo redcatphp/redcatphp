@@ -352,6 +352,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			$insertSQL = "INSERT INTO $table ( id, " . implode( ',', $insertcolumns ) . " ) VALUES
 			( $default, " . implode( ',', array_fill( 0, count( $insertcolumns ), ' ? ' ) ) . " ) $suffix";
 
+			//modif for point by surikat
+			\surikat\model\R::queryModelUpdateArgsAutowrap($insertSQL,$type,$insertcolumns,$insertvalues);
+
 			$ids = array();
 			foreach ( $insertvalues as $i => $insertvalue ) {
 				$ids[] = $this->adapter->getCell( $insertSQL, $insertvalue, $i );
@@ -526,6 +529,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			}
 
 			//Otherwise psql returns string while MySQL/SQLite return numeric causing problems with additions (array_diff)
+
 			return (string) $this->insertRecord( $table, $insertcolumns, array( $insertvalues ) );
 		}
 
@@ -546,6 +550,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$sql .= implode( ',', $p ) . ' WHERE id = ? ';
 
 		$v[] = $id;
+
+		//addon by surikat
+		\surikat\model\R::queryModelUpdateArgsAutowrap($sql,$type,$updatevalues);
 
 		$this->adapter->exec( $sql, $v );
 
