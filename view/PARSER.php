@@ -572,7 +572,7 @@ abstract class PARSER{
 		$this->nodeName = array_shift($args);
 		if(($pos=strpos($this->nodeName,':'))!==false){
 			$this->namespace = substr($this->nodeName,0,$pos);
-			$this->namespaceclass = substr($this->nodeName,$pos+1);
+			$this->namespaceClass = substr($this->nodeName,$pos+1);
 		}
 		$this->metaAttribution = (array)array_shift($args);
 		$this->constructor = array_shift($args);
