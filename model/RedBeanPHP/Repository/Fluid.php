@@ -55,7 +55,8 @@ class Fluid extends Repository
 		} elseif ( isset( $this->writer->sqltype_typeno[$cast] ) ) {
 			$typeno = $this->writer->sqltype_typeno[$cast];
 		} else {
-			throw new RedException( 'Invalid Cast' );
+			//throw new RedException( 'Invalid Cast' );
+			throw new RedException( 'Invalid Cast: '.$cast);
 		}
 
 		return $typeno;
