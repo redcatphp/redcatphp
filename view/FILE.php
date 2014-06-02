@@ -26,6 +26,7 @@ class FILE {
 	var $toCacheV = array();
 	var $childNodes = array();
 	var $isXhtml;
+	var $present;
 	function __construct($path,$options=array()){
 		$this->dirCompile = self::$DIRCOMPILE;
 		$this->dirCache = self::$DIRCACHE;

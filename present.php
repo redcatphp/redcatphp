@@ -51,9 +51,14 @@ class present extends TML{
 		}
 		return $this->__x;
 	}
-	protected function load(){}
 	protected function loaded(){
-		$this->preventLoad = true;
+		if($this->vFile->present){
+			$ns = $this->namespace.':'.$this->namespaceClass;
+			$_ns = $this->vFile->present->namespace.':'.$this->vFile->present->namespaceClass;
+			if(strpos($_ns,$ns)===0)
+				return;
+		}
+		$this->vFile->present = $this;
 		$a = array();
 		foreach($this->getX('compileVars()') as $c){
 			$r = $c::compileVars($a);
@@ -78,9 +83,8 @@ class present extends TML{
 			$code .= ')';
 		$code .= '  as $k=>$v) $$k = $v;';
 		$code .= '?>';
-
+		//print('<pre>'.htmlentities($code).'</pre>');exit;
 		$this->head($code);
-
 		foreach($this->getX('compileElement()') as $c)
 			$c::compileElement();
 		$a = array();
