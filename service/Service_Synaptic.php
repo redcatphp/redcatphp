@@ -126,7 +126,7 @@ class Service_Synaptic {
 						$k = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/'.$k;
 					elseif(($k = substr($k,0,-7).'.js')&&!is_file($k)&&!is_file($k=basename(control::$SURIKAT).'/'.$k)){
 						HTTP::code(404);
-						throw new Exception(404);
+						throw new Exception('404');
 						return;
 					}
 					self::minifyJS($k);
@@ -141,17 +141,17 @@ class Service_Synaptic {
 				){
 					if(self::scss($k)===false){
 						HTTP::code(404);
-						throw new Exception(404);
+						throw new Exception('404');
 					}
 				}
 				else{
 					HTTP::code(404);
-					throw new Exception(404);
+					throw new Exception('404');
 				}
 			}
 			else{
 				HTTP::code(404);
-				throw new Exception(404);
+				throw new Exception('404');
 			}
 		}
 	}

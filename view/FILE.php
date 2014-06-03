@@ -78,7 +78,7 @@ class FILE {
 	}
 	function __prepare(){
 		if(!($file=$this->exists()))
-			throw new Exception(404);
+			throw new Exception('404');
 		$node = new TML(file_get_contents($file),$this);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);

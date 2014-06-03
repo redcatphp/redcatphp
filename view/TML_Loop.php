@@ -48,7 +48,7 @@ class TML_Loop extends TML{
 	private function methodVar($var){
 		if(strpos($var,',')){
 			$var = explode(',',$var);
-			return (($c=count($var>1))?'array_merge(').'($'.implode(',$',$var).($c?')':'');
+			return (($c=count($var>1))?'array_merge(':'').'($'.implode(',$',$var).($c?')':'');
 		}
 		else
 			return '$'.$var;
