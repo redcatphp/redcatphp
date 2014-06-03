@@ -2,7 +2,7 @@
 use surikat\control;
 class session{
 	static $id;
-	static function set(){
+	static function &set(){
 		self::start();
 		$args = func_get_args();
 		$v = array_pop($args);
@@ -17,8 +17,9 @@ class session{
 			$ref =& $ref[$k];
 		}
 		$ref = $v;
+		return $ref;
 	}
-	static function get(){
+	static function &get(){
 		self::start();
 		$args = func_get_args();
 		$ref =& $_SESSION;
@@ -27,6 +28,7 @@ class session{
 				$ref =& $ref[$k];
 			else
 				return null;
+		return $ref;
 	}
 	static function start($name='project'){
 		if(self::$id)
@@ -36,6 +38,12 @@ class session{
 		session_start();
 		self::regenerate();
 		self::$id = session_id();
+	}
+	static function destroy($name='project'){
+		self::start($name);
+		$_SESSION = array();
+		session_destroy();
+		session_write_close();
 	}
 	private static function handle(){
 		@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)

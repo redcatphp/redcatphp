@@ -3,12 +3,11 @@ use surikat\control\session;
 class Service_Persona {
     protected $audience; //Scheme, hostname and port
 	static function email(){
-		session::start();
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode(isset($_SESSION['email'])?$_SESSION['email']:'');
+		echo json_encode(session::get('email'));
 	}
 	static function login(){
 		$response = '';
@@ -25,11 +24,8 @@ class Service_Persona {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 			$response = curl_exec($ch);
 			curl_close($ch);
-			if($js = json_decode($response)){
-				session::start();
-				if($js->status==='okay'&&$js->email)
-					$_SESSION['email'] = $js->email;
-			}
+			if(($js = json_decode($response))&&$js->status==='okay'&&$js->email)
+				session::set('email',$js->email);
 		}
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
@@ -38,9 +34,6 @@ class Service_Persona {
 		echo $response;
 	}
 	static function logout(){
-		$_SESSION = array();
-		session::start();
-		session_destroy();
-		session_write_close();
+		session::destroy();
 	}
 }
