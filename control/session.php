@@ -26,8 +26,10 @@ class session{
 		foreach($args as $k)
 			if(is_array($ref)&&isset($ref[$k]))
 				$ref =& $ref[$k];
-			else
-				return null;
+			else{
+				$ref = null;
+				break;
+			}
 		return $ref;
 	}
 	static function start($name='project'){
