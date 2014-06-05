@@ -26,7 +26,7 @@ class scssc_server{
 	function compile($in, $out,$input=null) {
 		$start = microtime(true);
 		if($input)
-			$css = $this->scss->compile('@import "/css/globals";@import "'.$input.'";'); //surikat addon
+			$css = $this->scss->compile('@import "globals";@import "'.$input.'";'); //surikat addon
 		else
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
