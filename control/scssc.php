@@ -49,7 +49,7 @@ use Exception;
  * @author Leaf Corcoran <leafot@gmail.com>
  * + addons by surikat
  */
-//addon by surikat
+//addons by surikat
 
 class scssc {
 	static public $VERSION = "v0.0.9.surikat";

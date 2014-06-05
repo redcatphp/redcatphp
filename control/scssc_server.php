@@ -23,11 +23,10 @@ class scssc_server{
 		}
 		return false;
 	}
-	//function compile($in, $out) {
-	function compile($in, $out,$input=null) { //surikat addon
+	function compile($in, $out,$input=null) {
 		$start = microtime(true);
 		if($input)
-			$css = $this->scss->compile('@import "globals";@import "'.$input.'";'); //surikat addon
+			$css = $this->scss->compile('@import "/css/globals";@import "'.$input.'";'); //surikat addon
 		else
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
@@ -81,9 +80,9 @@ class scssc_server{
 		FS::mkdir($this->cacheDir);
 		$this->scss = new scssc();
 		$this->scss->setImportPaths($this->dir);
-		if(is_dir(basename(control::$SURIKAT).'/css'))
-			$this->scss->addImportPath(basename(control::$SURIKAT).'/css');
 		if(is_dir('css'))
 			$this->scss->addImportPath('css');
+		if(is_dir(basename(control::$SURIKAT).'/css'))
+			$this->scss->addImportPath(basename(control::$SURIKAT).'/css');
 	}
 }
