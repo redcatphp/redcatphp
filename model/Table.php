@@ -33,12 +33,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	//function onDelete(){}
 	//function onDeleted(){}
 	#</workflow>
+	private $errors = array();
 	static $metaCast = array();
 	static $metaCastWrap = array();
 	protected $table;
 	protected $bean;
 	protected $creating;
-	protected $errors = array();
 	protected $__on = array();
 	function __construct(){
 		if(func_num_args())
@@ -59,6 +59,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->errors[$k] = func_get_arg(1);
 		else
 			$this->errors[] = $k;
+	}
+	function getErrors(){
+		return $this->errors;
 	}
 	function dispense(){
 		$this->creating = true;
@@ -89,19 +92,25 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('read');
 	}
 	function update(){
+		$this->errors = array();
+		R::begin();
 		$this->trigger('validate');
 		if($this->creating)
 			$this->trigger('create');
 		else
 			$this->trigger('update');
-		if(!empty($this->errors))
-			throw new Exception_Validation('Données manquantes ou erronées',$this->errors);
 	}
 	function after_update(){
-		if($this->creating)
-			$this->trigger('created');
-		else
-			$this->trigger('updated');
+		if(count($this->errors)>0){
+			R::rollback();
+			throw new Exception_Validation('Données manquantes ou erronées',$this->errors);
+		}
+		else{
+			if($this->creating)
+				$this->trigger('created');
+			else
+				$this->trigger('updated');
+		}
 	}
 	function delete(){
 		$this->trigger('delete');
