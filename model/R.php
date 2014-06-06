@@ -11,7 +11,7 @@ class R extends RedBeanPHP\Facade{
 		$prefix = defined('REDBEAN_MODEL_PREFIX')?constant('REDBEAN_MODEL_PREFIX'):'\\model\\Table_';
 		return class_exists($c=$prefix.ucfirst($type))?$c:rtrim($prefix,'_');
 	}
-	static function findOrNewOne($type,$params=array()){
+	static function findOrNewOne($type,$params=array(),$insert=null){
 		$query = array();
 		$bind = array();
 		foreach($params as $k=>$v){
@@ -23,8 +23,11 @@ class R extends RedBeanPHP\Facade{
 		foreach($type as $t)
 			if($bean = R::findOne($t,$query,$bind))
 				break;
-		if(!$bean)
+		if(!$bean){
+			if(is_array($insert))
+				$params = array_merge($params,$insert);
 			$bean = R::newOne(array_pop($type),$params);
+		}
 		return $bean;
 	}
 	static function newOne($type,$params=array()){
