@@ -38,4 +38,9 @@ class model {
 		if(is_file($path)&&!self::tableExist($table)&&is_array($a=include($path)))
 			R::storeMultiArray($a);
 	}
+	static function load($table,$id){
+		if(is_integer($id))
+			return R::load($table,$id);
+		return R::load($table,'WHERE label=?',array($id));
+	}
 }

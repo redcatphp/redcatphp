@@ -112,7 +112,7 @@ class Compo {
 		if(in_array($table,self::listOfTables()))
 			return R::$method($query,(array)$params);
 	}
-	
+
 	static function cellId($table,$label,$addCompo=null,$addParams=null){
 		$i = is_integer($label);
 		$compo = array('select'=>$i?'label':'id','where'=>($i?'id':'label').'=?');

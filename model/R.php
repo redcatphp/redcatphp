@@ -32,6 +32,8 @@ class R extends RedBeanPHP\Facade{
 	}
 	static function newOne($type,$params=array()){
 		$bean = self::dispense($type);
+		if(is_string($params))
+			$params = array('label'=>$params);
 		foreach((array)$params as $k=>$v)
 			$bean->$k = $v;
 		return $bean;
