@@ -69,9 +69,7 @@ class Compo {
 			else
 				$methods[$k] = $v;
 		}
-		
-		//helpers methods
-		if(isset($methods['sum'])){
+		if(isset($methods['sum'])){ //helpers methods
 			if(!empty($methods['sum']))
 				$methods['having'][] = 'SUM('.implode(' && ',(array)$methods['sum']).')';
 			unset($methods['sum']);
@@ -80,9 +78,7 @@ class Compo {
 			$methods['join'] = (isset($methods['join'])?implode((array)$methods['join']):'').self::joinOn($table,implode((array)$methods['joinOn']));
 			unset($methods['joinOn']);
 		}
-			
-		//aliasing methods
-		if(isset($methods['having-sum'])){
+		if(isset($methods['having-sum'])){ //aliasing methods
 			if(!empty($methods['having-sum']))
 				$methods['having'][] = 'SUM('.$methods['having-sum'].')';
 			unset($methods['having-sum']);
@@ -117,6 +113,16 @@ class Compo {
 			return R::$method($query,(array)$params);
 	}
 	
+	static function cellId($table,$label,$addCompo=null,$addParams=null){
+		$i = is_integer($label);
+		$compo = array('select'=>$i?'label':'id','where'=>($i?'id':'label').'=?');
+		if(is_array($addCompo))
+			$compo = array_merge($compo,$addCompo);
+		$params = array($label);
+		if(is_array($addParams))
+			$params = array_merge($params,$addParams);
+		return self::cell($table,$compo,$params);
+	}
 	static function cell($table,$compo=array(),$params=array()){
 		return self::query($table,'getCell',$compo,$params);
 	}
