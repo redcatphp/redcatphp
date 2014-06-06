@@ -16,14 +16,24 @@ class ruler {
 	static function email($v){
 		return filter_var($v, FILTER_VALIDATE_EMAIL);
 	}
+	static function maxchar($v,$arg){
+		$v = strip_tags($v);
+		$v = str_replace(array(' ',"\n","\r","\t"),'',$v);
+		return self::maxlength($v,$arg);
+	}
+	static function minchar($v,$arg){
+		$v = strip_tags($v);
+		$v = str_replace(array(' ',"\n","\r","\t"),'',$v);
+		return self::minlength($v,$arg);
+	}
 	static function maxlength($v,$arg){
-		return mb_strlen($v)<=(int)$arg;
+		return strlen($v)<=(int)$arg;
 	}
 	static function minlength($v,$arg){
-		return mb_strlen($v)>=(int)$arg;
+		return strlen($v)>=(int)$arg;
 	}
 	static function exactlength($v,$arg){
-		return mb_strlen($v)==(int)$arg;
+		return strlen($v)==(int)$arg;
 	}
 	static function alpha($v){
 		return preg_match("/^([a-zÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ])+$/i",$v)!==FALSE;
@@ -61,7 +71,7 @@ class ruler {
 	}
 	static function cc($c){
 		$number = preg_replace('/\D/', '', $v);
-		$number_length = mb_strlen($v);
+		$number_length = strlen($v);
 	  	$parity = $number_length % 2;
 	 	$total = 0;
 	  	for($i=0;$i<$number_length;$i++){
