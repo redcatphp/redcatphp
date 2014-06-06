@@ -34,12 +34,14 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function onDeleted(){}
 	#</workflow>
 	private $errors = array();
+	private $relationsKeysStore = array();
 	static $metaCast = array();
 	static $metaCastWrap = array();
 	protected $table;
 	protected $bean;
 	protected $creating;
 	protected $__on = array();
+	var $breakValidationOnError;
 	function __construct(){
 		if(func_num_args())
 			$this->table = func_get_arg(0);
@@ -60,8 +62,35 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		else
 			$this->errors[] = $k;
 	}
+	function relationsKeysRestore(){
+		foreach($this->relationsKeysStore as $k=>$v)
+			$this->$k = $v;
+		
+	}
+	function relationsKeysStore($keys){
+		$r = array();
+		foreach($keys as $k)
+			$r[$k] = $this->bean->$k;
+		$this->relationsKeysStore = $r;
+	}
 	function getErrors(){
-		return $this->errors;
+		$e = $this->errors;
+		foreach($this->bean as $k=>$o){
+			if(is_array($o)){
+				foreach($o as $_o){
+					$_e = $_o->getErrors();
+					if(!empty($_e))
+						$e[$k] = $_e;
+				}
+			}
+			elseif($o instanceof OODBBean){
+				$_e = $o->getErrors();
+				if(!empty($_e))
+					$e[$k] = $_e;
+			}
+		}
+		$this->errors = $e;
+		return !empty($e)?$e:null;
 	}
 	function dispense(){
 		$this->creating = true;
@@ -92,20 +121,31 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('read');
 	}
 	function update(){
+		$r = array();
+		foreach(array_keys($this->getProperties()) as $k)
+			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
+				$r[] = $k;
+			elseif(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
+				$r[] = $k;
+			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
+				$r[] = $k;
+		$this->relationsKeysStore($r);
+		
 		$this->errors = array();
-		//R::begin();
 		$this->trigger('validate');
-		if($this->creating)
-			$this->trigger('create');
-		else
-			$this->trigger('update');
+		$e = $this->getErrors();
+		if($e&&$this->breakValidationOnError)
+			throw new Exception_Validation('Données manquantes ou erronées',$e);
+		if(!$e){
+			if($this->creating)
+				$this->trigger('create');
+			else
+				$this->trigger('update');
+		}
 	}
 	function after_update(){
-		if(count($this->errors)>0){
-			//R::rollback();
-			throw new Exception_Validation('Données manquantes ou erronées',$this->errors);
-		}
-		else{
+		$this->relationsKeysRestore();
+		if(!$this->errors){
 			if($this->creating)
 				$this->trigger('created');
 			else

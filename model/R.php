@@ -107,9 +107,7 @@ class R extends RedBeanPHP\Facade{
 			else
 				$dataO->$k = $v;
 		}
-		return self::transaction(function()use(&$dataO){
-			return self::store($dataO);
-		});
+		return self::store($dataO);
 	}
 }
 R::initialize();
