@@ -39,7 +39,6 @@ class model {
 			R::storeMultiArray($a);
 	}
 	static function load($table,$id){
-		$r = is_integer($id)?R::load($table,$id):R::load($table,'WHERE label=?',array($id));
-		return $r->id?$r:null;
+		return R::findOne($table,'WHERE '.(is_integer($id)?'id':'label').'=?',array($id));
 	}
 }
