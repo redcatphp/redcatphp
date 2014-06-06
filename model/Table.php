@@ -23,15 +23,15 @@ use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
-	//function onNew(){}
-	//function onCreate(){}
-	//function onCreated(){}
-	//function onRead(){}
-	//function onUpdate(){}
-	//function onUpdated(){}
-	//function onValidate(){}
-	//function onDelete(){}
-	//function onDeleted(){}
+	function onNew(){}
+	function onCreate(){}
+	function onCreated(){}
+	function onRead(){}
+	function onUpdate(){}
+	function onUpdated(){}
+	function onValidate(){}
+	function onDelete(){}
+	function onDeleted(){}
 	#</workflow>
 	private $errors = array();
 	static $metaCast = array();
@@ -93,7 +93,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function update(){
 		$this->errors = array();
-		R::begin();
+		//R::begin();
 		$this->trigger('validate');
 		if($this->creating)
 			$this->trigger('create');
@@ -102,7 +102,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function after_update(){
 		if(count($this->errors)>0){
-			R::rollback();
+			//R::rollback();
 			throw new Exception_Validation('Données manquantes ou erronées',$this->errors);
 		}
 		else{
