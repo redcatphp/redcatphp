@@ -145,7 +145,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function after_update(){
 		$this->relationsKeysRestore();
-		if(!$this->errors){
+		if(empty($this->errors)){
 			if($this->creating)
 				$this->trigger('created');
 			else
