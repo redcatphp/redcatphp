@@ -353,7 +353,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			( $default, " . implode( ',', array_fill( 0, count( $insertcolumns ), ' ? ' ) ) . " ) $suffix";
 
 			//modif for point by surikat
-			\surikat\model\R::queryModelUpdateArgsAutowrap($insertSQL,$type,$insertcolumns,$insertvalues);
+			\surikat\model\R::queryModelUpdateArgsAutowrap($insertSQL,$type,$insertcolumns,$insertvalues[0]);
 
 			$ids = array();
 			foreach ( $insertvalues as $i => $insertvalue ) {

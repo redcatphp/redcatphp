@@ -49,7 +49,9 @@ class R extends RedBeanPHP\Facade{
 			}
 		}
 		$c = self::getModelClass($type);
-		foreach($insertvalues[0] as $i=>$v){
+		if(!is_array($insertvalues[0]))
+			exit(var_dump($insertvalues,$type,$insertcolumns,$insertSQL));
+		foreach($insertvalues as $i=>$v){
 			$k = $insertcolumns[$i];
 			$k = trim($k,'`');
 			if(is_string($v)){
