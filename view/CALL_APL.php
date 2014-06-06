@@ -28,13 +28,13 @@ abstract class CALL_APL extends CORE{
 	}
 	function selectorCodeTHAT($__this,$str){
 		$pos = 0;
-		if(preg_match_all('/\\{\\{this:(.*?)\\}\\}/',$str, $matches))
+		if(preg_match_all('/\\{\\{this:([^\\}\\}]+)/',$str, $matches))
 			foreach($matches[1] as $i=>$eve)
-				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return $__this->'.$eve.';').substr($str,$pos+strlen($matches[0][$i]));
+				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return $__this->'.$eve.';').substr($str,$pos+strlen($matches[0][$i])+2);
 		$pos = 0;
-		if(preg_match_all('/\\{\\{eval:([^\\}\\}]+)/',$str, $matches))
+		if(preg_match_all('/\\{\\{compile:([^\\}\\}]+)/',$str, $matches))
 			foreach($matches[1] as $i=>$eve)
-				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return '.$eve.';').substr($str,$pos+strlen($matches[0][$i]));
+				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return '.$eve.';').substr($str,$pos+strlen($matches[0][$i])+2);
 		return $str;
 	}
 	function extendLoad(){
