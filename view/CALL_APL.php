@@ -26,15 +26,41 @@ abstract class CALL_APL extends CORE{
 		$str = $this->selectorCodeTHAT($__this,"$this");
 		return $str===null?$this:$str;
 	}
+	private function __evePlus($eve,$prefix='',$sufix='',$__this=null){		
+		$plus = 0;
+		while(strpos($eve,'+')===0){
+			$eve = substr($eve,1);
+			$plus++;
+		}
+		ob_start();
+		eval('?>'.$prefix.$eve.$sufix);
+		$eve = ob_get_clean();
+		if($plus){
+			for($i=0;$i<$plus;$i++){
+				if(strpos($eve,'<?')===false)
+					break;
+				ob_start();
+				eval('?>'.$eve);
+				$eve = ob_get_clean();
+			}
+		}
+		return $eve;
+	}
 	function selectorCodeTHAT($__this,$str){
 		$pos = 0;
-		if(preg_match_all('/\\{\\{this:([^\\}\\}]+)/',$str, $matches))
-			foreach($matches[1] as $i=>$eve)
-				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return $__this->'.$eve.';').substr($str,$pos+strlen($matches[0][$i])+2);
+		if(preg_match_all('/\\{\\{this:([^\\}\\}]+)/',$str, $matches)){
+			foreach($matches[1] as $i=>$eve){
+				$eve = $this->__evePlus($eve,'<?php echo $__this->',';',$__this);
+				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).$eve.substr($str,$pos+strlen($matches[0][$i])+2);
+			}
+		}
 		$pos = 0;
-		if(preg_match_all('/\\{\\{compile:([^\\}\\}]+)/',$str, $matches))
-			foreach($matches[1] as $i=>$eve)
-				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).eval('return '.$eve.';').substr($str,$pos+strlen($matches[0][$i])+2);
+		if(preg_match_all('/\\{\\{compile:([^\\}\\}]+)/',$str, $matches)){
+			foreach($matches[1] as $i=>$eve){
+				$eve = $this->__evePlus($eve,'<?php echo ',';');
+				$str = substr($str,0,$pos=strpos($str,$matches[0][$i],$pos)).$eve.substr($str,$pos+strlen($matches[0][$i])+2);
+			}
+		}
 		return $str;
 	}
 	function extendLoad(){
