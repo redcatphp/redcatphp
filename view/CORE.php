@@ -155,8 +155,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		else
 			array_push($this->onLoaded,$callback);
 	}
-	protected function load(){}
-	protected function loaded(){}
+	function load(){}
+	function loaded(){}
 	function triggerLoaded(){
 		foreach($this->onLoaded as $callback)
 			if(is_callable($callback))
@@ -165,6 +165,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			return;
 		foreach($this->childNodes as $c)
 			$c->triggerLoaded();
+		$this->preventLoad = true;
 		$this->loaded();
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;

@@ -1,11 +1,10 @@
 <?php namespace surikat\view;
 use surikat\view\CDATA;
 class TML_Form extends TML {
+	/* too much experimental for moment
 	function loaded(){
 		if($this->autoCRUD)
 			$this->autoCRUD();
-		$this->preventLoad = true;
-		
 	}
 	function autoCRUD(){
 		$type = $this('input[name=type]',0);
@@ -123,4 +122,5 @@ class TML_Form extends TML {
 		$code .= 'return model::store($_POST);};if(!empty($_POST))$form_'.$type.'=$'.$fid.'();?>';
 		array_unshift($this->childNodes,$code);
 	}
+	*/
 }

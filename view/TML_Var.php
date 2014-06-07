@@ -18,4 +18,3 @@ class TML_Var extends TML{
 		$this->childNodes = array();
 	}
 }
-?>

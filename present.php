@@ -53,7 +53,7 @@ class present extends TML{
 		}
 		return $this->__x;
 	}
-	protected function loaded(){
+	function loaded(){
 		$ns = $this->namespace.':'.$this->namespaceClass;
 		if($this->vFile->present){
 			$_ns = $this->vFile->present->namespace.':'.$this->vFile->present->namespaceClass;

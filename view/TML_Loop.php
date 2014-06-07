@@ -3,7 +3,6 @@ class TML_Loop extends TML{
 	protected $hiddenWrap = true;
 	protected $loop = array();
 	function loaded(){
-		$this->preventLoad = true;
 		foreach($this->metaAttribution as $k=>$v){
 			$sp = ($pos=strpos($k,'-'))?substr($k,0,$pos):$k;
 			switch($sp){
@@ -88,4 +87,3 @@ class TML_Loop extends TML{
 		// return $this;
 	// }
 }
-?>
