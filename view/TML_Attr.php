@@ -6,10 +6,15 @@ class TML_Attr extends CALL_APL {
 			$this->applyLoad($extend);
 	}
 	function applyLoad($apply = null){
-		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
-			foreach($this->attributes as $k=>$v)
+		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended)){
+			foreach($this->attributes as $k=>$v){
 				if($k=='selector')
 					continue;
+				elseif($k=="removeAttr"){
+					$apply->find($this->selector,true)->each(function($o)use($v){
+						$o->__unset($v);
+					});
+				}
 				elseif(strpos($k,'add')===0&&ctype_upper(substr($k,3,1))){
 					$key = lcfirst(substr($k,3));
 					$apply->find($this->selector,true)->each(function($o)use($key,$v){
@@ -30,5 +35,7 @@ class TML_Attr extends CALL_APL {
 						$o->attr($k,$v);
 					});
 				}
+			}
+		}
 	}
 }
