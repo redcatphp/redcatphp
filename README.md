@@ -78,7 +78,7 @@ Included and integrated (some littles forks sometimes) externals libraries
 		Mathew Tinsley - tinsley@tinsology.net
 
 	CSS Selector
-		https://github.com/soloproyectos/php.common-libs + surikat fork
+		https://github.com/soloproyectos/php.css-selector + surikat fork
 	
 	SCSS Compiler
 		SASS 3.2 Portage for PHP - http://leafo.net/scssphp + surikat fork
@@ -105,6 +105,9 @@ Included and integrated (some littles forks sometimes) externals libraries
 	JSON2
 		http://www.JSON.org/json2.js
 
+	URLNormalizer
+		https://github.com/glenscott/url-normalizer
+		
 	Leaflet
 		http://leafletjs.com
 
