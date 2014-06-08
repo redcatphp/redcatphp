@@ -8,7 +8,7 @@ class Compo {
 		$table = array();
 		if(is_array($data)||$data instanceof \ArrayAccess)
 			foreach(array_keys($data) as $i){
-				$id = $data[$i]['id'];
+				$id = isset($data[$i]['id'])?$data[$i]['id']:$i;
 				$table[$id] = array();
 				foreach(array_keys($data[$i]) as $col){
 					$multi = stripos($col,'>');
@@ -86,10 +86,10 @@ class Compo {
 		}
 		$composer = stripos($method,'get')==0?'select':(($pos=strcspn($string,'ABCDEFGHJIJKLMNOPQRSTUVWXYZ'))!==false?substr($method,$pos):$method);
 		if($composer=='select'){
-			if(empty($select)){
+			if(empty($select))
 				$select[] = 'label';
+			if(!in_array('id',$select)&&!in_array($table.'.id',$select))
 				$select[] = 'id';
-			}
 			foreach(array_keys($select) as $i)
 					$select[$i] = self::prefixSelectColWithTable($table,$select[$i]);
 		}
@@ -240,4 +240,3 @@ class Compo {
 	}
 	
 }
-?>
