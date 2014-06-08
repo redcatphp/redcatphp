@@ -5,6 +5,8 @@ use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 class R extends RedBeanPHP\Facade{
 	static function initialize(){
 		extract(Config::model());
+		if(!isset($frozen))
+			$frozen = !control::devHas(control::dev_model);
 		$port = isset($port)&&$port?';port='.$port:'';
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
 		if(control::devHas(control::dev_model_redbean))
