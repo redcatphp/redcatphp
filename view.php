@@ -6,16 +6,17 @@ class view {
 	static $uriParams = array();
 	static $PATH;
 	static $xDom = 'x-dom/';
-	static function hooks(){
-		$path = func_num_args()?func_get_arg(0):self::$PATH;
-		self::serviceHook($path);
+	static function preHooks(){
+		$path = func_num_args()?func_get_arg(0):static::$PATH;
+		static::serviceHook($path);
 	}
+	static function postHooks(){}
 	static function index(){
-		self::hooks(func_num_args()?func_get_arg(0):self::$PATH);
-		self::exec(self::param(0).'.tml');
+		static::preHooks(func_num_args()?func_get_arg(0):static::$PATH);
+		static::exec(static::param(0).'.tml');
 	}
 	static function serviceHook(){
-		$path = func_num_args()?func_get_arg(0):self::$PATH;
+		$path = func_num_args()?func_get_arg(0):static::$PATH;
 		if(strpos($path,'/service/')===0&&service::method(str_replace('/','_',substr($path,9))))
 			exit;
 	}
@@ -24,7 +25,7 @@ class view {
 			view\FILE::display($file);
 		}
 		catch(\surikat\view\Exception $e){
-			self::error($e->getMessage());
+			static::error($e->getMessage());
 		}
 	}
 	static function error($c){
@@ -32,20 +33,21 @@ class view {
 			view\FILE::display($c.'.tml');
 		}
 		catch(\surikat\view\Exception $e){
+			static::postHooks();
 			HTTP::code($e->getMessage());
 		}
 		exit;
 	}
 	static function compileDocument($TML){
-		self::registerP($TML);
-		if(self::$xDom)
-			self::xDom($TML);
+		static::registerP($TML);
+		if(static::$xDom)
+			static::xDom($TML);
 		if(!control::devHas(control::dev_view))
-			self::autoMIN($TML);
+			static::autoMIN($TML);
 	}
 	static function xDom($TML){
 		$head = $TML->find('head',0);
-		$href = is_bool(self::$xDom)?'':self::$xDom;
+		$href = is_bool(static::$xDom)?'':static::$xDom;
 		$s = array();
 		$TML->recursive(function($el)use($TML,$head,$href,&$s){
 			if(
@@ -81,7 +83,7 @@ class view {
 		if(control::devHas(control::dev_view))
 			FILE::$FORCECOMPILE = 1;
 		FILE::$COMPILE[] = array('view','compileDocument');
-		self::$uriParams = self::getUriParams(ltrim(@$_SERVER['PATH_INFO'],'/'));
+		static::$uriParams = static::getUriParams(ltrim(@$_SERVER['PATH_INFO'],'/'));
 	}
 	static function getUriParams($path){
 		static $sepEq = ':';
@@ -117,7 +119,7 @@ class view {
 		return $uriParams;
 	}
 	static function param($k=null){
-		return $k===null?self::$uriParams:(isset(self::$uriParams[$k])?self::$uriParams[$k]:null);
+		return $k===null?static::$uriParams:(isset(static::$uriParams[$k])?static::$uriParams[$k]:null);
 	}
 	static function encode($v){
 		return str_replace('%2F','/',urlencode(urldecode(trim($v))));
