@@ -40,10 +40,10 @@ class Compo {
 		return $table;
 	}
 	static function getSeparator(){
-		return (strpos(get_class(R::$writer),'SQLiteT')!==false)?',':'SEPARATOR';
+		return (strpos(get_class(R::getWriter()),'SQLiteT')!==false)?',':'SEPARATOR';
 	}
 	static function getConcatenator(){
-		return (strpos(get_class(R::$writer),'SQLiteT')!==false)?"cast(X'1D' as text)":'0x1D';
+		return (strpos(get_class(R::getWriter()),'SQLiteT')!==false)?"cast(X'1D' as text)":'0x1D';
 	}
 	static function wrapperEnable(){
 		stream_register_wrapper('db', 'Stream_Db');
@@ -164,19 +164,20 @@ class Compo {
 			self::$listOfTables = R::inspect();
 		return self::$listOfTables;
 	}
-	static function heuristic4D($table){
-		if(!isset(self::$heuristic4D[$table])){
+	static function heuristic4D($t){
+		if(!isset(self::$heuristic4D[$t])){
 			$listOfTables = self::listOfTables();
-			$tableL = strlen($table);
-			$h4D['fields'] = in_array($table,$listOfTables)?array_keys(R::inspect($table)):array();
+			$tableL = strlen($t);
+			$h4D['fields'] = in_array($t,$listOfTables)?array_keys(R::inspect($t)):array();
 			$h4D['shareds'] = array();
 			$h4D['parents'] = array();
 			$h4D['fieldsOwn'] = array();
 			$h4D['owns'] = array();
 			foreach($listOfTables as $table) //shared
-				if(strpos($table,'_')!==false&&((strpos($table,$table)===0&&$table=substr($table,$tableL+1))
-					||((strrpos($table,$table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
+				if(strpos($table,'_')!==false&&((strpos($table,$t)===0&&$table=substr($table,$tableL+1))
+					||((strrpos($table,$t)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
 						$h4D['shareds'][] = $table;
+						
 						$h4D['fieldsShareds'] = array_keys(R::inspect($table));
 				}
 			foreach($h4D['fields'] as $field) //parent
@@ -191,9 +192,9 @@ class Compo {
 					if(in_array($table.'_id',$h4D['fieldsOwn']))
 						$h4D['owns'][] = $table;
 				}
-			self::$heuristic4D[$table] = $h4d;
+			self::$heuristic4D[$t] = $h4D;
 		}
-		return self::$heuristic4D[$table];
+		return self::$heuristic4D[$t];
 	}
 	static function compoSelectIn4D($table,&$compo,&$params){
 		extract(self::heuristic4D($table));
