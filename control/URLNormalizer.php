@@ -19,7 +19,23 @@ class URLNormalizer {
     private $fragment;
     private $default_scheme_ports = array( 'http:' => 80, 'https:' => 443, );
     private $components = array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment', );
-
+	private $singleton;
+	static function get($url){
+		if(!isset(self::$singleton))
+			self::$singleton = new URLNormalizer();
+		else
+			self::$singleton->resetObject();
+		self::$singleton->setUrl($url);
+		return self::$singleton->normalize();
+	}
+	private function resetObject(){
+        $blankInstance = new static;
+        $reflBlankInstance = new \ReflectionClass($blankInstance);
+        foreach ($reflBlankInstance->getProperties() as $prop) {
+            $prop->setAccessible(true);
+            $this->{$prop->name} = $prop->getValue($blankInstance);
+        }
+    }
     public function __construct( $url=null ) {
         if ( $url ) {
         	$this->setUrl( $url );
