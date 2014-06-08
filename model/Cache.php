@@ -24,7 +24,7 @@ class Cache {
 		return $data;
 	}
 	private static function _sync($c,$args,$id,$file){
-		$sync = control::$TMP.'cache/.db/'.$args[0].'.sync';
+		$sync = control::$TMP.'compile/'.$args[0].'.sync';
 		if(!($msync=@filemtime($sync))||@filemtime($file)<$msync)
 			return self::_dynTry($c,$args,$id,$file);
 	}
