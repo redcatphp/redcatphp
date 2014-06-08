@@ -177,7 +177,6 @@ class Compo {
 				if(strpos($table,'_')!==false&&((strpos($table,$t)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$t)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
 						$h4D['shareds'][] = $table;
-						
 						$h4D['fieldsShareds'] = array_keys(R::inspect($table));
 				}
 			foreach($h4D['fields'] as $field) //parent
@@ -220,7 +219,7 @@ class Compo {
 			$compo['join'][] = " LEFT OUTER JOIN {$own} ON {$own}.{$table}_id={$table}.id";
 		}
 		if(strpos(implode('',$compo['select']),'GROUP_CONCAT')!==false)
-			$compo['group_by'][] = 'id';
+			$compo['group_by'][] = $table.'.id';
 	}
 	static function joinOn($table,$share){
 		if(is_array($share)){
