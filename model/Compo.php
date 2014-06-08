@@ -86,10 +86,6 @@ class Compo {
 		}
 		$composer = stripos($method,'get')==0?'select':(($pos=strcspn($string,'ABCDEFGHJIJKLMNOPQRSTUVWXYZ'))!==false?substr($method,$pos):$method);
 		if($composer=='select'){
-			if(empty($select))
-				$select[] = 'label';
-			if(!in_array('id',$select)&&!in_array($table.'.id',$select))
-				$select[] = 'id';
 			foreach(array_keys($select) as $i)
 					$select[$i] = self::prefixSelectColWithTable($table,$select[$i]);
 		}
@@ -146,11 +142,21 @@ class Compo {
 		return self::query($table,'getAll',$compo,$params);
 	}
 	
+	static function count4D($table,$compo=array(),$params=array()){
+		self::compoSelectIn4D($table,$compo);
+		$compo['select'] = array($table.'.id');
+		$q = self::buildQuery($table,$compo);
+		//$i = R::getCell('SELECT COUNT(*) FROM ('.self::buildQuery($table,$compo).') as TMP_count',(array)$params);
+		$i = self::query($table,'getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
+		return (int)$i;
+	}
 	static function table4D($table,$compo=array(),$params=array()){
-		// self::debug();
 		if(empty($compo['select']))
-			$compo['select'] ='*';
-		self::compoSelectIn4D($table,$compo,$params);
+			$compo['select'] = '*';
+		$compo['select'] = (array)$compo['select'];
+		if(!in_array('id',$compo['select'])&&!in_array($table.'.id',$compo['select']))
+			$compo['select'][] = 'id';
+		self::compoSelectIn4D($table,$compo);
 		$table = self::query($table,'getAll',$compo,$params);
 		$table = self::explodeGroupConcat($table);
 		if(control::devHas(control::dev_model_compo))
@@ -195,7 +201,7 @@ class Compo {
 		}
 		return self::$heuristic4D[$t];
 	}
-	static function compoSelectIn4D($table,&$compo,&$params){
+	static function compoSelectIn4D($table,&$compo){
 		extract(self::heuristic4D($table));
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
