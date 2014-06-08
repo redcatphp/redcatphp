@@ -25,6 +25,7 @@ class view {
 			view\FILE::display($file);
 		}
 		catch(\surikat\view\Exception $e){
+			static::postHooks();
 			static::error($e->getMessage());
 		}
 	}
@@ -33,7 +34,6 @@ class view {
 			view\FILE::display($c.'.tml');
 		}
 		catch(\surikat\view\Exception $e){
-			static::postHooks();
 			HTTP::code($e->getMessage());
 		}
 		exit;
