@@ -1,4 +1,5 @@
 <?php namespace surikat\model;
+use surikat\control;
 use surikat\model;
 use surikat\model\SQLComposer\API as SQLComposer;
 class Compo {
@@ -98,7 +99,7 @@ class Compo {
 		}
 		else
 			$from = $table;
-		if(model::$DEBUG)
+		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($compo,true)).'</pre>');
 		$sqlc = SQLComposer::$composer($select)->from($from);
 		foreach($methods as $k=>$v)
@@ -107,7 +108,7 @@ class Compo {
 	}
 	static function query($table,$method,$compo=array(),$params=array()){
 		$query = self::buildQuery($table,$compo,$method);
-		if(model::$DEBUG)
+		if(control::devHas(control::dev_model_sql))
 			print('<pre>'.htmlentities($query).'</pre>');
 		if(in_array($table,self::listOfTables()))
 			return R::$method($query,(array)$params);
@@ -152,7 +153,7 @@ class Compo {
 		self::compoSelectIn4D($table,$compo,$params);
 		$table = self::query($table,'getAll',$compo,$params);
 		$table = self::explodeGroupConcat($table);
-		if(model::$DEBUG)
+		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($table,true)).'</pre>');
 		return $table;
 	}

@@ -1,4 +1,5 @@
 <?php namespace surikat\model;
+use surikat\control;
 use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 class R extends RedBeanPHP\Facade{
@@ -6,6 +7,8 @@ class R extends RedBeanPHP\Facade{
 		extract(Config::model());
 		$port = isset($port)&&$port?';port='.$port:'';
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
+		if(control::devHas(control::dev_model_redbean))
+			R::debug();
 	}
 	static function getModelClass($type){
 		$prefix = defined('REDBEAN_MODEL_PREFIX')?constant('REDBEAN_MODEL_PREFIX'):'\\model\\Table_';
