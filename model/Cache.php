@@ -1,7 +1,7 @@
 <?php namespace surikat\model;
 use surikat\control;
 use surikat\control\FS;
-class W {
+class Cache {
 	static function __callStatic($c,$args){
 		$id = sha1(serialize(array($c,$args)));
 		$file = control::$TMP.'cache/.db/'.$id;
