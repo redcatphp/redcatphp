@@ -27,6 +27,7 @@ class Cache {
 		$sync = control::$TMP.'compile/'.$args[0].'.sync';
 		if(!($msync=@filemtime($sync))||@filemtime($file)<$msync)
 			return self::_dynTry($c,$args,$id,$file);
+		return unserialize(file_get_contents($file));
 	}
 	private static function _statical($c,$args,$id,$file){
 		if(!file_exists($file))
