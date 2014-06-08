@@ -55,8 +55,11 @@ class control{
 			ini_set('display_errors','stdout');
 			ini_set('html_errors',false);
 		}
-		else
+		else{
 			error_reporting(0);
+			ini_set('display_startup_errors',false);
+			ini_set('display_errors',false);
+		}
 	}
 	static function catchException($e){
 		echo '<div style="color:#F00;display:block;position:relative;z-index:99999;">! '.$e->getMessage().' <a href="#" onclick="document.getElementById(\''.($id=uniqid('e')).'\').style.visibility=document.getElementById(\''.$id.'\').style.visibility==\'visible\'?\'hidden\':\'visible\';return false;">StackTrace</a></div><pre id="'.$id.'" style="visibility:hidden;display:block;position:relative;z-index:99999;">'.htmlentities($e->getTraceAsString()).'</pre>';
