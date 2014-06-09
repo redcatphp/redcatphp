@@ -21,7 +21,7 @@ geo-completer{
 		font-size: 0.9em;
 		margin-bottom:0.3em;
 	}
-	input[name="geo"] {
+	input[type="text"] {
 		margin-top: 16px;
 		border: 1px solid transparent;
 		border-radius: 2px 0 0 2px;
@@ -49,9 +49,9 @@ geo-completer{
 		margin: 0;
 		padding: 0;
 	}
-	.pac-container {
-		&:after{
-			content:none !important; //from google: "Our Autocomplete services do not need to be used in conjunction with a map, but it does require a “powered by Google” logo to appear under the text field if a map isn’t shown. "
-		}
+}
+.pac-container {
+	&:after{
+		content:none !important; //from google: "Our Autocomplete services do not need to be used in conjunction with a map, but it does require a “powered by Google” logo to appear under the text field if a map isn’t shown. "
 	}
 }

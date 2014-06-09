@@ -115,7 +115,7 @@
 					var defaults = {
 						excludeFields: [],
 						customKeySuffix: "",
-						locationBased: false,
+						locationBased: true, //by surikat
 						timeout: 0,
 						autoRelease: true,
 						onSave: function() {},

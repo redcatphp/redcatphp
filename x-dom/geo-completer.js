@@ -15,12 +15,11 @@ $js([
 				new google.maps.LatLng(params.northEastLatMainBound,params.northEastLngMainBound)
 			);
 			var geocoder = new google.maps.Geocoder();
-			var input_lat = geocompleter.find("input[name=lat]");
-			var input_lng = geocompleter.find("input[name=lng]");
-			var input_rayon = geocompleter.find('input[name=rayon]');
-			var input_locality = geocompleter.find('input[name=locality]');
-			var input_validate = geocompleter.find("input[name=geo-valid]");
-			var input = geocompleter.find('input[name=geo]');
+			var input_lat = geocompleter.find('input[type=number][step=any]:eq(0)');
+			var input_lng = geocompleter.find('input[type=number][step=any]:eq(1)');
+			var input_rayon = geocompleter.find('input[type=number][step][step!=any]:eq(0)');
+			var input_validate = geocompleter.find('input[type=hidden]:eq(0)');
+			var input = geocompleter.find('input[type=text]:eq(0)');
 			var div_map = $('<div class="map-canvas"></div>');
 			div_map.insertAfter(input);
 			var distance = function(lat1, lon1, lat2, lon2){
@@ -151,6 +150,7 @@ $js([
 					updateMarker(place);
 				//updateInfoWindow(place);
 				input_validate.val('true');
+				input.trigger('change');
 			};
 			//var autocompleteService = new google.maps.places.AutocompleteService();
 			google.maps.event.addListener(circle, 'radius_changed', function(){
@@ -211,4 +211,21 @@ $js([
 		});
 	};
 	$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocallback');
+	/*
+	$(window).on('unload',function(){
+		//trying to resolve google map bug on unloading page that slow hard navigation
+		//$(this).off('unload');
+		if (window.google !== undefined && google.maps !== undefined){
+			delete google.maps;
+			$('script').each(function () {
+				if (this.src.indexOf('googleapis.com/maps') >= 0
+						|| this.src.indexOf('maps.gstatic.com') >= 0
+						|| this.src.indexOf('earthbuilder.googleapis.com') >= 0) {
+					// console.log('removed', this.src);
+					$(this).remove();
+				}
+			});
+		}
+	});
+	*/
 });

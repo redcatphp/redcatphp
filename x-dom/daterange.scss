@@ -5,11 +5,14 @@
 	}
 	label{
 		cursor: pointer;
+		color: $color-main;
 	}
 	a{
 		vertical-align: top;
 	}
 	input[type=checkbox]{
-		margin-left:0.5em;
+		margin-left: 0.5em;
+		margin-right: 0.2em;
+		margin-top: 0.25em;
 	}
 }

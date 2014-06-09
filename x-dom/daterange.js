@@ -37,30 +37,22 @@ $js(true,[
 			dateEnd.closest('fieldset').show();
 			dateStart.closest('fieldset').find('legend').show();
 		};
-		dates_end_hide();
-		dateStart.closest('fieldset')
-			.append('<label><a class="date-set-details" href="javascript:;">Préciser la durée</a><input type="checkbox"><label>')
-			.find('legend').hide();
-		$('.date-set-details').each(function(){
-			var checkbox = $(this).next('input');
-			checkbox.change(function(e){
-				e.preventDefault();
-				if($(this).attr('checked')){
-					dates_end_hide();
-					$(this).removeAttr('checked');
-				}
-				else{
-					dates_end_show();
-					$(this).attr('checked','checked');
-				}
-				return false;
-			});
-			$(this).click(function(e){
-				e.preventDefault();
-				checkbox.click();
-				return false;
-			});
-			
+
+		var checkbox = $(this).find('input[name=date_with_end]');
+		if(!checkbox.is(':checked')){
+			dates_end_hide();
+		}
+		checkbox.change(function(e){
+			e.preventDefault();
+			if($(this).attr('checked')){
+				dates_end_hide();
+				$(this).removeAttr('checked');
+			}
+			else{
+				dates_end_show();
+				$(this).attr('checked','checked');
+			}
+			return false;
 		});
 		var dateToday = new Date();
 		dateStart.datepicker({
