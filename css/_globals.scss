@@ -1,5 +1,5 @@
 <?
-global $img,$resolutions;
+global $img,$resolutions,$screens;
 if(!isset($img))
 	$img = '../img/';
 if(!isset($resolutions))
@@ -10,4 +10,7 @@ if(!isset($resolutions))
 $img: '<?=$img?>' !default;
 $resolutions: (<?=implode(',',$resolutions)?>) !default;
 $screens: (<?=implode(',',$screens)?>) !default;
-$brand-primary:				 #ff9900 !default;
+
+$color-main:				 #93A72D !default; //ff9900
+$color-light:				 #F4F9E1 !default;
+$color-dark:				 darken($color-main, 15%) !default; //=5E6B1D, old:515C19
