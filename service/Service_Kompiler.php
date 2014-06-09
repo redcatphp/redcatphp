@@ -74,13 +74,12 @@ abstract class Service_Kompiler{
 		if(is_file($target))
 			unlink($target);
 		rename($target.'.phar',$target);
-		if(is_dir(control::$TMP.'compile'))
-			FS::recurse(control::$TMP.'compile',function($file){
-				if(is_file($file))
-					unlink($file);
-				elseif(is_dir($file))
-					rmdir($file);
-			});
+		FS::recurse(control::$TMP,function($file){
+			if(is_file($file))
+				unlink($file);
+			elseif(is_dir($file))
+				rmdir($file);
+		});
 			
 	}
 	static function Make_Ninja(){
@@ -131,7 +130,7 @@ abstract class Service_Kompiler{
 
 		$tgDir = control::$SURIKAT.'model/RedBeanPHP';
 		print "Cleaning (with backup if is able to) $tgDir\r\n";
-		$bak = control::$TMP.'zip/RedBean'.time();
+		$bak = control::$TMP.'kompiler_cache/RedBean'.time();
 		FS::mkdir($bak);
 		FS::recurse($tgDir,function($file)use($bak){
 			if(is_file($file)&&!(rename($file,$tg=$bak.'/'.basename($file))||unlink($file)))
@@ -254,7 +253,7 @@ abstract class Service_Kompiler{
 	}
 	protected static function getZIP($url){
 		$zip = new ZipArchive;
-		$dir = control::$TMP.'zip/'.sha1($url);
+		$dir = control::$TMP.'kompiler_cache/'.sha1($url);
 		FS::mkdir($dir);
 		if($cached = self::cachedHTTP($dir.'.zip'))
 			print "from cache \r\n";

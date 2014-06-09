@@ -1,6 +1,7 @@
 <?php namespace surikat\view;
 use surikat\view;
 use surikat\control;
+use surikat\control\sync;
 use surikat\control\FS;
 use surikat\control\PHP;
 use surikat\control\Min\HTML as minHTML;
@@ -13,8 +14,8 @@ class FILE {
 	static $COMPILE = array();
 	static function initialize(){
 		self::$DIRCWD = control::$CWD.'view/';
-		self::$DIRCOMPILE = control::$TMP.'compile/';
-		self::$DIRCACHE = control::$TMP.'cache/';
+		self::$DIRCOMPILE = control::$TMP.'view_compile/';
+		self::$DIRCACHE = control::$TMP.'view_cache/';
 	}
 	var $forceCompile;
 	var $path;
@@ -108,11 +109,7 @@ class FILE {
 		return is_file($this->dirCwd.$this->path)?$this->dirCwd.$this->path:null;
 	}
 	function mtime($file,$sync,$forceCache=true){
-		$file = $this->dirCache.$file;
-		$sync = $this->dirCompile.$sync.'.sync';
-		if($forceCache&&!is_file($sync))
-			file_put_contents($sync,'',LOCK_EX);
-		return @filemtime($file)<@filemtime($sync);
+		return sync::mtime($this->dirCache.$file,$sync,$forceCache);
 	}
 	function cacheInc($h,$sync=null){
 		if(func_num_args()<2)

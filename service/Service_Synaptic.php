@@ -166,7 +166,7 @@ class Service_Synaptic {
 			header($header);
 	}
 	protected static function cacheFile($arg,$ext=''){
-		return control::$TMP.'cache/'.trim($arg,'/').($ext?'.'.ltrim($ext,'.'):'');
+		return control::$TMP.'synaptic_cache/'.trim($arg,'/').($ext?'.'.ltrim($ext,'.'):'');
 	}
 	protected static function cacheStore($file,$str){
 		FS::mkdir($file,true);
