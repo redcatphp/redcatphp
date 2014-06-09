@@ -13,6 +13,15 @@ class sync{
 		}
 		return @filemtime($file)<@filemtime($syncF);
 	}
+	static function update($sync){
+		$syncF = control::$TMP.self::TIMESPACE.$sync.self::EXT;
+		if(!is_file($syncF)){
+			FS::mkdir($syncF,true);
+			file_put_contents($syncF,'',LOCK_EX);
+		}
+		else
+			touch($syncF);
+	}
 	
 	static $spaceName = 'sync';
 	static $className;
