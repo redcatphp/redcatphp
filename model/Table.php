@@ -18,6 +18,7 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
+use surikat\control\sync;
 use surikat\model\R;
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
@@ -37,6 +38,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private $relationsKeysStore = array();
 	static $metaCast = array();
 	static $metaCastWrap = array();
+	static $sync = true;
 	protected $table;
 	protected $bean;
 	protected $creating;
@@ -150,6 +152,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$this->trigger('created');
 			else
 				$this->trigger('updated');
+			if(static::$sync)
+				sync::update('model.'.$this->table);
 		}
 	}
 	function delete(){
