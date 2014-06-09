@@ -5,37 +5,41 @@ use surikat\model\SQLComposer\API as SQLComposer;
 class Compo {
 	static function explodeGroupConcat($data){
 		$_gs = chr(0x1D);
+		$row = array();
+		foreach(array_keys($data) as $col){
+			$multi = stripos($col,'>');
+			$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
+			if($sep){
+				$x = explode($sep,$col);
+				$tb = &$x[0];
+				$_col = &$x[1];
+				if(!isset($row[$tb]))
+					$row[$tb] = array();
+				if(empty($data[$col])){
+					if(!isset($row[$tb]))
+						$row[$tb] = array();
+				}
+				elseif($multi){
+					$_idx = explode($_gs,$data[$tb.$sep.'id']);
+					$_x = explode($_gs,$data[$col]);
+					foreach($_idx as $_i=>$_id)
+						if(!empty($_id))
+							$row[$tb][$_id][$_col] = $_x[$_i];
+				}
+				else
+					$row[$tb][$_col] = $data[$col];
+			}
+			else
+				$row[$col] = $data[$col];
+		}
+		return $row;
+	}
+	static function explodeGroupConcatMulti($data){
 		$table = array();
 		if(is_array($data)||$data instanceof \ArrayAccess)
 			foreach(array_keys($data) as $i){
 				$id = isset($data[$i]['id'])?$data[$i]['id']:$i;
-				$table[$id] = array();
-				foreach(array_keys($data[$i]) as $col){
-					$multi = stripos($col,'>');
-					$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
-					if($sep){
-						$x = explode($sep,$col);
-						$tb = &$x[0];
-						$_col = &$x[1];
-						if(!isset($table[$id][$tb]))
-							$table[$id][$tb] = array();
-						if(empty($data[$i][$col])){
-							if(!isset($table[$id][$tb]))
-								$table[$id][$tb] = array();
-						}
-						elseif($multi){
-							$_idx = explode($_gs,$data[$i][$tb.$sep.'id']);
-							$_x = explode($_gs,$data[$i][$col]);
-							foreach($_idx as $_i=>$_id)
-								if(!empty($_id))
-									$table[$id][$tb][$_id][$_col] = $_x[$_i];
-						}
-						else
-							$table[$id][$tb][$_col] = $data[$i][$col];
-					}
-					else
-						$table[$id][$col] = $data[$i][$col];
-				}
+				$table[$id] = self::explodeGroupConcat($data[$i]);
 			}
 		return $table;
 	}
@@ -157,11 +161,25 @@ class Compo {
 		if(!in_array('id',$compo['select'])&&!in_array($table.'.id',$compo['select']))
 			$compo['select'][] = 'id';
 		self::compoSelectIn4D($table,$compo);
-		$table = self::query($table,'getAll',$compo,$params);
-		$table = self::explodeGroupConcat($table);
+		$data = self::query($table,'getAll',$compo,$params);
+		$data = self::explodeGroupConcatMulti($data);
 		if(control::devHas(control::dev_model_compo))
-			print('<pre>'.htmlentities(print_r($table,true)).'</pre>');
-		return $table;
+			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
+		return $data;
+	}
+	static function row4D($table,$compo=array(),$params=array()){
+		if(empty($compo['select']))
+			$compo['select'] = '*';
+		$compo['select'] = (array)$compo['select'];
+		if(!in_array('id',$compo['select'])&&!in_array($table.'.id',$compo['select']))
+			$compo['select'][] = 'id';
+		self::compoSelectIn4D($table,$compo);
+		$compo['limit'] = 1;
+		$row = self::query($table,'getRow',$compo,$params);
+		$row = self::explodeGroupConcat($row);
+		if(control::devHas(control::dev_model_compo))
+			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
+		return $row;
 	}
 	protected static $listOfTables;
 	protected static $heuristic4D;
