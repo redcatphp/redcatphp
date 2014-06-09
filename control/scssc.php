@@ -186,7 +186,7 @@ class scssc {
 				$arg = str_replace(array_keys($r),array_values($r),'('.trim($arg).')');
 				preg_match_all('/([a-zA-Z0-9-$*]+)/s',$arg,$am);
 				if(isset($am[0])){
-					$pos = 0;
+					$_pos = 0;
 					foreach($am[0] as $y=>$m){
 						if(
 							$m!='array'
@@ -195,8 +195,8 @@ class scssc {
 							&&!is_numeric($am[1][$y])
 							&&strpos($m,'$')===false
 						){
-							$s = substr($arg,0,$pos=strpos($arg,$m,$pos+2));
-							$e = substr($arg,$pos+strlen($m));
+							$s = substr($arg,0,$_pos=strpos($arg,$m,$_pos+2));
+							$e = substr($arg,$_pos+strlen($m));
 							if(($_s=substr($s,-1))!='"'&&$_s!="'")
 								$s .= '"';
 							if(($_e=substr($e,0,1))!='"'&&$_e!="'")
