@@ -16,17 +16,6 @@ class R extends RedBeanPHP\Facade{
 		$prefix = defined('REDBEAN_MODEL_PREFIX')?constant('REDBEAN_MODEL_PREFIX'):'\\model\\Table_';
 		return class_exists($c=$prefix.ucfirst($type))?$c:rtrim($prefix,'_');
 	}
-	static function getQuote(){
-		$q = self::getWriter()->esc('test');
-		$q = substr($q,0,strpos($q,'test'));
-		return $q;
-	}
-	static function quote($v){
-		if($v=='*')
-			return $v;
-		$q = self::getQuote();
-		return $q.trim($v,$q).$q;
-	}
 	static function findOrNewOne($type,$params=array(),$insert=null){
 		$query = array();
 		$bind = array();

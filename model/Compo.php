@@ -3,6 +3,66 @@ use surikat\control;
 use surikat\model;
 use surikat\model\SQLComposer\API as SQLComposer;
 class Compo {
+	static $SqlWriterSeparators = array(
+		'MySQL'			=>'SEPARATOR',
+		'SQLiteT'		=>',',
+		'PostgreSQL'	=>',',
+		//'CUBRID'		=>,
+	);
+	static $SqlWriterAgg = array(
+		'MySQL'			=>'GROUP_CONCAT',
+		'SQLiteT'		=>'GROUP_CONCAT',
+		'PostgreSQL'	=>'string_agg',
+		//'CUBRID'=>,
+	);
+	static $SqlWriterAggCaster = array(
+		'PostgreSQL'	=>'::text',
+		'MySQL'			=>'',
+		'SQLiteT'		=>'',
+		//'CUBRID'=>,
+	);
+	static $SqlWriterConcatenators = array(
+		'PostgreSQL'	=>"x'1D'::text",
+		'SQLiteT'		=>"cast(X'1D' as text)",
+		'MySQL'			=>'0x1D',
+		//'CUBRID'=>,
+	);
+	static function getQuote(){
+		$q = R::getWriter()->esc('test'); //work around protected property of RedBean QueryWriter for not fork
+		$q = substr($q,0,strpos($q,'test'));
+		return $q;
+	}
+	static function quote($v){
+		if($v=='*')
+			return $v;
+		$q = self::getQuote();
+		return $q.trim($v,$q).$q;
+	}
+	static function getWriterType(){
+		return substr(get_class(R::getWriter()),37); //strlen('surikat\\model\\RedBeanPHP\\QueryWriter\\') = 37
+	}
+	static function getSeparator(){
+		$c = self::getWriterType();
+		if(!isset(self::$SqlWriterSeparators[$c]))
+			trigger_error('separator for '.$c.' not implemented',256);
+		return self::$SqlWriterSeparators[$c];
+	}
+	static function getConcatenator(){
+		$c = self::getWriterType();
+		if(!isset(self::$SqlWriterConcatenators[$c]))
+			trigger_error('concatenator for '.$c.' not implemented',256);
+		return self::$SqlWriterConcatenators[$c];
+	}
+	static function getAgg(){
+		$c = self::getWriterType();
+		if(!isset(self::$SqlWriterAgg[$c]))
+			trigger_error('GROUP_CONCAT for '.$c.' not implemented',256);
+		return self::$SqlWriterAgg[$c];
+	}
+	static function getAggCaster(){
+		$c = self::getWriterType();
+		return isset(self::$SqlWriterAggCaster[$c])?self::$SqlWriterAggCaster[$c]:'';
+	}
 	static function explodeGroupConcat($data){
 		$_gs = chr(0x1D);
 		$row = array();
@@ -43,18 +103,12 @@ class Compo {
 			}
 		return $table;
 	}
-	static function getSeparator(){
-		return (strpos(get_class(R::getWriter()),'SQLiteT')!==false)?',':'SEPARATOR';
-	}
-	static function getConcatenator(){
-		return (strpos(get_class(R::getWriter()),'SQLiteT')!==false)?"cast(X'1D' as text)":'0x1D';
-	}
 	static function wrapperEnable(){
 		stream_register_wrapper('db', 'Stream_Db');
 	}
 	static function prefixColWithTable($v,$table){
 		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
-			$v = R::quote($table).'.'.R::quote($v);
+			$v = self::quote($table).'.'.self::quote($v);
 		return $v;
 	}
 	static function buildQuery($table,$compo=array(),$method='select'){
@@ -101,7 +155,7 @@ class Compo {
 		else
 			$from = $table;
 		if(strpos($from,'(')===false&&strpos($from,')')===false)
-			$from = R::quote($from);
+			$from = self::quote($from);
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($compo,true)).'</pre>');
 		$sqlc = SQLComposer::$composer($select)->from($from);
@@ -232,17 +286,20 @@ class Compo {
 		return self::$heuristic4D[$t];
 	}
 	static function compoSelectIn4D($table,&$compo){
-		$q = R::getQuote();
+		$q = self::getQuote();
+		$agg = self::getAgg();
+		$aggc = self::getAggCaster();
 		extract(self::heuristic4D($table));
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
 			foreach(array_keys(R::inspect($parent)) as $col)
 				$compo['select'][] = "{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$table}{$q}.{$q}{$parent}_id{$q}";
+			$compo['group_by'][] = $q.$parent.$q.'.'.$q.'id'.$q;
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds as $col)
-				$compo['select'][] =  "GROUP_CONCAT(COALESCE({$q}{$share}{$q}.{$q}{$col}{$q},'') ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$share}<>{$col}{$q}";
+				$compo['select'][] =  $agg."(COALESCE({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$share}<>{$col}{$q}";
 			$rel = array($table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
@@ -252,10 +309,10 @@ class Compo {
 		foreach($owns as $own){
 			foreach($fieldsOwn[$table] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$compo['select'][] = "GROUP_CONCAT(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q},'') ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$own}>{$col}{$q}";
+					$compo['select'][] = $agg."(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$own}>{$col}{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
 		}
-		if(strpos(implode('',$compo['select']),'GROUP_CONCAT')!==false)
+		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
 			$compo['group_by'][] = $q.$table.$q.'.'.$q.'id'.$q;
 	}
 	static function joinOn($table,$share){
@@ -268,7 +325,7 @@ class Compo {
 		$rel = array($table,$share);
 		sort($rel);
 		$rel = implode('_',$rel);
-		$q = R::getQuote();
+		$q = self::getQuote();
 		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}
 				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 	}
