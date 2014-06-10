@@ -99,5 +99,7 @@ $js(['jquery','transition'],function(){
 	  $this[$target.hasClass('in') ? 'addClass' : 'removeClass']('collapsed')
 	}
 	$target.collapse(option)
-  }).ready(function(){ $('[is=collapser]').each(function(){ $(this).next().addClass('collapse') }) })
+  }).ready(function(){ $('[is=collapser]').each(function(){
+	$(this).next().addClass('collapse') })
+  })
 });
