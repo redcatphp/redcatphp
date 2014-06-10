@@ -52,9 +52,10 @@ class Compo {
 	static function wrapperEnable(){
 		stream_register_wrapper('db', 'Stream_Db');
 	}
-
-	static function prefixSelectColWithTable($table,$v){
-		return strpos($v,'.')===false&&strpos($v,'(')===false&&strpos($v,')')===false?$table.'.'.$v:$v;
+	static function prefixColWithTable($v,$table){
+		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
+			$v = R::quote($table).'.'.R::quote($v);
+		return $v;
 	}
 	static function buildQuery($table,$compo=array(),$method='select'){
 		$select = array();
@@ -67,9 +68,9 @@ class Compo {
 			if(is_integer($k)||$k=='select'){
 				if(is_array($v))
 					foreach($v as $sel)
-						$select[] = self::prefixSelectColWithTable($table,$sel);
+						$select[] = self::prefixColWithTable($sel,$table);
 				else
-					$select[] = self::prefixSelectColWithTable($table,$v);
+					$select[] = self::prefixColWithTable($v,$table);
 			}
 			else
 				$methods[$k] = $v;
@@ -80,7 +81,7 @@ class Compo {
 			unset($methods['sum']);
 		}
 		if(isset($methods['joinOn'])){
-			$methods['join'] = (isset($methods['join'])?implode((array)$methods['join']):'').self::joinOn($table,implode((array)$methods['joinOn']));
+			$methods['join'] = (isset($methods['join'])?implode((array)$methods['join']):'').implode((array)self::joinOn($table,$methods['joinOn']));
 			unset($methods['joinOn']);
 		}
 		if(isset($methods['having-sum'])){ //aliasing methods
@@ -91,7 +92,7 @@ class Compo {
 		$composer = stripos($method,'get')==0?'select':(($pos=strcspn($string,'ABCDEFGHJIJKLMNOPQRSTUVWXYZ'))!==false?substr($method,$pos):$method);
 		if($composer=='select'){
 			foreach(array_keys($select) as $i)
-					$select[$i] = self::prefixSelectColWithTable($table,$select[$i]);
+					$select[$i] = self::prefixColWithTable($select[$i],$table);
 		}
 		if(isset($methods['from'])){
 			$from = $methods['from'];
@@ -99,6 +100,8 @@ class Compo {
 		}
 		else
 			$from = $table;
+		if(strpos($from,'(')===false&&strpos($from,')')===false)
+			$from = R::quote($from);
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($compo,true)).'</pre>');
 		$sqlc = SQLComposer::$composer($select)->from($from);
@@ -154,11 +157,20 @@ class Compo {
 		$i = self::query($table,'getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
 		return (int)$i;
 	}
+	static function inSelectTable($in,$select,$table=null){
+		foreach(array_keys($select) as $k)
+			$select[$k] = trim($select[$k],'"');
+		if(in_array($in,$select))
+			return true;
+		if(in_array($table.'.'.$in,$select))
+			return true;
+		return false;
+	}
 	static function table4D($table,$compo=array(),$params=array()){
 		if(empty($compo['select']))
 			$compo['select'] = '*';
 		$compo['select'] = (array)$compo['select'];
-		if(!in_array('id',$compo['select'])&&!in_array($table.'.id',$compo['select']))
+		if(!self::inSelectTable('id',$compo['select'],$table)&&!self::inSelectTable('*',$compo['select'],$table))
 			$compo['select'][] = 'id';
 		self::compoSelectIn4D($table,$compo);
 		$data = self::query($table,'getAll',$compo,$params);
@@ -220,30 +232,31 @@ class Compo {
 		return self::$heuristic4D[$t];
 	}
 	static function compoSelectIn4D($table,&$compo){
+		$q = R::getQuote();
 		extract(self::heuristic4D($table));
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
 			foreach(array_keys(R::inspect($parent)) as $col)
-				$compo['select'][] = "{$parent}.{$col} as '{$parent}<{$col}'";
-			$compo['join'][] = " LEFT OUTER JOIN {$parent} ON {$parent}.id={$table}.{$parent}_id";
+				$compo['select'][] = "{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}";
+			$compo['join'][] = " LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$table}{$q}.{$q}{$parent}_id{$q}";
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds as $col)
-				$compo['select'][] =  "GROUP_CONCAT(COALESCE({$share}.{$col},'') ".self::getSeparator().' '.self::getConcatenator().") as '{$share}<>{$col}'";
+				$compo['select'][] =  "GROUP_CONCAT(COALESCE({$q}{$share}{$q}.{$q}{$col}{$q},'') ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$share}<>{$col}{$q}";
 			$rel = array($table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
-			$compo['join'][] = " LEFT OUTER JOIN {$rel} ON {$rel}.{$table}_id={$table}.id";
-			$compo['join'][] = " LEFT OUTER JOIN {$share} ON {$rel}.{$share}_id={$share}.id";
+			$compo['join'][] = " LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
+			$compo['join'][] = " LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$table] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$compo['select'][] = "GROUP_CONCAT(COALESCE({$own}.{$col},'') ".self::getSeparator().' '.self::getConcatenator().") as '{$own}>{$col}'";
-			$compo['join'][] = " LEFT OUTER JOIN {$own} ON {$own}.{$table}_id={$table}.id";
+					$compo['select'][] = "GROUP_CONCAT(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q},'') ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$own}>{$col}{$q}";
+			$compo['join'][] = " LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
 		}
 		if(strpos(implode('',$compo['select']),'GROUP_CONCAT')!==false)
-			$compo['group_by'][] = $table.'.id';
+			$compo['group_by'][] = $q.$table.$q.'.'.$q.'id'.$q;
 	}
 	static function joinOn($table,$share){
 		if(is_array($share)){
@@ -255,8 +268,9 @@ class Compo {
 		$rel = array($table,$share);
 		sort($rel);
 		$rel = implode('_',$rel);
-		return "LEFT OUTER JOIN {$rel} ON {$rel}.{$table}_id={$table}.id
-				LEFT OUTER JOIN {$share} ON {$rel}.{$share}_id={$share}.id";
+		$q = R::getQuote();
+		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}
+				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 	}
 	static function count($table,$compo=array(),$params=null){
 		//return (int)R::getCell('SELECT COUNT(*) FROM ('.self::buildQuery($table,$compo).') as TMP_count',(array)$params);
