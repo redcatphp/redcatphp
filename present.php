@@ -6,8 +6,7 @@ use surikat\view\TML;
 class present extends TML{
 	static $final;
 	static $implementation;
-	static function compileDocument($TML){}
-	static function compileElement(){}
+	static function document($TML){}
 	static function assign($o){}
 	static function dynamic($o){}
 	protected $hiddenWrap = true; //overload TML
@@ -63,8 +62,6 @@ class present extends TML{
 		$code .= 'extract((array)$o);?>';
 		//print('<pre>'.htmlentities($code).'</pre>');exit;
 		$this->head($code);
-		foreach($this->getX('compileElement()') as $c)
-			$c::compileElement();
 		$a = array();
 		foreach($this->getX('implementation') as $c)
 			$a = array_merge_recursive($a,(array)$c::$implementation);

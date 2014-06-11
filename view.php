@@ -38,8 +38,8 @@ class view {
 		}
 		exit;
 	}
-	static function compileDocument($TML){
-		static::registerP($TML);
+	static function document($TML){
+		static::registerPresent($TML);
 		if(static::$xDom)
 			static::xDom($TML);
 		if(!control::devHas(control::dev_view))
@@ -74,7 +74,7 @@ class view {
 			if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 				$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 	}
-	static function registerP($TML){
+	static function registerPresent($TML){
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='p')
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
 	}
@@ -82,7 +82,7 @@ class view {
 		static::$PATH = @$_SERVER['PATH_INFO'];
 		if(control::devHas(control::dev_view))
 			FILE::$FORCECOMPILE = 1;
-		FILE::$COMPILE[] = array('view','compileDocument');
+		FILE::$COMPILE[] = array('view','document');
 		static::$uriParams = static::getUriParams(ltrim(@$_SERVER['PATH_INFO'],'/'));
 	}
 	static function getUriParams($path){

@@ -64,8 +64,6 @@ class Compo {
 		return isset(self::$SqlWriterAggCaster[$c])?self::$SqlWriterAggCaster[$c]:'';
 	}
 	static function explodeGroupConcat($data){
-		//$_gs = chr(0x1D);
-		//$_gs = chr(hexdec(str_replace("'",'',self::getConcatenator())));
 		$_gs = chr(0x1D);
 		$row = array();
 		foreach(array_keys($data) as $col){
