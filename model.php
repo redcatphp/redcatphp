@@ -35,4 +35,7 @@ class model {
 	static function load($table,$id){
 		return R::findOne($table,'WHERE '.(is_integer($id)?'id':'label').'=?',array($id));
 	}
+	static function getModelClass($type){
+		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
+	}
 }

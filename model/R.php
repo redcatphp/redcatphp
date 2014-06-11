@@ -12,10 +12,6 @@ class R extends RedBeanPHP\Facade{
 		if(control::devHas(control::dev_model_redbean))
 			R::debug();
 	}
-	static function getModelClass($type){
-		$prefix = defined('REDBEAN_MODEL_PREFIX')?constant('REDBEAN_MODEL_PREFIX'):'\\model\\Table_';
-		return class_exists($c=$prefix.ucfirst($type))?$c:rtrim($prefix,'_');
-	}
 	static function findOrNewOne($type,$params=array(),$insert=null){
 		$query = array();
 		$bind = array();
