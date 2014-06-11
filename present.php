@@ -4,7 +4,6 @@ use surikat\control\PHP;
 use surikat\control\HTTP;
 use surikat\view\TML;
 class present extends TML{
-	static $final;
 	static $implementation;
 	static function document($TML){}
 	static function assign($o){}
