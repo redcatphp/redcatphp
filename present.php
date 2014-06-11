@@ -17,7 +17,7 @@ class present extends TML{
 		$o->options = $opts;
 		 if(isset($o->options->uri)&&$o->options->uri=='static'&&(count(view::param())>1||!empty($_GET)))
 			view::error(404);
-		static::$final = get_called_class();
+		$o->presentClass = get_called_class();
 	}
 	private $__x;
 	protected function getX($method=null){
