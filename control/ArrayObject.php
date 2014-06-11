@@ -1,6 +1,6 @@
 <?php namespace surikat\control;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	function __construct($a){
+	function __construct($a=array()){
 		foreach($a as $k=>$v)
             if (is_array($v))
                 $a[$k] = self::array2object($v);

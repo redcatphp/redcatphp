@@ -8,12 +8,12 @@ class present extends TML{
 	static $implementation;
 	static function compileDocument($TML){}
 	static function compileElement(){}
-	static function compileVars(&$vars=array()){}
+	static function assign($o){}
 	static function dynamic($o){}
 	protected $hiddenWrap = true; //overload TML
-	static function execute($opts,$tml,&$o){
+	static function execute($opts,$tml,&$o=array()){
 		if(!$o instanceof ArrayObject)
-			$o = new ArrayObject(array());
+			$o = new ArrayObject((array)$o);
 		$o->template = $tml;
 		$o->options = $opts;
 		 if(isset($o->options->uri)&&$o->options->uri=='static'&&(count(view::param())>1||!empty($_GET)))
@@ -47,18 +47,16 @@ class present extends TML{
 				return;
 		}
 		$this->vFile->present = $this;
-		$a = array();
-		foreach($this->getX('compileVars()') as $c){
-			$r = $c::compileVars($a);
-			if($r)
-				$a = array_merge($a,(array)$r);
-		}
+		$o = new ArrayObject();
+		foreach($this->getX('assign()') as $c)
+			$c::assign($o);
 		$code = '<?php ';
-		foreach($a as $k=>$v)
+		foreach($o->getArray() as $k=>$v)
 			$code .= '$'.$k.'='.var_export($v,true).';';
 
 		$this->attributes['namespaces'] = explode(':',$ns);
 		
+		$code .= '$o=get_defined_vars();unset($o["this"]);';
 		$code .= '\\'.get_class($this).'::execute('.var_export($this->attributes,true).',$this->path,$o);';
 		foreach($this->getX('dynamic()') as $c)
 			$code .= '\\'.$c.'::dynamic($o);';
