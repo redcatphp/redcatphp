@@ -9,14 +9,18 @@ class present extends TML{
 	static function assign($o){}
 	static function dynamic($o){}
 	protected $hiddenWrap = true; //overload TML
-	static function execute($opts,$tml,&$o=array()){
+	static function assignDefault($path,$namespaces,$attributes,&$o=array()){
 		if(!$o instanceof ArrayObject)
 			$o = new ArrayObject((array)$o);
-		$o->template = $tml;
-		$o->options = $opts;
-		 if(isset($o->options->uri)&&$o->options->uri=='static'&&(count(view::param())>1||!empty($_GET)))
-			view::error(404);
+		$o->templatePath = $path;
+		$o->presentAttributes = $attributes;
+		$o->presentNamespaces = $namespaces;
 		$o->presentClass = get_called_class();
+	}
+	static function execute($path,$namespaces,$attributes,&$o=array()){
+		static::assignDefault($path,$namespaces,$attributes,$o);
+		 if(isset($o->presentAttributes->uri)&&$o->presentAttributes->uri=='static'&&(count(view::param())>1||!empty($_GET)))
+			view::error(404);
 	}
 	private $__x;
 	protected function getX($method=null){
@@ -45,17 +49,16 @@ class present extends TML{
 				return;
 		}
 		$this->vFile->present = $this;
+		$namespaces = explode(':',$ns);
 		$o = new ArrayObject();
+		static::assignDefault($this->vFile->path,$namespaces,$this->attributes,$o);
 		foreach($this->getX('assign()') as $c)
 			$c::assign($o);
 		$code = '<?php ';
 		foreach($o->getArray() as $k=>$v)
 			$code .= '$'.$k.'='.var_export($v,true).';';
-
-		$this->attributes['namespaces'] = explode(':',$ns);
-		
 		$code .= '$o=get_defined_vars();unset($o["this"]);';
-		$code .= '\\'.get_class($this).'::execute('.var_export($this->attributes,true).',$this->path,$o);';
+		$code .= '\\'.get_class($this).'::execute($this->path,'.var_export($namespaces,true).','.var_export($this->attributes,true).',$o);';
 		foreach($this->getX('dynamic()') as $c)
 			$code .= '\\'.$c.'::dynamic($o);';
 		$code .= 'extract((array)$o);?>';
