@@ -1,36 +1,22 @@
 <?php namespace surikat;
+use surikat\control\ArrayObject;
 use surikat\control\PHP;
 use surikat\control\HTTP;
 use surikat\view\TML;
 class present extends TML{
 	static $final;
-	static $options;
-	static $template;
 	static $implementation;
-	private static $dynamicVars = array();
 	static function compileDocument($TML){}
 	static function compileElement(){}
 	static function compileVars(&$vars=array()){}
-	static function exec(){}
-	static function execVars(&$vars=array()){}
-	static function variable(){
-		if($n=func_num_args())
-			$k = func_get_arg(0);
-		else
-			return self::$dynamicVars;
-		if($n>1)
-			self::$dynamicVars[$k] = func_get_arg(1);
-		elseif(is_array($k))
-			foreach($k as $_k=>$v)
-				self::variable($_k,$v);
-		else
-			return self::$dynamicVars[$k];
-	}
+	static function dynamic($o){}
 	protected $hiddenWrap = true; //overload TML
-	static function execute($opts,$tml){
-		static::$options = $opts;
-		static::$template = $tml;
-		 if(isset(static::$options['uri'])&&static::$options['uri']=='static'&&(count(view::param())>1||!empty($_GET)))
+	static function execute($opts,$tml,&$o){
+		if(!$o instanceof ArrayObject)
+			$o = new ArrayObject(array());
+		$o->template = $tml;
+		$o->options = $opts;
+		 if(isset($o->options->uri)&&$o->options->uri=='static'&&(count(view::param())>1||!empty($_GET)))
 			view::error(404);
 		static::$final = get_called_class();
 	}
@@ -73,20 +59,10 @@ class present extends TML{
 
 		$this->attributes['namespaces'] = explode(':',$ns);
 		
-		$code .= '\\'.get_class($this).'::execute('.var_export($this->attributes,true).',$this->path);';
-		foreach($this->getX('exec()') as $c)
-			$code .= '\\'.$c.'::exec();';
-		$xev = $this->getX('execVars()');
-		$cxev = count($xev);
-		$code .= 'foreach('.($cxev?'array_merge(':'');
-		$code .= '$__execVars=\\'.get_class($this).'::variable(),';
-		foreach($xev as $c)
-			$code .= '($__execVars=(array)\\'.$c.'::execVars($__execVars)),';
-		$code = substr($code,0,-1);
-		if($cxev)
-			$code .= ')';
-		$code .= '  as $k=>$v) $$k = $v;';
-		$code .= '?>';
+		$code .= '\\'.get_class($this).'::execute('.var_export($this->attributes,true).',$this->path,$o);';
+		foreach($this->getX('dynamic()') as $c)
+			$code .= '\\'.$c.'::dynamic($o);';
+		$code .= 'extract((array)$o);?>';
 		//print('<pre>'.htmlentities($code).'</pre>');exit;
 		$this->head($code);
 		foreach($this->getX('compileElement()') as $c)
@@ -99,7 +75,7 @@ class present extends TML{
 				$tpl = $params;
 				$params = array();
 			}
-			$this->closest()->applyFile($tpl,$params);
+			$this->closest()->applyFile($tpl.'.tpl',$params);
 		}
 	}
 }
