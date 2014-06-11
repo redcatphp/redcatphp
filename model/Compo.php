@@ -22,7 +22,7 @@ class Compo {
 		//'CUBRID'=>,
 	);
 	static $SqlWriterConcatenators = array(
-		'PostgreSQL'	=>"x'1D'::text",
+		'PostgreSQL'	=>"chr(29)",
 		'SQLiteT'		=>"cast(X'1D' as text)",
 		'MySQL'			=>'0x1D',
 		//'CUBRID'=>,
@@ -64,6 +64,8 @@ class Compo {
 		return isset(self::$SqlWriterAggCaster[$c])?self::$SqlWriterAggCaster[$c]:'';
 	}
 	static function explodeGroupConcat($data){
+		//$_gs = chr(0x1D);
+		//$_gs = chr(hexdec(str_replace("'",'',self::getConcatenator())));
 		$_gs = chr(0x1D);
 		$row = array();
 		foreach(array_keys($data) as $col){
@@ -289,6 +291,8 @@ class Compo {
 		$q = self::getQuote();
 		$agg = self::getAgg();
 		$aggc = self::getAggCaster();
+		$sep = self::getSeparator();
+		$cc = self::getConcatenator();
 		extract(self::heuristic4D($table));
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
@@ -299,17 +303,19 @@ class Compo {
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds as $col)
-				$compo['select'][] =  $agg."(COALESCE({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$share}<>{$col}{$q}";
+				$compo['select'][] =  "{$agg}({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}";
 			$rel = array($table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
+			//$compo['group_by'][] = $q.$rel.$q.'.'.$q.'id'.$q;
+			//$compo['group_by'][] = $q.$rel.$q.'.'.$q.$table.'_id'.$q;
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$table] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$compo['select'][] = $agg."(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) ".self::getSeparator().' '.self::getConcatenator().") as {$q}{$own}>{$col}{$q}";
+					$compo['select'][] = "{$agg}(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
