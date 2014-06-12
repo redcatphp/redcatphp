@@ -1,4 +1,5 @@
 <?php namespace surikat\model;
+use surikat\model;
 use surikat\control;
 use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
@@ -49,7 +50,7 @@ class R extends RedBeanPHP\Facade{
 				$insertvalues[]  = $pair['value'];
 			}
 		}
-		$c = self::getModelClass($type);
+		$c = model::getModelClass($type);
 		foreach($insertvalues as $i=>$v){
 			$k = $insertcolumns[$i];
 			$k = trim($k,'`');
