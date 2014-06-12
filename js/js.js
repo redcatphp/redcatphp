@@ -52,9 +52,7 @@
 		else if(min){
 			if(fileName.indexOf('://')<0&&fileName.indexOf('.min.'+ext)<0&&fileName.indexOf('.'+ext)){
 				var p = fileName.lastIndexOf('.'+ext);
-				console.log('old:'+fileName);
 				fileName = fileName.substr(0,p)+'.min'+fileName.substr(p);
-				console.log(fileName);
 			}
 		}
 		return fileName;
