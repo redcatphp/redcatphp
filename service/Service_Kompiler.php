@@ -76,9 +76,9 @@ abstract class Service_Kompiler{
 		rename($target.'.phar',$target);
 		FS::recurse(control::$TMP,function($file){
 			if(is_file($file))
-				unlink($file);
+				@unlink($file);
 			elseif(is_dir($file))
-				rmdir($file);
+				@rmdir($file);
 		});
 			
 	}
