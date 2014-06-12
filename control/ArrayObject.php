@@ -21,6 +21,10 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function getArray(){
 		return self::object2array($this);
 	}
+	function merge($a){
+		foreach($a as $k=>$v)
+			$this->offsetSet($k,$v);
+	}
 	static function object2array($a){
 		foreach($a as $k=>$v)
             if($v instanceof \ArrayObject||is_array($v))
