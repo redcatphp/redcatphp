@@ -721,4 +721,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if($href&&!($script=$dom->find('link[href="'.$href.'"]'.$media_s,0)))
 			$dom[] = '<link href="'.$href.'" rel="stylesheet" type="text/css"'.$media.'>';
 	}
+
+	function presentProperty(){
+		if(strpos(func_get_arg(0),'<?')!==false){
+			extract((array)$this->vFile->present);
+			ob_start();
+			eval('?>'.func_get_arg(0));
+			return ob_get_clean();
+		}
+		return func_get_arg(0);
+	}
 }
