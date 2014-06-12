@@ -1,12 +1,17 @@
 <?php namespace surikat\view;
 use surikat\view\CDATA;
+use surikat\model;
 class TML_Form extends TML {
-	/* too much experimental for moment
-	function loaded(){
-		if($this->autoCRUD)
-			$this->autoCRUD();
+	function loadModelRules($model){
+		$this->__unset('modelRules');
+		if($this->vFile->present)
+			$model = $this->presentProperty($model);
+		$c = model::getModelClass($model);
+		//var_dump($c);exit;
 	}
-	function autoCRUD(){
+	/* too much experimental for moment
+	function loadAutoCRUD(){
+		$this->__unset('autoCRUD'):
 		$type = $this('input[name=type]',0);
 		if(!$type||($this->previousSibling instanceof CDATA&&strpos("{$this->previousSibling}",'$form_'.$type.'=$crud')===false))
 			return;
