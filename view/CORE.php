@@ -19,6 +19,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	public $nextSibling;
 	public $namespace;
 	public $namespaceClass;
+	public $_namespaces;
 	private $selectorService;
 	public $vFile;
 	protected $hiddenWrap;
@@ -166,6 +167,15 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		foreach($this->childNodes as $c)
 			$c->triggerLoaded();
 		$this->preventLoad = true;
+		if($this->_namespaces){
+			$x = $this->_namespaces;
+			while($v=array_pop($x)){
+				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'loaded')){
+					$c::loaded($this);
+					break;
+				}
+			}
+		}
 		$this->loaded();
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
@@ -206,16 +216,18 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
 				$this->$m($this->attributes[$k],$key);
 		}
-		if($this->namespace||$this->namespaceClass){
-			$x = explode(':',trim($this->namespace.':'.$this->namespaceClass,':'));
-			while($v=array_pop($x)){
-				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)){
-					$c::load($this);
+		if(!$this->preventLoad){
+			if($this->_namespaces){
+				$x = $this->_namespaces;
+				while($v=array_pop($x)){
+					if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'load')){
+						$c::load($this);
+						break;
+					}
 				}
 			}
-		}
-		if(!$this->preventLoad)
 			$this->load();
+		}
 		if(method_exists($this,'onExec')){
 			$this->head('<?php ob_start();?>');
 			$this->foot('<?php echo '.get_class($this).'::triggerExec(ob_get_clean());?>');
@@ -362,6 +374,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			&&$node->metaAttribution==$this->metaAttribution
 			&&$node->nodeName==$this->nodeName
 			&&get_class($node)==get_class($this);
+	}
+	function getAttributes(){
+		$a = array();
+		foreach($this->metaAttribution as $k=>$v)
+			$a[$k] = (string)$v;
+		return $a;
 	}
 	function getAttribute($k){
 		return $this->attr($k);

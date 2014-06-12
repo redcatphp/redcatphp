@@ -7,17 +7,14 @@ use surikat\view\TML;
 class present extends ArrayObject{
 	static function document(FILE $file){}
 	static function load(TML $tml){
-		$ns = $tml->namespace.':'.$tml->namespaceClass;
-		$file = $tml->vFile;
-		if($file->present&&strpos($file->present->namespace.':'.$file->present->namespaceClass,$ns)===0)
-			return; //avoid collision
-		$file->present = $tml;
+		if($tml->vFile->present&&strpos(implode(':',$tml->vFile->present->presentNamespaces),implode(':',$tml->_namespaces))===0)
+			return;
 		$c = get_called_class();
 		$o = new $c();
 		$o->merge(array(
-			'templatePath'		=> $file->path,
-			'presentAttributes'	=> $tml->attributes,
-			'presentNamespaces'	=> explode(':',$ns),
+			'templatePath'		=> $tml->vFile->path,
+			'presentAttributes'	=> $tml->getAttributes(),
+			'presentNamespaces'	=> $tml->_namespaces,
 		));
 		$o->assign();
 		$code = '<?php $o=new '.$c.'('.var_export($o->getArray(),true).');';
@@ -25,7 +22,7 @@ class present extends ArrayObject{
 		$code .= 'extract((array)$o);?>';
 		//print('<pre>'.htmlentities($code).'</pre>');exit;
 		$tml->head($code);
-		unset($o);
+		$tml->vFile->present = $o;
 	}
 	function assign(){}
 	function execute(){
