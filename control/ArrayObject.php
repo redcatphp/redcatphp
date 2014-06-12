@@ -25,6 +25,14 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		foreach($a as $k=>$v)
 			$this->offsetSet($k,$v);
 	}
+	function extend($a){
+		$c = clone $this;
+		$c->merge($a);
+		return $c;
+	}
+	function debug(){
+		echo '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
+	}
 	static function object2array($a){
 		foreach($a as $k=>$v)
             if($v instanceof \ArrayObject||is_array($v))
