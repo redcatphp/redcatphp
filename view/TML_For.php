@@ -1,10 +1,12 @@
 <?php namespace surikat\view; 
 class TML_For extends TML {
+	protected $hiddenWrap = true;
 	function load(){
 		$c = $this->for;
-		if(!$c&&isset($this->attributes['i'])){
+		if(!$c&&$this->i)
 			$c = '$i=0;$i<'.$this->attributes['i'].';$i++';
-		}
+		if(!$c&&$this->from&&$this->to)
+			$c = '$i='.$this->from.';$i<='.$this->to.';$i++';
 		if(!$c)
 			$c = $this->e;
 		if(!$c)
