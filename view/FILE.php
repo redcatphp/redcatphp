@@ -39,9 +39,14 @@ class FILE {
 		if(strpos($path,$this->dirCwd)===0)
 			$path = substr($path,strlen($this->dirCwd));
 		$this->path = $path;
-		foreach($options as $k=>$v)
-			if(!is_integer($k))
+		foreach($options as $k=>$v){
+			if(is_integer($k))
+				continue;
+			if(is_array($v)&&is_array($this->$k))
+				$this->$k = array_merge($this->$k,$v);
+			else
 				$this->$k = $v;
+		}
 	}
 	private static $__factory = array();
 	static function factoy($path,$options=array(),$instance=0){

@@ -22,7 +22,7 @@ class view {
 	}
 	static function exec($file){
 		try{
-			view\FILE::display($file);
+			FILE::display($file);
 		}
 		catch(\surikat\view\Exception $e){
 			static::postHooks();
@@ -31,7 +31,7 @@ class view {
 	}
 	static function error($c){
 		try{
-			view\FILE::display($c.'.tml');
+			FILE::display($c.'.tml');
 		}
 		catch(\surikat\view\Exception $e){
 			HTTP::code($e->getMessage());

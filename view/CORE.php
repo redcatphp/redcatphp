@@ -20,7 +20,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	public $namespace;
 	public $namespaceClass;
 	private $selectorService;
-	protected $vFile;
+	public $vFile;
 	protected $hiddenWrap;
 	protected $preventLoad;
 	protected $selfClosed;
@@ -205,6 +205,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
 			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
 				$this->$m($this->attributes[$k],$key);
+		}
+		if($this->namespace||$this->namespaceClass){
+			$x = explode(':',trim($this->namespace.':'.$this->namespaceClass,':'));
+			while($v=array_pop($x)){
+				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)){
+					$c::load($this);
+				}
+			}
 		}
 		if(!$this->preventLoad)
 			$this->load();

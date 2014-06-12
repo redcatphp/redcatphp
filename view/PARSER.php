@@ -540,15 +540,10 @@ abstract class PARSER{
 	}
 
 	protected static function getClass($n){
-		if(strpos($n,':')){
-			$n = rtrim(str_replace(':','\\',$n),'\\');
-			$x = explode('\\',$n);
-			while($v=array_pop($x))
-				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v))
-					return $c;
-			return $c;
-		}
-		elseif(class_exists($c='view\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
+		if($p=strpos($n,':'))
+			$n = substr($n,0,$p);
+		$n = str_replace('-','_',$n);
+		if(class_exists($c='view\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
 			return $c;
 		return 'view\\TML';
 	}
