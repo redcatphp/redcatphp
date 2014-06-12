@@ -181,11 +181,10 @@ class Service_Synaptic {
 	protected static function minifyJS($f){
 		if(!is_file($f))
 			return false;
-			
 		set_time_limit(0);
 		$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.js';
 		$c = JS::minify(file_get_contents($f));
-		if(!control::$DEV)
+		if(!control::devHas(control::dev_js))
 			file_put_contents($min,$c);
 		@header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
@@ -206,7 +205,7 @@ class Service_Synaptic {
 		else
 			$c = file_get_contents($f);
 		$c = CSS::minify($c);
-		if(!control::$DEV)
+		if(!control::devHas(control::dev_css))
 			file_put_contents(dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css',$c);
 		@header('Content-Type:text/css; charset=utf-8');
 		echo $c;
