@@ -73,6 +73,18 @@ class Compo {
 		$c = self::getWriterType();
 		return isset(self::$SqlWriterAggCaster[$c])?self::$SqlWriterAggCaster[$c]:'';
 	}
+	static function multiSlots(){ //helper method
+		$args = func_get_args();
+		$query = array_shift($args);
+		$x = explode('?',$query);
+		$q = array_shift($x);
+		for($i=0;$i<count($x);$i++){
+			foreach($args[$i] as $k=>$v)
+				$q .= (is_integer($k)?'?':':'.ltrim($k,':')).',';
+			$q = rtrim($q,',').$x[$i];
+		}
+		return $q;
+	}
 	static function explodeGroupConcat($data){
 		$_gs = chr(0x1D);
 		$row = array();
