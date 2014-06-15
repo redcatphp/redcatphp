@@ -142,7 +142,7 @@ class Compo {
 		if(isset($methods['joinWhere'])){
 			if(!empty($methods['joinWhere'])){
 				$hc = self::getSumCaster();
-				$hs = implode(' && ',(array)$methods['joinWhere']);
+				$hs = implode(' AND ',(array)$methods['joinWhere']);
 				if($hc)
 					$hs = '('.$hs.')'.$hc;
 					$methods['having'][] = 'SUM('.$hs.')>0';
