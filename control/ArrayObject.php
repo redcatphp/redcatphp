@@ -13,7 +13,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function offsetExists($k){
 		$e = parent::offsetExists($k);
 		if($e&&($a=parent::offsetGet($k)) instanceof \ArrayObject)
-			return empty($a);
+			return count($a);
 		return $e;
 	}
 	function offsetSet($k,$v){
