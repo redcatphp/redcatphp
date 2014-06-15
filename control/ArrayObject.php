@@ -10,6 +10,12 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	private function offsetDefine($k,$v){
 		return parent::offsetSet($k,$v);
 	}
+	function offsetExists($k){
+		$e = parent::offsetExists($k);
+		if($e&&($a=parent::offsetGet($k)) instanceof \ArrayObject)
+			return empty($a);
+		return $e;
+	}
 	function offsetSet($k,$v){
 		if(is_array($v))
 			$v = self::array2object($v);
