@@ -38,4 +38,7 @@ class model {
 	static function getModelClass($type){
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
 	}
+	static function getClassModel($c){
+		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
+	}
 }
