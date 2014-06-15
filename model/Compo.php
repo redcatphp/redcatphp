@@ -21,6 +21,12 @@ class Compo {
 		'SQLiteT'		=>'',
 		//'CUBRID'=>,
 	);
+	static $SqlWriterSumCaster = array(
+		'PostgreSQL'	=>'::int',
+		'MySQL'			=>'',
+		'SQLiteT'		=>'',
+		//'CUBRID'=>,
+	);
 	static $SqlWriterConcatenators = array(
 		'PostgreSQL'	=>"chr(29)",
 		'SQLiteT'		=>"cast(X'1D' as text)",
@@ -59,6 +65,10 @@ class Compo {
 			trigger_error('GROUP_CONCAT for '.$c.' not implemented',256);
 		return self::$SqlWriterAgg[$c];
 	}
+	static function getSumCaster(){
+		$c = self::getWriterType();
+		return isset(self::$SqlWriterSumCaster[$c])?self::$SqlWriterSumCaster[$c]:'';
+	}
 	static function getAggCaster(){
 		$c = self::getWriterType();
 		return isset(self::$SqlWriterAggCaster[$c])?self::$SqlWriterAggCaster[$c]:'';
@@ -84,7 +94,7 @@ class Compo {
 					$_x = explode($_gs,$data[$col]);
 					foreach($_idx as $_i=>$_id)
 						if(!empty($_id))
-							$row[$tb][$_id][$_col] = $_x[$_i];
+							$row[$tb][$_id][$_col] = isset($_x[$_i])?$_x[$_i]:null;
 				}
 				else
 					$row[$tb][$_col] = $data[$col];
@@ -129,19 +139,19 @@ class Compo {
 			else
 				$methods[$k] = $v;
 		}
-		if(isset($methods['sum'])){ //helpers methods
-			if(!empty($methods['sum']))
-				$methods['having'][] = 'SUM('.implode(' && ',(array)$methods['sum']).')';
-			unset($methods['sum']);
+		if(isset($methods['joinWhere'])){
+			if(!empty($methods['joinWhere'])){
+				$hc = self::getSumCaster();
+				$hs = implode(' && ',(array)$methods['joinWhere']);
+				if($hc)
+					$hs = '('.$hs.')'.$hc;
+					$methods['having'][] = 'SUM('.$hs.')>0';
+				unset($methods['joinWhere']);
+			}
 		}
 		if(isset($methods['joinOn'])){
 			$methods['join'] = (isset($methods['join'])?implode((array)$methods['join']):'').implode((array)self::joinOn($table,$methods['joinOn']));
 			unset($methods['joinOn']);
-		}
-		if(isset($methods['having-sum'])){ //aliasing methods
-			if(!empty($methods['having-sum']))
-				$methods['having'][] = 'SUM('.$methods['having-sum'].')';
-			unset($methods['having-sum']);
 		}
 		$composer = stripos($method,'get')==0?'select':(($pos=strcspn($string,'ABCDEFGHJIJKLMNOPQRSTUVWXYZ'))!==false?substr($method,$pos):$method);
 		if($composer=='select'){
@@ -307,8 +317,6 @@ class Compo {
 			$rel = implode('_',$rel);
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
-			//$compo['group_by'][] = $q.$rel.$q.'.'.$q.'id'.$q;
-			//$compo['group_by'][] = $q.$rel.$q.'.'.$q.$table.'_id'.$q;
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$table] as $col)
