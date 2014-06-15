@@ -1,9 +1,11 @@
 <?php namespace surikat;
+use surikat\control\str;
 use surikat\model\R;
 use surikat\model\Compo;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	private static $AVAILABLE;
+	const FLAG_CASE_INSENSITIVE = 2;
 	static function available($force=null){
 		if(self::$AVAILABLE===null||$force){
 			self::$AVAILABLE = true;
@@ -32,8 +34,17 @@ class model {
 		if(is_file($path)&&!self::tableExist($table)&&is_array($a=include($path)))
 			R::storeMultiArray($a);
 	}
-	static function load($table,$id){
-		return R::findOne($table,'WHERE '.(is_integer($id)?'id':'label').'=?',array($id));
+	static function load($table,$id,$flag=0){
+		if(is_integer($id))
+			$w = 'id';
+		else{
+			$w = 'label';
+			if($flag&self::FLAG_CASE_INSENSITIVE){
+				$w = 'LOWER('.$w.')';
+				$id = str::tolower($id);
+			}
+		}
+		return R::findOne($table,'WHERE '.$w.'=?',array($id));
 	}
 	static function getModelClass($type){
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
