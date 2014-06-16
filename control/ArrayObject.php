@@ -27,13 +27,15 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function getArray(){
 		return self::object2array($this);
 	}
-	function merge($a){
-		foreach($a as $k=>$v)
-			$this->offsetSet($k,$v);
+	function merge(){
+		foreach(func_get_args() as $a)
+			foreach($a as $k=>$v)
+				$this->offsetSet($k,$v);
 	}
 	function extend($a){
 		$c = clone $this;
-		$c->merge($a);
+		foreach(func_get_args() as $a)
+			$c->merge($a);
 		return $c;
 	}
 	function debug(){
