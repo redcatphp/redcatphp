@@ -40,7 +40,9 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	}
 	function group(){
 		$c = new ArrayObject();
-		call_user_func_array(array($c,'merge'),func_get_args());
+		foreach(func_get_args() as $k)
+			if($this->$k instanceof ArrayObject||is_array($this->$k))
+				$c->merge($this->$k);
 		return $c;
 	}
 	function debug(){
