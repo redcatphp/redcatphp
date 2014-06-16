@@ -62,6 +62,18 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 			array_unshift($a, $v);
         $this->exchangeArray($a);
 	}
+	function shift(){
+		$a = (array)$this;
+		$r = array_shift($a);
+        $this->exchangeArray($a);
+        return $r;
+	}
+	function pop(){
+		$a = (array)$this;
+		$r = array_pop($a);
+        $this->exchangeArray($a);
+        return $r;
+	}
 	function debug(){
 		echo '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
 	}
