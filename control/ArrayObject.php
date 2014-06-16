@@ -42,8 +42,25 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		$c = new ArrayObject();
 		foreach(func_get_args() as $k)
 			if($this->$k instanceof ArrayObject||is_array($this->$k))
+				$c->push($this->$k);
+		return $c;
+	}
+	function submerge(){
+		$c = new ArrayObject();
+		foreach(func_get_args() as $k)
+			if($this->$k instanceof ArrayObject||is_array($this->$k))
 				$c->merge($this->$k);
 		return $c;
+	}
+	function push(){
+		foreach(func_get_args() as $v)
+			$this[] = $v;
+	}
+	function unshift(){
+		$a = (array)$this;
+		foreach(func_get_args() as $v)
+			array_unshift($a, $v);
+        $this->exchangeArray($a);
 	}
 	function debug(){
 		echo '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
