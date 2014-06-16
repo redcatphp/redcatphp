@@ -1,4 +1,5 @@
 <?php namespace surikat\control;
+use surikat\control;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function __construct($a=array()){
 		foreach($a as $k=>$v)
@@ -38,6 +39,33 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 			$c->merge($a);
 		return $c;
 	}
+	static function __recurseKey($v,$key,$depth=null){
+		$c = new ArrayObject();
+		foreach($v as $k=>$v){
+			if($key==$k){
+				$c[] = $v;
+			}
+			elseif($depth&&$v instanceof ArrayObject){
+				foreach(self::__recurseKey($v,$key,$depth===true?true:$depth-1) as $_v)
+					$c[] = $_v;
+			}
+		}
+		return $c;
+	}
+	static function __groupKey($o,$group,$key,$depth=null){
+		$c = new ArrayObject();
+		foreach($group as $g){
+			$v = $o->offsetGet($g);
+			if(!$v instanceof ArrayObject)
+				continue;
+			foreach(self::__recurseKey($v,$key,$depth) as $v)
+				$c[] = $v;
+		}
+		return $c;
+	}
+	function groupKey($group,$key,$depth=null){
+		return self::__groupKey($this,$group,$key,$depth);
+	}
 	function group(){
 		$c = new ArrayObject();
 		foreach(func_get_args() as $k)
@@ -55,6 +83,12 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function push(){
 		foreach(func_get_args() as $v)
 			$this[] = $v;
+	}
+	function keys(){
+		return array_keys((array)$this);
+	}
+	function values(){
+		return array_values((array)$this);
 	}
 	function unshift(){
 		$a = (array)$this;
@@ -74,8 +108,15 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
         $this->exchangeArray($a);
         return $r;
 	}
+	function __toString(){
+		if(control::devHas(control::dev_control))
+			return $this->__debug();
+	}
+	function __debug(){
+		return '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
+	}
 	function debug(){
-		echo '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
+		echo $this->__debug();
 	}
 	static function object2array($a){
 		foreach($a as $k=>$v)
