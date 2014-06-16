@@ -119,9 +119,9 @@ class Compo {
 	static function explodeGroupConcatMulti($data){
 		$table = array();
 		if(is_array($data)||$data instanceof \ArrayAccess)
-			foreach(array_keys($data) as $i){
-				$id = isset($data[$i]['id'])?$data[$i]['id']:$i;
-				$table[$id] = self::explodeGroupConcat($data[$i]);
+			foreach($data as $i=>$d){
+				$id = isset($d['id'])?$d['id']:$i;
+				$table[$id] = self::explodeGroupConcat($d);
 			}
 		return $table;
 	}
@@ -181,14 +181,20 @@ class Compo {
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($compo,true)).'</pre>');
 		$sqlc = SQLComposer::$composer($select)->from($from);
-		foreach($methods as $k=>$v)
+		foreach($methods as $k=>$v){
+			switch($k){
+				case 'where':
+					$v = implode(' AND ',(array)$v);
+				break;
+			}
 			$sqlc->$k($v);
+		}
 		return $sqlc->getQuery();
 	}
 	static function query($table,$method,$compo=array(),$params=array()){
 		$query = self::buildQuery($table,$compo,$method);
 		if(control::devHas(control::dev_model_sql))
-			print('<pre>'.htmlentities($query).'</pre>');
+			print('<pre>'.htmlentities($query)."\r\n".print_r($params,true).'</pre>');
 		if(in_array($table,self::listOfTables()))
 			return R::$method($query,(array)$params);
 	}
