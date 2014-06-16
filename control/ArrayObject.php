@@ -32,10 +32,15 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 			foreach($a as $k=>$v)
 				$this->offsetSet($k,$v);
 	}
-	function extend($a){
+	function extend(){
 		$c = clone $this;
 		foreach(func_get_args() as $a)
 			$c->merge($a);
+		return $c;
+	}
+	function group(){
+		$c = new ArrayObject();
+		call_user_func_array(array($c,'merge'),func_get_args());
 		return $c;
 	}
 	function debug(){
