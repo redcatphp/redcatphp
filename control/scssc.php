@@ -4198,7 +4198,7 @@ class scss_parser {
 	protected function match($regex, &$out, $eatWhitespace = null) {
 		if (is_null($eatWhitespace)) $eatWhitespace = $this->eatWhiteDefault;
 
-		$r = '/'.$regex.'/Ais';
+		$r = '/'.$regex.'/Aisu'; //addon by surikat, u for large unicode support #http://php.net/manual/fr/function.preg-match.php
 		if (preg_match($r, $this->buffer, $out, null, $this->count)) {
 			$this->count += strlen($out[0]);
 			if ($eatWhitespace) $this->whitespace();
