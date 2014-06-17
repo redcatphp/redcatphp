@@ -108,6 +108,12 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
         $this->exchangeArray($a);
         return $r;
 	}
+	function in($v){
+        return in_array($v,(array)$this);
+	}
+	function search($v){
+        return array_search($v,(array)$this);
+	}
 	function __toString(){
 		if(control::devHas(control::dev_control))
 			return $this->__debug();
