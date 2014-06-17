@@ -114,6 +114,12 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function search($v){
         return array_search($v,(array)$this);
 	}
+	function unique(){
+		return new ArrayObject(array_unique((array)$this));
+	}
+	function filter($cb){
+		return new ArrayObject(array_filter((array)$this,$cb));
+	}
 	function __toString(){
 		if(control::devHas(control::dev_control))
 			return $this->__debug();
