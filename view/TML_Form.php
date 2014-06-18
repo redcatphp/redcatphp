@@ -6,6 +6,7 @@ class TML_Form extends TML {
 		$this->__unset('modelRules');
 		if($this->vFile->present)
 			$model = $this->presentProperty($model);
+		$model = trim($model);
 		$c = model::getModelClass($model);
 		//var_dump($c);exit;
 	}

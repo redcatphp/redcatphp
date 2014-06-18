@@ -85,29 +85,43 @@ class view {
 		FILE::$COMPILE[] = array('view','document');
 		static::$uriParams = static::getUriParams(ltrim(@$_SERVER['PATH_INFO'],'/'));
 	}
+	static $separators = array(
+		'Eq'=>':',
+		'And'=>'|',
+		'Or'=>'&',
+	);
+	static $separatorWord = '-';
+	static $forbiddenChrParam = array(
+		'?','%',',','!','^','#','~',"'",'"',"\r","\n","\t"," ",
+		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
+		';','.'
+	);
+	static function filterParam($s){
+		$s = trim($s);
+		$s = strip_tags($s);
+		$forbid = array_merge(array_values(static::$separators),static::$forbiddenChrParam);
+		$s = str_replace($forbid,static::$separatorWord,$s);
+		return $s;
+	}
 	static function getUriParams($path){
-		static $sepEq = ':';
-		static $sepAnd = '|';
-		static $sepOr = '&';
-		static $sepWord = '-';
 		$uriParams = array();
 		$min = array();
-		if(($pos=strpos($path,$sepEq))!==false)
+		if(($pos=strpos($path,self::$separators['Eq']))!==false)
 			$min[] = $pos;
-		if(($pos=strpos($path,$sepAnd))!==false)
+		if(($pos=strpos($path,self::$separators['And']))!==false)
 			$min[] = $pos;
 		if(!empty($min)){
 			$sepDir = min($min);
 			$uriParams[0] = substr($path,0,$sepDir);
 			$path = substr($path,$sepDir);
-			$x = explode($sepAnd,$path);
+			$x = explode(self::$separators['And'],$path);
 			foreach($x as $v){
-				$x2 = explode($sepOr,$v);
-				if($k=$i=strpos($v,$sepEq)){
+				$x2 = explode(self::$separators['Or'],$v);
+				if($k=$i=strpos($v,self::$separators['Eq'])){
 					$k = substr($v,0,$i);
 					$v = substr($v,$i+1);
 				}
-				$v = strpos($v,$sepOr)?explode($sepOr,$v):$v;
+				$v = strpos($v,self::$separators['Or'])?explode(self::$separators['Or'],$v):$v;
 				if($k)
 					$uriParams[$k] = $v;
 				elseif(!empty($v))
