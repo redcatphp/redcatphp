@@ -5,7 +5,8 @@ use surikat\model\Compo;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	private static $AVAILABLE;
-	const FLAG_CASE_INSENSITIVE = 2;
+	const FLAG_ACCENT_INSENSITIVE = 2;
+	const FLAG_CASE_INSENSITIVE = 4;
 	static function available($force=null){
 		if(self::$AVAILABLE===null||$force){
 			self::$AVAILABLE = true;
@@ -39,9 +40,15 @@ class model {
 			$w = 'id';
 		else{
 			$w = 'label';
-			if($flag&self::FLAG_CASE_INSENSITIVE){
-				$w = 'LOWER('.$w.')';
-				$id = str::tolower($id);
+			if($flag){
+				if($flag&self::FLAG_ACCENT_INSENSITIVE){
+					$w = 'unaccent('.$w.')';
+					$id = str::unaccent($id);
+				}
+				if($flag&self::FLAG_CASE_INSENSITIVE){
+					$w = 'LOWER('.$w.')';
+					$id = str::tolower($id);
+				}
 			}
 		}
 		return R::findOne($table,'WHERE '.$w.'=?',array($id));
