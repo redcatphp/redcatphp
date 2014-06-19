@@ -78,7 +78,11 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$e = $this->errors;
 		foreach($this->bean as $k=>$o){
 			if(is_array($o)){
-				foreach($o as $_o){
+				foreach($o as $i=>$_o){
+					if(!is_object($_o)){
+						unset($o[$i]);
+						continue;
+					}
 					$_e = $_o->getErrors();
 					if(!empty($_e))
 						$e[$k] = $_e;
