@@ -37,7 +37,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private $errors = array();
 	private $relationsKeysStore = array();
 	static $metaCast = array();
-	static $metaCastWrap = array();
 	static $sync = true;
 	protected $table;
 	protected $bean;
@@ -99,7 +98,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->table = $this->getMeta('type');
 		$c = get_class($this);
 		foreach($c::$metaCast as $k=>$cast)
-			$this->bean->setMeta('cast.'.$k,$cast); 
+			$this->bean->setMeta('cast.'.$k,$cast);
+		//R::bindFunc('write',
 		$this->trigger('new');
 	}
 	function on($f,$c){
@@ -118,6 +118,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				call_user_func($c,$this,$args);
 	}
 	function open(){
+		//R::bindFunc('read',
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
 		$this->trigger('read');

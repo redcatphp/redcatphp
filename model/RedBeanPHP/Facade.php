@@ -117,6 +117,11 @@ class Facade
 	private static $exportCaseStyle = 'default';
 
 	/**
+	 * @var array
+	 */
+	private static $sqlFilters = array();
+
+	/**
 	 * Internal Query function, executes the desired query. Used by
 	 * all facade query functions. This keeps things DRY.
 	 *
@@ -1520,6 +1525,47 @@ class Facade
 	}
 
 	/**
+	 * Binds an SQL function to a column.
+	 * This method can be used to setup a decode/encode scheme or
+	 * perform UUID insertion. This method is especially useful for handling
+	 * MySQL spatial columns, because they need to be processed first using
+	 * the asText/GeomFromText functions.
+	 *
+	 * Example:
+	 *
+	 * R::bindFunc( 'read', 'location.point', 'asText' );
+	 * R::bindFunc( 'write', 'location.point', 'GeomFromText' );
+	 *
+	 * Passing NULL as the function will reset (clear) the function
+	 * for this column/mode.
+	 *
+	 * @param string $mode (read or write)
+	 * @param string $field
+	 * @param string $function
+	 *
+	 */
+	public static function bindFunc( $mode, $field, $function ) {
+
+		list( $type, $property ) = explode( '.', $field );
+		$mode = ($mode === 'write') ? QueryWriter::C_SQLFILTER_WRITE : QueryWriter::C_SQLFILTER_READ;
+
+		if ( !isset( self::$sqlFilters[$mode] ) ) self::$sqlFilters[$mode] = array();
+		if ( !isset( self::$sqlFilters[$mode][$type] ) ) self::$sqlFilters[$mode][$type] = array();
+
+		if ( is_null( $function ) ) {
+			unset( self::$sqlFilters[$mode][$type][$property] );
+		} else {
+			if ($mode === QueryWriter::C_SQLFILTER_WRITE) {
+				self::$sqlFilters[$mode][$type][$property] = $function.'(?)';
+			} else {
+				self::$sqlFilters[$mode][$type][$property] = $function."($field)";
+			}
+		}
+
+		AQueryWriter::setSQLFilters(self::$sqlFilters);
+	}
+
+	/**
 	 * Dynamically extends the facade with a plugin.
 	 * Using this method you can register your plugin with the facade and then
 	 * use the plugin by invoking the name specified plugin name as a method on
@@ -1564,3 +1610,4 @@ class Facade
 		return call_user_func_array( self::$plugins[$pluginName], $params );
 	}
 }
+

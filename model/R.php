@@ -40,35 +40,6 @@ class R extends RedBeanPHP\Facade{
 			$bean->$k = $v;
 		return $bean;
 	}
-	static function queryModelUpdateArgsAutowrap(&$insertSQL,$type,$insertcolumns,$insertvalues=null){
-		//patched RedBeanPHP/QueryWriter/AQueryWriter.php
-		if(func_num_args()<4){
-			$updatevalues = $insertcolumns;
-			$insertcolumns = $insertvalues = array();
-			foreach ( $updatevalues as $pair ) {
-				$insertcolumns[] = $pair['property'];
-				$insertvalues[]  = $pair['value'];
-			}
-		}
-		$c = model::getModelClass($type);
-		foreach($insertvalues as $i=>$v){
-			$k = $insertcolumns[$i];
-			$k = trim($k,'`');
-			if(is_string($v)){
-				if(isset($c::$metaCastWrap[$k]))
-					self::queryWrapArg($insertSQL,$c::$metaCastWrap[$k],$i);
-				if(isset($c::$metaCast[$k]))
-					switch($c::$metaCast[$k]){
-						case 'point':
-							//https://groups.google.com/forum/#!topic/redbeanorm/jQTW2Oqvlqg
-							//https://groups.google.com/forum/#!topic/redbeanorm/wz2lJCLuclE
-							if(strpos($v,'POINT(')===0&&substr($v,-1)==')')
-								self::queryWrapArg($insertSQL,'GeomFromText(?)',$i);
-						break;
-					}
-			}
-		}
-	}
 	static function queryWrapArg(&$query,$wrap,$arg){
 		$x = explode('?',$query);
 		$s = '';

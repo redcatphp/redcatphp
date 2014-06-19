@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace surikat\model\RedBeanPHP\QueryWriter;
 
@@ -34,6 +34,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIAL_POINT    = 90;
+	const C_DATATYPE_SPECIAL_LINESTRING = 91;
+	const C_DATATYPE_SPECIAL_POLYGON    = 92;
+
 	const C_DATATYPE_SPECIFIED        = 99;
 
 	/**
@@ -122,6 +125,8 @@ class MySQL extends AQueryWriter implements QueryWriter
 			MySQL::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
 			MySQL::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
 			MySQL::C_DATATYPE_SPECIAL_POINT    => ' POINT ',
+			MySQL::C_DATATYPE_SPECIAL_LINESTRING => ' LINESTRING ',
+			MySQL::C_DATATYPE_SPECIAL_POLYGON => ' POLYGON ',
 		);
 
 		$this->sqltype_typeno = array();
@@ -198,12 +203,21 @@ class MySQL extends AQueryWriter implements QueryWriter
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d$/', $value ) ) {
 				return MySQL::C_DATATYPE_SPECIAL_DATETIME;
 			}
+			if ( preg_match( '/^POINT\(/', $value ) ) {
+				return MySQL::C_DATATYPE_SPECIAL_POINT;
+			}
+			if ( preg_match( '/^LINESTRING\(/', $value ) ) {
+				return MySQL::C_DATATYPE_SPECIAL_LINESTRING;
+			}
+			if ( preg_match( '/^POLYGON\(/', $value ) ) {
+				return MySQL::C_DATATYPE_SPECIAL_POLYGON;
+			}
 		}
 
 		$value = strval( $value );
 
 		if ( !$this->startsWithZeros( $value ) ) {
-			
+
 			if ( $value === TRUE || $value === FALSE || $value === '1' || $value === '' || $value === '0') {
 				return MySQL::C_DATATYPE_BOOL;
 			}
@@ -281,7 +295,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 		} catch ( \Exception $e ) {
 			//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
 		}
-			
+
 		$this->adapter->exec( $sql );
 	}
 
@@ -303,37 +317,37 @@ class MySQL extends AQueryWriter implements QueryWriter
 		} catch (\Exception $e ) {
 		}
 	}
-	
+
 	/**
 	 * @see QueryWriter::addFK
 	 */
 	public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
 	{
-		
+
 		$db = $this->adapter->getCell( 'SELECT DATABASE()' );
-		
+
 		$cfks = $this->adapter->getCell('
 			SELECT CONSTRAINT_NAME
 				FROM information_schema.KEY_COLUMN_USAGE
-			WHERE 
-				TABLE_SCHEMA = ? 
-				AND TABLE_NAME = ? 
+			WHERE
+				TABLE_SCHEMA = ?
+				AND TABLE_NAME = ?
 				AND COLUMN_NAME = ? AND
 				CONSTRAINT_NAME != \'PRIMARY\'
 				AND REFERENCED_TABLE_NAME IS NOT NULL
 		', array($db, $type, $field));
 
 		if ($cfks) return;
-		
-		try {		
+
+		try {
 			$fkName = 'fk_'.($type.'_'.$field);
 			$cName = 'c_'.$fkName;
 			$this->adapter->exec( "
 				ALTER TABLE  {$this->esc($type)}
-				ADD CONSTRAINT $cName 
+				ADD CONSTRAINT $cName
 				FOREIGN KEY $fkName ( {$this->esc($field)} ) REFERENCES {$this->esc($targetType)} (
 				{$this->esc($targetField)}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
-			
+
 		} catch (\Exception $e ) {
 			// Failure of fk-constraints is not a problem
 		}
