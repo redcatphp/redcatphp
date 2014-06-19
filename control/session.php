@@ -66,21 +66,21 @@ class session{
 	}
 	private static function regenerate(){
 		$now = time();
-		$hash = sha1(HTTP::getRealIpAddr());
-		if(!isset($_SESSION['sess_expiration'])){
-			$_SESSION['sess_expiration'] = $now+ini_get('session.gc_maxlifetime');
-			$_SESSION['sess_hash'] = $hash;
+		$hash = sha1($_SERVER['REMOTE_ADDR']);
+		if(!isset($_SESSION['expire'])){
+			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
+			$_SESSION['hash'] = $hash;
 		}
 		if(
-			!isset($_SESSION['sess_hash'])
-			||($_SESSION['sess_hash']!=$hash)
-			||($_SESSION['sess_expiration']<=$now-session_handler::$maxNoConnectionTime)
+			!isset($_SESSION['hash'])
+			||($_SESSION['hash']!=$hash)
+			||($_SESSION['expire']<=$now-session_handler::$maxNoConnectionTime)
 		){
 			session_destroy();
 			session_write_close();
 			session_start();
 		}
-		if($now>=$_SESSION['sess_expiration']){
+		elseif($now>=$_SESSION['expire']){
 			session_regenerate_id(true);
 			$sid = session_id();
 			session_write_close();
