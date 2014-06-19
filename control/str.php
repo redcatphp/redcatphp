@@ -27,7 +27,7 @@ class str{
 		return str_replace(self::$utf8CharsMaj, self::$utf8CharsMin, strtolower($str));
 	}
 	// An example string like ÀØėÿᾜὨζὅБю will be translated to AOeyIOzoBY More complete than : strtr((string)$str,"ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ","aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn"); @author http://www.evaisse.net/2008/php-translit-remove-accent-unaccent-21001
-    function unaccent($str, $utf8 = true){
+    static function unaccent($str, $utf8 = true){
 		static $transliteration = array(
 			'Ĳ' => 'I', 'Ö' => 'O', 'Œ' => 'O', 'Ü' => 'U', 'ä' => 'a', 'æ' => 'a',
 			'ĳ' => 'i', 'ö' => 'o', 'œ' => 'o', 'ü' => 'u', 'ß' => 's', 'ſ' => 's',
