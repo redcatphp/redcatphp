@@ -42,9 +42,8 @@ class model {
 			$w = 'label';
 			if($flag){
 				if($flag&self::FLAG_ACCENT_INSENSITIVE){
-					//$w = 'unaccent('.$w.')';
-					//$id = str::unaccent($id);
-					//var_dump($id,$w);exit;
+					$w = 'uaccent('.$w.')';
+					$id = str::unaccent($id);
 				}
 				if($flag&self::FLAG_CASE_INSENSITIVE){
 					$w = 'LOWER('.$w.')';
