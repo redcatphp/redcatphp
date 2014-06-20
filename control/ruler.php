@@ -85,10 +85,10 @@ class ruler {
 		return $total%10==0;
 	}
 	static function date($v){
-		return C_Filter::validate_date($v);
+		return dates::validate_date($v);
 	}
 	static function time($v){
-		return C_Filter::validate_time($v);
+		return dates::validate_time($v);
 	}
 }
 ?>
