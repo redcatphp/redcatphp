@@ -104,7 +104,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
 		$c = get_class($this);
-		foreach($this->getKeys as $k)
+		foreach($this->getKeys() as $k)
 			if($cast=$c::getColumnDef($k,'cast'))
 				$this->bean->setMeta('cast.'.$k,$cast);
 		$this->trigger('new');
