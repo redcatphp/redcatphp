@@ -30,7 +30,7 @@ class uploader{
 		});
 	}
 	static function formatFilename($name){
-		return filter_var(str_replace(array(' ','_',',','?','.'),'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+		return filter_var(str_replace(array(' ','_',',','?'),'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	}
 	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null){
 		if($file['error']!==UPLOAD_ERR_OK)
