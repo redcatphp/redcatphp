@@ -47,6 +47,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(func_num_args())
 			$this->table = func_get_arg(0);
 	}
+	function getKeys(){
+		return array_keys($this->getProperties());
+	}
 	function getArray(){
 		$a = array();
 		foreach($this->bean as $k=>$v)
@@ -101,9 +104,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
 		$c = get_class($this);
-		foreach($c::$metaCast as $k=>$cast)
-			$this->bean->setMeta('cast.'.$k,$cast);
-		//R::bindFunc('write',
+		foreach($this->getKeys as $k)
+			if($cast=$c::getColumnDef($k,'cast'))
+				$this->bean->setMeta('cast.'.$k,$cast);
 		$this->trigger('new');
 	}
 	function on($f,$c){
@@ -129,7 +132,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function update(){
 		$r = array();
-		foreach(array_keys($this->getProperties()) as $k)
+		foreach($this->getKeys() as $k)
 			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
 				$r[] = $k;
 			elseif(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
