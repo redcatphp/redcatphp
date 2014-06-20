@@ -295,18 +295,17 @@ class Compo {
 				if(strpos($table,'_')!==false&&((strpos($table,$t)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$t)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
 						$h4D['shareds'][] = $table;
-						$h4D['fieldsShareds'] = array_keys(R::inspect($table));
+						$h4D['fieldsShareds'][$table] = array_keys(R::inspect($table));
 				}
 			foreach($h4D['fields'] as $field) //parent
 				if(strrpos($field,'_id')===strlen($field)-3){
 					$table = substr($field,0,-3);
 					$h4D['parents'][] = $table;
-					$h4D['fieldsParents'] = array_keys(R::inspect($table));
 				}
 			foreach($listOfTables as $table) //own
 				if(strpos($table,'_')===false&&$table!=$table){
 					$h4D['fieldsOwn'][$table] = array_keys(R::inspect($table));
-					if(in_array($table.'_id',$h4D['fieldsOwn']))
+					if(in_array($table.'_id',$h4D['fieldsOwn'][$table]))
 						$h4D['owns'][] = $table;
 				}
 			self::$heuristic4D[$t] = $h4D;
@@ -328,7 +327,7 @@ class Compo {
 			$compo['group_by'][] = $q.$parent.$q.'.'.$q.'id'.$q;
 		}
 		foreach($shareds as $share){
-			foreach($fieldsShareds as $col)
+			foreach($fieldsShareds[$share] as $col)
 				$compo['select'][] =  "{$agg}({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}";
 			$rel = array($table,$share);
 			sort($rel);
@@ -337,7 +336,7 @@ class Compo {
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 		}
 		foreach($owns as $own){
-			foreach($fieldsOwn[$table] as $col)
+			foreach($fieldsOwn[$own] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
 					$compo['select'][] = "{$agg}(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$table}_id{$q}={$q}{$table}{$q}.{$q}id{$q}";
