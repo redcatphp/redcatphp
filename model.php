@@ -59,4 +59,18 @@ class model {
 	static function getClassModel($c){
 		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
 	}
+	static function getTableColumnDef($t,$col,$key=null){
+		$c = self::getClassModel($t);
+		return $c::getColumnDef($col,$key);
+	}
+	static function getColumnDef($col,$key=null){
+		$c = get_called_class();
+		$p = 'column'.ucfirst($col);
+		if(property_exists($c,$p))
+			$r = $c::$$p;
+		if($key!==null)
+			return isset($r[$key])?$r[$key]:null;
+		else
+			return $r;
+	}
 }
