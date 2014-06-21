@@ -17,11 +17,16 @@ class present extends ArrayObject{
 			'presentNamespaces'	=> $tml->_namespaces,
 		));
 		$o->assign();
-		$code = '<?php $o=new '.$c.'('.var_export($o->getArray(),true).');';
-		$code .= '$o->execute();';
-		$code .= 'extract((array)$o);?>';
-		//print('<pre>'.htmlentities($code).'</pre>');exit;
-		$tml->head($code);
+		//$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID|EXTR_REFS,'i'";
+		$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID,'i'";
+		//$fl = "";
+		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
+		$head .= '$THIS->execute();';
+		$head .= 'extract((array)$THIS'.$fl.');?>';
+		//print('<pre>'.htmlentities($head.$foot).'</pre>');exit;
+		$tml->head($head);
+		if(!empty($tml->childNodes))
+			$tml->foot('<?php if(isset($_THIS));extract((array)($THIS=$_THIS)'.$fl.'); ?>');
 		$tml->vFile->present = $o;
 	}
 	function assign(){}
