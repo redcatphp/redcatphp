@@ -7,8 +7,6 @@ use surikat\view\TML;
 class present extends ArrayObject{
 	static function document(FILE $file){}
 	static function load(TML $tml){
-		if($tml->vFile->present&&strpos(implode(':',$tml->vFile->present->presentNamespaces),implode(':',$tml->_namespaces))===0)
-			return;
 		$c = get_called_class();
 		$o = new $c();
 		$o->merge(array(
@@ -17,9 +15,8 @@ class present extends ArrayObject{
 			'presentNamespaces'	=> $tml->_namespaces,
 		));
 		$o->assign();
-		//$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID|EXTR_REFS,'i'";
 		$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID,'i'";
-		//$fl = "";
+		//$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID|EXTR_REFS,'i'";
 		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
 		$head .= '$THIS->execute();';
 		$head .= 'extract((array)$THIS'.$fl.');?>';
