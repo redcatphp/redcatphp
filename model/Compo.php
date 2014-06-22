@@ -7,31 +7,26 @@ class Compo {
 		'MySQL'			=>'SEPARATOR',
 		'SQLiteT'		=>',',
 		'PostgreSQL'	=>',',
-		//'CUBRID'		=>,
 	);
 	static $SqlWriterAgg = array(
 		'MySQL'			=>'GROUP_CONCAT',
 		'SQLiteT'		=>'GROUP_CONCAT',
 		'PostgreSQL'	=>'string_agg',
-		//'CUBRID'=>,
 	);
 	static $SqlWriterAggCaster = array(
 		'PostgreSQL'	=>'::text',
 		'MySQL'			=>'',
 		'SQLiteT'		=>'',
-		//'CUBRID'=>,
 	);
 	static $SqlWriterSumCaster = array(
 		'PostgreSQL'	=>'::int',
 		'MySQL'			=>'',
 		'SQLiteT'		=>'',
-		//'CUBRID'=>,
 	);
 	static $SqlWriterConcatenators = array(
 		'PostgreSQL'	=>"chr(29)",
 		'SQLiteT'		=>"cast(X'1D' as text)",
 		'MySQL'			=>'0x1D',
-		//'CUBRID'=>,
 	);
 	static function getQuote(){
 		$q = R::getWriter()->esc('test'); //work around protected property of RedBean QueryWriter for not fork
@@ -302,12 +297,13 @@ class Compo {
 					$table = substr($field,0,-3);
 					$h4D['parents'][] = $table;
 				}
-			foreach($listOfTables as $table) //own
-				if(strpos($table,'_')===false&&$table!=$table){
+			foreach($listOfTables as $table){ //own
+				if(strpos($table,'_')===false&&$table!=$t){
 					$h4D['fieldsOwn'][$table] = array_keys(R::inspect($table));
-					if(in_array($table.'_id',$h4D['fieldsOwn'][$table]))
+					if(in_array($t.'_id',$h4D['fieldsOwn'][$table]))
 						$h4D['owns'][] = $table;
 				}
+			}
 			self::$heuristic4D[$t] = $h4D;
 		}
 		return self::$heuristic4D[$t];
