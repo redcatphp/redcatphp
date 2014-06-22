@@ -271,7 +271,13 @@ class Compo {
 		return $row;
 	}
 	protected static $listOfTables;
+	protected static $listOfColumns = array();
 	protected static $heuristic4D;
+	static function listOfColumns($t,$details=null){
+		if(!isset(self::$listOfColumns[$t]))
+			self::$listOfColumns[$t] = R::inspect($t);
+		return $details?self::$listOfColumns[$t]:array_keys(self::$listOfColumns[$t]);
+	}
 	static function listOfTables(){
 		if(!self::$listOfTables)
 			self::$listOfTables = R::inspect();
@@ -281,7 +287,7 @@ class Compo {
 		if(!isset(self::$heuristic4D[$t])){
 			$listOfTables = self::listOfTables();
 			$tableL = strlen($t);
-			$h4D['fields'] = in_array($t,$listOfTables)?array_keys(R::inspect($t)):array();
+			$h4D['fields'] = in_array($t,$listOfTables)?self::listOfColumns($t):array();
 			$h4D['shareds'] = array();
 			$h4D['parents'] = array();
 			$h4D['fieldsOwn'] = array();
@@ -290,7 +296,7 @@ class Compo {
 				if(strpos($table,'_')!==false&&((strpos($table,$t)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$t)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
 						$h4D['shareds'][] = $table;
-						$h4D['fieldsShareds'][$table] = array_keys(R::inspect($table));
+						$h4D['fieldsShareds'][$table] = self::listOfColumns($table);
 				}
 			foreach($h4D['fields'] as $field) //parent
 				if(strrpos($field,'_id')===strlen($field)-3){
@@ -299,7 +305,7 @@ class Compo {
 				}
 			foreach($listOfTables as $table){ //own
 				if(strpos($table,'_')===false&&$table!=$t){
-					$h4D['fieldsOwn'][$table] = array_keys(R::inspect($table));
+					$h4D['fieldsOwn'][$table] = self::listOfColumns($table);
 					if(in_array($t.'_id',$h4D['fieldsOwn'][$table]))
 						$h4D['owns'][] = $table;
 				}
@@ -317,7 +323,7 @@ class Compo {
 		extract(self::heuristic4D($table));
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
-			foreach(array_keys(R::inspect($parent)) as $col)
+			foreach(self::listOfColumns($parent) as $col)
 				$compo['select'][] = "{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}";
 			$compo['join'][] = " LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$table}{$q}.{$q}{$parent}_id{$q}";
 			$compo['group_by'][] = $q.$parent.$q.'.'.$q.'id'.$q;
