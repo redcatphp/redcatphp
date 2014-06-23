@@ -42,10 +42,20 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $bean;
 	protected $creating;
 	protected $__on = array();
+	private static $__binded = array();
 	var $breakValidationOnError;
-	function __construct(){
-		if(func_num_args())
-			$this->table = func_get_arg(0);
+	function __construct($table){
+		$this->table = $table;
+		$c = get_called_class();
+		if(!in_array($c,self::$__binded)){
+			foreach(static::getDefColumns('write') as $col=>$func)
+				foreach((array)$func as $f)
+					R::bindFunc($func, $table.'.'.$col, $f);
+			foreach(static::getDefColumns('read') as $col=>$func)
+				foreach((array)$func as $f)
+					R::bindFunc($func, $table.'.'.$col, $f);
+			self::$__binded[] = $c;
+		}
 	}
 	function getKeys(){
 		return array_keys($this->getProperties());
@@ -214,5 +224,22 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
     }
     function getTable(){
 		return $this->table;
+	}
+	static function getDefColumns($key=null){
+		$a = array();
+		$c = get_called_class();
+		$a = get_class_vars($c);
+		var_dump($a);exit;
+		return $a;
+	}
+	static function getColumnDef($col,$key=null){
+		$c = get_called_class();
+		$p = 'column'.ucfirst($col);
+		if(property_exists($c,$p))
+			$r = $c::$$p;
+		if($key!==null)
+			return isset($r[$key])?$r[$key]:null;
+		else
+			return $r;
 	}
 }
