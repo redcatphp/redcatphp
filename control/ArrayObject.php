@@ -108,6 +108,18 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
         $this->exchangeArray($a);
         return $r;
 	}
+	function asort($flag=null){
+		$a = (array)$this;
+		asort($a,$flag);
+        $this->exchangeArray($a);
+        return $this;
+	}
+	function sort($flag=null){
+		$a = (array)$this;
+		sort($a,$flag);
+        $this->exchangeArray($a);
+        return $this;
+	}
 	function in($v){
         return in_array($v,(array)$this);
 	}
