@@ -48,10 +48,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->table = $table;
 		$c = get_called_class();
 		if(!in_array($c,self::$__binded)){
-			foreach(static::getDefColumns('write') as $col=>$func)
+			foreach(static::getDefColumns('read') as $col=>$func)
 				foreach((array)$func as $f)
 					R::bindFunc($func, $table.'.'.$col, $f);
-			foreach(static::getDefColumns('read') as $col=>$func)
+			foreach(static::getDefColumns('write') as $col=>$func)
 				foreach((array)$func as $f)
 					R::bindFunc($func, $table.'.'.$col, $f);
 			self::$__binded[] = $c;
@@ -150,8 +150,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
 				$r[] = $k;
 		$this->relationsKeysStore($r);
-		
-		$this->errors = array();
 		$this->trigger('validate');
 		$e = $this->getErrors();
 		if($e&&$this->breakValidationOnError)
