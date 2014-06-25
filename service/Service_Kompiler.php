@@ -176,7 +176,58 @@ abstract class Service_Kompiler{
 					
 		});
 		
-		print 'OK';
+		print 'OK - experimental';
+		print '</pre>';
+	}
+	static function Update_Geocoder(){
+		ob_implicit_flush(true);
+		ob_end_flush();
+		print '<pre>';
+
+		$tgDir = control::$SURIKAT.'control/Geocoder';
+		print "Cleaning (with backup if is able to) $tgDir\r\n";
+		$bak = control::$TMP.'kompiler_cache/RedBean'.time();
+		FS::mkdir($bak);
+		FS::recurse($tgDir,function($file)use($bak){
+			if(is_file($file)&&!(rename($file,$tg=$bak.'/'.basename($file))||unlink($file)))
+				throw new \Exception('Unable to rename or remove "'.$file.'"');
+		});
+		$url = 'https://github.com/geocoder-php/Geocoder/archive/master.zip';
+		print "Downloading $url\r\n";
+		$dir = self::getZIP($url);
+		$dir .= '/Geocoder-master/src/Geocoder';
+
+		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
+		$dir = realpath($dir);
+		if(!$dir)
+			throw new \Exception('Directory not noud: "'.$dir.'"');
+		error_reporting(-1);
+		ini_set('display_errors','stdout');
+		$ons = 'Geocoder';
+		$ns = 'surikat\\control';
+		$namespace = $ns.'\\Geocoder';
+		$_ons = str_replace('\\','\\\\',$ons);
+		$_namespace = str_replace('\\','\\\\',$namespace);
+		$_ns = str_replace('\\','\\\\',$ns);
+		$rep = array(
+			'namespace '.$ons=>'namespace '.$namespace,
+			'use '.$ons=>'use '.$namespace,
+		);
+		FS::recurse($dir,function($file)use($ons,$namespace,$dir,$tgDir,$rep){
+				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
+					$code = file_get_contents($file);
+					$code = str_replace(array_keys($rep),array_values($rep),$code);
+					$tgFile=$tgDir.'/'.substr($file,($l=strlen($dir))+1);
+					FS::mkdir($tgFile,true);
+					if(file_put_contents($tgFile,$code))
+						print "$tgFile\r\n";
+					else
+						throw new \Exception('Unable to write: "'.$tgFile.'"');
+				}
+					
+		});
+		
+		print 'OK - experimental';
 		print '</pre>';
 	}
 	/*
