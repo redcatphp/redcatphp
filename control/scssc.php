@@ -161,6 +161,11 @@ class scssc {
 		return $code;
 	}
 	protected function autoloadSphpSupport($code){
+		$pos = 0;
+		preg_match_all('/\/\/@\\?([^\\r\\n]+)/s',$code,$matches); //strip
+		if(!empty($matches)&&!empty($matches[0]))
+			foreach(array_keys($matches[0]) as $i)
+				$code = substr($code,0,$pos=strpos($code,$matches[0][$i],$pos)).substr($code,$pos+1+strlen($matches[0][$i]));
 		preg_match_all('/@\\?include\\s+([a-zA-Z0-9-]+)\\((.*?)\\);/s',$code,$matches);
 		$pos = 0;
 		if(!empty($matches)&&!empty($matches[0])){
