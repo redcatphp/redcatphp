@@ -1,0 +1,54 @@
+DELIMITER ;;
+
+DROP PROCEDURE IF EXISTS `treeToId`;;
+CREATE PROCEDURE `treeToId`(IN `tb` varchar(30), IN `treepath` text)
+BEGIN
+	DECLARE foundPos tinyint UNSIGNED;
+	DECLARE tmpTxt text;
+	DECLARE delimLen tinyint UNSIGNED;
+	DECLARE element text;
+	DECLARE delim char(1);
+	SET delim = '/';
+	DROP TEMPORARY TABLE IF EXISTS tmpValues;
+	CREATE TEMPORARY TABLE tmpValues
+	(
+		`id` bigint unsigned DEFAULT NULL
+	);
+	SET delimLen = LENGTH(delim);
+	SET tmpTxt = treepath;
+	SET foundPos = INSTR(tmpTxt,delim);
+	SET @dyn_sql=CONCAT('SELECT id INTO @prim_id FROM ',tb,' where ',tb,'_id IS NULL AND base="" LIMIT 0,1');
+	SET @prim_id = 0;
+	PREPARE s1 from @dyn_sql;
+	EXECUTE s1;
+	DEALLOCATE PREPARE s1;
+	IF (@prim_id) THEN
+		IF (treepath='') THEN
+			INSERT INTO tmpValues (`id`) VALUES (@prim_id);
+		ELSE
+			WHILE foundPos <> 0 DO
+				SET element = SUBSTRING(tmpTxt, 1, foundPos-1);
+				SET tmpTxt = SUBSTRING(tmpTxt, foundPos+1, LENGTH(tmpTxt) - foundPos);
+				SET @dyn_sql=CONCAT('SELECT id INTO @prim_id FROM ',tb,' where ',tb,'_id = ',@prim_id,' AND base = "',element,'" LIMIT 0,1');
+				SET @prim_id = 0;
+				PREPARE s1 from @dyn_sql;
+				EXECUTE s1;
+				DEALLOCATE PREPARE s1;
+				SET foundPos = INSTR(tmpTxt,delim);
+			END WHILE;
+			IF tmpTxt <> '' THEN
+				SET @dyn_sql=CONCAT('SELECT id INTO @prim_id FROM ',tb,' where ',tb,'_id = ',@prim_id,' AND base = "',tmpTxt,'" LIMIT 0,1');
+				SET @prim_id = 0;
+				PREPARE s1 from @dyn_sql;
+				EXECUTE s1;
+				DEALLOCATE PREPARE s1;
+				IF @prim_id THEN
+					INSERT INTO tmpValues (`id`) VALUES (@prim_id);
+				END IF;
+			END IF;	
+		END IF;
+	END IF;
+	SELECT * FROM tmpValues;
+END;;
+
+DELIMITER ;
