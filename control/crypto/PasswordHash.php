@@ -1,4 +1,4 @@
-<?php namespace surikat\control; 
+<?php namespace surikat\control\crypto; 
 #
 # Portable PHP password hashing framework.
 #
