@@ -92,7 +92,7 @@ class view {
 	);
 	static $separatorWord = '-';
 	static $forbiddenChrParam = array(
-		'?','%',',','!','^','#','~',"'",'"',"\r","\n","\t"," ",
+		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
 		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
 		';','.'
 	);
@@ -101,6 +101,15 @@ class view {
 		$s = strip_tags($s);
 		$forbid = array_merge(array_values(static::$separators),static::$forbiddenChrParam);
 		$s = str_replace($forbid,static::$separatorWord,$s);
+		$s = trim($s,static::$separatorWord);
+		if(strpos($s,static::$separatorWord.static::$separatorWord)!==false){
+			$ns = '';
+			$l = strlen($s)-1;
+			for($i=0;$i<=$l;$i++)
+				if(!($i&&$s[$i]==static::$separatorWord&&$s[$i-1]==static::$separatorWord))
+					$ns .= $s[$i];
+			$s = $ns;
+		}
 		return $s;
 	}
 	static function getUriParams($path){
