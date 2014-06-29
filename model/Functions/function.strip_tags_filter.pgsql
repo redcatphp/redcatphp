@@ -1,3 +1,4 @@
+-- https://github.com/pdanis/postgresql-utils/blob/master/strip_tags.sql
 -- usage: SELECT strip_tags_filter('<p>test <script>alert(1);</script> <strong>strong</strong> <div>div</div></p>', 'p,strong');
 
 CREATE OR REPLACE FUNCTION strip_tags(in_text text, in_allowed text)
