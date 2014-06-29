@@ -189,7 +189,7 @@ class Compo {
 	static function query($table,$method,$compo=array(),$params=array()){
 		$query = self::buildQuery($table,$compo,$method);
 		if(control::devHas(control::dev_model_sql))
-			print('<pre>'.htmlentities($query)."\r\n".print_r($params,true).'</pre>');
+			print('<pre>'.str_replace(',',",\r\n\t",htmlentities($query))."\r\n\t".print_r($params,true).'</pre>');
 		if(in_array($table,self::listOfTables()))
 			return R::$method($query,(array)$params);
 	}
@@ -225,15 +225,6 @@ class Compo {
 	static function table($table,$compo=array(),$params=array()){
 		return self::query($table,'getAll',$compo,$params);
 	}
-	
-	static function count4D($table,$compo=array(),$params=array()){
-		self::compoSelectIn4D($table,$compo);
-		$compo['select'] = array($table.'.id');
-		$q = self::buildQuery($table,$compo);
-		//$i = R::getCell('SELECT COUNT(*) FROM ('.self::buildQuery($table,$compo).') as TMP_count',(array)$params);
-		$i = self::query($table,'getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
-		return (int)$i;
-	}
 	static function inSelectTable($in,$select,$table=null){
 		foreach(array_keys($select) as $k)
 			$select[$k] = trim($select[$k],'"');
@@ -242,6 +233,14 @@ class Compo {
 		if(in_array($table.'.'.$in,$select))
 			return true;
 		return false;
+	}
+	static function count4D($table,$compo=array(),$params=array()){
+		self::compoSelectIn4D($table,$compo);
+		$compo['select'] = array($table.'.id');
+		$q = self::buildQuery($table,$compo);
+		//$i = R::getCell('SELECT COUNT(*) FROM ('.self::buildQuery($table,$compo).') as TMP_count',(array)$params);
+		$i = self::query($table,'getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
+		return (int)$i;
 	}
 	static function table4D($table,$compo=array(),$params=array()){
 		if(empty($compo['select']))
