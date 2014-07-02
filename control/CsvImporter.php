@@ -48,8 +48,9 @@ class CsvImporter{
 			if($this->debug&&$this->debug!=3)
 				print_r($data);
 			$b = R::dispense($table);
-			foreach($data as $k=>$v)
-				$b->$k = $v;
+			foreach($allCols as $k)
+				$b->$k = $data[$k];
+
 			foreach($allCols as $k)
 				if(!in_array($k,$missingCols)&&(!isset($data[$k])||!$data[$k]))
 					$missingCols[] = $k;
