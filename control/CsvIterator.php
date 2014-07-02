@@ -11,7 +11,8 @@ class CsvIterator implements Iterator{
     private $trim;
     private $keys;
     private $keysKeepI;
-	function __construct($file,$delimiter=',',$enclosure='"',$escape="\\",$length=0,$trim=true,$keys=null,$keysKeepI=false){
+    private $callback;
+	function __construct($file,$delimiter=',',$enclosure='"',$escape="\\",$length=0,$trim=true,$keys=null,$keysKeepI=false,$callback=null){
 		$this->filePointer = fopen($file, 'r');
 		$this->delimiter = $delimiter;
 		$this->enclosure = $enclosure;
@@ -23,7 +24,11 @@ class CsvIterator implements Iterator{
         if($keys)
 			$this->setKeys($keys);
 		$this->keysKeepI = $keysKeepI;
+		$this->callback = $callback;
     }
+    function setCallback($callback){
+		$this->callback = $callback;
+	}
     function setKeys($keys,$keysKeepI=false){
 		$this->keys = $keys;
 		$this->keysKeepI = $keysKeepI;
@@ -51,6 +56,8 @@ class CsvIterator implements Iterator{
 					unset($this->currentElement[$i]);
 			}
 		}
+		if($this->callback)
+			call_user_func_array($this->callback,array(&$this->currentElement));
         return $this->currentElement;
     }
     function key() {
