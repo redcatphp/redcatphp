@@ -7,7 +7,8 @@ class CsvImporter{
 	private $utf8_encode;
 	private $separator = ';';
 	private $csvDir;
-	function __construct($options){
+	private $callback;
+	function __construct($options=array()){
 		$this->csvDir = control::$CWD.'/.data/';
 		foreach($options as $k=>$v)
 			$this->$k = $v;
@@ -36,7 +37,14 @@ class CsvImporter{
 		});
 		$missingCols = array();
 		$completesCols = array();
+		$continue = false;
 		foreach($csvIterator as $i=>$data){
+			if($this->callback)
+				call_user_func_array($this->callback,array(&$data,&$continue));
+			if($continue){
+				$continue = false;
+				continue;
+			}
 			if($this->debug)
 				print_r($data);
 			$b = R::dispense($table);
