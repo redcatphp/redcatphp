@@ -320,6 +320,13 @@ class Compo {
 		$sep = self::getSeparator();
 		$cc = self::getConcatenator();
 		extract(self::heuristic4D($table));
+		
+		$comp = array();
+		if(isset($compo['join'])){
+			$comp['join'] = (array)@$compo['join'];
+			unset($compo['join']);
+		}
+		
 		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
 			foreach(self::listOfColumns($parent) as $col)
@@ -344,6 +351,11 @@ class Compo {
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
 			$compo['group_by'][] = $q.$table.$q.'.'.$q.'id'.$q;
+
+		if(isset($comp['join']))
+			foreach($comp['join'] as $c)
+				$compo['join'][] = $c;
+		
 	}
 	static function joinOn($table,$share){
 		if(is_array($share)){

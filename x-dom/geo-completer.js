@@ -148,7 +148,7 @@ $js([
 				}
 				if(updateMark)
 					updateMarker(place);
-				//updateInfoWindow(place);
+				console.log(place);
 				input_validate.val('true');
 				input.trigger('change');
 			};
@@ -200,12 +200,15 @@ $js([
 				
 			});
 			var val = input.val();
+			console.log(val);
 			if(val){
-				geocoder.geocode({'address':val},function(results,status){
+				geocoder.geocode({'address':val.trim()},function(results,status){
 					if(status==='OK'){
 						input.val(results[0].formatted_address);
 						updatePlace(results[0],true);
 					}
+					else
+						console.log(status);
 				});
 			}
 		});

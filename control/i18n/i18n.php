@@ -1,13 +1,12 @@
 <?php namespace surikat\control\i18n;
 use surikat\control;
-require_once __DIR__.'php-gettext.php';
+require_once __DIR__.'/php-gettext.php';
 class i18n {
 	private static $locales_root;
 	private static $domain;
 	private static $locale;
 	private static $language;
-	static $availables = array();
-	static $multi = 0;
+	static $availables = array('fr','en');
 	static $default_lang = 'fr';
 	static $i18n_iso = array (
 	  'AF' =>  array (
@@ -1511,14 +1510,8 @@ class i18n {
 			'number' => '716',
 		  ),
 		);
-	static function getLang(){
-		if(empty(self::$language)){
-			self::$language = self::$multi?self::$availables[0]:self::$default_lang;
-		}
-		return self::$language;
-	}
 	
-	private static function set($lg){
+	static function set($lg){
 		self::$language = $lg;
 		self::$locales_root = control::$CWD.'langs';
 		self::$domain = 'messages';
@@ -1539,8 +1532,8 @@ class i18n {
 		}
 		self::$domain = self::$domain.'_'.$mtime;
 	}
-	private static function handle(){
-		date_default_timezone_set(SurikatConfig('timezone'));
+	static function handle(){
+		date_default_timezone_set('Europe/Paris');
 		
 		$lang = self::$locale;
 		$all_locales = explode("\n",shell_exec('locale -a'));
@@ -1548,21 +1541,17 @@ class i18n {
 			/* allow gettext to access local translate dir even if that local type is not available on system */
 			putenv("LANGUAGE=$lang");
 			putenv("LC_ALL=$lang");
-			if(in_array($lang.'.utf8',$all_locales)){
+			if(in_array($lang.'.utf8',$all_locales))
 				$lang .= '.utf8';
-			}
 		}		
 		T_setlocale(LC_ALL,$lang);
+		//setlocale(LC_TIME, $lang);
 		T_bind_textdomain_codeset(self::$domain, "UTF-8");
 		T_bindtextdomain(self::$domain,self::$locales_root);
 		T_textdomain(self::$domain);
 		
-		// bind_textdomain_codeset(self::$domain, "UTF-8");
-		// bindtextdomain(self::$domain,self::$locales_root);
-		// textdomain(self::$domain);
+		 //bind_textdomain_codeset(self::$domain, "UTF-8");
+		 //bindtextdomain(self::$domain,self::$locales_root);
+		 //textdomain(self::$domain);
 	}
-}
-if(SurikatConfig('i18n')){
-	Surikati18n::$availables = explode(',',SurikatConfig('i18n'));
-	Surikati18n::$multi = count(Surikati18n::$availables);
 }
