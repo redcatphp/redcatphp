@@ -45,7 +45,7 @@ class CsvImporter{
 				$continue = false;
 				continue;
 			}
-			if($this->debug)
+			if($this->debug&&$this->debug!=3)
 				print_r($data);
 			$b = R::dispense($table);
 			foreach($data as $k=>$v)
