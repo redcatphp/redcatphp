@@ -44,4 +44,17 @@ path = /www/dev/project
 passive = true
 ;[ftp://ftplogin:ftppassword@myhost.com:21/www/dev/project]
 
+clean_directories[] = folder/to/clean
+clean_directories[] = another/folder
+
+ignore_files[] = file/toignore.txt
+ignore_files[] = another/file/toignore.php
+
+upload_untracked[] = folder/to/upload
+upload_untracked[] = another/file/toignore.php
+
+maintenance_file = 'maintenance.php'
+maintenance_on_value = '<?php $under_maintenance = true;?>'
+maintenance_off_value = '<?php $under_maintenance = false;?>'
+
 */
