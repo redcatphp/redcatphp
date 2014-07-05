@@ -327,5 +327,3 @@ abstract class GitClone extends GitCheckout
      */
     abstract protected function wgetFile($url);
 }
-
-?>

@@ -180,5 +180,3 @@ abstract class GitCheckout extends GitBase
         return $return;
     }
 }
-
-?>
