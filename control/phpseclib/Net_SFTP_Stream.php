@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * SFTP Stream Wrapper
@@ -153,9 +153,9 @@ class Net_SFTP_Stream
             echo "__construct()\r\n";
         }
 
-        if (!class_exists('Net_SFTP')) {
-            include_once 'Net/SFTP.php';
-        }
+        //if (!class_exists('Net_SFTP')) {
+            //include_once 'Net/SFTP.php';
+        //}
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of RC2.
@@ -56,9 +56,9 @@
  *
  * Base cipher class
  */
-if (!class_exists('Crypt_Base')) {
-    include_once 'Base.php';
-}
+//if (!class_exists('Crypt_Base')) {
+    //include_once 'Base.php';
+//}
 
 /**#@+
  * @access public

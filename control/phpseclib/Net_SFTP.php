@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of SFTP.
@@ -56,9 +56,9 @@
 /**
  * Include Net_SSH2
  */
-if (!class_exists('Net_SSH2')) {
-    include_once 'SSH2.php';
-}
+//if (!class_exists('Net_SSH2')) {
+    //include_once 'SSH2.php';
+//}
 
 /**#@+
  * @access public

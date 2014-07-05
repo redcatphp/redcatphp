@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of SCP.

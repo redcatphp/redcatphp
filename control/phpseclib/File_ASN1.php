@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP ASN.1 Parser
@@ -250,9 +250,9 @@ class File_ASN1
         static $static_init = null;
         if (!$static_init) {
             $static_init = true;
-            if (!class_exists('Math_BigInteger')) {
-                include_once 'Math/BigInteger.php';
-            }
+            //if (!class_exists('Math_BigInteger')) {
+                //include_once 'Math/BigInteger.php';
+            //}
         }
     }
 

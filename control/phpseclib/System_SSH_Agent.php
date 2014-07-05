@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 /**
  * Pure-PHP ssh-agent client.
  *
@@ -288,9 +288,9 @@ class System_SSH_Agent
             $key_type = substr($key_blob, 4, $length);
             switch ($key_type) {
                 case 'ssh-rsa':
-                    if (!class_exists('Crypt_RSA')) {
-                        include_once 'Crypt/RSA.php';
-                    }
+                    //if (!class_exists('Crypt_RSA')) {
+                        //include_once 'Crypt/RSA.php';
+                    //}
                     $key = new Crypt_RSA();
                     $key->loadKey('ssh-rsa ' . base64_encode($key_blob) . ' ' . $key_comment);
                     break;

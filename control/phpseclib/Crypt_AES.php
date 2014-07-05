@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of AES.
@@ -63,10 +63,10 @@
 
 /**
  * Include Crypt_Rijndael
- */
 if (!class_exists('Crypt_Rijndael')) {
     include_once 'Rijndael.php';
 }
+ */
 
 /**#@+
  * @access public

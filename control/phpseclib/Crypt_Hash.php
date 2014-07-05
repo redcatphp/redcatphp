@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
@@ -579,9 +579,9 @@ class Crypt_Hash
      */
     function _sha512($m)
     {
-        if (!class_exists('Math_BigInteger')) {
-            include_once 'Math/BigInteger.php';
-        }
+        //if (!class_exists('Math_BigInteger')) {
+            //include_once 'Math/BigInteger.php';
+        //}
 
         static $init384, $init512, $k;
 

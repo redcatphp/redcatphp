@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of Triple DES.
@@ -55,9 +55,9 @@
 /**
  * Include Crypt_DES
  */
-if (!class_exists('Crypt_DES')) {
-    include_once 'DES.php';
-}
+//if (!class_exists('Crypt_DES')) {
+    //include_once 'DES.php';
+//}
 
 /**
  * Encrypt / decrypt using inner chaining

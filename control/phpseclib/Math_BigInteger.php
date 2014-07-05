@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP arbitrary precision integer arithmetic library.
@@ -3067,7 +3067,7 @@ class Math_BigInteger
     function _random_number_helper($size)
     {
         if (function_exists('crypt_random_string')) {
-            $random = crypt_random_string($size);
+            $random = Cypt_Random::crypt_random_string($size);
         } else {
             $random = '';
 

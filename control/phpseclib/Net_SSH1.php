@@ -1,4 +1,4 @@
-<?php
+<?php namespace surikat\control\phpseclib;
 
 /**
  * Pure-PHP implementation of SSHv1.
@@ -517,18 +517,18 @@ class Net_SSH1
      */
     function Net_SSH1($host, $port = 22, $timeout = 10, $cipher = NET_SSH1_CIPHER_3DES)
     {
-        if (!class_exists('Math_BigInteger')) {
-            include_once 'Math/BigInteger.php';
-        }
+        //if (!class_exists('Math_BigInteger')) {
+            //include_once 'Math/BigInteger.php';
+        //}
 
         // Include Crypt_Random
         // the class_exists() will only be called if the crypt_random_string function hasn't been defined and
         // will trigger a call to __autoload() if you're wanting to auto-load classes
         // call function_exists() a second time to stop the include_once from being called outside
         // of the auto loader
-        if (!function_exists('crypt_random_string') && !class_exists('Crypt_Random') && !function_exists('crypt_random_string')) {
-            include_once 'Crypt/Random.php';
-        }
+        //if (!function_exists('crypt_random_string') && !class_exists('Crypt_Random') && !function_exists('crypt_random_string')) {
+            //include_once 'Crypt/Random.php';
+        //}
 
         $this->protocol_flags = array(
             1  => 'NET_SSH1_MSG_DISCONNECT',
@@ -637,7 +637,7 @@ class Net_SSH1
 
         $session_id = pack('H*', md5($host_key_public_modulus->toBytes() . $server_key_public_modulus->toBytes() . $anti_spoofing_cookie));
 
-        $session_key = crypt_random_string(32);
+        $session_key = Cypt_Random::crypt_random_string(32);
         $double_encrypted_session_key = $session_key ^ str_pad($session_id, 32, chr(0));
 
         if ($server_key_public_modulus->compare($host_key_public_modulus) < 0) {
@@ -685,18 +685,18 @@ class Net_SSH1
             //    $this->crypto = new Crypt_Null();
             //    break;
             case NET_SSH1_CIPHER_DES:
-                if (!class_exists('Crypt_DES')) {
-                    include_once 'Crypt/DES.php';
-                }
+                //if (!class_exists('Crypt_DES')) {
+                    //include_once 'Crypt/DES.php';
+                //}
                 $this->crypto = new Crypt_DES();
                 $this->crypto->disablePadding();
                 $this->crypto->enableContinuousBuffer();
                 $this->crypto->setKey(substr($session_key, 0,  8));
                 break;
             case NET_SSH1_CIPHER_3DES:
-                if (!class_exists('Crypt_TripleDES')) {
-                    include_once 'Crypt/TripleDES.php';
-                }
+                //if (!class_exists('Crypt_TripleDES')) {
+                    //include_once 'Crypt/TripleDES.php';
+                //}
                 $this->crypto = new Crypt_TripleDES(CRYPT_DES_MODE_3CBC);
                 $this->crypto->disablePadding();
                 $this->crypto->enableContinuousBuffer();
@@ -1185,7 +1185,7 @@ class Net_SSH1
 
         $length = strlen($data) + 4;
 
-        $padding = crypt_random_string(8 - ($length & 7));
+        $padding = Cypt_Random::crypt_random_string(8 - ($length & 7));
 
         $orig = $data;
         $data = $padding . $data;
@@ -1371,7 +1371,7 @@ class Net_SSH1
         $length = strlen($modulus) - strlen($m) - 3;
         $random = '';
         while (strlen($random) != $length) {
-            $block = crypt_random_string($length - strlen($random));
+            $block = Cypt_Random::crypt_random_string($length - strlen($random));
             $block = str_replace("\x00", '', $block);
             $random.= $block;
         }
