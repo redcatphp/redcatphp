@@ -1,10 +1,11 @@
 <?php namespace surikat\control\GitDeploy;
+use surikat\control;
 class Config {
 
     public static function getArgs() {
         $argv = (array)@$_SERVER['argv'];
 
-        $deploy = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'deploy.ini';
+        $deploy = control::$CWD.'deploy.ini';
         $commands = array('-l', '-r', '-c', '-d', '--revert', '--log', '--repo');
 
         $deploy_file = isset($argv[1]) ? end($argv) : "deploy.ini";
@@ -30,7 +31,7 @@ class Config {
         if (isset($opts['repo'])) {
             $repo_path = $opts['repo'];
         } else {
-            $repo_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+            $repo_path = control::$CWD;
         }
 
         return array(
@@ -50,6 +51,8 @@ class Config {
             GitDeploy::error("File '$config_file' is not a valid .ini file.");
         } else {
             foreach ($servers as $uri => $options) {
+				if(!is_array($options))
+					continue;
                 if (stristr($uri, "://") !== false) {
                     $options = array_merge($options, parse_url($uri));
                 }
@@ -79,7 +82,6 @@ class Config {
                 }
             }
         }
-
         return $return;
     }
 
