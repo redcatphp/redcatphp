@@ -131,7 +131,7 @@ class File_ASN1_Element
      * @return File_ASN1_Element
      * @access public
      */
-    function File_ASN1_Element($encoded)
+    function __construct($encoded)
     {
         $this->element = $encoded;
     }
@@ -245,7 +245,7 @@ class File_ASN1
      *
      * @access public
      */
-    function File_ASN1()
+    function __construct()
     {
         static $static_init = null;
         if (!$static_init) {

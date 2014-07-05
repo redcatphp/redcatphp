@@ -115,7 +115,7 @@ class System_SSH_Agent_Identity
      * @return System_SSH_Agent_Identity
      * @access private
      */
-    function System_SSH_Agent_Identity($fsock)
+    function __construct($fsock)
     {
         $this->fsock = $fsock;
     }

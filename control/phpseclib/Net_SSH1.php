@@ -515,7 +515,7 @@ class Net_SSH1
      * @return Net_SSH1
      * @access public
      */
-    function Net_SSH1($host, $port = 22, $timeout = 10, $cipher = NET_SSH1_CIPHER_3DES)
+    function __construct($host, $port = 22, $timeout = 10, $cipher = NET_SSH1_CIPHER_3DES)
     {
         //if (!class_exists('Math_BigInteger')) {
             //include_once 'Math/BigInteger.php';

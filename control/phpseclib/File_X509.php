@@ -311,7 +311,7 @@ class File_X509
      * @return File_X509
      * @access public
      */
-    function File_X509()
+    function __construct()
     {
         //if (!class_exists('Math_BigInteger')) {
             //include_once 'Math/BigInteger.php';
