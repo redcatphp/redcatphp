@@ -2,7 +2,9 @@
 use surikat\control;
 use surikat\model;
 use surikat\model\SQLComposer\API as SQLComposer;
-class Compo {
+class QuerySQL {
+	const FLAG_ACCENT_INSENSITIVE = 2;
+	const FLAG_CASE_INSENSITIVE = 4;
 	static $SqlWriterSeparators = array(
 		'MySQL'			=>'SEPARATOR',
 		'SQLiteT'		=>',',
@@ -29,8 +31,13 @@ class Compo {
 		'MySQL'			=>'0x1D',
 	);
 	static function getQuote(){
-		$q = R::getWriter()->esc('test'); //work around protected property of RedBean QueryWriter for not fork
-		$q = substr($q,0,strpos($q,'test'));
+		//$q = R::getWriter()->esc('test'); //work around protected property of RedBean QueryWriter for not fork
+		//$q = substr($q,0,strpos($q,'test'));
+		$qw = R::getWriter();
+		$class = new \ReflectionClass(get_class($qw));
+		$property = $class->getProperty('quoteCharacter');
+		$property->setAccessible(true);
+		$q = $property->getValue($qw);
 		return $q;
 	}
 	static function quote($v){
@@ -40,7 +47,8 @@ class Compo {
 		return $q.trim($v,$q).$q;
 	}
 	static function getWriterType(){
-		return substr(get_class(R::getWriter()),37); //strlen('surikat\\model\\RedBeanPHP\\QueryWriter\\') = 37
+		//return substr(get_class(R::getWriter()),37); //strlen('surikat\\model\\RedBeanPHP\\QueryWriter\\') = 37
+		return substr(get_class(R::getWriter()),26); //strlen('surikat\\model\\QueryWriter\\') = 26
 	}
 	static function getSeparator(){
 		$c = self::getWriterType();
@@ -190,7 +198,7 @@ class Compo {
 		$query = self::buildQuery($table,$compo,$method);
 		if(control::devHas(control::dev_model_sql))
 			print('<pre>'.str_replace(',',",\r\n\t",htmlentities($query))."\r\n\t".print_r($params,true).'</pre>');
-		if(in_array($table,self::listOfTables()))
+		if(R::getWriter()->tableExists($table))
 			return R::$method($query,(array)$params);
 	}
 
@@ -269,7 +277,6 @@ class Compo {
 			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
 		return $row;
 	}
-	protected static $listOfTables;
 	protected static $listOfColumns = array();
 	protected static $heuristic4D;
 	static function listOfColumns($t,$details=null){
@@ -277,14 +284,9 @@ class Compo {
 			self::$listOfColumns[$t] = R::inspect($t);
 		return $details?self::$listOfColumns[$t]:array_keys(self::$listOfColumns[$t]);
 	}
-	static function listOfTables(){
-		if(!self::$listOfTables)
-			self::$listOfTables = R::inspect();
-		return self::$listOfTables;
-	}
 	static function heuristic4D($t){
 		if(!isset(self::$heuristic4D[$t])){
-			$listOfTables = self::listOfTables();
+			$listOfTables = R::inspect();
 			$tableL = strlen($t);
 			$h4D['fields'] = in_array($t,$listOfTables)?self::listOfColumns($t):array();
 			$h4D['shareds'] = array();

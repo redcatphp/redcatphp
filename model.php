@@ -1,25 +1,18 @@
 <?php namespace surikat;
 use surikat\control\str;
 use surikat\model\R;
-use surikat\model\Compo;
+use surikat\model\QuerySQL;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
-	const FLAG_ACCENT_INSENSITIVE = 2;
-	const FLAG_CASE_INSENSITIVE = 4;
-	static function storeArray(){
-		return call_user_func_array(array('surikat\model\R',__FUNCTION__),func_get_args());
-	}
 	static function __callStatic($func,$args){
-		return call_user_func_array(array('surikat\model\Compo',$func),$args);
-	}
-	static function tableExist($table){
-		return in_array($table,Compo::listOfTables());
+		
+		return call_user_func_array(array('surikat\model\QuerySQL',$func),$args);
 	}
 	static function schemaAuto($table,$force=false){
 		if(!control::devHas(control::dev_model)&&!$force)
 			return;
 		$path = 'model/schema.'.$table.'.php';
-		if(is_file($path)&&!self::tableExist($table)&&is_array($a=include($path)))
+		if(is_file($path)&&!R::getWriter()->tableExists($table)&&is_array($a=include($path)))
 			R::storeMultiArray($a);
 	}
 	static function load($table,$id,$flag=0){
@@ -28,11 +21,11 @@ class model {
 		else{
 			$w = 'label';
 			if($flag){
-				if($flag&self::FLAG_ACCENT_INSENSITIVE){
+				if($flag&QuerySQL::FLAG_ACCENT_INSENSITIVE){
 					$w = 'uaccent('.$w.')';
 					$id = str::unaccent($id);
 				}
-				if($flag&self::FLAG_CASE_INSENSITIVE){
+				if($flag&QuerySQL::FLAG_CASE_INSENSITIVE){
 					$w = 'LOWER('.$w.')';
 					$id = str::tolower($id);
 				}

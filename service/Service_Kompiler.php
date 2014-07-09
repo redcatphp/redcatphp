@@ -161,6 +161,7 @@ abstract class Service_Kompiler{
 			'use '.$ons=>'use '.$namespace,
 			$_namespace.'\\\\BeanHelper\\\\SimpleFacadeBeanHelper'=>$_ns.'\\\\SimpleFacadeBeanHelper',
 			$namespace.'\\BeanHelper\\SimpleFacadeBeanHelper'=>$ns.'\\SimpleFacadeBeanHelper',
+			'RedBeanPHP\\QueryWriter'=>'QueryWriter',
 		);
 		FS::recurse($dir,function($file)use($ons,$namespace,$dir,$tgDir,$rep){
 				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
