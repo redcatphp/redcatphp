@@ -1,5 +1,5 @@
 <?php namespace surikat\model;
-class Query4D extend Query {
+class Query4D extends Query {
 	
 	
 }

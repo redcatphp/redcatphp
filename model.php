@@ -1,12 +1,12 @@
 <?php namespace surikat;
 use surikat\control\str;
 use surikat\model\R;
-use surikat\model\QuerySQL;
+use surikat\model\Query;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	static function __callStatic($func,$args){
 		
-		return call_user_func_array(array('surikat\model\QuerySQL',$func),$args);
+		return call_user_func_array(array('surikat\model\Query',$func),$args);
 	}
 	static function schemaAuto($table,$force=false){
 		if(!control::devHas(control::dev_model)&&!$force)
@@ -21,11 +21,11 @@ class model {
 		else{
 			$w = 'label';
 			if($flag){
-				if($flag&QuerySQL::FLAG_ACCENT_INSENSITIVE){
+				if($flag&Query::FLAG_ACCENT_INSENSITIVE){
 					$w = 'uaccent('.$w.')';
 					$id = str::unaccent($id);
 				}
-				if($flag&QuerySQL::FLAG_CASE_INSENSITIVE){
+				if($flag&Query::FLAG_CASE_INSENSITIVE){
 					$w = 'LOWER('.$w.')';
 					$id = str::tolower($id);
 				}
