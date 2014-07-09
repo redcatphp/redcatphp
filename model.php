@@ -5,8 +5,8 @@ use surikat\model\Query;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	static function __callStatic($func,$args){
-		
-		return call_user_func_array(array('surikat\model\Query',$func),$args);
+		$q = new Query();
+		return call_user_func_array(array($q,$func),$args);
 	}
 	static function schemaAuto($table,$force=false){
 		if(!control::devHas(control::dev_model)&&!$force)
