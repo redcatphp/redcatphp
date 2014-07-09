@@ -69,9 +69,19 @@ class control{
 		$f = str_replace('\\',DIRECTORY_SEPARATOR,$c).'.php';
 		if(stripos($c,__NAMESPACE__.'\\')===0)
 			is_file($php=self::$SURIKAT_X.substr($f,8))&&include($php);
-		elseif(!(is_file($php=self::$CWD_X.$f)&&include($php))&&class_exists(__NAMESPACE__.'\\'.$c))
-			eval('namespace '.(($pos=strrpos($c,'\\'))?substr($c,0,$pos):'').'{ class '.($pos?substr($c,$pos+1):$c).' extends \\'.__NAMESPACE__.'\\'.$c.'{} }');
+		elseif(!(is_file($php=self::$CWD_X.$f)&&include($php))){
+			$ns = (($pos=strrpos($c,'\\'))?substr($c,0,$pos):'');
+			$cn = ($pos?substr($c,$pos+1):$c);
+			$trait = strpos($cn,'Mixin_')===0;
+			$cf = $trait?'trait_exists':'class_exists';
+			if($cf(__NAMESPACE__.'\\'.$c)){
+				if($trait)
+					$ev = 'trait '.$cn.' { use \\'.__NAMESPACE__.'\\'.$c.'; }';
+				else
+					$ev = ((strpos($cn,'Interface_')===0)?'interface':'class').' '.$cn.' extends \\'.__NAMESPACE__.'\\'.$c.'{}';
+				eval('namespace '.$ns.'{ '.$ev.'}');
+			}
+		}
 	}
-	
 }
 control::initialize();
