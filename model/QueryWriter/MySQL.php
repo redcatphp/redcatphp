@@ -5,5 +5,5 @@ class MySQL extends \surikat\model\RedBeanPHP\QueryWriter\MySQL {
 	protected $aggCaster = '';
 	protected $sumCaster = '';
 	protected $concatenator = '0x1D';
-	use AHelper;
+	use AQueryWriter;
 }

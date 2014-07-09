@@ -2,10 +2,11 @@
 use surikat\control\str;
 use surikat\model\R;
 use surikat\model\Query;
+use surikat\model\Query4D;
 use surikat\model\RedBeanPHP\OODBBean;
 class model {
 	static function __callStatic($func,$args){
-		$q = new Query();
+		$q = new Query4D(array_shift($args));
 		return call_user_func_array(array($q,$func),$args);
 	}
 	static function schemaAuto($table,$force=false){

@@ -5,5 +5,5 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 	protected $aggCaster = '::text';
 	protected $sumCaster = '::int';
 	protected $concatenator = 'chr(29)';
-	use AHelper;
+	use AQueryWriter;
 }

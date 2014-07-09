@@ -5,5 +5,5 @@ class SQLiteT extends \surikat\model\RedBeanPHP\QueryWriter\SQLiteT {
 	protected $aggCaster = '';
 	protected $sumCaster = '';
 	protected $concatenator = "cast(X'1D' as text)";
-	use AHelper;
+	use AQueryWriter;
 }
