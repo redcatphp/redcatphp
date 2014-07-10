@@ -3,46 +3,46 @@ use surikat\control;
 use surikat\model;
 use surikat\model\SQLComposer\API as SQLComposer;
 class Query4D extends Query {
-	protected $heuristic4D;
-	function heuristic4D($reload=null){
-		if(!isset($this->heuristic4D)||$reload){
-			$this->heuristic4D = array();
+	protected $heuristic;
+	function heuristic($reload=null){ //todo mode frozen
+		if(!isset($this->heuristic)||$reload){
+			$this->heuristic = array();
 			$listOfTables = R::inspect();
 			$tableL = strlen($this->table);
-			$h4D['fields'] = in_array($this->table,$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
-			$h4D['shareds'] = array();
-			$h4D['parents'] = array();
-			$h4D['fieldsOwn'] = array();
-			$h4D['owns'] = array();
+			$h['fields'] = in_array($this->table,$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
+			$h['shareds'] = array();
+			$h['parents'] = array();
+			$h['fieldsOwn'] = array();
+			$h['owns'] = array();
 			foreach($listOfTables as $table) //shared
 				if(strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
-						$h4D['shareds'][] = $table;
-						$h4D['fieldsShareds'][$table] = $this->listOfColumns($table,null,$reload);
+						$h['shareds'][] = $table;
+						$h['fieldsShareds'][$table] = $this->listOfColumns($table,null,$reload);
 				}
-			foreach($h4D['fields'] as $field) //parent
+			foreach($h['fields'] as $field) //parent
 				if(strrpos($field,'_id')===strlen($field)-3){
 					$table = substr($field,0,-3);
-					$h4D['parents'][] = $table;
+					$h['parents'][] = $table;
 				}
 			foreach($listOfTables as $table){ //own
 				if(strpos($table,'_')===false&&$table!=$this->table){
-					$h4D['fieldsOwn'][$table] = $this->listOfColumns($table,null,$reload);
-					if(in_array($this->table.'_id',$h4D['fieldsOwn'][$table]))
-						$h4D['owns'][] = $table;
+					$h['fieldsOwn'][$table] = $this->listOfColumns($table,null,$reload);
+					if(in_array($this->table.'_id',$h['fieldsOwn'][$table]))
+						$h['owns'][] = $table;
 				}
 			}
-			$this->heuristic4D = $h4D;
+			$this->heuristic = $h;
 		}
-		return $this->heuristic4D;
+		return $this->heuristic;
 	}
-	function compoSelectIn4D(&$compo,$reload=null){
+	function autoSelect(&$compo,$reload=null){
 		$q = $this->writerQuote;
 		$agg = $this->writerAgg;
 		$aggc = $this->writerAggCaster;
 		$sep = $this->writerSeparator;
 		$cc = $this->writerConcatenator;
-		extract($this->heuristic4D($reload));
+		extract($this->heuristic($reload));
 		
 		$comp = array();
 		if(isset($compo['join'])){
@@ -80,34 +80,33 @@ class Query4D extends Query {
 				$compo['join'][] = $c;
 		
 	}
-	function count4D($compo=array(),$params=array()){
-		$this->compoSelectIn4D($compo);
+	function count($compo=array(),$params=array()){
+		$this->autoSelect($compo);
 		$compo['select'] = array($this->table.'.id');
 		$q = $this->buildQuery($compo);
-		//$i = R::getCell('SELECT COUNT(*) FROM ('.$this->buildQuery($compo).') as TMP_count',(array)$params);
 		$i = $this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
 		return (int)$i;
 	}
-	function table4D($compo=array(),$params=array()){
+	function table($compo=array(),$params=array()){
 		if(empty($compo['select']))
 			$compo['select'] = '*';
 		$compo['select'] = (array)$compo['select'];
 		if(!self::inSelectTable('id',$compo['select'],$this->table)&&!self::inSelectTable('*',$compo['select'],$this->table))
 			$compo['select'][] = 'id';
-		$this->compoSelectIn4D($compo);
+		$this->autoSelect($compo);
 		$data = $this->query('getAll',$compo,$params);
 		$data = self::explodeGroupConcatMulti($data);
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
 	}
-	function row4D($compo=array(),$params=array()){
+	function row($compo=array(),$params=array()){
 		if(empty($compo['select']))
 			$compo['select'] = '*';
 		$compo['select'] = (array)$compo['select'];
 		if(!in_array('id',$compo['select'])&&!in_array($this->table.'.id',$compo['select']))
 			$compo['select'][] = 'id';
-		$this->compoSelectIn4D($compo);
+		$this->autoSelect($compo);
 		$compo['limit'] = 1;
 		$row = $this->query('getRow',$compo,$params);
 		$row = self::explodeGroupConcat($row);

@@ -1,18 +1,51 @@
 <?php namespace surikat\model;
+use ArrayAccess;
 use surikat\control;
 use surikat\model;
 use surikat\model\SQLComposer\API as SQLComposer;
-class Query {
+class Query /* implements ArrayAccess */{
 	const FLAG_ACCENT_INSENSITIVE = 2;
 	const FLAG_CASE_INSENSITIVE = 4;
 	protected $writer;
 	protected $table;
+	protected $compo = array();
+	protected $params;
 	function __construct($table,$writer=null){
 		$this->table = $table;
 		if(!$writer)
 			$writer = R::getWriter();
 		$this->writer = $writer;
 	}
+	/*
+	function __call($f,$args){
+		$sql = array_shift($args);
+		foreach($args as $a){
+			if(is_array($a)||$a instanceof ArrayAccess){
+				foreach($a as $k=>$v)
+					$this->params[$k] = $v;
+			}
+			else
+				$this->params[] = $a;
+		}
+	}
+	function offsetSet($k,$v){
+		if($k===null)
+			$this->params[] = $v;
+		else
+			$this->params[$k] = $v;
+	}
+	function offsetUnset($k){
+		if($this->offsetExists($k))
+			unset($this->params[$k]);
+	}
+	function offsetGet($k){
+		if($this->offsetExists($k))
+			return $this->params[$k];
+	}
+	function offsetExists($k){
+		return isset($this->params[$k]);
+	}
+	*/
 	function quote($v){
 		if($v=='*')
 			return $v;
