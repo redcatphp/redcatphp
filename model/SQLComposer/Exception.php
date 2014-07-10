@@ -4,4 +4,4 @@
  *
  * The main exception to be used within these classes
  */
-class SQLComposerException extends Exception {}
+class Exception extends \Exception {}

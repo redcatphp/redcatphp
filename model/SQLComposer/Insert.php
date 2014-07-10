@@ -1,4 +1,5 @@
 <?php namespace surikat\model\SQLComposer;
+use surikat\model\SQLComposer;
 /**
  * SQLComposerInsert
  *
@@ -7,7 +8,7 @@
  * @package SQLComposer
  * @author Shane Smith
  */
-class SQLComposerInsert extends SQLComposerBase {
+class Insert extends Base {
 
 	/**
 	 * IGNORE

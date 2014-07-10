@@ -1,4 +1,5 @@
 <?php namespace surikat\model\SQLComposer;
+use surikat\model\SQLComposer;
 /**
  * SQLComposerReplace
  *
@@ -7,7 +8,7 @@
  * @package SQLComposer
  * @author Shane Smith
  */
-class SQLComposerReplace extends SQLComposerBase {
+class Replace extends Base {
 
 	/**
 	 * To create an REPLACE INTO ... SELECT ...

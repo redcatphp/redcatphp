@@ -1,4 +1,5 @@
 <?php namespace surikat\model\SQLComposer;
+use surikat\model\SQLComposer;
 /**
  * SQLComposerSelect
  *
@@ -7,7 +8,7 @@
  * @package SQLComposer
  * @author Shane Smith
  */
-class SQLComposerSelect extends SQLComposerWhere {
+class Select extends Where {
 
 	/**
 	 * SELECT DISTINCT ...

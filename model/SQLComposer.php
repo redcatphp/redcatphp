@@ -1,4 +1,11 @@
-<?php namespace surikat\model\SQLComposer;
+<?php namespace surikat\model;
+use SQLComposer\Exception as SQLComposerException;
+use SQLComposer\Expr as SQLComposerExpr;
+use SQLComposer\Select as SQLComposerSelect;
+use SQLComposer\Insert as SQLComposerInsert;
+use SQLComposer\Update as SQLComposerUpdate;
+use SQLComposer\Replace as SQLComposerReplace;
+use SQLComposer\Delete as SQLComposerDelete;
 /**
  * SQLComposer
  *
@@ -264,17 +271,5 @@ abstract class SQLComposer {
 	 */
 	public static function expr($val, array $params=array(), $mysqli_types="") {
 		return new SQLComposerExpr($val, $params, $mysqli_types);
-	}
-}
-
-/**
- * A container to denote an expression to be directly embedded
- */
-class SQLComposerExpr {
-	public $value, $params, $mysqli_types;
-	public function __construct($val, array $params=array(), $mysqli_types="") {
-		$this->value = $val;
-		$this->params = $params;
-		$this->mysqli_types = $mysqli_types;
 	}
 }

@@ -1,11 +1,11 @@
 <?php namespace surikat\model\SQLComposer;
-
+use surikat\model\SQLComposer;
 /**
  * SQLComposerWhere
  *
  * A helper class for any query classes that contain a WHERE clause
  */
-abstract class SQLComposerWhere extends SQLComposerBase {
+abstract class Where extends Base {
 
 	/**
 	 * WHERE clause
