@@ -2,7 +2,7 @@
 use ArrayAccess;
 use surikat\control;
 use surikat\model;
-use surikat\model\SQLComposer\API as SQLComposer;
+use surikat\model\SQLComposer\SQLComposer;
 class Query /* implements ArrayAccess */{
 	const FLAG_ACCENT_INSENSITIVE = 2;
 	const FLAG_CASE_INSENSITIVE = 4;

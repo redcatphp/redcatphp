@@ -1,12 +1,11 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once ".class.php";
+<?php namespace surikat\model\SQLComposer;
 
 /**
- * Where
+ * SQLComposerWhere
  *
  * A helper class for any query classes that contain a WHERE clause
  */
-abstract class Where extends Base {
+abstract class SQLComposerWhere extends SQLComposerBase {
 
 	/**
 	 * WHERE clause
@@ -26,7 +25,7 @@ abstract class Where extends Base {
 	 * @param string $where
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function where($where, array $params = null, $mysqli_types = "") {
 		$this->where[] = $where;
@@ -41,7 +40,7 @@ abstract class Where extends Base {
 	 * @param string $where
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function where_in($where, array $params, $mysqli_types = "") {
 		list($where, $params, $mysqli_types) = SQLComposer::in($where, $params, $mysqli_types);
@@ -55,7 +54,7 @@ abstract class Where extends Base {
 	 * @param string $op
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function where_op($column, $op, array $params=null, $mysqli_types="") {
 		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params, $mysqli_types);
@@ -65,7 +64,7 @@ abstract class Where extends Base {
 	/**
 	 * Open a paranthesis for sub-expressions using 'AND'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_where_and() {
 		$this->where[] = array( '(', 'AND' );
@@ -75,7 +74,7 @@ abstract class Where extends Base {
 	/**
 	 * Open a paranthesis for sub-expressions using 'OR'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_where_or() {
 		$this->where[] = array( '(', 'OR' );
@@ -85,7 +84,7 @@ abstract class Where extends Base {
 	/**
 	 * Open a paranthesis preceded by a 'NOT' for sub-expressions using 'AND'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_where_not_and() {
 		$this->where[] = array('(', 'NOT');
@@ -96,7 +95,7 @@ abstract class Where extends Base {
 	/**
 	 * Open a paranthesis preceded by a 'NOT' for sub-expressions using 'OR'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_where_not_or() {
 		$this->where[] = array( '(', 'NOT' );
@@ -107,7 +106,7 @@ abstract class Where extends Base {
 	/**
 	 * Close a paranthesis with for sub-expressions
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function close_where() {
 		$this->where[] = array( ')' );
@@ -120,7 +119,7 @@ abstract class Where extends Base {
 	 * @return string
 	 */
 	protected function _render_where() {
-		return Base::_render_bool_expr($this->where);
+		return SQLComposerBase::_render_bool_expr($this->where);
 	}
 
 

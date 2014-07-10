@@ -1,20 +1,18 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Replace
+ * SQLComposerReplace
  *
  * A REPLACE query
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-class Replace extends Base {
+class SQLComposerReplace extends SQLComposerBase {
 
 	/**
 	 * To create an REPLACE INTO ... SELECT ...
 	 *
-	 * @var Select
+	 * @var SQLComposerSelect
 	 */
 	protected $select;
 
@@ -35,7 +33,7 @@ class Replace extends Base {
 	 * REPLACE INTO
 	 *
 	 * @param string|array $table
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public function replace_into($table) {
 		return $this->into($table);
@@ -45,7 +43,7 @@ class Replace extends Base {
 	 * REPLACE INTO
 	 *
 	 * @param string|array $table
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public function into($table) {
 		$this->add_table($table);
@@ -59,7 +57,7 @@ class Replace extends Base {
 	 * is an associative array, the array's keys will become the column names.
 	 *
 	 * @param string|array $column
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public function columns($column) {
 		$this->columns = array_merge($this->columns, (array)$column);
@@ -81,24 +79,24 @@ class Replace extends Base {
 	 *
 	 * @param array $values
 	 * @param string $mysqli_types
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public function values(array $values, $mysqli_types = "") {
-		if (isset($this->select)) throw new Exception("Cannot use 'REPLACE INTO ... VALUES' when a SELECT is already set!");
+		if (isset($this->select)) throw new SQLComposerException("Cannot use 'REPLACE INTO ... VALUES' when a SELECT is already set!");
 
 		return $this->_add_params('values', array( $values ), $mysqli_types);
 	}
 
 	/**
-	 * Return a Select object to be used in a query of the type REPLACE INTO ... SELECT ...
+	 * Return a SQLComposerSelect object to be used in a query of the type REPLACE INTO ... SELECT ...
 	 *
 	 * @param string|array $select
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function select($select = null, array $params = null, $mysqli_types = "") {
-		if (isset($this->params['values'])) throw new Exception("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
+		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
 			$this->select = SQLComposer::select();

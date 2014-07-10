@@ -1,15 +1,13 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Delete
+ * SQLComposerDelete
  *
  * A DELETE query
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-class Delete extends Where {
+class SQLComposerDelete extends SQLComposerWhere {
 
 	/**
 	 * DELETE FROM
@@ -57,7 +55,7 @@ class Delete extends Where {
 	 * Add a table to the DELETE FROM clause
 	 *
 	 * @param string|array $table
-	 * @return Delete
+	 * @return SQLComposerDelete
 	 */
 	public function delete_from($table) {
 		$this->delete_from = array_merge($this->delete_from, (array)$table);
@@ -70,7 +68,7 @@ class Delete extends Where {
 	 * @param string|array $table
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Delete
+	 * @return SQLComposerDelete
 	 */
 	public function using($table, array $params = null, $mysqli_types = "") {
 		return $this->add_table($table, $params, $mysqli_types);
@@ -80,7 +78,7 @@ class Delete extends Where {
 	 * ORDER BY
 	 *
 	 * @param string|array $order_by
-	 * @return Delete
+	 * @return SQLComposerDelete
 	 */
 	public function order_by($order_by) {
 		$this->order_by = array_merge($this->order_by, (array)$order_by);
@@ -91,7 +89,7 @@ class Delete extends Where {
 	 * LIMIT
 	 *
 	 * @param int $limit
-	 * @return Delete
+	 * @return SQLComposerDelete
 	 */
 	public function limit($limit) {
 		$this->limit = $limit;

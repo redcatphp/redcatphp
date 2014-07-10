@@ -1,15 +1,13 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Select
+ * SQLComposerSelect
  *
  * A SELECT query
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-class Select extends Where {
+class SQLComposerSelect extends SQLComposerWhere {
 
 	/**
 	 * SELECT DISTINCT ...
@@ -86,7 +84,7 @@ class Select extends Where {
 	 * @param string|array $select
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function select($select, array $params = null, $mysqli_types = "") {
 		$this->columns = array_merge($this->columns, (array)$select);
@@ -98,7 +96,7 @@ class Select extends Where {
 	 * DISTINCT
 	 *
 	 * @param bool $distinct
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function distinct($distinct = true) {
 		$this->distinct = (bool)$distinct;
@@ -111,7 +109,7 @@ class Select extends Where {
 	 * @param string|array $group_by
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function group_by($group_by, array $params = null, $mysqli_types = "") {
 		$this->group_by = array_merge($this->group_by, (array)$group_by);
@@ -123,7 +121,7 @@ class Select extends Where {
 	 * Add WITH ROLLUP after the GROUP BY
 	 *
 	 * @param bool $with_rollup
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function with_rollup($with_rollup = true) {
 		$this->with_rollup = $with_rollup;
@@ -136,7 +134,7 @@ class Select extends Where {
 	 * @param string|array $order_by
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function order_by($order_by, array $params = null, $mysqli_types = "") {
 		$this->order_by = array_merge($this->order_by, (array)$order_by);
@@ -148,7 +146,7 @@ class Select extends Where {
 	 * LIMIT clause
 	 *
 	 * @param int $limit
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function limit($limit) {
 		$this->limit = (int)$limit;
@@ -159,7 +157,7 @@ class Select extends Where {
 	 * OFFSET
 	 *
 	 * @param int $offset
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function offset($offset) {
 		$this->offset = (int)$offset;
@@ -172,7 +170,7 @@ class Select extends Where {
 	 * @param string|array $having
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function having($having, array $params = null, $mysqli_types = "") {
 		$this->having = array_merge($this->having, (array)$having);
@@ -187,10 +185,10 @@ class Select extends Where {
 	 * @param string $having
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function having_in($having, array $params, $mysqli_types = "") {
-		if (!is_string($having)) throw new Exception("Method having_in must be called with a string as first argument.");
+		if (!is_string($having)) throw new SQLComposerException("Method having_in must be called with a string as first argument.");
 		list($having, $params, $mysqli_types) = SQLComposer::in($having, $params, $mysqli_types);
 		return $this->having($having, $params, $mysqli_types);
 	}
@@ -203,7 +201,7 @@ class Select extends Where {
 	 * @param string $op
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function having_op($column, $op, array $params=null, $mysqli_types="") {
 		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params, $mysqli_types);
@@ -213,7 +211,7 @@ class Select extends Where {
 	/**
 	 * Open a paranthesis for sub-expressions using 'AND'
 	 *
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function open_having_and() {
 		$this->having[] = array( '(', 'AND' );
@@ -223,7 +221,7 @@ class Select extends Where {
 	/**
 	 * Open a paranthesis for sub-expressions using 'OR'
 	 *
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function open_having_or() {
 		$this->having[] = array( '(', 'OR' );
@@ -233,7 +231,7 @@ class Select extends Where {
 	/**
 	 * Open a paranthesis preceded by a 'NOT' for sub-expressions using 'AND'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_having_not_and() {
 		$this->having[] = array( '(', 'NOT' );
@@ -244,7 +242,7 @@ class Select extends Where {
 	/**
 	 * Open a paranthesis preceded by a 'NOT' for sub-expressions using 'OR'
 	 *
-	 * @return Where
+	 * @return SQLComposerWhere
 	 */
 	public function open_having_not_or() {
 		$this->having[] = array( '(', 'NOT' );
@@ -255,7 +253,7 @@ class Select extends Where {
 	/**
 	 * Close a paranthesis for sub-expressions
 	 *
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function close_having() {
 		$this->having[] = array( ')' );
@@ -273,7 +271,7 @@ class Select extends Where {
 	 * @return string
 	 */
 	protected function _render_having() {
-		return Base::_render_bool_expr($this->having);
+		return SQLComposerBase::_render_bool_expr($this->having);
 	}
 
 	/**

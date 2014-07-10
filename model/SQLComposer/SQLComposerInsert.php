@@ -1,15 +1,13 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Insert
+ * SQLComposerInsert
  *
  * An INSERT query
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-class Insert extends Base {
+class SQLComposerInsert extends SQLComposerBase {
 
 	/**
 	 * IGNORE
@@ -21,7 +19,7 @@ class Insert extends Base {
 	/**
 	 * To create an INSERT INTO ... SELECT ...
 	 *
-	 * @var Select
+	 * @var SQLComposerSelect
 	 */
 	protected $select;
 
@@ -55,7 +53,7 @@ class Insert extends Base {
 	 * INSERT INTO
 	 *
 	 * @param string $table
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function insert_into($table) {
 		return $this->into($table);
@@ -65,7 +63,7 @@ class Insert extends Base {
 	 * INSERT INTO
 	 *
 	 * @param string $table
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function into($table) {
 		$this->add_table($table);
@@ -76,7 +74,7 @@ class Insert extends Base {
 	 * IGNORE
 	 *
 	 * @param bool $ignore
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function ignore($ignore = true) {
 		$this->ignore = $ignore;
@@ -90,7 +88,7 @@ class Insert extends Base {
 	 * is an associative array, the array's keys will become the column names.
 	 *
 	 * @param string|array $column
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function columns($column) {
 		$this->columns = array_merge($this->columns, (array)$column);
@@ -112,24 +110,24 @@ class Insert extends Base {
 	 *
 	 * @param array $values
 	 * @param string $mysqli_types
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function values(array $values, $mysqli_types = "") {
-		if (isset($this->select)) throw new Exception("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
+		if (isset($this->select)) throw new SQLComposerException("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
 
 		return $this->_add_params('values', array( $values ), $mysqli_types);
 	}
 
 	/**
-	 * Return a Select object to be used in a query of the type INSERT INTO ... SELECT ...
+	 * Return a SQLComposerSelect object to be used in a query of the type INSERT INTO ... SELECT ...
 	 *
 	 * @param string|array $select
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public function select($select = null, array $params = null, $mysqli_types = "") {
-		if (isset($this->params['values'])) throw new Exception("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
+		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
 			$this->select = SQLComposer::select();
@@ -148,7 +146,7 @@ class Insert extends Base {
 	 * @param string|array $update
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public function on_duplicate($update, array $params = null, $mysqli_types = "") {
 		$this->on_duplicate = array_merge($this->on_duplicate, (array)$update);

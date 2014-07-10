@@ -1,15 +1,13 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Base
+ * SQLComposerBase
  *
  * The base class that all query classes should extend.
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-abstract class Base {
+abstract class SQLComposerBase {
 
 	/**
 	 * The query's columns
@@ -50,7 +48,7 @@ abstract class Base {
 	 * @param string|array $table
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Base
+	 * @return SQLComposerBase
 	 */
 	public function add_table($table, array $params = null, $mysqli_types = "") {
 		$this->tables = array_merge($this->tables, (array)$table);
@@ -65,7 +63,7 @@ abstract class Base {
 	 * @param string|array $table
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Base
+	 * @return SQLComposerBase
 	 */
 	public function join($table, array $params = null, $mysqli_types = "") {
 		return $this->add_table($table, $params, $mysqli_types);
@@ -78,7 +76,7 @@ abstract class Base {
 	 * @param string|array $table
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Base
+	 * @return SQLComposerBase
 	 */
 	public function from($table, array $params = null, $mysqli_types = "") {
 		return $this->add_table($table, $params, $mysqli_types);
@@ -95,7 +93,7 @@ abstract class Base {
 	 * @param string $clause
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Base
+	 * @return SQLComposerBase
 	 */
 	protected function _add_params($clause, array $params = null, $mysqli_types = "") {
 		if (isset($params)) {

@@ -1,15 +1,13 @@
-<?php namespace surikat\model\SQLComposer; 
-// require_once '.class.php';
-
+<?php namespace surikat\model\SQLComposer;
 /**
- * Update
+ * SQLComposerUpdate
  *
  * An UPDATE query
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-class Update extends Where {
+class SQLComposerUpdate extends SQLComposerWhere {
 
 	/**
 	 * SET
@@ -62,7 +60,7 @@ class Update extends Where {
 	 * UPDATE
 	 *
 	 * @param string|array $table
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public function update($table) {
 		$this->add_table($table);
@@ -89,7 +87,7 @@ class Update extends Where {
 	 * @param string|array $set
 	 * @param array $params
 	 * @param null $mysqli_types
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public function set($set, array $params = null, $mysqli_types = null) {
 		$set = (array)$set;
@@ -109,7 +107,7 @@ class Update extends Where {
 	 * ORDER BY
 	 *
 	 * @param string|array $order_by
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public function order_by($order_by) {
 		$this->order_by = array_merge($this->order_by, (array)$order_by);
@@ -120,7 +118,7 @@ class Update extends Where {
 	 * LIMIT
 	 *
 	 * @param int $limit
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public function limit($limit) {
 		$this->limit = $limit;
@@ -131,7 +129,7 @@ class Update extends Where {
 	 * IGNORE
 	 *
 	 * @param bool $ignore
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public function ignore($ignore = true) {
 		$this->ignore = $ignore;

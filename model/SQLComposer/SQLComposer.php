@@ -1,33 +1,23 @@
-<?php namespace surikat\model\SQLComposer;  
+<?php namespace surikat\model\SQLComposer;
 /**
- * 
+ * SQLComposer
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  * @version 0.1
  */
-
-// require_once "Base.class.php";
-// require_once "Where.class.php";
-
-// require_once "Select.class.php";
-// require_once "Insert.class.php";
-// require_once "Replace.class.php";
-// require_once "Update.class.php";
-// require_once "Delete.class.php";
-
 /**
- * 
+ * SQLComposer
  *
  * A factory class for queries.
  *
  * ex:
  *  SQLComposer::select(array("id", "name", "role"))->from("users");
  *
- * @package 
+ * @package SQLComposer
  * @author Shane Smith
  */
-abstract class API {
+abstract class SQLComposer {
 
 	/**
 	 * A useful list of valid SQL operator
@@ -52,14 +42,14 @@ abstract class API {
 	/**
 	 * Start a new SELECT statement
 	 *
-	 * @see Select::__construct()
+	 * @see SQLComposerSelect::__construct()
 	 * @param array $params
 	 * @param string|array $select
 	 * @param string $mysqli_types
-	 * @return Select
+	 * @return SQLComposerSelect
 	 */
 	public static function select($select = null, array $params = null, $mysqli_types = null) {
-		return new Select($select, $params, $mysqli_types);
+		return new SQLComposerSelect($select, $params, $mysqli_types);
 	}
 
 
@@ -70,9 +60,9 @@ abstract class API {
 	/**
 	 * Start a new INSERT statement
 	 *
-	 * @see Insert::__construct()
+	 * @see SQLComposerInsert::__construct()
 	 * @param string $table
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public static function insert($table=null) {
 		return self::insert_into($table);
@@ -81,12 +71,12 @@ abstract class API {
 	/**
 	 * Start a new INSERT statement
 	 *
-	 * @see Insert::__construct()
+	 * @see SQLComposerInsert::__construct()
 	 * @param string $table
-	 * @return Insert
+	 * @return SQLComposerInsert
 	 */
 	public static function insert_into($table = null) {
-		return new Insert($table);
+		return new SQLComposerInsert($table);
 	}
 
 
@@ -97,9 +87,9 @@ abstract class API {
 	/**
 	 * Start a new REPLACE statement
 	 *
-	 * @see Replace::__construct()
+	 * @see SQLComposerReplace::__construct()
 	 * @param string $table
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public static function replace($table = null) {
 		return self::replace_into($table);
@@ -108,12 +98,12 @@ abstract class API {
 	/**
 	 * Start a new REPLACE statement
 	 *
-	 * @see Replace::__construct()
+	 * @see SQLComposerReplace::__construct()
 	 * @param string $table
-	 * @return Replace
+	 * @return SQLComposerReplace
 	 */
 	public static function replace_into($table = null) {
-		return new Replace($table);
+		return new SQLComposerReplace($table);
 	}
 
 	/**************
@@ -123,12 +113,12 @@ abstract class API {
 	/**
 	 * Start a new UPDATE statement
 	 *
-	 * @see Update::__construct()
+	 * @see SQLComposerUpdate::__construct()
 	 * @param string|array $table
-	 * @return Update
+	 * @return SQLComposerUpdate
 	 */
 	public static function update($table=null) {
-		return new Update($table);
+		return new SQLComposerUpdate($table);
 	}
 
 
@@ -143,12 +133,12 @@ abstract class API {
 	/**
 	 * Start a new DELETE statement
 	 *
-	 * @see Delete::__construct()
+	 * @see SQLComposerDelete::__construct()
 	 * @param string|array $table
-	 * @return Delete
+	 * @return SQLComposerDelete
 	 */
 	public static function delete_from($table=null) {
-		return new Delete($table);
+		return new SQLComposerDelete($table);
 	}
 
 
@@ -184,7 +174,7 @@ abstract class API {
 		$params = array();
 
 		foreach ($given_params as $p) {
-			if ($p instanceof Expr) {
+			if ($p instanceof SQLComposerExpr) {
 				$placeholders[] = $p->value;
 				if (!empty($p->params)) {
 					$params = array_merge($params, $p->params);
@@ -244,7 +234,7 @@ abstract class API {
 			case 'between':
 				$sql = "{$column} between ";
 				$p = array_shift($params);
-				if ($p instanceof Expr) {
+				if ($p instanceof SQLComposerExpr) {
 					$sql .= $p->value;
 				} else {
 					$sql .= "?";
@@ -252,7 +242,7 @@ abstract class API {
 				}
 				$sql .= " and ";
 				$p = array_shift($params);
-				if ($p instanceof Expr) {
+				if ($p instanceof SQLComposerExpr) {
 					$sql .= $p->value;
 				} else {
 					$sql .= "?";
@@ -260,27 +250,27 @@ abstract class API {
 				}
 				return array($sql, $params, $mysqli_types);
 			default:
-				throw new Exception("Invalid operator: {$op}");
+				throw new SQLComposerException("Invalid operator: {$op}");
 		}
 	}
 
 	/**
-	 * A factory for Expr
+	 * A factory for SQLComposerExpr
 	 *
 	 * @param string $val
 	 * @param array $params
 	 * @param string $mysqli_types
-	 * @return Expr
+	 * @return SQLComposerExpr
 	 */
 	public static function expr($val, array $params=array(), $mysqli_types="") {
-		return new Expr($val, $params, $mysqli_types);
+		return new SQLComposerExpr($val, $params, $mysqli_types);
 	}
 }
 
 /**
  * A container to denote an expression to be directly embedded
  */
-class Expr {
+class SQLComposerExpr {
 	public $value, $params, $mysqli_types;
 	public function __construct($val, array $params=array(), $mysqli_types="") {
 		$this->value = $val;
@@ -288,12 +278,3 @@ class Expr {
 		$this->mysqli_types = $mysqli_types;
 	}
 }
-
-/**
- * Exception
- *
- * The main exception to be used within these classes
- */
-class Exception extends \Exception {}
-
-?>
