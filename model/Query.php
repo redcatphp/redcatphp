@@ -1,33 +1,126 @@
 <?php namespace surikat\model;
 use ArrayAccess;
 use surikat\control;
+use surikat\control\str;
 use surikat\model;
 use surikat\model\SQLComposer\SQLComposer;
 class Query /* implements ArrayAccess */{
 	const FLAG_ACCENT_INSENSITIVE = 2;
 	const FLAG_CASE_INSENSITIVE = 4;
-	protected $writer;
 	protected $table;
-	protected $compo = array();
-	protected $params;
-	function __construct($table,$writer=null){
+	protected $writer;
+	protected $composer;
+	function __construct($table,$writer=null,$composer='select'){
 		$this->table = $table;
 		if(!$writer)
 			$writer = R::getWriter();
 		$this->writer = $writer;
+		if(is_string($composer))
+			$composer = SQLComposer::$composer();
+		$this->composer = $composer;
 	}
-	/*
-	function __call($f,$args){
-		$sql = array_shift($args);
-		foreach($args as $a){
-			if(is_array($a)||$a instanceof ArrayAccess){
-				foreach($a as $k=>$v)
-					$this->params[$k] = $v;
+	private static function nestBindingLoop($sql,$binds){
+		//allow nested array params
+		//+ correct inconsistence of PDO placeholders binding, not only 1-indexed see: http://php.net/manual/en/pdostatement.bindparam.php
+		/*ex:
+		echo '<pre>';
+		set_time_limit(1);
+		$test = array(
+			["SELECT * FROM table WHERE (type, type_id) IN ?",array([['article', 1],['comment', 11]] )],
+			["SELECT * FROM table WHERE (type, type_id) IN :type",array('type'=>[['article', 1],['comment', 11]] )],
+			["SELECT * FROM table WHERE (type, type_id) IN ?",array([['foo'=>'article', 1],['comment', 'bar'=>11]] )],
+			["SELECT * FROM table WHERE (type, type_id) IN :type",array('type'=>[['foo'=>'article', 1],['comment', 'bar'=>11]] )],
+			["SELECT * FROM table WHERE name IN :name",array('name'=>['foo'=>'article', 1,'comment', 'bar'=>11] )],
+			["SELECT * FROM table WHERE name IN :name OR altName IN :name",array('name'=>['foo'=>'article', 1,'comment', 'bar'=>11] )],
+		);
+		foreach($test as $a)
+			print(print_r(Query::nestBinding($a[0],$a[1]),true)."\r\n");
+		echo '</pre>';
+		*/
+		$nBinds = array();
+		$ln = 0;
+		foreach($binds as $k=>$v){
+			if(is_array($v)){
+				if(is_integer($k))
+					$find = '?';
+				else
+					$find = ':'.ltrim($k,':');
+				$binder = array();
+				foreach($v as $_k=>$_v){
+					if(is_integer($_k))
+						$binder[] = '?';
+					else
+						$binder[] = ':slot_'.$k.'_'.ltrim($_k,':');
+				}
+				$av = array_values($v);
+				$i = 0;
+				do{
+					if($ln)
+						$p = strpos($sql,$find,$ln);
+					else
+						$p = str::posnth($sql,$find,is_integer($k)?$k:0,$ln);
+					$nSql = '';
+					if($p!==false)
+						$nSql .= substr($sql,0,$p);
+					$binderL = $binder;
+					if($i)
+						foreach($binderL as &$v)
+							if($v!='?')
+								$v .= $i;
+					$nSql .= '('.implode(',',$binderL).')';
+					$ln = strlen($nSql);
+					$nSql .= substr($sql,$p+strlen($find));
+					$sql = $nSql;
+					foreach($binderL as $y=>$_k){
+						if($_k=='?')
+							$nBinds[] = $av[$y];
+						else
+							$nBinds[$_k] = $av[$y];
+					}
+					$i++;
+				}
+				while(!is_integer($k)&&strpos($sql,$find)!==false);
 			}
-			else
-				$this->params[] = $a;
+			else{
+				if(is_integer($k))
+					$nBinds[] = $v;
+				else{
+					$key = ':'.ltrim($k,':');
+					$nBinds[$key] = $v;
+				}
+			}
+		}
+		return array($sql,$nBinds);
+	}
+	static function nestBinding($sql,$binds){
+		do{
+			list($sql,$binds) = self::nestBindingLoop($sql,$binds);
+			$containA = false;
+			foreach($binds as $v)
+				if($containA=is_array($v))
+					break;
+			//echo'<pre>';print_r(array($sql,$binds));
+		}
+		while($containA);
+		return array($sql,$binds);
+	}
+	
+	function __call($f,$args){
+		if(method_exists($this->composer,$f)){
+			$sql = array_shift($args);
+			$binds = array_shift($args);
+			if($sql instanceof SQLComposerBase){
+				if(is_array($binds))
+					$binds = array_merge($sql->getParams(),$binds);
+				else
+					$binds = $sql->getParams();
+				$sql = $sql->getQuery();
+			}
+			$args = self::nestBinding($sql,$binds);
+			return call_user_func_array(array($this->composer,$f),$args);
 		}
 	}
+	/*
 	function offsetSet($k,$v){
 		if($k===null)
 			$this->params[] = $v;
@@ -49,7 +142,7 @@ class Query /* implements ArrayAccess */{
 	function quote($v){
 		if($v=='*')
 			return $v;
-		$q = $this->writerQuote;
+		$q = $this->writerQuoteCharacter;
 		return $q.trim($v,$q).$q;
 	}
 	function formatColumnName($v){
@@ -172,7 +265,7 @@ class Query /* implements ArrayAccess */{
 		$rel = array($this->table,$share);
 		sort($rel);
 		$rel = implode('_',$rel);
-		$q = $this->writerQuote;
+		$q = $this->writerQuoteCharacter;
 		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}
 				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 	}
@@ -183,10 +276,8 @@ class Query /* implements ArrayAccess */{
 
 	//magic decouplers accessors and setters
 	function __get($k){
-		if(strpos($k,'writer')===0&&ctype_upper(substr($k,6,1))){
-			$m =  'get'.substr($k,6);
-			return $this->writer->$m();
-		}
+		if(strpos($k,'writer')===0&&ctype_upper(substr($k,6,1))&&($key=lcfirst(substr($k,6))))
+			return $this->writer->$key;
 	}
 	function __set($k,$v){
 		
