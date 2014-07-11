@@ -422,8 +422,7 @@ class str{
 	}
 	
 
-	static function posnth($haystack,$needle,$n){
-		$offset = 0;
+	static function posnth($haystack,$needle,$n,$offset=0){
 		$l = strlen($needle);
 		for($i=0;$i<=$n;$i++){
 			$indx = strpos($haystack, $needle, $offset);
