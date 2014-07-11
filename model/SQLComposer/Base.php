@@ -12,6 +12,8 @@ abstract class SQLComposerBase {
 	function __unset($k){ //reset var
 		if(property_exists($this,$k)){
 			$v = get_class_vars(get_class($this));
+			if(isset($this->params[$k]))
+				unset($this->params[$k]);
 			$this->$k = $v[$k];
 		}
 	}
