@@ -420,4 +420,20 @@ class str{
 	static function cleanXhtml($str){
 		return self::html_convert_entities($str);
 	}
+	
+
+	static function posnth($haystack,$needle,$n){
+		$offset = 0;
+		$l = strlen($needle);
+		for($i=0;$i<=$n;$i++){
+			$indx = strpos($haystack, $needle, $offset);
+			if($i==$n||$indx===false)
+				return $indx;
+			else
+				$offset = $indx+$l;
+		}
+		return false;
+	}
+
+
 }
