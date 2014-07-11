@@ -69,6 +69,7 @@ class Query4D extends Query {
 	}
 	function count(){
 		$queryCount = clone $this;
+		$queryCount->unSelect();
 		$queryCount->autoSelect();
 		$queryCount->select($this->table.'.id');
 		$this->select('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count');

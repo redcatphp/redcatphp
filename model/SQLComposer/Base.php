@@ -9,6 +9,13 @@
  */
 abstract class SQLComposerBase {
 
+	function __unset($k){ //reset var
+		if(property_exists($this,$k)){
+			$v = get_class_vars(get_class($this));
+			$this->$k = $v[$k];
+		}
+	}
+	
 	/**
 	 * The query's columns
 	 *

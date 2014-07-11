@@ -31,36 +31,33 @@ class Query /* implements ArrayAccess */{
         $this->composer = clone $this->composer;
     }
 	function __call($f,$args){
-		switch($f){
-			case 'getAll':
-			case 'getRow':
-			case 'getCol':
-			case 'getCell':
-			case 'getAssoc':
-			case 'getAssocRow':
-				if(R::getWriter()->tableExists($this->table)){
-					$params = $this->composer->getParams();
-					if(is_array($paramsX=array_shift($args)))
-						$params = array_merge($params,$args);
-					return R::$f($this->composer->getQuery(),$params);
+		if(strpos($f,'un')===0&&ctype_upper(substr($f,3,1))){
+			$k = substr($f,2);
+			unset($this->composer->$k);
+		}
+		elseif(strpos($f,'get')===0&&ctype_upper(substr($f,4,1))){
+			if(R::getWriter()->tableExists($this->table)){
+				$params = $this->composer->getParams();
+				if(is_array($paramsX=array_shift($args)))
+					$params = array_merge($params,$args);
+				return R::$f($this->composer->getQuery(),$params);
+			}
+		}
+		else{
+			if(method_exists($this->composer,$f)){
+				$sql = array_shift($args);
+				$binds = array_shift($args);
+				if($sql instanceof SQLComposerBase){
+					if(is_array($binds))
+						$binds = array_merge($sql->getParams(),$binds);
+					else
+						$binds = $sql->getParams();
+					$sql = $sql->getQuery();
 				}
-			break;
-			default:
-				if(method_exists($this->composer,$f)){
-					$sql = array_shift($args);
-					$binds = array_shift($args);
-					if($sql instanceof SQLComposerBase){
-						if(is_array($binds))
-							$binds = array_merge($sql->getParams(),$binds);
-						else
-							$binds = $sql->getParams();
-						$sql = $sql->getQuery();
-					}
-					$args = self::nestBinding($sql,$binds);
-					call_user_func_array(array($this->composer,$f),$args);
-					return $this;
-				}
-			break;
+				$args = self::nestBinding($sql,$binds);
+				call_user_func_array(array($this->composer,$f),$args);
+				return $this;
+			}
 		}
 	}
 	function joinOn($on){
