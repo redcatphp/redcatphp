@@ -52,11 +52,11 @@ class TML_Loop extends TML{
 		else
 			return '$'.$var;
 	}
-	private function methodM($params){
-		if(isset($this->cacheSync)&&!trim($this->cacheSync))
-			$this->cacheSync = $params['table'].'.db';
-		return '(array)model::'.$params['method'].'('.self::exportVars($params['table'],@$params['compo'],explode(',',@$params['compoParams'])).')';
-	}
+	//private function methodModel($params){
+		//if(isset($this->cacheSync)&&!trim($this->cacheSync))
+			//$this->cacheSync = $params['table'].'.db';
+		//return '(array)model::'.$params['method'].'('.self::exportVars($params['table'],@$params['compo'],explode(',',@$params['compoParams'])).')';
+	//}
 	private function methodFile($file){
 		$method = 'methodFile'.(substr($file,-1)==='/'?'Dir':ucfirst(strtolower(pathinfo($file,PATHINFO_EXTENSION))));
 		return $this->$method($file);

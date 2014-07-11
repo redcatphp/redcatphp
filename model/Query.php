@@ -18,25 +18,9 @@ class Query /* implements ArrayAccess */{
 		if(is_string($composer))
 			$composer = SQLComposer::$composer();
 		$this->composer = $composer;
+		$this->from($table);
 	}
 	private static function nestBindingLoop($sql,$binds){
-		//allow nested array params
-		//+ correct inconsistence of PDO placeholders binding, not only 1-indexed see: http://php.net/manual/en/pdostatement.bindparam.php
-		/*ex:
-		echo '<pre>';
-		set_time_limit(1);
-		$test = array(
-			["SELECT * FROM table WHERE (type, type_id) IN ?",array([['article', 1],['comment', 11]] )],
-			["SELECT * FROM table WHERE (type, type_id) IN :type",array('type'=>[['article', 1],['comment', 11]] )],
-			["SELECT * FROM table WHERE (type, type_id) IN ?",array([['foo'=>'article', 1],['comment', 'bar'=>11]] )],
-			["SELECT * FROM table WHERE (type, type_id) IN :type",array('type'=>[['foo'=>'article', 1],['comment', 'bar'=>11]] )],
-			["SELECT * FROM table WHERE name IN :name",array('name'=>['foo'=>'article', 1,'comment', 'bar'=>11] )],
-			["SELECT * FROM table WHERE name IN :name OR altName IN :name",array('name'=>['foo'=>'article', 1,'comment', 'bar'=>11] )],
-		);
-		foreach($test as $a)
-			print(print_r(Query::nestBinding($a[0],$a[1]),true)."\r\n");
-		echo '</pre>';
-		*/
 		$nBinds = array();
 		$ln = 0;
 		foreach($binds as $k=>$v){
@@ -46,7 +30,7 @@ class Query /* implements ArrayAccess */{
 				else
 					$find = ':'.ltrim($k,':');
 				$binder = array();
-				foreach($v as $_k=>$_v){
+				foreach(array_keys($v) as $_k){
 					if(is_integer($_k))
 						$binder[] = '?';
 					else
@@ -94,128 +78,87 @@ class Query /* implements ArrayAccess */{
 	}
 	static function nestBinding($sql,$binds){
 		do{
-			list($sql,$binds) = self::nestBindingLoop($sql,$binds);
+			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
 			$containA = false;
 			foreach($binds as $v)
 				if($containA=is_array($v))
 					break;
-			//echo'<pre>';print_r(array($sql,$binds));
 		}
 		while($containA);
 		return array($sql,$binds);
 	}
 	
 	function __call($f,$args){
-		if(method_exists($this->composer,$f)){
-			$sql = array_shift($args);
-			$binds = array_shift($args);
-			if($sql instanceof SQLComposerBase){
-				if(is_array($binds))
-					$binds = array_merge($sql->getParams(),$binds);
-				else
-					$binds = $sql->getParams();
-				$sql = $sql->getQuery();
-			}
-			$args = self::nestBinding($sql,$binds);
-			return call_user_func_array(array($this->composer,$f),$args);
+		switch($f){
+			case 'getAll':
+			case 'getRow':
+			case 'getCol':
+			case 'getCell':
+			case 'getAssoc':
+			case 'getAssocRow':
+				if(R::getWriter()->tableExists($this->table))
+					return R::$f($this->composer->getQuery(),$this->composer->getParams());
+			break;
+			default:
+				if(method_exists($this->composer,$f)){
+					$sql = array_shift($args);
+					$binds = array_shift($args);
+					if($sql instanceof SQLComposerBase){
+						if(is_array($binds))
+							$binds = array_merge($sql->getParams(),$binds);
+						else
+							$binds = $sql->getParams();
+						$sql = $sql->getQuery();
+					}
+					$args = self::nestBinding($sql,$binds);
+					return call_user_func_array(array($this->composer,$f),$args);
+				}
+			break;
 		}
 	}
-	/*
-	function offsetSet($k,$v){
-		if($k===null)
-			$this->params[] = $v;
+	function joinOn($on){
+		$this->join(implode((array)$this->joinOnSQL($on)));
+	}
+	function joinWhere($w){
+		if(empty($w))
+			return;
+		$hc = $this->writerSumCaster;
+		$hs = implode(' AND ',(array)$w);
+		if($hc)
+			$hs = '('.$hs.')'.$hc;
+			$this->having('SUM('.$hs.')>0');
+	}
+	function select(){
+		$args = func_get_args();
+		if(is_array($args[0]))
+			foreach($args[0] as &$s)
+				$s = $this->formatColumnName($s);
 		else
-			$this->params[$k] = $v;
+			$args[0] = $this->formatColumnName($args[0]);
+		$this->__call(__FUNCTION__,$args);
 	}
-	function offsetUnset($k){
-		if($this->offsetExists($k))
-			unset($this->params[$k]);
+	function from(){
+		$args = func_get_args();
+		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false)
+			$args[0] = $this->quote($args[0]);
+		$this->__call(__FUNCTION__,$args);
 	}
-	function offsetGet($k){
-		if($this->offsetExists($k))
-			return $this->params[$k];
+	function where($w){
+		$args = func_get_args();
+		if(is_array($args[0]))
+			$args[0] = implode(' AND ',$args[0]);
+		$this->__call(__FUNCTION__,$args);
 	}
-	function offsetExists($k){
-		return isset($this->params[$k]);
-	}
-	*/
 	function quote($v){
 		if($v=='*')
 			return $v;
-		$q = $this->writerQuoteCharacter;
-		return $q.trim($v,$q).$q;
+		return $this->writerQuoteCharacter.trim($v,$this->writerQuoteCharacter).$this->writerQuoteCharacter;
 	}
 	function formatColumnName($v){
 		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
 			$v = $this->quote($this->table).'.'.$this->quote($v);
 		return $v;
 	}
-	function buildQuery($compo=array(),$method='select'){
-		$select = array();
-		$methods = array();
-		if(is_string($compo))
-			$compo = explode(',',$compo);
-		foreach((array)$compo as $k=>$v){
-			if(empty($v))
-				continue;
-			if(is_integer($k)||$k=='select'){
-				if(is_array($v))
-					foreach($v as $sel)
-						$select[] = $this->formatColumnName($sel);
-				else
-					$select[] = $this->formatColumnName($v);
-			}
-			else
-				$methods[$k] = $v;
-		}
-		if(isset($methods['joinWhere'])){
-			if(!empty($methods['joinWhere'])){
-				$hc = $this->writerSumCaster;
-				$hs = implode(' AND ',(array)$methods['joinWhere']);
-				if($hc)
-					$hs = '('.$hs.')'.$hc;
-					$methods['having'][] = 'SUM('.$hs.')>0';
-				unset($methods['joinWhere']);
-			}
-		}
-		if(isset($methods['joinOn'])){
-			$methods['join'] = (isset($methods['join'])?implode((array)$methods['join']):'').implode((array)$this->joinOn($methods['joinOn']));
-			unset($methods['joinOn']);
-		}
-		$composer = stripos($method,'get')==0?'select':(($pos=strcspn($string,'ABCDEFGHJIJKLMNOPQRSTUVWXYZ'))!==false?substr($method,$pos):$method);
-		if($composer=='select'){
-			foreach(array_keys($select) as $i)
-				$select[$i] = $this->formatColumnName($select[$i]);
-		}
-		if(isset($methods['from'])){
-			$from = $methods['from'];
-			unset($methods['from']);
-		}
-		else
-			$from = $this->table;
-		if(strpos($from,'(')===false&&strpos($from,')')===false)
-			$from = $this->quote($from);
-		if(control::devHas(control::dev_model_compo))
-			print('<pre>'.htmlentities(print_r($compo,true)).'</pre>');
-		$sqlc = SQLComposer::$composer($select)->from($from);
-		foreach($methods as $k=>$v){
-			switch($k){
-				case 'where':
-					$v = implode(' AND ',(array)$v);
-				break;
-			}
-			$sqlc->$k($v);
-		}
-		return $sqlc->getQuery();
-	}
-	function query($method,$compo=array(),$params=array()){
-		$query = $this->buildQuery($compo,$method);
-		if(control::devHas(control::dev_model_sql))
-			print('<pre>'.str_replace(',',",\r\n\t",htmlentities($query))."\r\n\t".print_r($params,true).'</pre>');
-		if(R::getWriter()->tableExists($this->table))
-			return R::$method($query,(array)$params);
-	}
-
 	function cellId($label,$addCompo=null,$addParams=null){
 		$i = is_integer($label);
 		$compo = array('select'=>$i?'label':'id','where'=>($i?'id':'label').'=?');
@@ -241,12 +184,6 @@ class Query /* implements ArrayAccess */{
 		}
 		return $col;
 	}
-	function row($compo=array(),$params=array()){
-		return $this->query('getRow',$compo,$params);
-	}
-	function table($compo=array(),$params=array()){
-		return $this->query('getAll',$compo,$params);
-	}
 	
 	protected $listOfColumns = array();
 	function listOfColumns($t,$details=null,$reload=null){
@@ -255,11 +192,11 @@ class Query /* implements ArrayAccess */{
 		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
 	}
 	
-	function joinOn($share){
+	function joinOnSQL($share){
 		if(is_array($share)){
 			$r = array();
 			foreach($share as $k=>$v)
-				$r[$k] = $this->joinOn($this->table,$v);
+				$r[$k] = $this->joinOnSQL($this->table,$v);
 			return $r;
 		}
 		$rel = array($this->table,$share);

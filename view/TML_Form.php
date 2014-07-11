@@ -7,7 +7,7 @@ class TML_Form extends TML {
 		if($this->vFile->present)
 			$model = $this->presentProperty($model);
 		$model = trim($model);
-		$c = model::getModelClass($model);
+		$c = R::getModelClass($model);
 		//var_dump($c);exit;
 		//$this->find('indput[name="titre"]')->attr('minlenght',$c::getColumnDef('titre','rule','minlenght'))
 	}
@@ -126,7 +126,7 @@ class TML_Form extends TML {
 				}
 			}
 		}
-		$code .= 'return model::store($_POST);};if(!empty($_POST))$form_'.$type.'=$'.$fid.'();?>';
+		$code .= 'return R::create($_POST);};if(!empty($_POST))$form_'.$type.'=$'.$fid.'();?>';
 		array_unshift($this->childNodes,$code);
 	}
 	*/

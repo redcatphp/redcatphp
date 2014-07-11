@@ -132,9 +132,5 @@ class R extends RedBeanPHP\Facade{
 		$c = self::getClassModel($t);
 		return $c::getColumnDef($col,$key);
 	}
-	static function __callStatic($func,$args){
-		$q = new Query4D(array_shift($args));
-		return call_user_func_array(array($q,$func),$args);
-	}
 }
 R::initialize();
