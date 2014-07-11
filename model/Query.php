@@ -20,6 +20,189 @@ class Query /* implements ArrayAccess */{
 		$this->composer = $composer;
 		$this->from($table);
 	}
+	function __get($k){
+		if(strpos($k,'writer')===0&&ctype_upper(substr($k,6,1))&&($key=lcfirst(substr($k,6))))
+			return $this->writer->$key;
+	}
+	function __set($k,$v){
+		
+	}
+	function __clone(){
+        $this->composer = clone $this->composer;
+    }
+	function __call($f,$args){
+		switch($f){
+			case 'getAll':
+			case 'getRow':
+			case 'getCol':
+			case 'getCell':
+			case 'getAssoc':
+			case 'getAssocRow':
+				if(R::getWriter()->tableExists($this->table)){
+					$params = $this->composer->getParams();
+					if(is_array($paramsX=array_shift($args)))
+						$params = array_merge($params,$args);
+					return R::$f($this->composer->getQuery(),$params);
+				}
+			break;
+			default:
+				if(method_exists($this->composer,$f)){
+					$sql = array_shift($args);
+					$binds = array_shift($args);
+					if($sql instanceof SQLComposerBase){
+						if(is_array($binds))
+							$binds = array_merge($sql->getParams(),$binds);
+						else
+							$binds = $sql->getParams();
+						$sql = $sql->getQuery();
+					}
+					$args = self::nestBinding($sql,$binds);
+					call_user_func_array(array($this->composer,$f),$args);
+					return $this;
+				}
+			break;
+		}
+	}
+	function joinOn($on){
+		$this->join(implode((array)$this->joinOnSQL($on)));
+	}
+	function joinWhere($w){
+		if(empty($w))
+			return;
+		$hc = $this->writerSumCaster;
+		$hs = implode(' AND ',(array)$w);
+		if($hc)
+			$hs = '('.$hs.')'.$hc;
+			$this->having('SUM('.$hs.')>0');
+	}
+	function select(){
+		$args = func_get_args();
+		if(is_array($args[0]))
+			foreach($args[0] as &$s)
+				$s = $this->formatColumnName($s);
+		else
+			$args[0] = $this->formatColumnName($args[0]);
+		$this->__call(__FUNCTION__,$args);
+	}
+	function from(){
+		$args = func_get_args();
+		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false)
+			$args[0] = $this->quote($args[0]);
+		$this->__call(__FUNCTION__,$args);
+	}
+	function where($w){
+		$args = func_get_args();
+		if(is_array($args[0]))
+			$args[0] = implode(' AND ',$args[0]);
+		$this->__call(__FUNCTION__,$args);
+	}
+	function quote($v){
+		if($v=='*')
+			return $v;
+		return $this->writerQuoteCharacter.trim($v,$this->writerQuoteCharacter).$this->writerQuoteCharacter;
+	}
+	function formatColumnName($v){
+		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
+			$v = $this->quote($this->table).'.'.$this->quote($v);
+		return $v;
+	}	
+	protected $listOfColumns = array();
+	function listOfColumns($t,$details=null,$reload=null){
+		if(!isset($this->listOfColumns[$t])||$reload)
+			$this->listOfColumns[$t] = R::inspect($t);
+		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
+	}
+	function joinOnSQL($share){
+		if(is_array($share)){
+			$r = array();
+			foreach($share as $k=>$v)
+				$r[$k] = $this->joinOnSQL($this->table,$v);
+			return $r;
+		}
+		$rel = array($this->table,$share);
+		sort($rel);
+		$rel = implode('_',$rel);
+		$q = $this->writerQuoteCharacter;
+		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}
+				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
+	}
+	function count($compo=array(),$params=null){
+		return (int)$this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$this->buildQuery($compo).') as TMP_count'),(array)$params);
+	}
+	
+	//public helpers api
+	static function multiSlots(){
+		$args = func_get_args();
+		$query = array_shift($args);
+		$x = explode('?',$query);
+		$q = array_shift($x);
+		for($i=0;$i<count($x);$i++){
+			foreach($args[$i] as $k=>$v)
+				$q .= (is_integer($k)?'?':':'.ltrim($k,':')).',';
+			$q = rtrim($q,',').$x[$i];
+		}
+		return $q;
+	}
+	static function explodeAgg($data){
+		$_gs = chr(0x1D);
+		$row = array();
+		foreach(array_keys($data) as $col){
+			$multi = stripos($col,'>');
+			$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
+			if($sep){
+				$x = explode($sep,$col);
+				$tb = &$x[0];
+				$_col = &$x[1];
+				if(!isset($row[$tb]))
+					$row[$tb] = array();
+				if(empty($data[$col])){
+					if(!isset($row[$tb]))
+						$row[$tb] = array();
+				}
+				elseif($multi){
+					$_idx = explode($_gs,$data[$tb.$sep.'id']);
+					$_x = explode($_gs,$data[$col]);
+					foreach($_idx as $_i=>$_id)
+						if(!empty($_id))
+							$row[$tb][$_id][$_col] = isset($_x[$_i])?$_x[$_i]:null;
+				}
+				else
+					$row[$tb][$_col] = $data[$col];
+			}
+			else
+				$row[$col] = $data[$col];
+		}
+		return $row;
+	}
+	static function explodeAggTable($data){
+		$table = array();
+		if(is_array($data)||$data instanceof \ArrayAccess)
+			foreach($data as $i=>$d){
+				$id = isset($d['id'])?$d['id']:$i;
+				$table[$id] = self::explodeAgg($d);
+			}
+		return $table;
+	}	
+	static function inSelectTable($in,$select,$table=null){
+		foreach(array_keys($select) as $k)
+			$select[$k] = trim($select[$k],'"');
+		if(in_array($in,$select))
+			return true;
+		if(in_array($table.'.'.$in,$select))
+			return true;
+		return false;
+	}
+	static function nestBinding($sql,$binds){
+		do{
+			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
+			$containA = false;
+			foreach($binds as $v)
+				if($containA=is_array($v))
+					break;
+		}
+		while($containA);
+		return array($sql,$binds);
+	}
 	private static function nestBindingLoop($sql,$binds){
 		$nBinds = array();
 		$ln = 0;
@@ -75,211 +258,5 @@ class Query /* implements ArrayAccess */{
 			}
 		}
 		return array($sql,$nBinds);
-	}
-	static function nestBinding($sql,$binds){
-		do{
-			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
-			$containA = false;
-			foreach($binds as $v)
-				if($containA=is_array($v))
-					break;
-		}
-		while($containA);
-		return array($sql,$binds);
-	}
-	
-	function __call($f,$args){
-		switch($f){
-			case 'getAll':
-			case 'getRow':
-			case 'getCol':
-			case 'getCell':
-			case 'getAssoc':
-			case 'getAssocRow':
-				if(R::getWriter()->tableExists($this->table))
-					return R::$f($this->composer->getQuery(),$this->composer->getParams());
-			break;
-			default:
-				if(method_exists($this->composer,$f)){
-					$sql = array_shift($args);
-					$binds = array_shift($args);
-					if($sql instanceof SQLComposerBase){
-						if(is_array($binds))
-							$binds = array_merge($sql->getParams(),$binds);
-						else
-							$binds = $sql->getParams();
-						$sql = $sql->getQuery();
-					}
-					$args = self::nestBinding($sql,$binds);
-					return call_user_func_array(array($this->composer,$f),$args);
-				}
-			break;
-		}
-	}
-	function joinOn($on){
-		$this->join(implode((array)$this->joinOnSQL($on)));
-	}
-	function joinWhere($w){
-		if(empty($w))
-			return;
-		$hc = $this->writerSumCaster;
-		$hs = implode(' AND ',(array)$w);
-		if($hc)
-			$hs = '('.$hs.')'.$hc;
-			$this->having('SUM('.$hs.')>0');
-	}
-	function select(){
-		$args = func_get_args();
-		if(is_array($args[0]))
-			foreach($args[0] as &$s)
-				$s = $this->formatColumnName($s);
-		else
-			$args[0] = $this->formatColumnName($args[0]);
-		$this->__call(__FUNCTION__,$args);
-	}
-	function from(){
-		$args = func_get_args();
-		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false)
-			$args[0] = $this->quote($args[0]);
-		$this->__call(__FUNCTION__,$args);
-	}
-	function where($w){
-		$args = func_get_args();
-		if(is_array($args[0]))
-			$args[0] = implode(' AND ',$args[0]);
-		$this->__call(__FUNCTION__,$args);
-	}
-	function quote($v){
-		if($v=='*')
-			return $v;
-		return $this->writerQuoteCharacter.trim($v,$this->writerQuoteCharacter).$this->writerQuoteCharacter;
-	}
-	function formatColumnName($v){
-		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
-			$v = $this->quote($this->table).'.'.$this->quote($v);
-		return $v;
-	}
-	function cellId($label,$addCompo=null,$addParams=null){
-		$i = is_integer($label);
-		$compo = array('select'=>$i?'label':'id','where'=>($i?'id':'label').'=?');
-		if(is_array($addCompo))
-			$compo = array_merge($compo,$addCompo);
-		$params = array($label);
-		if(is_array($addParams))
-			$params = array_merge($params,$addParams);
-		return $this->cell($compo,$params);
-	}
-	function cell($compo=array(),$params=array()){
-		return $this->query('getCell',$compo,$params);
-	}
-	function column($compo=array(),$params=array()){
-		return $this->query('getCol',$compo,$params);
-	}
-	function col($compo=array(),$params=array()){
-		$col = array();
-		foreach($this->query('getAll',$compo,$params) as $row){
-			$id = $row['id'];
-			unset($row['id']);
-			$col[$id] = array_shift($row);
-		}
-		return $col;
-	}
-	
-	protected $listOfColumns = array();
-	function listOfColumns($t,$details=null,$reload=null){
-		if(!isset($this->listOfColumns[$t])||$reload)
-			$this->listOfColumns[$t] = R::inspect($t);
-		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
-	}
-	
-	function joinOnSQL($share){
-		if(is_array($share)){
-			$r = array();
-			foreach($share as $k=>$v)
-				$r[$k] = $this->joinOnSQL($this->table,$v);
-			return $r;
-		}
-		$rel = array($this->table,$share);
-		sort($rel);
-		$rel = implode('_',$rel);
-		$q = $this->writerQuoteCharacter;
-		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}
-				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
-	}
-	function count($compo=array(),$params=null){
-		return (int)$this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$this->buildQuery($compo).') as TMP_count'),(array)$params);
-	}
-
-
-	//magic decouplers accessors and setters
-	function __get($k){
-		if(strpos($k,'writer')===0&&ctype_upper(substr($k,6,1))&&($key=lcfirst(substr($k,6))))
-			return $this->writer->$key;
-	}
-	function __set($k,$v){
-		
-	}
-	
-	//public helpers api
-	static function multiSlots(){
-		$args = func_get_args();
-		$query = array_shift($args);
-		$x = explode('?',$query);
-		$q = array_shift($x);
-		for($i=0;$i<count($x);$i++){
-			foreach($args[$i] as $k=>$v)
-				$q .= (is_integer($k)?'?':':'.ltrim($k,':')).',';
-			$q = rtrim($q,',').$x[$i];
-		}
-		return $q;
-	}
-	static function explodeGroupConcat($data){
-		$_gs = chr(0x1D);
-		$row = array();
-		foreach(array_keys($data) as $col){
-			$multi = stripos($col,'>');
-			$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
-			if($sep){
-				$x = explode($sep,$col);
-				$tb = &$x[0];
-				$_col = &$x[1];
-				if(!isset($row[$tb]))
-					$row[$tb] = array();
-				if(empty($data[$col])){
-					if(!isset($row[$tb]))
-						$row[$tb] = array();
-				}
-				elseif($multi){
-					$_idx = explode($_gs,$data[$tb.$sep.'id']);
-					$_x = explode($_gs,$data[$col]);
-					foreach($_idx as $_i=>$_id)
-						if(!empty($_id))
-							$row[$tb][$_id][$_col] = isset($_x[$_i])?$_x[$_i]:null;
-				}
-				else
-					$row[$tb][$_col] = $data[$col];
-			}
-			else
-				$row[$col] = $data[$col];
-		}
-		return $row;
-	}
-	static function explodeGroupConcatMulti($data){
-		$table = array();
-		if(is_array($data)||$data instanceof \ArrayAccess)
-			foreach($data as $i=>$d){
-				$id = isset($d['id'])?$d['id']:$i;
-				$table[$id] = self::explodeGroupConcat($d);
-			}
-		return $table;
-	}	
-	static function inSelectTable($in,$select,$table=null){
-		foreach(array_keys($select) as $k)
-			$select[$k] = trim($select[$k],'"');
-		if(in_array($in,$select))
-			return true;
-		if(in_array($table.'.'.$in,$select))
-			return true;
-		return false;
 	}
 }

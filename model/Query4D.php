@@ -36,56 +36,43 @@ class Query4D extends Query {
 		}
 		return $this->heuristic;
 	}
-	function autoSelect(&$compo,$reload=null){
+	function autoSelect($reload=null){
 		$q = $this->writerQuote;
 		$agg = $this->writerAgg;
 		$aggc = $this->writerAggCaster;
 		$sep = $this->writerSeparator;
 		$cc = $this->writerConcatenator;
 		extract($this->heuristic($reload));
-		
-		$comp = array();
-		if(isset($compo['join'])){
-			$comp['join'] = (array)@$compo['join'];
-			unset($compo['join']);
-		}
-		
-		$compo['select'] = (array)@$compo['select'];
 		foreach($parents as $parent){
 			foreach($this->listOfColumns($parent,null,$reload) as $col)
-				$compo['select'][] = "{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}";
-			$compo['join'][] = " LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}";
-			$compo['group_by'][] = $q.$parent.$q.'.'.$q.'id'.$q;
+				$this->select("{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}");
+			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
+			$this->group_by($q.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
-				$compo['select'][] =  "{$agg}({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}";
+				$this->select("{$agg}({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
 			$rel = array($this->table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
-			$compo['join'][] = " LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}";
-			$compo['join'][] = " LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
+			$this->join(" LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
+			$this->join(" LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}");
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$compo['select'][] = "{$agg}(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}";
-			$compo['join'][] = " LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}";
+					$this->select("{$agg}(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
+			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
-			$compo['group_by'][] = $q.$this->table.$q.'.'.$q.'id'.$q;
-
-		if(isset($comp['join']))
-			foreach($comp['join'] as $c)
-				$compo['join'][] = $c;
-		
+			$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
-	function count($compo=array(),$params=array()){
-		$this->autoSelect($compo);
-		$compo['select'] = array($this->table.'.id');
-		$q = $this->buildQuery($compo);
-		$i = $this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$q.') as TMP_count'),(array)$params);
-		return (int)$i;
+	function count(){
+		$queryCount = clone $this;
+		$queryCount->autoSelect();
+		$queryCount->select($this->table.'.id');
+		$this->select('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count');
+		return (int)$this->getCell();
 	}
 	function table($compo=array(),$params=array()){
 		if(empty($compo['select']))
@@ -95,7 +82,7 @@ class Query4D extends Query {
 			$compo['select'][] = 'id';
 		$this->autoSelect($compo);
 		$data = $this->query('getAll',$compo,$params);
-		$data = self::explodeGroupConcatMulti($data);
+		$data = self::explodeAggTable($data);
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
@@ -109,7 +96,7 @@ class Query4D extends Query {
 		$this->autoSelect($compo);
 		$compo['limit'] = 1;
 		$row = $this->query('getRow',$compo,$params);
-		$row = self::explodeGroupConcat($row);
+		$row = self::explodeAgg($row);
 		if(control::devHas(control::dev_model_compo))
 			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
 		return $row;
