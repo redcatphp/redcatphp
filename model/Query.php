@@ -3,14 +3,13 @@ use ArrayAccess;
 use surikat\control;
 use surikat\control\str;
 use surikat\model;
-use surikat\model\SQLComposer\SQLComposer;
 class Query /* implements ArrayAccess */{
 	const FLAG_ACCENT_INSENSITIVE = 2;
 	const FLAG_CASE_INSENSITIVE = 4;
 	protected $table;
 	protected $writer;
 	protected $composer;
-	function __construct($table,$writer=null,$composer='select'){
+	function __construct($table=null,$writer=null,$composer='select'){
 		$this->table = $table;
 		if(!$writer)
 			$writer = R::getWriter();
@@ -18,7 +17,8 @@ class Query /* implements ArrayAccess */{
 		if(is_string($composer))
 			$composer = SQLComposer::$composer();
 		$this->composer = $composer;
-		$this->from($table);
+		if(isset($table))
+			$this->from($table);
 	}
 	function __toString(){
 		return (string)$this->composer->getQuery();
@@ -34,11 +34,7 @@ class Query /* implements ArrayAccess */{
         $this->composer = clone $this->composer;
     }
 	function __call($f,$args){
-		if(strpos($f,'un')===0&&ctype_upper(substr($f,3,1))){
-			$k = substr($f,2);
-			unset($this->composer->$k);
-		}
-		elseif(strpos($f,'get')===0&&ctype_upper(substr($f,4,1))){
+		if(strpos($f,'get')===0&&ctype_upper(substr($f,4,1))){
 			if(R::getWriter()->tableExists($this->table)){
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
@@ -57,11 +53,24 @@ class Query /* implements ArrayAccess */{
 						$binds = $sql->getParams();
 					$sql = $sql->getQuery();
 				}
-				$args = self::nestBinding($sql,$binds);
+				if(is_array($binds))
+					$args = self::nestBinding($sql,$binds);
+				else
+					$args = array($sql,$binds);
+				if(strpos($f,'un')===0&&ctype_upper(substr($f,2,1))){
+					if(is_array($args[1])&&empty($args[1]))
+						$args[1] = null;
+				}
 				call_user_func_array(array($this->composer,$f),$args);
 				return $this;
 			}
 		}
+	}
+	function getQuery(){
+		return $this->composer->getQuery();
+	}
+	function getParams(){
+		return $this->composer->getParams();
 	}
 	function joinOn($on){
 		$this->join(implode((array)$this->joinOnSQL($on)));
@@ -86,8 +95,11 @@ class Query /* implements ArrayAccess */{
 	}
 	function from(){
 		$args = func_get_args();
-		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false)
+		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false){
+			if(!isset($this->table))
+				$this->table = $this->unQuote($args[0]);
 			$args[0] = $this->quote($args[0]);
+		}
 		$this->__call(__FUNCTION__,$args);
 	}
 	function where($w){
@@ -96,13 +108,16 @@ class Query /* implements ArrayAccess */{
 			$args[0] = implode(' AND ',$args[0]);
 		$this->__call(__FUNCTION__,$args);
 	}
+	function unQuote($v){
+		return trim($v,$this->writerQuoteCharacter);
+	}
 	function quote($v){
 		if($v=='*')
 			return $v;
-		return $this->writerQuoteCharacter.trim($v,$this->writerQuoteCharacter).$this->writerQuoteCharacter;
+		return $this->writerQuoteCharacter.$this->unQuote($v).$this->writerQuoteCharacter;
 	}
 	function formatColumnName($v){
-		if(strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
+		if($this->table&&strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
 			$v = $this->quote($this->table).'.'.$this->quote($v);
 		return $v;
 	}	
