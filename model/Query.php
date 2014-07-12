@@ -44,6 +44,9 @@ class Query /* implements ArrayAccess */{
 		}
 		else{
 			if(method_exists($this->composer,$f)){
+				$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
+				if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
+					$args = call_user_func_array(array($this,$m),$args);
 				$sql = array_shift($args);
 				$binds = array_shift($args);
 				if($sql instanceof SQLComposerBase){
@@ -57,7 +60,7 @@ class Query /* implements ArrayAccess */{
 					$args = self::nestBinding($sql,$binds);
 				else
 					$args = array($sql,$binds);
-				if(strpos($f,'un')===0&&ctype_upper(substr($f,2,1))){
+				if($un){
 					if(is_array($args[1])&&empty($args[1]))
 						$args[1] = null;
 				}
@@ -75,38 +78,51 @@ class Query /* implements ArrayAccess */{
 	function joinOn($on){
 		$this->join(implode((array)$this->joinOnSQL($on)));
 	}
+	function unJoinOn($on){
+		$this->unJoin(implode((array)$this->joinOnSQL($on)));
+	}
 	function joinWhere($w){
+		if(empty($w))
+			return;
+		$this->having($this->joinWhereSQL($w));
+	}
+	function unJoinWhere($w){
+		if(empty($w))
+			return;
+		$this->unHaving($this->joinWhereSQL($w));
+	}
+	protected function joinWhereSQL($w){
 		if(empty($w))
 			return;
 		$hc = $this->writerSumCaster;
 		$hs = implode(' AND ',(array)$w);
 		if($hc)
 			$hs = '('.$hs.')'.$hc;
-			$this->having('SUM('.$hs.')>0');
+		return 'SUM('.$hs.')>0';
 	}
-	function select(){
+	protected function composerSelect(){
 		$args = func_get_args();
 		if(is_array($args[0]))
 			foreach($args[0] as &$s)
 				$s = $this->formatColumnName($s);
 		else
 			$args[0] = $this->formatColumnName($args[0]);
-		$this->__call(__FUNCTION__,$args);
+		return $args;
 	}
-	function from(){
+	protected function composerFrom(){
 		$args = func_get_args();
 		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false){
 			if(!isset($this->table))
 				$this->table = $this->unQuote($args[0]);
 			$args[0] = $this->quote($args[0]);
 		}
-		$this->__call(__FUNCTION__,$args);
+		return $args;
 	}
-	function where($w){
+	protected function composerWhere($w){
 		$args = func_get_args();
 		if(is_array($args[0]))
 			$args[0] = implode(' AND ',$args[0]);
-		$this->__call(__FUNCTION__,$args);
+		return $args;
 	}
 	function unQuote($v){
 		return trim($v,$this->writerQuoteCharacter);
