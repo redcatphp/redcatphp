@@ -6,15 +6,7 @@
  */
 abstract class Base {
 
-	function __unset($k){ //reset var
-		if(property_exists($this,$k)){
-			$v = get_class_vars(get_class($this));
-			if(isset($this->params[$k]))
-				unset($this->params[$k]);
-			$this->$k = $v[$k];
-		}
-	}
-	protected function _remove_params($clause,$i=null,$params=null){
+	private function _remove_params($clause,$i=null,$params=null){
 		if(isset($this->params[$clause])){
 			if(!isset($i))
 				$i = count($this->params[$clause])-1;
@@ -27,13 +19,13 @@ abstract class Base {
 			}
 		}
 	}
-	function remove_property($k,$v,$params=null,$once=null){
+	function remove_property($k,$v=null,$params=null,$once=null){
 		if($params===false){
 			$params = null;
 			$once = true;
 		}
 		foreach(array_keys($this->$k) as $i)
-			if($this->{$k}[$i]==$v){
+			if(!isset($v)||$this->{$k}[$i]==$v){
 				$found = $this->_remove_params($k,$i,$params);
 				if(!isset($params)||$found)
 					unset($this->{$k}[$i]);
@@ -42,10 +34,10 @@ abstract class Base {
 			}
 		return $this;
 	}
-	function unJoin($table,$params=null){
+	function unJoin($table=null,$params=null){
 		return $this->remove_property('tables',$table,$params);
 	}
-	function unFrom($table,$params=null){
+	function unFrom($table=null,$params=null){
 		return $this->remove_property('tables',$table,$params);
 	}
 	

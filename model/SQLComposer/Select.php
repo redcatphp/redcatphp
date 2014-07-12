@@ -1,21 +1,21 @@
 <?php namespace surikat\model\SQLComposer;
 use surikat\model\SQLComposer;
 class Select extends Where {
-	function unSelect($select, array $params = null){
+	function unSelect($select=null, array $params = null){
 		return $this->remove_property('columns',$select,$params);
 	}
 	function unDistinct(){
 		$this->distinct = false;
 		return $this;
 	}
-	function unGroup_by($group_by, array $params = null){
+	function unGroup_by($group_by=null, array $params = null){
 		return $this->remove_property('group_by',$group_by,$params);
 	}
 	function unWith_rollup(){
 		$this->with_rollup = false;
 		return $this;
 	}
-	function unOrder_by($order_by, array $params = null){
+	function unOrder_by($order_by=null, array $params = null){
 		return $this->remove_property('order_by',$order_by,$params);
 	}
 	function unLimit() {
@@ -26,7 +26,7 @@ class Select extends Where {
 		$this->offset = null;
 		return $this;
 	}
-	function unHaving($having, array $params = null){
+	function unHaving($having=null, array $params = null){
 		return $this->remove_property('having',$having,$params);
 	}
 	function unHaving_in($having, array $params){

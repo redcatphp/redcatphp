@@ -102,25 +102,27 @@ class Query /* implements ArrayAccess */{
 	}
 	protected function composerSelect(){
 		$args = func_get_args();
-		if(is_array($args[0]))
-			foreach($args[0] as &$s)
-				$s = $this->formatColumnName($s);
-		else
-			$args[0] = $this->formatColumnName($args[0]);
+		if(isset($args[0])){
+			if(is_array($args[0]))
+				foreach($args[0] as &$s)
+					$s = $this->formatColumnName($s);
+			else
+				$args[0] = $this->formatColumnName($args[0]);
+		}
 		return $args;
 	}
 	protected function composerFrom(){
 		$args = func_get_args();
-		if(strpos($args[0],'(')===false&&strpos($args[0],')')===false){
+		if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false){
 			if(!isset($this->table))
 				$this->table = $this->unQuote($args[0]);
 			$args[0] = $this->quote($args[0]);
 		}
 		return $args;
 	}
-	protected function composerWhere($w){
+	protected function composerWhere(){
 		$args = func_get_args();
-		if(is_array($args[0]))
+		if(isset($args[0])&&is_array($args[0]))
 			$args[0] = implode(' AND ',$args[0]);
 		return $args;
 	}

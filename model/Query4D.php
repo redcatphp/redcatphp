@@ -36,7 +36,7 @@ class Query4D extends Query {
 		}
 		return $this->heuristic;
 	}
-	function autoSelect($reload=null){
+	function autoSelectJoin($reload=null){
 		$q = $this->writerQuote;
 		$agg = $this->writerAgg;
 		$aggc = $this->writerAggCaster;
@@ -69,9 +69,8 @@ class Query4D extends Query {
 	}
 	function count(){
 		$queryCount = clone $this;
-		//$queryCount->unSelect();
-		$queryCount->unColumns();
-		$queryCount->autoSelect();
+		$queryCount->autoSelectJoin();
+		$queryCount->unSelect();
 		$queryCount->select($this->table.'.id');
 		$this->select('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count');
 		return (int)$this->getCell();
@@ -82,7 +81,7 @@ class Query4D extends Query {
 		$compo['select'] = (array)$compo['select'];
 		if(!self::inSelectTable('id',$compo['select'],$this->table)&&!self::inSelectTable('*',$compo['select'],$this->table))
 			$compo['select'][] = 'id';
-		$this->autoSelect($compo);
+		$this->autoSelectJoin($compo);
 		$data = $this->query('getAll',$compo,$params);
 		$data = self::explodeAggTable($data);
 		if(control::devHas(control::dev_model_compo))
@@ -95,7 +94,7 @@ class Query4D extends Query {
 		$compo['select'] = (array)$compo['select'];
 		if(!in_array('id',$compo['select'])&&!in_array($this->table.'.id',$compo['select']))
 			$compo['select'][] = 'id';
-		$this->autoSelect($compo);
+		$this->autoSelectJoin($compo);
 		$compo['limit'] = 1;
 		$row = $this->query('getRow',$compo,$params);
 		$row = self::explodeAgg($row);

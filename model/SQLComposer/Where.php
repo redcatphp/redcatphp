@@ -1,7 +1,7 @@
 <?php namespace surikat\model\SQLComposer;
 use surikat\model\SQLComposer;
 abstract class Where extends Base {
-	function unWhere($where,$params=null){
+	function unWhere($where=null,$params=null){
 		return $this->remove_property('where',$where,$params);
 	}
 	function unWhere_in($where,$params=null){
