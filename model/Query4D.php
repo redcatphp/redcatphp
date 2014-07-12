@@ -1,7 +1,6 @@
 <?php namespace surikat\model;
 use surikat\control;
 use surikat\model;
-use surikat\model\SQLComposer\SQLComposer;
 class Query4D extends Query {
 	protected $heuristic;
 	function heuristic($reload=null){ //todo mode frozen

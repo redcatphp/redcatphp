@@ -34,8 +34,8 @@ class Query /* implements ArrayAccess */{
         $this->composer = clone $this->composer;
     }
 	function __call($f,$args){
-		if(strpos($f,'get')===0&&ctype_upper(substr($f,4,1))){
-			if(R::getWriter()->tableExists($this->table)){
+		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
+			if(!$this->table||R::getWriter()->tableExists($this->table)){
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
@@ -159,7 +159,7 @@ class Query /* implements ArrayAccess */{
 		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}
 				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 	}
-	function count($compo=array(),$params=null){
+	function count(){
 		return (int)$this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$this->buildQuery($compo).') as TMP_count'),(array)$params);
 	}
 	
