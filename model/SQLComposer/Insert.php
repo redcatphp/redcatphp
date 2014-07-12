@@ -116,7 +116,7 @@ class Insert extends Base {
 	public function values(array $values, $mysqli_types = "") {
 		if (isset($this->select)) throw new SQLComposerException("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
 
-		return $this->_add_params('values', array( $values ), $mysqli_types);
+		return $this->_add_params('values', $values, $mysqli_types);
 	}
 
 	/**

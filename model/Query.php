@@ -20,6 +20,9 @@ class Query /* implements ArrayAccess */{
 		$this->composer = $composer;
 		$this->from($table);
 	}
+	function __toString(){
+		return (string)$this->composer->getQuery();
+	}
 	function __get($k){
 		if(strpos($k,'writer')===0&&ctype_upper(substr($k,6,1))&&($key=lcfirst(substr($k,6))))
 			return $this->writer->$key;
