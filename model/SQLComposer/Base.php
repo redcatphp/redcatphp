@@ -14,33 +14,35 @@ abstract class Base {
 			$this->$k = $v[$k];
 		}
 	}
-	protected function _remove_params($clause,$i=null){
+	protected function _remove_params($clause,$i=null,$params=null){
 		if(isset($this->params[$clause])){
 			if(!isset($i))
 				$i = count($this->params[$clause])-1;
-			if(isset($this->params[$clause][$i])){
+			if(isset($this->params[$clause][$i])&&(!isset($params)||$params==$this->params[$clause][$i])){
 				if(isset($this->mysqli_types[$clause]))
 					$this->mysqli_types[$clause] = substr($this->mysqli_types[$clause],count($this->params[$clause][$i])*-1);
 				unset($this->params[$clause][$i]);
 				array_merge($this->params[$clause]); //reorder
+				return true;
 			}
 		}
-		return $this;
 	}
-	function remove_table($table){
+	function remove_table($table,$params=null){
 		foreach(array_keys($this->tables) as $i)
 			if($this->tables[$i]==$table){
-				unset($this->tables[$i]);
-				$this->_remove_params('tables',$i);
-				break;
+				$found = $this->_remove_params('tables',$i,$params);
+				if(!isset($params)||$found)
+					unset($this->tables[$i]);
+				if(isset($params)&&$found)
+					break;
 			}
 		return $this;
 	}
-	function unJoin($table){
-		$this->remove_table($table);
+	function unJoin($table,$params=null){
+		$this->remove_table($table,$params);
 	}
-	function unFrom($table){
-		$this->remove_table($table);
+	function unFrom($table,$params=null){
+		$this->remove_table($table,$params);
 	}
 	
 	protected $columns = array();
