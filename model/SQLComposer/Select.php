@@ -1,6 +1,64 @@
 <?php namespace surikat\model\SQLComposer;
 use surikat\model\SQLComposer;
 class Select extends Where {
+	function unSelect($select, array $params = null){
+		return $this->remove_property('columns',$select,$params);
+	}
+	function unDistinct(){
+		$this->distinct = false;
+		return $this;
+	}
+	function unGroup_by($group_by, array $params = null){
+		return $this->remove_property('group_by',$group_by,$params);
+	}
+	function unWith_rollup(){
+		$this->with_rollup = false;
+		return $this;
+	}
+	function unOrder_by($order_by, array $params = null){
+		return $this->remove_property('order_by',$order_by,$params);
+	}
+	function unLimit() {
+		$this->limit = null;
+		return $this;
+	}
+	function unOffset(){
+		$this->offset = null;
+		return $this;
+	}
+	function unHaving($having, array $params = null){
+		return $this->remove_property('having',$having,$params);
+	}
+	function unHaving_in($having, array $params){
+		if (!is_string($having)) throw new SQLComposerException("Method having_in must be called with a string as first argument.");
+		list($having, $params) = SQLComposer::in($having, $params);
+		return $this->unHaving($having, $params);
+	}
+	function unHaving_op($column, $op, array $params=null){
+		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params);
+		return $this->unHaving($where, $params);
+	}
+	function unOpen_having_and() {
+		return $this->remove_property('having',array( '(', 'AND' ));
+	}
+	function unOpen_having_or() {
+		return $this->remove_property('having',array( '(', 'OR' ));
+	}
+	function unOpen_having_not_and() {
+		$this->remove_property('having',array( '(', 'NOT' ));
+		$this->unOpen_having_and();
+		return $this;
+	}
+	function unOpen_having_not_or() {
+		$this->remove_property('having',array( '(', 'NOT' ));
+		$this->unOpen_having_or();
+		return $this;
+	}
+	function unClose_having() {
+		return $this->remove_property('having',array( ')' ));
+	}
+	
+	
 	protected $distinct = false;
 	protected $offset = null;
 	protected $group_by = array( );
@@ -9,9 +67,8 @@ class Select extends Where {
 	protected $order_by = array( );
 	protected $limit = null;
 	function __construct($select = null, array $params = null, $mysqli_types = "") {
-		if (isset($select)) {
+		if (isset($select))
 			$this->select($select, $params, $mysqli_types);
-		}
 	}
 	function select($select, array $params = null, $mysqli_types = "") {
 		$this->columns = array_merge($this->columns, (array)$select);
@@ -81,7 +138,7 @@ class Select extends Where {
 		return $this;
 	}
 	protected function _render_having() {
-		return SQLComposerBase::_render_bool_expr($this->having);
+		return Base::_render_bool_expr($this->having);
 	}
 	function render() {
 		$columns = empty($this->columns) ? "*" : implode(", ", $this->columns);

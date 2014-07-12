@@ -1,6 +1,35 @@
 <?php namespace surikat\model\SQLComposer;
 use surikat\model\SQLComposer;
 abstract class Where extends Base {
+	function unWhere($where,$params=null){
+		return $this->remove_property('where',$where,$params);
+	}
+	function unWhere_in($where,$params=null){
+		list($where, $params) = SQLComposer::in($where, $params);
+		return $this->remove_property('where',$where,$params);
+	}
+	function unWhere_op($column, $op, array $params=null){
+		list($where, $params) = SQLComposer::applyOperator($column, $op, $params);
+		return $this->remove_property('where',$where,$params);
+	}
+	function unOpen_where_and() {
+		return $this->remove_property('where',array( '(', 'AND' ));
+	}
+	function unOpen_where_or() {
+		return $this->remove_property('where',array( '(', 'OR' ));
+	}
+	function unOpen_where_not_and() {
+		$this->remove_property('where',array( '(', 'NOT' ));
+		return $this->unOpen_where_and();
+	}
+	function unOpen_where_not_or() {
+		$this->remove_property('where',array( '(', 'NOT' ));
+		return $this->unOpen_where_or();
+	}
+	function unClose_where() {
+		return $this->remove_property('where',array(')'));
+	}
+	
 	protected $where = array( );
 	function where($where, array $params = null, $mysqli_types = "") {
 		$this->where[] = $where;
@@ -38,7 +67,7 @@ abstract class Where extends Base {
 		return $this;
 	}
 	protected function _render_where() {
-		return SQLComposerBase::_render_bool_expr($this->where);
+		return Base::_render_bool_expr($this->where);
 	}
 
 

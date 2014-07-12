@@ -27,22 +27,26 @@ abstract class Base {
 			}
 		}
 	}
-	function remove_table($table,$params=null){
-		foreach(array_keys($this->tables) as $i)
-			if($this->tables[$i]==$table){
-				$found = $this->_remove_params('tables',$i,$params);
+	function remove_property($k,$v,$params=null,$once=null){
+		if($params===false){
+			$params = null;
+			$once = true;
+		}
+		foreach(array_keys($this->$k) as $i)
+			if($this->{$k}[$i]==$v){
+				$found = $this->_remove_params($k,$i,$params);
 				if(!isset($params)||$found)
-					unset($this->tables[$i]);
-				if(isset($params)&&$found)
+					unset($this->{$k}[$i]);
+				if((isset($params)&&$found)||(!isset($params)&&$once))
 					break;
 			}
 		return $this;
 	}
 	function unJoin($table,$params=null){
-		$this->remove_table($table,$params);
+		return $this->remove_property('tables',$table,$params);
 	}
 	function unFrom($table,$params=null){
-		$this->remove_table($table,$params);
+		return $this->remove_property('tables',$table,$params);
 	}
 	
 	protected $columns = array();
