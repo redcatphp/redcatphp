@@ -40,6 +40,17 @@ abstract class Base {
 	function unFrom($table=null,$params=null){
 		return $this->remove_property('tables',$table,$params);
 	}
+	private static $__apiProp = array(
+		'select'=>'columns',
+		'join'=>'tables',
+		'from'=>'tables',
+	);
+	function __get($k){
+		if(isset(self::$__apiProp[$k]))
+			$k = self::$__apiProp[$k];
+		if(property_exists($this,$k))
+			return $this->$k;
+	}
 	
 	protected $columns = array();
 	protected $tables = array();

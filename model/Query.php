@@ -239,12 +239,16 @@ class Query /* implements ArrayAccess */{
 			}
 		return $table;
 	}	
-	static function inSelectTable($in,$select,$table=null){
+	function inSelect($in,$select=null,$table=null){
+		if(!isset($table))
+			$table = $this->table;
+		if(!isset($select))
+			$select = $this->composer->select;
 		foreach(array_keys($select) as $k)
-			$select[$k] = trim($select[$k],'"');
+			$select[$k] = $this->unQuote($select[$k]);
 		if(in_array($in,$select))
 			return true;
-		if(in_array($table.'.'.$in,$select))
+		if(in_array($this->formatColumnName($in),$select))
 			return true;
 		return false;
 	}

@@ -73,29 +73,25 @@ class Query4D extends Query {
 		$queryCount->select('id');
 		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count')->getCell();
 	}
-	function table($compo=array(),$params=array()){
-		if(empty($compo['select']))
-			$compo['select'] = '*';
-		$compo['select'] = (array)$compo['select'];
-		if(!self::inSelectTable('id',$compo['select'],$this->table)&&!self::inSelectTable('*',$compo['select'],$this->table))
-			$compo['select'][] = 'id';
-		$this->autoSelectJoin($compo);
-		$data = $this->query('getAll',$compo,$params);
-		$data = self::explodeAggTable($data);
+	function selectNeed($n='id'){
+		if(!count($this->composer->select))
+			$this->select('*');
+		if(!$this->inSelect($n)&&!$this->inSelect($n))
+			$this->select($n);
+	}
+	function table(){
+		$this->selectNeed();
+		$this->autoSelectJoin();
+		$data = $this->getAll4D();
 		if(control::devHas(control::dev_model_data))
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
 	}
 	function row($compo=array(),$params=array()){
-		if(empty($compo['select']))
-			$compo['select'] = '*';
-		$compo['select'] = (array)$compo['select'];
-		if(!in_array('id',$compo['select'])&&!in_array($this->table.'.id',$compo['select']))
-			$compo['select'][] = 'id';
-		$this->autoSelectJoin($compo);
-		$compo['limit'] = 1;
-		$row = $this->query('getRow',$compo,$params);
-		$row = self::explodeAgg($row);
+		$this->selectNeed();
+		$this->autoSelectJoin();
+		$this->limit(1);
+		$row = $this->getRow4D();
 		if(control::devHas(control::dev_model_data))
 			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
 		return $row;

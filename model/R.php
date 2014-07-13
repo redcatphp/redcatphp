@@ -104,6 +104,12 @@ class R extends RedBeanPHP\Facade{
 		if(is_file($path)&&!R::getWriter()->tableExists($table)&&is_array($a=include($path)))
 			R::storeMultiArray($a);
 	}
+	static function getAll4D(){
+		return Query::explodeAggTable(call_user_func_array(array('self','getAll'),func_get_args()));
+	}
+	static function getRow4D(){
+		return Query::explodeAgg(call_user_func_array(array('self','getRow'),func_get_args()));
+	}
 	static function load($table,$id,$flag=0){
 		if(is_integer($id))
 			$w = 'id';
