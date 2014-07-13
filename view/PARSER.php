@@ -390,30 +390,19 @@ abstract class PARSER{
 		$char = $text{($len - 1 - $index)};
 		return $char;
 	}
-	private static function parseAttributes($attrText) {
-		$attrText = trim($attrText);	
+	private static function parseAttributes($attrText){
+		$attrText = trim($attrText);
 		$attrArray = array();
 		$total = strlen($attrText);
 		$keyDump = '';
 		$valueDump = '';
 		$currentState = self::STATE_ATTR_NONE;
 		$quoteType = '';
-		for ($i = 0; $i < $total; $i++) {								
+		for($i=0;$i<$total;$i++){	
 			$currentChar = $attrText{$i};
-			if ($currentState == self::STATE_ATTR_NONE&&trim($currentChar))
+			if($currentState==self::STATE_ATTR_NONE&&trim($currentChar))
 				$currentState = self::STATE_ATTR_KEY;
-			switch ($currentChar) {
-				case "\t":
-					if ($currentState == self::STATE_ATTR_VALUE)
-						$valueDump .= $currentChar;
-					else
-						$currentChar = '';
-				break;
-				case "\x0B": //vertical tab	
-				case "\n":
-				case "\r":
-					$currentChar = '';
-				break;
+			switch ($currentChar){
 				case '=':
 					if ($currentState == self::STATE_ATTR_VALUE)
 						$valueDump .= $currentChar;
@@ -424,7 +413,7 @@ abstract class PARSER{
 				break;
 				case '"':
 					if ($currentState == self::STATE_ATTR_VALUE) {
-						if ($quoteType == '')
+						if ($quoteType=='')
 							$quoteType = '"';
 						elseif ($quoteType == $currentChar) {
 							$keyDump = trim($keyDump);
@@ -452,11 +441,15 @@ abstract class PARSER{
 						}
 					}
 				break;
+				case "\t":
+				case "\x0B":
+				case "\n":
+				case "\r":
 				case ' ':
 					if($currentState==self::STATE_ATTR_KEY){
 						$currentState = self::STATE_ATTR_NONE;
 						if($keyDump)
-							$attrArray[$keyDump] = trim($valueDump)?$valueDump:'';
+							$attrArray[] = trim($keyDump);
 						$keyDump = $valueDump = $quoteType = '';
 					}
 					elseif($currentState==self::STATE_ATTR_VALUE)
