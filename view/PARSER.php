@@ -462,8 +462,8 @@ abstract class PARSER{
 						$valueDump .= $currentChar;
 			}
 		}
-		if(!empty($keyDump))
-			$attrArray[$keyDump] = trim($valueDump)?$valueDump:'';
+		if(trim($keyDump))
+			$attrArray[] = trim($keyDump);
 		return $attrArray;
 	}
 	private static function strToHex($s){
