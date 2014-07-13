@@ -7,12 +7,30 @@ class uploader{
 			'rename'=>false,
 			'width'=>false,
 			'height'=>false,
-			'multi'=>false
+			'multi'=>false,
+			'extensions'=>Images::$extensions,
+			'conversion'=>null,
 		),$conf);
 		extract($conf);
 		$func = 'file'.($multi?'s':'');
 		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
+			if($conversion){
+				switch(exif_imagetype($file)){
+					case IMAGETYPE_GIF :
+						$img = imagecreatefromgif($file);
+					break;
+					case IMAGETYPE_JPEG :
+						$img = imagecreatefromjpeg($file);
+					break;
+					default :
+					throw new Exception_Upload('extension conversion');
+				}
+				$file = substr($file,0,-1*strlen($ext)).$conversion;
+				$ext = $conversion;
+				$convertF = 'image'.$conversion;
+				$convertF($img, $file);
+			}
 			if($rename){
 				if($rename===true)
 					$rename = 'image';
@@ -25,12 +43,19 @@ class uploader{
 			}
 		},function($file){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
-			if(!in_array($ext,Images::$extensions))
+			if(!in_array($ext,(array)$extensions))
 				throw new Exception_Upload('extension');
 		});
 	}
+	protected $extensionRewrite = array(
+		'jpeg'=>'jpg',
+	);
 	static function formatFilename($name){
-		return filter_var(str_replace(array(' ','_',',','?'),'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+		$name = filter_var(str_replace(array(' ','_',',','?'),'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+		$e = strtolower(pathinfo($name,PATHINFO_EXTENSION));
+		if(isset(static::$extensionRewrite[$e]))
+			$name = substr($name,0,-1*strlen($e)).static::$extensionRewrite[$e];
+		return $name;
 	}
 	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null){
 		if($file['error']!==UPLOAD_ERR_OK)
