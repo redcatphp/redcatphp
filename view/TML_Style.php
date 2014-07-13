@@ -2,4 +2,3 @@
 class TML_Style extends TML{
 	protected $noParseContent = true;
 }
-?>

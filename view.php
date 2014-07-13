@@ -47,8 +47,11 @@ class view {
 	}
 	static function xDom($TML){
 		$head = $TML->find('head',0);
-		if(!$head)
+		if(!$head){
 			$head = $TML;
+			$head->append('<script type="text/javascript" src="/js/js.js"></script>');
+			$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
+		}
 		$href = is_bool(static::$xDom)?'':static::$xDom;
 		$s = array();
 		$TML->recursive(function($el)use($TML,$head,$href,&$s){

@@ -9,34 +9,34 @@ use surikat\view\CssSelector\Parser\CssParserHelper;
 # Nodal Representation for Templating-Markup-Language
 # 	Pure Object Recursive Nodal Dom for XML/XHTML/HTML5/PHP5
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
-	public $nodeName;
-	public $parent;
-	public $constructor;
-	public $childNodes = array();
-	public $attributes = array();
-	public $metaAttribution = array();
-	public $previousSibling;
-	public $nextSibling;
-	public $namespace;
-	public $namespaceClass;
-	public $_namespaces;
+	var $nodeName;
+	var $parent;
+	var $constructor;
+	var $childNodes = array();
+	var $attributes = array();
+	var $metaAttribution = array();
+	var $previousSibling;
+	var $nextSibling;
+	var $namespace;
+	var $namespaceClass;
+	var $_namespaces;
+	var $vFile;
 	private $selectorService;
-	public $vFile;
 	protected $hiddenWrap;
 	protected $preventLoad;
 	protected $selfClosed;
 	protected $noParseContent;
-	public function evalue(){
+	function evalue(){
 		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
 	}
-	public function recursiveMethod($callback,$node=null,$args=null){
+	function recursiveMethod($callback,$node=null,$args=null){
 		if(func_num_args()<2)
 			$node = &$this;
 		call_user_func_array(array(&$node,$callback),(array)$args);
 		foreach($node->childNodes as $el)
 			$this->recursiveMethod($callback,$el,$args);
 	}
-	public function recursive($callback,$node=null,$break=false){
+	function recursive($callback,$node=null,$break=false){
 		if(func_num_args()<2)
 			$node = &$this;
 		call_user_func_array($callback,array(&$node,&$break));
@@ -48,7 +48,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				break;
 		}
 	}
-	public function arecursive($callback,$node=null){
+	function arecursive($callback,$node=null){
 		if(func_num_args()<2)
 			$node = &$this;
 		foreach($node->childNodes as $el)
@@ -58,25 +58,25 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function vFileOf($file){
 		return FILE::factoy(dirname($this->vFile->path).'/'.$file);
 	}
-	public function pathFile($file){
+	function pathFile($file){
 		return $this->vFileOf($file)->path($file);
 	}
-	public function getFile($file,$c=null){
+	function getFile($file,$c=null){
 		$vFile = $this->vFileOf($file);
 		if(!is_file($real=$vFile->path($file)))
 			throw new Exception_TML('Template '.$c.': "'.$file.'" not found called in "'.$this->vFile->dirCwd.'" by "'.$vFile->path.'"');
 		return file_get_contents($real);
 	}
-	public function parseFile($file,$params=null,$c=null){
+	function parseFile($file,$params=null,$c=null){
 		return $this->parse($this->getFile($file,$c),$params);
 	}
-	public function getInnerTml(){
+	function getInnerTml(){
 		$str = '';
 		foreach($this->childNodes as $c)
 			$str .= $c;
 		return $str;
 	}
-	public function __construct(){
+	function __construct(){
 		$args = func_get_args();
 		if(!empty($args)){
 			if(is_string($args[0])){
@@ -234,7 +234,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 	}
 	
-	public function __invoke(){
+	function __invoke(){
 		return call_user_func_array(array($this,'find'),func_get_args());
 	}
 	function offsetUnset($k){
@@ -521,22 +521,22 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$str .= implode('',$this->foot);
 		return $str;
 	}
-	public function clear(){
+	function clear(){
 		$this->clean();
 		$this->clearInner();
 	}
-	public function clearInner(){
+	function clearInner(){
 		$this->innerHead = array();
 		$this->innerFoot = array();
 		$this->childNodes = array();
 	}
-	public function clean(){
+	function clean(){
 		$this->clearInner();
 		$this->hiddenWrap = true;
 		$this->head = array();
 		$this->foot = array();
 	}
-	public function delete(){
+	function delete(){
 		if($this->nextSibling)
 			$this->nextSibling->previousSibling = $this->previousSibling;
 		if($this->previousSibling)
@@ -595,6 +595,20 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				$this->__set($_k,$v);
 		else
 			return $this->__get($k);
+	}
+	function removeAttr($k){
+		if(is_array($k)){
+			foreach($k as $v)
+				$this->__unset($v);
+		}
+		else
+			$this->__unset($k);
+	}
+	function remapAttr($to,$from=0){
+		if(!isset($this->metaAttribution[$to])&&isset($this->metaAttribution[$from])){
+			$this->metaAttribution[$to] = $this->metaAttribution[$from];
+			unset($this->metaAttribution[$from]);
+		}
 	}
 
 	private $__metaData = array();
