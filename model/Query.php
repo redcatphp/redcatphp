@@ -1,5 +1,6 @@
 <?php namespace surikat\model;
 use ArrayAccess;
+use BadMethodCallException;
 use surikat\control;
 use surikat\control\str;
 use surikat\model;
@@ -20,6 +21,9 @@ class Query /* implements ArrayAccess */{
 		if(isset($table))
 			$this->from($table);
 	}
+	function __destruct(){
+		unset($this->composer);
+	}
 	function __toString(){
 		return (string)$this->composer->getQuery();
 	}
@@ -29,6 +33,13 @@ class Query /* implements ArrayAccess */{
 	}
 	function __set($k,$v){
 		
+	}
+	function fork(){
+		$c = clone $this;
+		foreach(func_get_args() as $arg)
+			foreach((array)$arg as $m=>$a)
+				call_user_func_array(array($c,$m),$a);
+		return $c;
 	}
 	function __clone(){
         $this->composer = clone $this->composer;
@@ -41,33 +52,33 @@ class Query /* implements ArrayAccess */{
 					$params = array_merge($params,$args);
 				return R::$f($this->composer->getQuery(),$params);
 			}
+			return;
 		}
-		else{
-			if(method_exists($this->composer,$f)){
-				$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
-				if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
-					$args = call_user_func_array(array($this,$m),$args);
-				$sql = array_shift($args);
-				$binds = array_shift($args);
-				if($sql instanceof SQLComposerBase){
-					if(is_array($binds))
-						$binds = array_merge($sql->getParams(),$binds);
-					else
-						$binds = $sql->getParams();
-					$sql = $sql->getQuery();
-				}
+		elseif(method_exists($this->composer,$f)){
+			$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
+			if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
+				$args = call_user_func_array(array($this,$m),$args);
+			$sql = array_shift($args);
+			$binds = array_shift($args);
+			if($sql instanceof SQLComposerBase){
 				if(is_array($binds))
-					$args = self::nestBinding($sql,$binds);
+					$binds = array_merge($sql->getParams(),$binds);
 				else
-					$args = array($sql,$binds);
-				if($un){
-					if(is_array($args[1])&&empty($args[1]))
-						$args[1] = null;
-				}
-				call_user_func_array(array($this->composer,$f),$args);
-				return $this;
+					$binds = $sql->getParams();
+				$sql = $sql->getQuery();
 			}
+			if(is_array($binds))
+				$args = self::nestBinding($sql,$binds);
+			else
+				$args = array($sql,$binds);
+			if($un){
+				if(is_array($args[1])&&empty($args[1]))
+					$args[1] = null;
+			}
+			call_user_func_array(array($this->composer,$f),$args);
+			return $this;
 		}
+		throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$f);
 	}
 	function getQuery(){
 		return $this->composer->getQuery();
@@ -99,6 +110,18 @@ class Query /* implements ArrayAccess */{
 		if($hc)
 			$hs = '('.$hs.')'.$hc;
 		return 'SUM('.$hs.')>0';
+	}
+	function selectTruncation($col,$truncation=369,$getl=true){
+		$c = $this->formatColumnName($col);
+		$this->select("SUBSTRING($c,1,$truncation) as $col");
+		if($getl)
+			$this->select("LENGTH($c) as {$col}_length");
+	}
+	function fullText($cols,$t){
+		//pgsql full text search
+		foreach((array)$cols as $k=>$col)
+			$cols[$k] = 'to_tsvector('.$this->formatColumnName($col).')';
+		$this->where(implode(' || ',$cols)." @@ to_tsquery(?)",array("'$t'"));
 	}
 	protected function composerSelect(){
 		$args = func_get_args();

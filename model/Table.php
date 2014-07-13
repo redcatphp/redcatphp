@@ -18,6 +18,7 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
+use BadMethodCallException;
 use surikat\control\sync;
 use surikat\model\R;
 use surikat\model\RedBeanPHP\OODBBean;
@@ -185,7 +186,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(is_callable(array($this->bean,$func)))
 			return call_user_func_array(array($this->bean,$func),$args);
 		else
-			throw new \BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
+			throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
 	}
 	function __get($prop){
 		return $this->bean->$prop;

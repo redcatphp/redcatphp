@@ -10,7 +10,7 @@ class control{
 	const dev_view = 4;
 	const dev_present = 8;
 	const dev_model = 16;
-	const dev_model_compo = 32;
+	const dev_model_data = 32;
 	const dev_model_redbean = 64;
 	const dev_model_sql = 128;
 	const dev_css = 256;

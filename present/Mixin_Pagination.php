@@ -1,11 +1,15 @@
 <?php namespace surikat\present;
+use surikat\control\ArrayObject;
 trait Mixin_Pagination{
+	protected $limit				= 5;
+	protected $offset	    		= 0;
 	protected function pagination(){
-		$this->pagination = array(
+		$this->pagination = new ArrayObject(array(
 			'prefix'			=>'|page:',
 			'maxCols'			=>3,
-		);
-		
+		));
+		if($this->limitation)
+			$this->limit = $this->limitation;
 		if($this->page===null)
 			$this->page = 1;
 		elseif(

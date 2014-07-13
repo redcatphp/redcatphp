@@ -6,7 +6,12 @@ class model {
 		$cl = 'surikat\model\Query';
 		if(substr($f,-2)=='4D'){
 			$cl .= '4D';
-			$f = substr($f,0-2);
+			$f = substr($f,0,-2);
+		}
+		if(strpos($f,'new')===0&&ctype_upper(substr($f,3,1))){
+			$n = new $cl();
+			$m = substr($f,3);
+			return call_user_func_array(array($n,$m),$args);
 		}
 		$q = new $cl(array_shift($args));
 		foreach((array)array_shift($args) as $method=>$params)

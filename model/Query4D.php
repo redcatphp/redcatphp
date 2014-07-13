@@ -36,7 +36,7 @@ class Query4D extends Query {
 		return $this->heuristic;
 	}
 	function autoSelectJoin($reload=null){
-		$q = $this->writerQuote;
+		$q = $this->writerQuoteCharacter;
 		$agg = $this->writerAgg;
 		$aggc = $this->writerAggCaster;
 		$sep = $this->writerSeparator;
@@ -70,9 +70,8 @@ class Query4D extends Query {
 		$queryCount = clone $this;
 		$queryCount->autoSelectJoin();
 		$queryCount->unSelect();
-		$queryCount->select($this->table.'.id');
-		$this->select('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count');
-		return (int)$this->getCell();
+		$queryCount->select('id');
+		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count')->getCell();
 	}
 	function table($compo=array(),$params=array()){
 		if(empty($compo['select']))
@@ -83,7 +82,7 @@ class Query4D extends Query {
 		$this->autoSelectJoin($compo);
 		$data = $this->query('getAll',$compo,$params);
 		$data = self::explodeAggTable($data);
-		if(control::devHas(control::dev_model_compo))
+		if(control::devHas(control::dev_model_data))
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
 	}
@@ -97,7 +96,7 @@ class Query4D extends Query {
 		$compo['limit'] = 1;
 		$row = $this->query('getRow',$compo,$params);
 		$row = self::explodeAgg($row);
-		if(control::devHas(control::dev_model_compo))
+		if(control::devHas(control::dev_model_data))
 			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
 		return $row;
 	}
