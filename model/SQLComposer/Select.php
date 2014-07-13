@@ -93,8 +93,10 @@ class Select extends Where {
 		$this->_add_params('order_by', $params, $mysqli_types);
 		return $this;
 	}
-	function limit($limit) {
+	function limit($limit){
 		$this->limit = (int)$limit;
+		if(func_num_args()>1)
+			$this->offset(func_get_arg(1));
 		return $this;
 	}
 	function offset($offset) {

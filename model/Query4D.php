@@ -2,18 +2,22 @@
 use surikat\control;
 use surikat\model;
 class Query4D extends Query {
-	protected $heuristic;
+	protected static $listOfTables;
+	protected static $heuristic;
 	function heuristic($reload=null){ //todo mode frozen
-		if(!isset($this->heuristic)||$reload){
+		if(!$this->table)
+			return;
+		if(!isset(self::$heuristic[$this->table])||$reload){
 			$this->heuristic = array();
-			$listOfTables = R::inspect();
+			if(!isset(self::$listOfTables))
+				self::$listOfTables = R::inspect();
 			$tableL = strlen($this->table);
-			$h['fields'] = in_array($this->table,$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
+			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
 			$h['shareds'] = array();
 			$h['parents'] = array();
 			$h['fieldsOwn'] = array();
 			$h['owns'] = array();
-			foreach($listOfTables as $table) //shared
+			foreach(self::$listOfTables as $table) //shared
 				if(strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
 						$h['shareds'][] = $table;
@@ -24,7 +28,7 @@ class Query4D extends Query {
 					$table = substr($field,0,-3);
 					$h['parents'][] = $table;
 				}
-			foreach($listOfTables as $table){ //own
+			foreach(self::$listOfTables as $table){ //own
 				if(strpos($table,'_')===false&&$table!=$this->table){
 					$h['fieldsOwn'][$table] = $this->listOfColumns($table,null,$reload);
 					if(in_array($this->table.'_id',$h['fieldsOwn'][$table]))
