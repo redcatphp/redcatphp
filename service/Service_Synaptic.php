@@ -122,13 +122,7 @@ class Service_Synaptic {
 		else{
 			if(substr($k,-3)=='.js'){
 				if(substr($k,-7,-3)=='.min'){
-					if(substr($k,-15,-7)=='.combine')
-						$k = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].'/'.$k;
-					elseif(($k = substr($k,0,-7).'.js')&&!is_file($k)&&!is_file($k=basename(control::$SURIKAT).'/'.$k)){
-						HTTP::code(404);
-						throw new Exception('404');
-						return;
-					}
+					$k = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
 					self::minifyJS($k);
 				}
 			}
@@ -179,7 +173,7 @@ class Service_Synaptic {
 		readfile($file);
 	}
 	protected static function minifyJS($f){
-		if(!is_file($f))
+		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
 		$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.js';
