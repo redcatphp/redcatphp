@@ -8,10 +8,10 @@ class Query4D extends Query {
 		if(!$this->table)
 			return;
 		if(!isset(self::$heuristic[$this->table])||$reload){
-			$this->heuristic = array();
 			if(!isset(self::$listOfTables))
 				self::$listOfTables = R::inspect();
 			$tableL = strlen($this->table);
+			$h = array();
 			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
 			$h['shareds'] = array();
 			$h['parents'] = array();
@@ -35,9 +35,9 @@ class Query4D extends Query {
 						$h['owns'][] = $table;
 				}
 			}
-			$this->heuristic = $h;
+			self::$heuristic[$this->table] = $h;
 		}
-		return $this->heuristic;
+		return self::$heuristic[$this->table];
 	}
 	function autoSelectJoin($reload=null){
 		$q = $this->writerQuoteCharacter;
