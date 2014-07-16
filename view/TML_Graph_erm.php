@@ -9,6 +9,7 @@ class TML_Graph_erm extends TML{
 		foreach($this->find('link') as $l){
 			$l->remapAttr('from');
 			$l->remapAttr('to',1);
+			$l->remapAttr('relation',2);
 		}
 	}
 	
