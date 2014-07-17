@@ -34,16 +34,29 @@ LC_ALL          6
 
 // LC_MESSAGES is not available if php-gettext is not loaded
 // while the other constants are already available from session extension.
-if (!defined('LC_MESSAGES'))
+if (!defined('LC_MESSAGES')) {
   define('LC_MESSAGES',	5);
+}
+
+//require('streams.php');
+//require('gettext.php');
+
 
 // Variables
+
 global $text_domains, $default_domain, $LC_CATEGORIES, $EMULATEGETTEXT, $CURRENTLOCALE;
 $text_domains = array();
 $default_domain = 'messages';
 $LC_CATEGORIES = array('LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL');
 $EMULATEGETTEXT = 0;
 $CURRENTLOCALE = '';
+
+/* Class to hold a single domain included in $text_domains. */
+class domain {
+  var $l10n;
+  var $path;
+  var $codeset;
+}
 
 // Utility functions
 
@@ -100,7 +113,7 @@ function get_list_of_locales($locale) {
 /**
  * Utility function to get a StreamReader for the given text domain.
  */
-function _get_reader($domain=null, $category=5, $enable_cache=false) {
+function _get_reader($domain=null, $category=5, $enable_cache=true) {
     global $text_domains, $default_domain, $LC_CATEGORIES;
     if (!isset($domain)) $domain = $default_domain;
     if (!isset($text_domains[$domain]->l10n)) {
@@ -247,10 +260,7 @@ function _bindtextdomain($domain, $path) {
  */
 function _bind_textdomain_codeset($domain, $codeset) {
     global $text_domains;
-    if(!isset($text_domains[$domain])){
-		$text_domains[$domain] = (object)array();
-	}
-	$text_domains[$domain]->codeset = $codeset;
+    $text_domains[$domain]->codeset = $codeset;
 }
 
 /**
@@ -272,14 +282,9 @@ function _gettext($msgid) {
 /**
  * Alias for gettext.
  */
-function t($msgid) {
+function __($msgid) {
     return _gettext($msgid);
 }
-/*
-function __($msgid) {
-    return t($msgid);
-}
-*/
 
 /**
  * Plural version of gettext.
@@ -394,12 +399,12 @@ function T_textdomain($domain) {
     else return _textdomain($domain);
 }
 function T_gettext($msgid) {
-	if (_check_locale_and_function()) return gettext($msgid);
+    if (_check_locale_and_function()) return gettext($msgid);
     else return _gettext($msgid);
 }
 function T_($msgid) {
     if (_check_locale_and_function()) return _($msgid);
-    return t($msgid);
+    return __($msgid);
 }
 function T_ngettext($singular, $plural, $number) {
     if (_check_locale_and_function())
@@ -489,7 +494,7 @@ if (!function_exists('gettext')) {
         return _gettext($msgid);
     }
     function _($msgid) {
-        return t($msgid);
+        return __($msgid);
     }
     function ngettext($singular, $plural, $number) {
         return _ngettext($singular, $plural, $number);

@@ -3,11 +3,11 @@ class StringReader {
   var $_pos;
   var $_str;
   function __construct($str='') {
-    $this->_str = $str;
-    $this->_pos = 0;
+	$this->_str = $str;
+	$this->_pos = 0;
   }
   function read($bytes) {
-    $data = substr($this->_str, $this->_pos, $bytes);
+	$data = substr($this->_str, $this->_pos, $bytes);
     $this->_pos += $bytes;
     if (strlen($this->_str)<$this->_pos)
       $this->_pos = strlen($this->_str);

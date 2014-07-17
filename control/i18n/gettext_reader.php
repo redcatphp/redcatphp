@@ -98,7 +98,6 @@ class gettext_reader {
    * @param object Reader the StreamReader object
    * @param boolean enable_cache Enable or disable caching of strings (default on)
    */
-  // function gettext_reader($Reader, $enable_cache = true) {
   function __construct($Reader, $enable_cache = true) {
     // If there isn't a StreamReader, turn on short circuit mode.
     if (! $Reader || isset($Reader->error) ) {
@@ -125,6 +124,7 @@ class gettext_reader {
 
     // FIXME: Do we care about revision? We should.
     $revision = $this->readint();
+
     $this->total = $this->readint();
     $this->originals = $this->readint();
     $this->translations = $this->readint();
@@ -190,10 +190,11 @@ class gettext_reader {
    * @param int num Offset number of original string
    * @return string Requested string if found, otherwise ''
    */
-  function get_translation_string($num,$string='') {
+  function get_translation_string($num) {
     $length = $this->table_translations[$num * 2 + 1];
     $offset = $this->table_translations[$num * 2 + 2];
-    if (!$length) return $string;
+    if (! $length)
+      return '';
     $this->STREAM->seekto($offset);
     $data = $this->STREAM->read($length);
     return (string)$data;
@@ -250,8 +251,8 @@ class gettext_reader {
   function translate($string) {
     if ($this->short_circuit)
       return $string;
-	  
     $this->load_tables();
+
     if ($this->enable_cache) {
       // Caching enabled, get translated string from cache
       if (array_key_exists($string, $this->cache_translations))
@@ -261,12 +262,10 @@ class gettext_reader {
     } else {
       // Caching not enabled, try to find string
       $num = $this->find_string($string);
-      if ($num == -1 || $num == 0){
+      if ($num == -1)
         return $string;
-      }
-	  else{
-        return $this->get_translation_string($num,$string);
-	  }
+      else
+        return $this->get_translation_string($num);
     }
   }
 
@@ -401,7 +400,7 @@ class gettext_reader {
       if ($num == -1) {
         return ($number != 1) ? $plural : $single;
       } else {
-        $result = $this->get_translation_string($num,$key);
+        $result = $this->get_translation_string($num);
         $list = explode(chr(0), $result);
         return $list[$select];
       }

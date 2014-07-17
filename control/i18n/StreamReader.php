@@ -1,16 +1,21 @@
 <?php namespace surikat\control\i18n;
-// Simple class to wrap file streams, string streams, etc. seek is essential, and it should be byte stream
+// Simple class to wrap file streams, string streams, etc.
+// seek is essential, and it should be byte stream
 class StreamReader {
-  function read($bytes){
+  // should return a string [FIXME: perhaps return array of bytes?]
+  function read($bytes) {
     return false;
   }
-  function seekto($position){
+  // should return new position
+  function seekto($position) {
     return false;
   }
-  function currentpos(){
+  // returns current position
+  function currentpos() {
     return false;
   }
-  function length(){
+  // returns length of entire stream (limit for seekto()s)
+  function length() {
     return false;
   }
 }

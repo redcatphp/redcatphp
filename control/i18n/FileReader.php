@@ -4,6 +4,7 @@ class FileReader {
   var $_pos;
   var $_fd;
   var $_length;
+
   function __construct($filename) {
     if (file_exists($filename)) {
 
@@ -19,6 +20,7 @@ class FileReader {
       return false;
     }
   }
+
   function read($bytes) {
     if ($bytes) {
       fseek($this->_fd, $this->_pos);
@@ -36,18 +38,23 @@ class FileReader {
       return $data;
     } else return '';
   }
+
   function seekto($pos) {
     fseek($this->_fd, $pos);
     $this->_pos = ftell($this->_fd);
     return $this->_pos;
   }
+
   function currentpos() {
     return $this->_pos;
   }
+
   function length() {
     return $this->_length;
   }
+
   function close() {
     fclose($this->_fd);
   }
+
 }
