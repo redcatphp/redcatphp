@@ -136,7 +136,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				call_user_func($c,$this,$args);
 	}
 	function open(){
-		//R::bindFunc('read',
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
 		$this->trigger('read');
