@@ -184,7 +184,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 	}
 	protected function opened(){
-		if((isset($this->metaAttribution['/'])&&$i='/')||(($i=array_search('/',$this->metaAttribution))!==false&&is_integer($i))){
+		while((isset($this->metaAttribution['/'])&&$i='/')||(($i=array_search('/',$this->metaAttribution))!==false&&is_integer($i))){
 			$this->selfClosed = 2;
 			unset($this->metaAttribution[$i]);
 		}
