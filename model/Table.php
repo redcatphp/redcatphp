@@ -21,6 +21,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
+use surikat\control;
 use surikat\control\sync;
 use BadMethodCallException;
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
@@ -52,7 +53,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $creating;
 	protected $checkUniq = true;
 	protected $__on = array();
-	var $breakValidationOnError;
+	protected $breakValidationOnError;
+	function breakOnError($b=null){
+		$this->breakValidationOnError = isset($b)?!!$b:true;
+	}
 	function __construct($table){
 		$this->table = $table;
 		$c = get_called_class();
@@ -184,13 +188,15 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}
-		
 		$this->_uniqConvention();
 
 		$this->trigger('validate');
 		$e = $this->getErrors();
-		if($e&&$this->breakValidationOnError)
+		if($e&&$this->breakValidationOnError){
+			if(control::devHas(control::dev_model))
+				print_r($e);
 			throw new Exception_Validation('Données manquantes ou erronées',$e);
+		}
 			
 		if(!$e){
 			if($this->creating)
@@ -211,7 +217,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function _uniqConvention(){
 		$uniqs = array();
 		foreach($this->getKeys() as $key){
-			if($key==$this->loadUniq)
+			if($key==static::$loadUniq)
 				$uniqs[$key] = $this->bean->$key;
 			elseif(strpos($key,'uniq_')===0){
 				$k = substr($key,5);
