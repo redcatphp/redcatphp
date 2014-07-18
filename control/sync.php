@@ -9,7 +9,7 @@ class sync{
 		$syncF = control::$TMP.self::TIMESPACE.$sync.self::EXT;
 		if($forceCache&&!is_file($syncF)){
 			FS::mkdir($syncF,true);
-			file_put_contents($syncF,'',LOCK_EX);
+			file_put_contents($syncF,'');
 		}
 		return @filemtime($file)<@filemtime($syncF);
 	}
@@ -17,7 +17,7 @@ class sync{
 		$syncF = control::$TMP.self::TIMESPACE.$sync.self::EXT;
 		if(!is_file($syncF)){
 			FS::mkdir($syncF,true);
-			file_put_contents($syncF,'',LOCK_EX);
+			file_put_contents($syncF,'');
 		}
 		else
 			touch($syncF);

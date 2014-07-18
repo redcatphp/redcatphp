@@ -45,7 +45,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $str;
 	}
 	static $metaCast = array();
-	static $sync = true;
+	static $sync;
 	private $errors = array();
 	private $relationsKeysStore = array();
 	protected $table;
