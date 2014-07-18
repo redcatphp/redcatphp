@@ -211,16 +211,17 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function _uniqConvention(){
 		$uniqs = array();
 		foreach($this->getKeys() as $key){
-			if(strpos($key,'uniq_')===0){
+			if($key==$this->loadUniq)
+				$uniqs[$key] = $this->bean->$key;
+			elseif(strpos($key,'uniq_')===0){
 				$k = substr($key,5);
 				$bk = self::_keyImplode($k);
 				$uniqs[$k] = $this->bean->$bk = $this->bean->$key;
 				unset($this->bean->$key);
 			}
 		}
-		foreach(static::getDefColumns('uniq') as $col=>$bool)
-			if($bool)
-				$uniqs[$col] = $this->bean->$col;
+		foreach(array_keys(static::getDefColumns('uniq')) as $col)
+			$uniqs[$col] = $this->bean->$col;
 		if(!empty($uniqs)){
 			if($this->checkUniq&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))){
 				$throwed = false;
