@@ -64,10 +64,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->table = $table;
 		$c = get_called_class();
 		if(!in_array($c,self::$__binded)){
-			foreach(static::getDefColumns('read') as $col=>$func)
+			foreach(static::getDefColumns('readCol') as $col=>$func)
 				foreach((array)$func as $f)
 					R::bindFunc($func, $table.'.'.$col, $f);
-			foreach(static::getDefColumns('write') as $col=>$func)
+			foreach(static::getDefColumns('readParam') as $col=>$func)
 				foreach((array)$func as $f)
 					R::bindFunc($func, $table.'.'.$col, $f);
 			self::$__binded[] = $c;
