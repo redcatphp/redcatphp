@@ -69,11 +69,21 @@ class Query4D extends Query {
 						$h['owns'][] = $table;
 				}
 			}
-			foreach(array('fields','fieldsOwn','fieldsShareds') as $k)
-				if(isset($h[$k]))
-					foreach(array_keys($h[$k]) as $i)
-						if($this->ignoring('column',$h[$k][$i]))
-							unset($h[$k][$i]);
+			
+			if(isset($h['fields']))
+				foreach(array_keys($h['fields']) as $i)
+					if($this->ignoring('column',$h['fields'][$i]))
+						unset($h['fields'][$i]);
+			if(isset($h['fieldsOwn']))
+				foreach(array_keys($h['fieldsOwn']) as $table)
+					foreach(array_keys($h['fieldsOwn'][$table]) as $i)
+						if($this->ignoring('column',$table.'.'.$h['fieldsOwn'][$table][$i]))
+							unset($h['fieldsOwn'][$table][$i]);
+			if(isset($h['fieldsShareds']))
+				foreach(array_keys($h['fieldsShareds']) as $table)
+					foreach(array_keys($h['fieldsShareds'][$table]) as $i)
+						if($this->ignoring('column',$table.'.'.$h['fieldsShareds'][$table][$i]))
+							unset($h['fieldsShareds'][$table][$i]);
 						
 			self::$heuristic[$this->table] = $h;
 		}
