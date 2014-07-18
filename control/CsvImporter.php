@@ -8,6 +8,7 @@ class CsvImporter{
 	private $separator = ';';
 	private $csvDir;
 	private $callback;
+	private $freeze;
 	function __construct($options=array()){
 		$this->csvDir = control::$CWD.'/.data/';
 		foreach($options as $k=>$v)
@@ -54,9 +55,13 @@ class CsvImporter{
 			foreach($allCols as $k)
 				if(!in_array($k,$missingCols)&&(!isset($data[$k])||!$data[$k]))
 					$missingCols[] = $k;
+			$b->breakOnError();
 			R::store($b);
 			unset($b);
+			if($this->freeze&&$i==1)
+				R::freeze(true);
 		}
+			
 		$completesCols = array_diff($allCols,$missingCols);
 		if($this->debug>1){
 			print('$allCols');
