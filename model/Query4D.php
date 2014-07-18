@@ -4,6 +4,38 @@ use surikat\model;
 class Query4D extends Query {
 	protected static $listOfTables;
 	protected static $heuristic;
+	protected $_ignore = array();
+	function ignoring($k,$ignore){
+		return isset($this->_ignore[$k])&&in_array($ignore,$this->_ignore[$k]);
+	}
+	function ignoreTable(){
+		foreach(func_get_args() as $ignore)
+			$this->_ignore['table'] = $ignore;
+	}
+	function ignoreColumn(){
+		foreach(func_get_args() as $ignore)
+			$this->_ignore['colmun'] = $ignore;
+	}
+	function ignoreFrom(){
+		foreach(func_get_args() as $ignore)
+			$this->_ignore['from'] = $ignore;
+	}
+	function ignoreSelect(){
+		foreach(func_get_args() as $ignore)
+			$this->_ignore['select'] = $ignore;
+	}
+	function ignoreJoin(){
+		return call_user_func_array(array($this,'ignoreFrom'),func_get_args());
+	}
+	function select(){
+		if(!$this->ignoring('select',func_get_arg(0)))
+			return parent::__call(__FUNCTION__,func_get_args());
+	}
+	function join(){
+		if(!$this->ignoring('join',func_get_arg(0)))
+			return parent::__call(__FUNCTION__,func_get_args());
+	}
+	
 	function heuristic($reload=null){ //todo mode frozen
 		if(!$this->table)
 			return;
@@ -18,23 +50,30 @@ class Query4D extends Query {
 			$h['fieldsOwn'] = array();
 			$h['owns'] = array();
 			foreach(self::$listOfTables as $table) //shared
-				if(strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
-					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1))))){
+				if((strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
+					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1)))))
+				&&!$this->ignoring('table',$table)){
 						$h['shareds'][] = $table;
 						$h['fieldsShareds'][$table] = $this->listOfColumns($table,null,$reload);
 				}
 			foreach($h['fields'] as $field) //parent
 				if(strrpos($field,'_id')===strlen($field)-3){
 					$table = substr($field,0,-3);
-					$h['parents'][] = $table;
+					if(!$this->ignoring('table',$table))
+						$h['parents'][] = $table;
 				}
 			foreach(self::$listOfTables as $table){ //own
 				if(strpos($table,'_')===false&&$table!=$this->table){
 					$h['fieldsOwn'][$table] = $this->listOfColumns($table,null,$reload);
-					if(in_array($this->table.'_id',$h['fieldsOwn'][$table]))
+					if(in_array($this->table.'_id',$h['fieldsOwn'][$table])&&!$this->ignoring('table',$table))
 						$h['owns'][] = $table;
 				}
 			}
+			foreach(array('fields','fieldsOwn','fieldsShareds') as $k)
+				foreach(array_keys($h[$k]) as $i)
+					if($this->ignoring('column',$h[$k][$i]))
+						unset($h[$k][$i]);
+						
 			self::$heuristic[$this->table] = $h;
 		}
 		return self::$heuristic[$this->table];
