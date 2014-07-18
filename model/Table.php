@@ -50,6 +50,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $table;
 	protected $bean;
 	protected $creating;
+	protected $checkUniq = true;
 	protected $__on = array();
 	var $breakValidationOnError;
 	function __construct($table){
@@ -184,17 +185,19 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$uniqs = array();
 		foreach($this->getKeys() as $k){
 			if(strpos($f,'uniq_')===0){
-				$rKey = self::_keyImplode(substr($f,5));
-				$this->bean->$rKey = $this->bean->$k;
+				$bk = self::_keyImplode(substr($f,5));
+				$uniqs[$k] = $this->bean->$bk = $this->bean->$k;
 				unset($this->bean->$k);
-				$uniqs[] = $k;
 			}
 		}
 		foreach(static::getDefColumns('uniq') as $col=>$bool)
 			if($bool)
-				$uniqs[] = $col;
-		if(!empty($uniqs))
-			$this->bean->setMeta("buildcommand.unique" , array($uniqs));
+				$uniqs[$col] = $this->bean->$col;
+		if(!empty($uniqs)){
+			if($this->checkUniq&&R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
+				throw new Exception_Validation('Unicity constraint violation on table "'.$this->table.'" columns "'.implode(',',array_keys($uniqs)).'" with values "'.implode('","',array_values($uniqs)).'"');
+			$this->bean->setMeta("buildcommand.unique" , array(array_keys($uniqs)));
+		}
 	}
 	function after_update(){
 		$this->relationsKeysRestore();

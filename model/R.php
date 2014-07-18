@@ -115,6 +115,11 @@ class R extends RedBeanPHP\Facade{
 			return self::loadUniq(array_shift($args),array_shift($args),lcfirst(substr($f,8)));
 		return parent::__callStatic($f,$args);
 	}
+	static function load($type,$id){
+		if(is_string($id)||func_num_args()>2)
+			return self::loadUniq($type,$id,func_get_arg(2));
+		return parent::load($type,$id);
+	}
 	static function loadUniq($table,$id,$column=null){
 		$c = R::getModelClass($type);
 		if(is_array($table)){
