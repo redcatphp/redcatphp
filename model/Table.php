@@ -158,12 +158,29 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
 				$r[] = $k;
 		$this->relationsKeysStore($r);
+
+		foreach(static::getDefColumns('filter') as $col=>$call){
+			foreach((array)$call as $f=>$a){
+				array_unshift($a,$this->$col);
+				$this->$col = call_user_func_array(array('control\\filter',$f),$a);
+			}
+		}
+		foreach(static::getDefColumns('ruler') as $col=>$call){
+			foreach((array)$call as $f=>$a){
+				if(!is_array($a))
+					$a = (array)$a;
+				array_unshift($a,$this->$col);
+				if(!call_user_func_array(array('control\\ruler',$f),$a))
+					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
+			}
+		}
+		
+		$this->_uniqConvention();
+
 		$this->trigger('validate');
 		$e = $this->getErrors();
 		if($e&&$this->breakValidationOnError)
 			throw new Exception_Validation('Données manquantes ou erronées',$e);
-
-		$this->_uniqConvention();
 			
 		if(!$e){
 			if($this->creating)
@@ -183,19 +200,30 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function _uniqConvention(){
 		$uniqs = array();
-		foreach($this->getKeys() as $k){
-			if(strpos($f,'uniq_')===0){
-				$bk = self::_keyImplode(substr($f,5));
-				$uniqs[$k] = $this->bean->$bk = $this->bean->$k;
-				unset($this->bean->$k);
+		foreach($this->getKeys() as $key){
+			if(strpos($key,'uniq_')===0){
+				$k = substr($key,5);
+				$bk = self::_keyImplode($k);
+				$uniqs[$k] = $this->bean->$bk = $this->bean->$key;
+				unset($this->bean->$key);
 			}
 		}
 		foreach(static::getDefColumns('uniq') as $col=>$bool)
 			if($bool)
 				$uniqs[$col] = $this->bean->$col;
 		if(!empty($uniqs)){
-			if($this->checkUniq&&R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
-				throw new Exception_Validation('Unicity constraint violation on table "'.$this->table.'" columns "'.implode(',',array_keys($uniqs)).'" with values "'.implode('","',array_values($uniqs)).'"');
+			if($this->checkUniq&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))){
+				$throwed = false;
+				foreach($uniqs as $k=>$v){
+					$bk = self::_keyImplode($k);
+					if($v==$r->$k){
+						$this->error($k,'not uniq on column "'.$k.'" with value "'.$v.'"');
+						$throwed = true;
+					}
+				}
+				if(!$throwed)
+					$this->error('Unicity constraint violation');
+			}
 			$this->bean->setMeta("buildcommand.unique" , array(array_keys($uniqs)));
 		}
 	}
