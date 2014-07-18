@@ -161,12 +161,22 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 
 		foreach(static::getDefColumns('filter') as $col=>$call){
 			foreach((array)$call as $f=>$a){
+				if(is_integer($f)){
+					$f = $a;
+					$a = array();
+				}
+				if(!is_array($a))
+					$a = (array)$a;
 				array_unshift($a,$this->$col);
 				$this->$col = call_user_func_array(array('control\\filter',$f),$a);
 			}
 		}
 		foreach(static::getDefColumns('ruler') as $col=>$call){
 			foreach((array)$call as $f=>$a){
+				if(is_integer($f)){
+					$f = $a;
+					$a = array();
+				}
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
