@@ -70,9 +70,10 @@ class Query4D extends Query {
 				}
 			}
 			foreach(array('fields','fieldsOwn','fieldsShareds') as $k)
-				foreach(array_keys($h[$k]) as $i)
-					if($this->ignoring('column',$h[$k][$i]))
-						unset($h[$k][$i]);
+				if(isset($h[$k]))
+					foreach(array_keys($h[$k]) as $i)
+						if($this->ignoring('column',$h[$k][$i]))
+							unset($h[$k][$i]);
 						
 			self::$heuristic[$this->table] = $h;
 		}
