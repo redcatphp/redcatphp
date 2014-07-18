@@ -5,8 +5,6 @@ use surikat\control;
 use surikat\control\str;
 use surikat\model;
 class Query /* implements ArrayAccess */{
-	const FLAG_ACCENT_INSENSITIVE = 2;
-	const FLAG_CASE_INSENSITIVE = 4;
 	protected $table;
 	protected $writer;
 	protected $composer;

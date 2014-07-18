@@ -110,23 +110,30 @@ class R extends RedBeanPHP\Facade{
 	static function getRow4D(){
 		return Query::explodeAgg(call_user_func_array(array('self','getRow'),func_get_args()));
 	}
-	static function load($table,$id,$flag=0){
-		if(is_integer($id))
-			$w = 'id';
+	static function __callStatic($f,$args){
+		if(strpos($f,'loadUniq')===0&&ctype_upper(substr($f,8,1)))
+			return self::loadUniq(array_shift($args),array_shift($args),lcfirst(substr($f,8)));
+		return parent::__callStatic($f,$args);
+	}
+	static function loadUniq($table,$id,$column=null){
+		$c = R::getModelClass($type);
+		if(is_array($table)){
+			foreach($table as $tb)
+				if($r = self::loadUniq($tb,$id,$column))
+					return $r;
+		}
 		else{
-			$w = 'label';
-			if($flag){
-				if($flag&Query::FLAG_ACCENT_INSENSITIVE){
-					$w = 'uaccent('.$w.')';
-					$id = str::unaccent($id);
-				}
-				if($flag&Query::FLAG_CASE_INSENSITIVE){
-					$w = 'LOWER('.$w.')';
-					$id = str::tolower($id);
-				}
+			if(!$column)
+				$column = $c::getLoaderUniq($column);
+			if(is_array($column)){
+				foreach($column as $col)
+					if($r = self::loadUniq($table,$id,$col))
+						return $r;
+			}
+			else{
+				return R::findOne($table,'WHERE '.$column.'=?',array($c::loadUniqFilter($id)));
 			}
 		}
-		return R::findOne($table,'WHERE '.$w.'=?',array($id));
 	}
 	static function getModelClass($type){
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';

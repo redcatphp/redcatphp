@@ -18,11 +18,11 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
-use BadMethodCallException;
-use surikat\control\sync;
-use surikat\model\R;
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
+use surikat\control\sync;
+use BadMethodCallException;
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
 	function onNew(){}
@@ -35,15 +35,22 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function onDelete(){}
 	function onDeleted(){}
 	#</workflow>
-	private $errors = array();
-	private $relationsKeysStore = array();
+	private static $__binded = array();
+	protected static $loadUniq = 'name';
+	static function getLoaderUniq(){
+		return static::$loadUniq;
+	}
+	static function loadUniqFilter($str){
+		return $str;
+	}
 	static $metaCast = array();
 	static $sync = true;
+	private $errors = array();
+	private $relationsKeysStore = array();
 	protected $table;
 	protected $bean;
 	protected $creating;
 	protected $__on = array();
-	private static $__binded = array();
 	var $breakValidationOnError;
 	function __construct($table){
 		$this->table = $table;
@@ -154,12 +161,40 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$e = $this->getErrors();
 		if($e&&$this->breakValidationOnError)
 			throw new Exception_Validation('Données manquantes ou erronées',$e);
+
+		$this->_uniqConvention();
+			
 		if(!$e){
 			if($this->creating)
 				$this->trigger('create');
 			else
 				$this->trigger('update');
 		}
+	}
+	static function _keyExplode($k){
+		return AQueryWriter::camelsSnake($k);
+	}
+	static function _keyImplode($k){
+		$x = explode('_',$k);
+		foreach($x as &$_x)
+			$_x = ucfirst($_x);
+		return implode('',$x);
+	}
+	function _uniqConvention(){
+		$uniqs = array();
+		foreach($this->getKeys() as $k){
+			if(strpos($f,'uniq_')===0){
+				$rKey = self::_keyImplode(substr($f,5));
+				$this->bean->$rKey = $this->bean->$k;
+				unset($this->bean->$k);
+				$uniqs[] = $k;
+			}
+		}
+		foreach(static::getDefColumns('uniq') as $col=>$bool)
+			if($bool)
+				$uniqs[] = $col;
+		if(!empty($uniqs))
+			$this->bean->setMeta("buildcommand.unique" , array($uniqs));
 	}
 	function after_update(){
 		$this->relationsKeysRestore();
@@ -178,7 +213,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function after_delete(){
 		$this->trigger('deleted');
 	}
-	function loadBean( OODBBean $bean ){
+	function loadBean(OODBBean $bean){
 		$this->bean = $bean;
 	}
 	function __call($func,array $args=array()){
