@@ -14,7 +14,7 @@ class Query4D extends Query {
 	}
 	function ignoreColumn(){
 		foreach(func_get_args() as $ignore)
-			$this->_ignore['colmun'] = $ignore;
+			$this->_ignore['column'] = $ignore;
 	}
 	function ignoreFrom(){
 		foreach(func_get_args() as $ignore)
