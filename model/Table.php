@@ -54,6 +54,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $checkUniq = true;
 	protected $__on = array();
 	protected $breakValidationOnError;
+	function checkUniq($b=null){
+		$this->checkUniq = isset($b)?!!$b:true;
+	}
 	function breakOnError($b=null){
 		$this->breakValidationOnError = isset($b)?!!$b:true;
 	}

@@ -9,6 +9,10 @@ class CsvImporter{
 	private $csvDir;
 	private $callback;
 	private $freeze;
+	private $breakOnError;
+	private $checkUniq;
+	private $addCols;
+	private $addColsAfter;
 	function __construct($options=array()){
 		$this->csvDir = control::$CWD.'/.data/';
 		foreach($options as $k=>$v)
@@ -49,13 +53,21 @@ class CsvImporter{
 			if($this->debug&&$this->debug!=3)
 				print_r($data);
 			$b = R::dispense($table);
-			foreach($allCols as $k)
-				$b->$k = $data[$k];
-
+			foreach($data as $k=>$v){
+				if(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1))){
+					foreach($v as $xown)
+						$b->noLoad()->{$k}[] = $xown;
+				}
+				else
+					$b->$k = $v;
+				
+				$allCols[] = $k;
+			}
 			foreach($allCols as $k)
 				if(!in_array($k,$missingCols)&&(!isset($data[$k])||!$data[$k]))
 					$missingCols[] = $k;
-			$b->breakOnError();
+			$b->breakOnError($this->breakOnError);
+			$b->checkUniq($this->checkUniq);
 			R::store($b);
 			unset($b);
 			if($this->freeze&&$i==1)
