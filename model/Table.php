@@ -248,7 +248,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!$throwed)
 					$this->error('Unicity constraint violation');
 			}
-			$this->bean->setMeta("buildcommand.unique" , array(array_keys($uniqs)));
+			if(isset($uniqs[static::$loadUniq]))
+				unset($uniqs[static::$loadUniq]);
+			if(!empty($uniqs)&&!R::getRedBean()->isFrozen())
+				$this->bean->setMeta('buildcommand.unique',array(array_keys($uniqs)));
 		}
 	}
 	function after_update(){
