@@ -98,13 +98,13 @@ class Query4D extends Query {
 		extract($this->heuristic($reload));
 		foreach($parents as $parent){
 			foreach($this->listOfColumns($parent,null,$reload) as $col)
-				$this->select("{$q}{$parent}{$q}.{$q}{$col}{$q} as {$q}{$parent}<{$col}{$q}");
+				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->group_by($q.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
-				$this->select("{$agg}({$q}{$share}{$q}.{$q}{$col}{$q}{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
+				$this->select("{$agg}(".self::autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
 			$rel = array($this->table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
@@ -114,7 +114,7 @@ class Query4D extends Query {
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col)
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$this->select("{$agg}(COALESCE({$q}{$own}{$q}.{$q}{$col}{$q}{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
+					$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))

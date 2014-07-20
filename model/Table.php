@@ -39,7 +39,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private static $__binded = array();
 	protected static $loadUniq = 'name';
 	static function getLoaderUniq(){
-		return static::$loadUniq;
+		$l = static::$loadUniq;
+		if($f=static::getColumnDef($l,'readCol'))
+			$l = $f.'('.$l.')';
+		return $l;
 	}
 	static function loadUniqFilter($str){
 		return $str;
@@ -60,18 +63,19 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function breakOnError($b=null){
 		$this->breakValidationOnError = isset($b)?!!$b:true;
 	}
+	static function _binder($table){
+		if(!in_array($table,self::$__binded)){
+			$c = R::getModelClass($table);
+			foreach($c::getDefColumns('readCol') as $col=>$func)
+				R::bindFunc('read', $table.'.'.$col, $func);
+			foreach($c::getDefColumns('writeCol') as $col=>$func)
+				R::bindFunc('write', $table.'.'.$col, $func);
+			self::$__binded[] = $table;
+		}
+	}
 	function __construct($table){
 		$this->table = $table;
-		$c = get_called_class();
-		if(!in_array($c,self::$__binded)){
-			foreach(static::getDefColumns('readCol') as $col=>$func)
-				foreach((array)$func as $f)
-					R::bindFunc($func, $table.'.'.$col, $f);
-			foreach(static::getDefColumns('readParam') as $col=>$func)
-				foreach((array)$func as $f)
-					R::bindFunc($func, $table.'.'.$col, $f);
-			self::$__binded[] = $c;
-		}
+		//self::_binder($table);
 	}
 	function getKeys(){
 		return array_keys($this->getProperties());
@@ -321,11 +325,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	static function getColumnDef($col,$key=null){
 		$c = get_called_class();
 		$p = 'column'.ucfirst($col);
+		if($key)
+			$p .= ucfirst($key);
 		if(property_exists($c,$p))
-			$r = $c::$$p;
-		if($key!==null)
-			return isset($r[$key])?$r[$key]:null;
-		else
-			return $r;
+			return $c::$$p;
 	}
 }

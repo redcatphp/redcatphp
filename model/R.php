@@ -147,7 +147,7 @@ class R extends RedBeanPHP\Facade{
 		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
 	}
 	static function getTableColumnDef($t,$col,$key=null){
-		$c = self::getClassModel($t);
+		$c = self::getModelClass($t);
 		return $c::getColumnDef($col,$key);
 	}
 }

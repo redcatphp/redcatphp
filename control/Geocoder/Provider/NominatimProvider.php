@@ -24,7 +24,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
      * @param string               $rootUrl Root URL of the nominatim server
      * @param string               $locale  A locale (optional).
      */
-    public function __construct(HttpAdapterInterface $adapter, $rootUrl, $locale = null)
+    public function __construct(HttpAdapterInterface $adapter, $rootUrl='http://nominatim.openstreetmap.org/', $locale = null)
     {
         parent::__construct($adapter, $locale);
 

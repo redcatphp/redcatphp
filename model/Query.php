@@ -4,6 +4,8 @@ use BadMethodCallException;
 use surikat\control;
 use surikat\control\str;
 use surikat\model;
+use surikat\model\RedBeanPHP\QueryWriter;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 class Query /* implements ArrayAccess */{
 	protected $table;
 	protected $writer;
@@ -316,5 +318,13 @@ class Query /* implements ArrayAccess */{
 			}
 		}
 		return array($sql,$nBinds);
+	}
+	static function autoWrapCol($s,$table,$col){
+		//Table::_binder($table);
+		//if(isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table])&&isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col]))
+			//$s = AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col];
+		if($func=R::getTableColumnDef($table,$col,'readCol'))
+			$s = $func.'('.$s.')';
+		return $s;
 	}
 }
