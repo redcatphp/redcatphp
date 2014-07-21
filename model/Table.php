@@ -75,7 +75,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function __construct($table){
 		$this->table = $table;
-		//self::_binder($table);
+		self::_binder($table);
 	}
 	function getKeys(){
 		return array_keys($this->getProperties());
