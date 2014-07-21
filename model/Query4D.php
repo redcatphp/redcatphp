@@ -93,7 +93,7 @@ class Query4D extends Query {
 	function addSelectAgg($alias,$s){
 		if(!isset($this->_fullTextAggAlias[$alias]))
 			$this->_fullTextAggAlias[$alias] = array();
-		$this->_fullTextAggAlias[$alias][] $s;
+		$this->_fullTextAggAlias[$alias][] = $s;
 	}
 	function autoSelectJoin($reload=null){
 		$q = $this->writerQuoteCharacter;
