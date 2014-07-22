@@ -3,8 +3,11 @@ use surikat\control\HTTP;
 use surikat\view\FILE;
 use surikat\view\TML;
 class view {
-	static $URI;
+	protected static $URI;
 	static $xDom = 'x-dom/';
+	static function getUri(){
+		return static::$URI;
+	}
 	static function preHooks(){
 		$path = func_num_args()?func_get_arg(0):static::$URI->getPath();
 		static::serviceHook($path);

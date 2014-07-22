@@ -11,6 +11,7 @@ class uri{
 		'And'=>'|',
 		'Or'=>'&',
 	);
+	protected $resolved;
 	private static $__factory = array();
 	static function factory($k=0,$path=null){
 		if(!isset(self::$__factory[$k]))
@@ -45,10 +46,13 @@ class uri{
 	
 	protected $PATH;
 	protected $uriParams = array();
+	protected $resolvedParams = array();
 	protected $orderParams = array();
 	function __construct($path=''){
 		$this->PATH = (string)$path;
 		$this->uriParams = $this->parseUriParams(ltrim($this->PATH,'/'));
+		foreach(array_keys($this->uriParams) as $k)
+			$this->resolvedParams[$k] = null;
 	}
 	function getPath(){
 		return $this->PATH;
@@ -86,26 +90,64 @@ class uri{
 		return $k===null?$this->uriParams:(isset($this->uriParams[$k])?$this->uriParams[$k]:null);
 	}
 
-	function orderParams($orderParams){
-		$this->orderParams = (array)$orderParams;
-		//foreach($this->orderParams as $k){
-			//switch($k){
-				//case ':int':
-					//foreach($uriA as $i=>$a)
-						//if(is_integer($i)){
-							//$this->taxonomies[] = $uriA[$i];
-							//unset($uriA[$i]);
-						//}
-						//else
-							//break;
-					//
-				//break;
-				//default:
-					//if(isset($uriA[$k]))
-						//unset($uriA[$k]);
-				//break;
-			//}
-		//}
+	function resolveParam($k,$callback){
+		if($k==':int'){
+			foreach(array_keys($this->uriParams) as $i)
+				if($i&&is_integer($i)&&!$this->resolveParam($i,$callback))
+					return false;
+			return true;
+		}
+		$value = $this->getParam($k);
+		if(!isset($value))
+			return $this->resolvedParams[$k] = true;
+		if(is_callable($callback))
+			return $this->resolvedParams[$k] = call_user_func($callback,$value);
+	}
+	function orderParams($orderParams=null){
+		if(func_num_args())
+			$this->orderParams = (array)$orderParams;
+		return $this->orderParams;
+	}
+	function orderedUri($orderParams=null){
+		if(isset($orderParams))
+			$this->orderParams($orderParams);
+		$uri = $this->getParam(0);
+		foreach($this->orderParams as $k)
+			if($k==':int'){
+				$ints = array();
+				foreach(array_keys($this->uriParams) as $i){
+					if($i&&is_integer($i)&&!in_array($this->uriParams[$i],$ints)){
+						$uri .= $this->separators['And'].$this->uriParams[$i];
+						$ints[] = $this->uriParams[$i];
+					}
+				}
+			}
+			elseif(isset($this->uriParams[$k]))
+				$uri .= $this->separators['And'].$k.$this->separators['Eq'].$this->uriParams[$k];
+		$uri = ltrim($uri,$this->separators['And']);
+		return $uri;
+	}
+	function resolveParams($orderParams=null){
+		if(isset($orderParams))
+			$this->orderParams($orderParams);
+		foreach($this->orderParams as $k=>$callback)
+			if(!$this->resolveParam($k,$callback))
+				return $this->resolved = false;
+		return $this->resolved = true;
+	}
+	function isResolved(){
+		return $this->resolved;
+	}
+	function resolveMap($resolveParams=null){
+		if(isset($resolveParams))
+			$this->resolveParams($resolveParams);
+		if(($uri=$this->orderedUri())!=ltrim($this->getPath(),'/')){
+			if(!control::devHas(control::dev_uri))
+				header('Location: /'.$uri,true,301);
+			else
+				echo 'Location: /'.$uri;
+			exit;
+		}
 	}
 	function __toString(){
 		return $this->PATH;

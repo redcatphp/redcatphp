@@ -16,6 +16,7 @@ class control{
 	const dev_css = 256;
 	const dev_js = 512;
 	const dev_img = 1024;
+	const dev_uri = 2048;
 	const dev_default = 30; //control+view+present+model
 	const dev_all = 2046;
 	static function CWD_X(){
