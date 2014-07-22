@@ -1,5 +1,6 @@
 <?php namespace surikat;
-class uri{
+use ArrayAccess;
+class uri implements ArrayAccess{
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = array(
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
@@ -164,6 +165,7 @@ class uri{
 		if(isset($resolveParams))
 			$this->resolveParams($resolveParams);
 		if(($uri=$this->validatedUri())!=ltrim($this->getPath(),'/')||$this->resolved===false){
+			var_dump($this['1Id']);
 			if(!control::devHas(control::dev_uri))
 				header('Location: /'.$uri,true,301);
 			else
@@ -172,16 +174,10 @@ class uri{
 		}
 	}
 	function getResolved($k=null){
-		return $k===null?$this->uriParams:(isset($this->uriParams[$k])?$this->uriParams[$k]:null);
+		return $k===null?$this->resolvedParams:(isset($this->resolvedParams[$k])?$this->resolvedParams[$k]:null);
 	}
 	function __toString(){
 		return $this->PATH;
-	}
-	function __get($k){
-		if(substr($k,-2)=='Id')
-			return $this->resolved(substr($k,0,-2));
-		else
-			return $this->param($k);
 	}
 	function __set($k,$v){
 		if(substr($k,-2)=='Id'){
@@ -190,6 +186,20 @@ class uri{
 		}
 		else
 			$this->uriParams[$k] = $v;
+	}
+	function __get($k){
+		if(substr($k,-2)=='Id')
+			return $this->getResolved(substr($k,0,-2));
+		else
+			return $this->param($k);
+	}
+	function __isset($k){
+		if(substr($k,-2)=='Id'){
+			$k = substr($k,0,-2);
+			return isset($this->resolvedParams[$k]);
+		}
+		else
+			return isset($this->uriParams[$k]);
 	}
 	function __unset($k){
 		if(substr($k,-2)=='Id'){
@@ -201,12 +211,16 @@ class uri{
 			if(isset($this->uriParams[$k]))
 				unset($this->uriParams[$k]);
 	}
-	function __isset($k){
-		if(substr($k,-2)=='Id'){
-			$k = substr($k,0,-2);
-			return isset($this->resolvedParams[$k]);
-		}
-		else
-			return isset($this->uriParams[$k]);
+	function offsetSet($k,$v){
+		return $this->__set($k,$v);
+	}
+	function offsetGet($k){
+		return $this->__get($k);
+	}
+	function offsetExists($k){
+		return $this->__isset($k);
+	}
+	function offsetUnset($k){
+		return $this->__unset($k);
 	}
 }
