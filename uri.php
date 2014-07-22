@@ -21,6 +21,9 @@ class uri{
 	static function param($k=null){
 		return self::factory()->getParam($k);
 	}
+	static function resolved($k=null){
+		return self::factory()->getResolved($k);
+	}
 	static function filterParam($s){
 		return self::factory()->getFilterParam($s);
 	}
@@ -92,47 +95,66 @@ class uri{
 
 	function resolveParam($k,$callback){
 		if($k==':int'){
+			$r = true;
 			foreach(array_keys($this->uriParams) as $i)
 				if($i&&is_integer($i)&&!$this->resolveParam($i,$callback))
-					return false;
-			return true;
+					$r = false;
+			return $r;
 		}
-		$value = $this->getParam($k);
-		if(!isset($value))
-			return $this->resolvedParams[$k] = true;
-		if(is_callable($callback))
-			return $this->resolvedParams[$k] = call_user_func($callback,$value);
+		if($callback===true||($value = $this->getParam($k))===null)
+			$this->resolvedParams[$k] = true;
+		elseif(is_callable($callback))
+			$this->resolvedParams[$k] = call_user_func($callback,$value);
+		else
+			$this->resolvedParams[$k] = false;
+		return $this->resolvedParams[$k];
 	}
 	function orderParams($orderParams=null){
 		if(func_num_args())
 			$this->orderParams = (array)$orderParams;
 		return $this->orderParams;
 	}
-	function orderedUri($orderParams=null){
+	function validatedUri($orderParams=null){
+		return self::orderedUri($orderParams,true);
+	}
+	function orderedUri($orderParams=null,$validate=null){
 		if(isset($orderParams))
 			$this->orderParams($orderParams);
 		$uri = $this->getParam(0);
-		foreach($this->orderParams as $k)
+		foreach($this->orderParams as $k=>$callback){
+			if(is_integer($k)){
+				$k = $callback;
+				$callback = null;
+			}
 			if($k==':int'){
 				$ints = array();
 				foreach(array_keys($this->uriParams) as $i){
-					if($i&&is_integer($i)&&!in_array($this->uriParams[$i],$ints)){
+					if($i
+						&&is_integer($i)
+						&&!in_array($this->uriParams[$i],$ints)
+						&&(!$validate||$this->resolvedParams[$i])
+					){
 						$uri .= $this->separators['And'].$this->uriParams[$i];
 						$ints[] = $this->uriParams[$i];
 					}
 				}
 			}
-			elseif(isset($this->uriParams[$k]))
+			elseif(isset($this->uriParams[$k])&&(!$validate||$this->resolvedParams[$k]))
 				$uri .= $this->separators['And'].$k.$this->separators['Eq'].$this->uriParams[$k];
+		}
 		$uri = ltrim($uri,$this->separators['And']);
 		return $uri;
 	}
 	function resolveParams($orderParams=null){
 		if(isset($orderParams))
 			$this->orderParams($orderParams);
-		foreach($this->orderParams as $k=>$callback)
-			if(!$this->resolveParam($k,$callback))
-				return $this->resolved = false;
+		foreach($this->orderParams as $k=>$callback){
+			if(is_integer($k)){
+				$k = $callback;
+				$callback = null;
+			}
+			$this->resolved = $this->resolveParam($k,$callback);
+		}
 		return $this->resolved = true;
 	}
 	function isResolved(){
@@ -141,13 +163,16 @@ class uri{
 	function resolveMap($resolveParams=null){
 		if(isset($resolveParams))
 			$this->resolveParams($resolveParams);
-		if(($uri=$this->orderedUri())!=ltrim($this->getPath(),'/')){
+		if(($uri=$this->validatedUri())!=ltrim($this->getPath(),'/')||$this->resolved===false){
 			if(!control::devHas(control::dev_uri))
 				header('Location: /'.$uri,true,301);
 			else
 				echo 'Location: /'.$uri;
 			exit;
 		}
+	}
+	function getResolved($k=null){
+		return $k===null?$this->uriParams:(isset($this->uriParams[$k])?$this->uriParams[$k]:null);
 	}
 	function __toString(){
 		return $this->PATH;
