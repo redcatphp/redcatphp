@@ -122,7 +122,7 @@ class Query /* implements ArrayAccess */{
 		//pgsql full text search
 		foreach((array)$cols as $k=>$col)
 			$cols[$k] = 'to_tsvector('.$this->formatColumnName($col).')';
-		$this->where(implode(' || ',$cols)." @@ to_tsquery(?)",array("'$t'"));
+		$this->where(implode(" || ' ' || ",$cols).' @@ to_tsquery(?)',array($t));
 	}
 	protected function composerSelect(){
 		$args = func_get_args();

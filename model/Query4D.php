@@ -126,7 +126,7 @@ class Query4D extends Query {
 		$queryCount->autoSelectJoin();
 		$queryCount->unSelect();
 		$queryCount->select('id');
-		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count')->getCell();
+		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))

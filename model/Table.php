@@ -12,7 +12,9 @@ onRead		R::load			$model->open() 			READ		GET		SELECT
 
 onUpdate	R::store		$model->update()		UPDATE		PUT		UPDATE
 onValidate
+onChange
 onUpdated					$model->after_update()
+onChanged
 
 onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
@@ -33,6 +35,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function onUpdate(){}
 	function onUpdated(){}
 	function onValidate(){}
+	function onChange(){}
+	function onChanged(){}
 	function onDelete(){}
 	function onDeleted(){}
 	#</workflow>
@@ -198,6 +202,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->_uniqConvention();
 
 		$this->trigger('validate');
+		$this->trigger('change');
 		$e = $this->getErrors();
 		if($e&&$this->breakValidationOnError){
 			if(control::devHas(control::dev_model))
@@ -264,6 +269,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(static::$sync)
 				sync::update('model.'.$this->table);
 		}
+		$this->trigger('changed');
 	}
 	function delete(){
 		$this->trigger('delete');
