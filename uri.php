@@ -165,7 +165,6 @@ class uri implements ArrayAccess{
 		if(isset($resolveParams))
 			$this->resolveParams($resolveParams);
 		if(($uri=$this->validatedUri())!=ltrim($this->getPath(),'/')||$this->resolved===false){
-			var_dump($this['1Id']);
 			if(!control::devHas(control::dev_uri))
 				header('Location: /'.$uri,true,301);
 			else
