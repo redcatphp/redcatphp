@@ -89,12 +89,6 @@ class Query4D extends Query {
 		}
 		return self::$heuristic[$this->table];
 	}
-	protected $_fullTextAggAlias = array();
-	function addSelectAgg($alias,$s){
-		if(!isset($this->_fullTextAggAlias[$alias]))
-			$this->_fullTextAggAlias[$alias] = array();
-		$this->_fullTextAggAlias[$alias][] = $s;
-	}
 	function autoSelectJoin($reload=null){
 		$q = $this->writerQuoteCharacter;
 		$agg = $this->writerAgg;
@@ -103,24 +97,14 @@ class Query4D extends Query {
 		$cc = $this->writerConcatenator;
 		extract($this->heuristic($reload));
 		foreach($parents as $parent){
-			foreach($this->listOfColumns($parent,null,$reload) as $col){
-				$s = self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q;
-				if($alias=R::getTableColumnDef($parent,$col,'fullTextAgg'))
-					$this->addSelectAgg($alias,$s);
-				else
-					$this->select($s);
-			}
+			foreach($this->listOfColumns($parent,null,$reload) as $col)
+				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->group_by($q.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
-			foreach($fieldsShareds[$share] as $col){
-				$s = "{$agg}(".self::autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}";
-				if($alias=R::getTableColumnDef($parent,$col,'fullTextAgg'))
-					$this->addSelectAgg($alias,$s);
-				else
-					$this->select($s);
-			}
+			foreach($fieldsShareds[$share] as $col)
+				$this->select("{$agg}(".self::autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
 			$rel = array($this->table,$share);
 			sort($rel);
 			$rel = implode('_',$rel);
@@ -129,22 +113,10 @@ class Query4D extends Query {
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col){
-				if(strrpos($col,'_id')!==strlen($col)-3){
-					$s = "{$agg}(COALESCE(".self::autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}";
-					if($alias=R::getTableColumnDef($parent,$col,'fullTextAgg'))
-						$this->addSelectAgg($alias,$s);
-					else
-						$this->select($s);
-				}
+				if(strrpos($col,'_id')!==strlen($col)-3)
+					$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			}
 			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
-		}
-		if(!empty($this->_fullTextAggAlias)){
-			$s = '';
-			foreach($this->_fullTextAggAlias as $alias){
-				//in dev...
-			}
-			//$this->select($s);
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
 			$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);

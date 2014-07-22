@@ -3,20 +3,19 @@ use surikat\control\HTTP;
 use surikat\view\FILE;
 use surikat\view\TML;
 class view {
-	static $uriParams = array();
-	static $PATH;
+	static $URI;
 	static $xDom = 'x-dom/';
 	static function preHooks(){
-		$path = func_num_args()?func_get_arg(0):static::$PATH;
+		$path = func_num_args()?func_get_arg(0):static::$URI->getPath();
 		static::serviceHook($path);
 	}
 	static function postHooks(){}
 	static function index(){
-		static::preHooks(func_num_args()?func_get_arg(0):static::$PATH);
-		static::exec(static::param(0).'.tml');
+		static::preHooks(func_num_args()?func_get_arg(0):static::$URI->getPath());
+		static::exec(static::$URI->param(0).'.tml');
 	}
 	static function serviceHook(){
-		$path = func_num_args()?func_get_arg(0):static::$PATH;
+		$path = func_num_args()?func_get_arg(0):static::$URI->getPath();
 		if(strpos($path,'/service/')===0&&service::method(str_replace('/','_',substr($path,9))))
 			exit;
 	}
@@ -84,73 +83,10 @@ class view {
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
 	}
 	static function initialize(){
-		static::$PATH = @$_SERVER['PATH_INFO'];
 		if(control::devHas(control::dev_view))
 			FILE::$FORCECOMPILE = 1;
 		FILE::$COMPILE[] = array('view','document');
-		static::$uriParams = static::getUriParams(ltrim(@$_SERVER['PATH_INFO'],'/'));
-	}
-	static $separators = array(
-		'Eq'=>':',
-		'And'=>'|',
-		'Or'=>'&',
-	);
-	static $separatorWord = '-';
-	static $forbiddenChrParam = array(
-		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
-		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
-		';','.'
-	);
-	static function filterParam($s){
-		$s = trim($s);
-		$s = strip_tags($s);
-		$forbid = array_merge(array_values(static::$separators),static::$forbiddenChrParam);
-		$s = str_replace($forbid,static::$separatorWord,$s);
-		$s = trim($s,static::$separatorWord);
-		if(strpos($s,static::$separatorWord.static::$separatorWord)!==false){
-			$ns = '';
-			$l = strlen($s)-1;
-			for($i=0;$i<=$l;$i++)
-				if(!($i&&$s[$i]==static::$separatorWord&&$s[$i-1]==static::$separatorWord))
-					$ns .= $s[$i];
-			$s = $ns;
-		}
-		return $s;
-	}
-	static function getUriParams($path){
-		$uriParams = array();
-		$min = array();
-		if(($pos=strpos($path,self::$separators['Eq']))!==false)
-			$min[] = $pos;
-		if(($pos=strpos($path,self::$separators['And']))!==false)
-			$min[] = $pos;
-		if(!empty($min)){
-			$sepDir = min($min);
-			$uriParams[0] = substr($path,0,$sepDir);
-			$path = substr($path,$sepDir);
-			$x = explode(self::$separators['And'],$path);
-			foreach($x as $v){
-				$x2 = explode(self::$separators['Or'],$v);
-				if($k=$i=strpos($v,self::$separators['Eq'])){
-					$k = substr($v,0,$i);
-					$v = substr($v,$i+1);
-				}
-				$v = strpos($v,self::$separators['Or'])?explode(self::$separators['Or'],$v):$v;
-				if($k)
-					$uriParams[$k] = $v;
-				elseif(!empty($v))
-					$uriParams[] = $v;
-			}
-		}
-		else
-			$uriParams[0] = $path;
-		return $uriParams;
-	}
-	static function param($k=null){
-		return $k===null?static::$uriParams:(isset(static::$uriParams[$k])?static::$uriParams[$k]:null);
-	}
-	static function encode($v){
-		return str_replace('%2F','/',urlencode(urldecode(trim($v))));
+		static::$URI = uri::factory(0,isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'');
 	}
 }
 view::initialize();

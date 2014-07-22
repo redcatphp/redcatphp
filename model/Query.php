@@ -116,6 +116,7 @@ class Query /* implements ArrayAccess */{
 		$this->select("SUBSTRING($c,1,$truncation) as $col");
 		if($getl)
 			$this->select("LENGTH($c) as {$col}_length");
+		return $this;
 	}
 	function fullText($cols,$t){
 		//pgsql full text search
