@@ -177,4 +177,36 @@ class uri{
 	function __toString(){
 		return $this->PATH;
 	}
+	function __get($k){
+		if(substr($k,-2)=='Id')
+			return $this->resolved(substr($k,0,-2));
+		else
+			return $this->param($k);
+	}
+	function __set($k,$v){
+		if(substr($k,-2)=='Id'){
+			$k = substr($k,0,-2);
+			$this->resolvedParams[$k] = $v;
+		}
+		else
+			$this->uriParams[$k] = $v;
+	}
+	function __unset($k){
+		if(substr($k,-2)=='Id'){
+			$k = substr($k,0,-2);
+			if(isset($this->resolvedParams[$k]))
+				unset($this->resolvedParams[$k]);
+		}
+		else
+			if(isset($this->uriParams[$k]))
+				unset($this->uriParams[$k]);
+	}
+	function __isset($k){
+		if(substr($k,-2)=='Id'){
+			$k = substr($k,0,-2);
+			return isset($this->resolvedParams[$k]);
+		}
+		else
+			return isset($this->uriParams[$k]);
+	}
 }
