@@ -4,13 +4,14 @@ use surikat\control;
 use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\RedException;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 class R extends RedBeanPHP\Facade{
-	private static $camelsSnakeCase;
-	static camelsSnakeCase(){
+	private static $camelsSnakeCase = true;
+	static function camelsSnakeCase(){
 		if(func_num_args())
-			$this->camelsSnakeCase = func_get_arg(0);
+			self::$camelsSnakeCase = func_get_arg(0);
 		else
-			return $this->camelsSnakeCase;
+			return self::$camelsSnakeCase;
 	}
 	static function initialize(){
 		extract(Config::model());
@@ -19,7 +20,7 @@ class R extends RedBeanPHP\Facade{
 		$port = isset($port)&&$port?';port='.$port:'';
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
 		if(control::devHas(control::dev_model_redbean))
-			R::debug();
+			self::debug(true,2);
 	}
 	function __call($f,$args){
 		if(substr($f,-4)=='Call'&&method_exists($method=substr($f,0,-4)))
@@ -123,13 +124,26 @@ class R extends RedBeanPHP\Facade{
 			return self::loadUniq(array_shift($args),array_shift($args),lcfirst(substr($f,8)));
 		return parent::__callStatic($f,$args);
 	}
+	static function toSnake($camel){
+		if(!self::$camelsSnakeCase)
+			return $camel;
+		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
+	}
+	static function find(){
+		
+	}
+	static function inspect( $type = NULL ){
+		return parent::inspect(self::toSnake($type));
+	}
+	
 	static function load($type,$id){
+		$type = self::toSnake($type);
 		if(is_string($id)||func_num_args()>2)
 			return self::loadUniq($type,$id,func_get_arg(2));
 		return parent::load($type,$id);
 	}
 	static function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
-		if (is_array($typeOrBeanArray)){
+		if(is_array($typeOrBeanArray)){
 			if (!isset( $typeOrBeanArray['_type'] ) )
 				throw new RedException('Missing _type field.');
 			$import = $typeOrBeanArray;
@@ -137,9 +151,9 @@ class R extends RedBeanPHP\Facade{
 			unset( $import['_type'] );
 		}else
 			$type = $typeOrBeanArray;
-		if ( (self::$camelsSnakeCase&&!preg_match( '/^[a-z0-9]+$/',$type))
-			||(!self::$camelsSnakeCase&&!ctype_alnum($type)) )
-			throw new RedException( 'Invalid type: ' . $type );
+		if(!ctype_alnum($type))
+			throw new RedException('Invalid type: '.$type);
+		$type = self::toSnake($type);
 		$beanOrBeans = self::getRedBean()->dispense( $type, $num, $alwaysReturnArray );
 		if (isset($import))
 			$beanOrBeans->import( $import );

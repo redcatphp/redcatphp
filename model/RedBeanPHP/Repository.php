@@ -269,7 +269,8 @@ abstract class Repository
 			throw new RedException( 'Bean has incomplete Meta Information II' );
 		}
 		//Pattern of allowed characters
-		$pattern = '/[^a-z0-9_]/i';
+		//$pattern = '/[^a-z0-9_]/i';
+		$pattern = '/[^a-z0-9_-]/i';
 		//Does the type contain invalid characters?
 		if ( preg_match( $pattern, $bean->getMeta( 'type' ) ) ) {
 			throw new RedException( 'Bean Type is invalid' );

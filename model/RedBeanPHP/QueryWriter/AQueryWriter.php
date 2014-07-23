@@ -461,7 +461,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	protected function check( $struct )
 	{
-		if ( !preg_match( '/^[a-zA-Z0-9_]+$/', $struct ) ) {
+		//if ( !preg_match( '/^[a-zA-Z0-9_]+$/', $struct ) ) {
+		if ( !preg_match( '/^[a-zA-Z0-9_-]+$/', $struct ) ) {
 			throw new RedException( 'Identifier does not conform to RedBeanPHP security policies.' );
 		}
 
@@ -516,9 +517,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public static function camelsSnake( $camel )
 	{
-		if(!R::camelsSnakeCase())
-			return $camel;
-		return strtolower( preg_replace( '/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '_$1$2', $camel ) );
+		return R::toSnake($camel);
 	}
 
 	/**
