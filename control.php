@@ -26,10 +26,10 @@ class control{
 		return $d&self::$DEV;
 	}
 	static function devOn($d){
-		return self::$DEV = $d&self::$DEV;
+		return self::$DEV = $d^self::$DEV;
 	}
 	static function devOff($d){
-		return self::$DEV = $d^self::$DEV;
+		return self::$DEV = $d&self::$DEV;
 	}
 	static function dev(){
 		$dev = 0;
