@@ -7,16 +7,13 @@ trait AQueryWriter{
 	function addTypes(){
 		if(property_exists($this,'addTypes'))
 			foreach($this->addTypes as $k=>$v)
-				$this->addType($v,is_integer($k)?null:$k);
+				$this->addType($k,$v);
 	}
-	function addType($v,$k=null){
-		if($k==null){
-			$this->typeno_sqltype[] = $v;
-			end($this->typeno_sqltype);
-			$k = key($this->typeno_sqltype);
-		}
-		else
-			$this->typeno_sqltype[$k] = $v;
-		$this->typeno_sqltype[trim(strtolower($v))] = $k;
+	protected $__typeIndex = 200;
+	function addType($k,$v=null){
+		if($v==null)
+			$v = $this->__typeIndex+=1;
+		$this->typeno_sqltype[$v] = $k;
+		$this->typeno_sqltype[trim(strtolower($k))] = $v;
 	}
 }
