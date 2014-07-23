@@ -3,7 +3,15 @@ use surikat\model;
 use surikat\control;
 use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
+use surikat\model\RedBeanPHP\RedException;
 class R extends RedBeanPHP\Facade{
+	private static $camelsSnakeCase;
+	static camelsSnakeCase(){
+		if(func_num_args())
+			$this->camelsSnakeCase = func_get_arg(0);
+		else
+			return $this->camelsSnakeCase;
+	}
 	static function initialize(){
 		extract(Config::model());
 		if(!isset($frozen))
@@ -119,6 +127,23 @@ class R extends RedBeanPHP\Facade{
 		if(is_string($id)||func_num_args()>2)
 			return self::loadUniq($type,$id,func_get_arg(2));
 		return parent::load($type,$id);
+	}
+	static function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
+		if (is_array($typeOrBeanArray)){
+			if (!isset( $typeOrBeanArray['_type'] ) )
+				throw new RedException('Missing _type field.');
+			$import = $typeOrBeanArray;
+			$type = $import['_type'];
+			unset( $import['_type'] );
+		}else
+			$type = $typeOrBeanArray;
+		if ( (self::$camelsSnakeCase&&!preg_match( '/^[a-z0-9]+$/',$type))
+			||(!self::$camelsSnakeCase&&!ctype_alnum($type)) )
+			throw new RedException( 'Invalid type: ' . $type );
+		$beanOrBeans = self::getRedBean()->dispense( $type, $num, $alwaysReturnArray );
+		if (isset($import))
+			$beanOrBeans->import( $import );
+		return $beanOrBeans;
 	}
 	static function loadUniq($table,$id,$column=null){
 		$c = R::getModelClass($table);

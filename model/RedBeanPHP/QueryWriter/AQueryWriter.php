@@ -7,6 +7,8 @@ use surikat\model\RedBeanPHP\RedException as RedException;
 use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\OODBBean as OODBBean;
 
+use surikat\model\R;
+
 /**
  * RedBean Abstract Query Writer
  *
@@ -514,6 +516,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public static function camelsSnake( $camel )
 	{
+		if(!R::camelsSnakeCase())
+			return $camel;
 		return strtolower( preg_replace( '/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '_$1$2', $camel ) );
 	}
 
