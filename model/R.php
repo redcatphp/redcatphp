@@ -6,7 +6,7 @@ use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\RedException;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 class R extends RedBeanPHP\Facade{
-	private static $camelsSnakeCase = true;
+	private static $camelsSnakeCase = false;
 	static function camelsSnakeCase(){
 		if(func_num_args())
 			self::$camelsSnakeCase = func_get_arg(0);
@@ -21,6 +21,16 @@ class R extends RedBeanPHP\Facade{
 		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
 		if(control::devHas(control::dev_model_redbean))
 			self::debug(true,2);
+	}
+	static function getModelClass($type){
+		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
+	}
+	static function getClassModel($c){
+		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
+	}
+	static function getTableColumnDef($t,$col,$key=null){
+		$c = self::getModelClass($t);
+		return $c::getColumnDef($col,$key);
 	}
 	function __call($f,$args){
 		if(substr($f,-4)=='Call'&&method_exists($method=substr($f,0,-4)))
@@ -129,13 +139,26 @@ class R extends RedBeanPHP\Facade{
 			return $camel;
 		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
 	}
-	static function find(){
-		
+	static function loadUniq($table,$id,$column=null){
+		$c = R::getModelClass($table);
+		if(is_array($table)){
+			foreach($table as $tb)
+				if($r = self::loadUniq($tb,$id,$column))
+					return $r;
+		}
+		else{
+			if(!$column)
+				$column = $c::getLoaderUniq($column);
+			if(is_array($column)){
+				foreach($column as $col)
+					if($r = self::loadUniq($table,$id,$col))
+						return $r;
+			}
+			else{
+				return R::findOne($table,'WHERE '.$column.'=?',array($c::loadUniqFilter($id)));
+			}
+		}
 	}
-	static function inspect( $type = NULL ){
-		return parent::inspect(self::toSnake($type));
-	}
-	
 	static function load($type,$id){
 		$type = self::toSnake($type);
 		if(is_string($id)||func_num_args()>2)
@@ -159,35 +182,67 @@ class R extends RedBeanPHP\Facade{
 			$beanOrBeans->import( $import );
 		return $beanOrBeans;
 	}
-	static function loadUniq($table,$id,$column=null){
-		$c = R::getModelClass($table);
-		if(is_array($table)){
-			foreach($table as $tb)
-				if($r = self::loadUniq($tb,$id,$column))
-					return $r;
-		}
-		else{
-			if(!$column)
-				$column = $c::getLoaderUniq($column);
-			if(is_array($column)){
-				foreach($column as $col)
-					if($r = self::loadUniq($table,$id,$col))
-						return $r;
+	static function inspect($type=null){
+		return parent::inspect(self::toSnake($type));
+	}
+	static function loadMulti($types,$id){
+		if ( is_string( $types ) )
+			$types = explode( ',', $types );
+		if ( !is_array( $types ) )
+			return array();
+		foreach ( $types as $k => $typeItem )
+			$types[$k] = self::$redbean->load( self::toSnake($typeItem), $id );
+		return $types;
+	}
+	static function dispenseAll($order,$onlyArrays=false){
+		$list = array();
+		foreach( explode( ',', $order ) as $order ) {
+			if ( strpos( $order, '*' ) !== false ) {
+				list( $type, $amount ) = explode( '*', $order );
 			}
-			else{
-				return R::findOne($table,'WHERE '.$column.'=?',array($c::loadUniqFilter($id)));
+			else {
+				$type   = $order;
+				$amount = 1;
 			}
+			$list[] = self::dispense( self::toSnake($type), $amount, $onlyArrays );
 		}
+		return $list;
 	}
-	static function getModelClass($type){
-		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
+	static function findOrDispense($type,$sql=NULL,$bindings=array()){
+		return parent::findOrDispense( self::toSnake($type), $sql, $bindings );
 	}
-	static function getClassModel($c){
-		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
+	static function find( $type, $sql = NULL, $bindings = array() ){
+		return parent::find( self::toSnake($type), $sql, $bindings );
 	}
-	static function getTableColumnDef($t,$col,$key=null){
-		$c = self::getModelClass($t);
-		return $c::getColumnDef($col,$key);
+	static function findAll( $type, $sql = NULL, $bindings = array() ){
+		return parent::findAll( self::toSnake($type), $sql, $bindings );
+	}
+	static function findAndExport( $type, $sql = NULL, $bindings = array() ){
+		return parent::findAndExport( self::toSnake($type), $sql, $bindings );
+	}
+	static function findOne( $type, $sql = NULL, $bindings = array() ){
+		return parent::findOne( self::toSnake($type), $sql, $bindings );
+	}
+	static function findLast( $type, $sql = NULL, $bindings = array() ){
+		return parent::findLast( self::toSnake($type), $sql, $bindings );
+	}
+	static function batch( $type, $ids ){
+		return parent::batch( self::toSnake($type), $ids );
+	}
+	static function loadAll( $type, $ids ){
+		return parent::loadAll( self::toSnake($type), $ids );
+	}
+	static function convertToBeans( $type, $rows ){
+		return parent::convertToBeans( self::toSnake($type), $rows );
+	}
+	static function taggedAll( $beanType, $tagList ){
+		return parent::taggedAll( self::toSnake($beanType), $tagList );
+	}
+	static function wipe( $beanType ){
+		return parent::wipe( self::toSnake($beanType) );
+	}
+	static function count( $type, $addSQL = '', $bindings = array() ){
+		return parent::count( self::toSnake($type), $addSQL, $bindings );
 	}
 }
 R::initialize();
