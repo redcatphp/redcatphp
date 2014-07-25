@@ -262,20 +262,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(!in_array($col,array_keys(R::inspect($this->table)))){
 				$w->addColumnFulltext($this->table, $col);
 				$w->addIndexFullText($this->table, $col);
+				$w->handleFullText($this->table, $col, $cols, $this);
 			}
-			$columns = '';
-			foreach((array)$cols as $k=>$v){
-				$col = "to_tsvector(language, $k)";
-					$col = "setweight($col,'$v')";
-				$columns .= $col;
-			}
-			$this->onChanged(function($bean)use($col,&$w){
-				$model = $bean->box();
-				$table = $w->esc($model->getTable());
-				$col = $w->esc(R::toSnake($col));
-				R::exec('UPDATE '.$table.' SET '.$col.'='.$columns.' WHERE id=?',array($bean->id));
-			});
-			$this->$col = $columns;
 		}
 	}
 	function after_update(){
