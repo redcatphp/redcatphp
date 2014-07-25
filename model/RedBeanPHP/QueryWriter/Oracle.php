@@ -1,4 +1,9 @@
-<?php
+<?php namespace surikat\model\RedBeanPHP\QueryWriter;
+
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\Adapter as Adapter;
 /**
  * RedBean Oracle Driver
  *
@@ -13,8 +18,9 @@
  * This source file is subject to the BSD/GPLv2 License that is bundled
  * with this source code in the file license.txt.
  */
-class RedBean_QueryWriter_Oracle extends RedBean_QueryWriter_AQueryWriter implements RedBean_QueryWriter
+class Oracle extends AQueryWriter implements QueryWriter
 {
+	protected $caseSupport = false;
 	/**
 	 * Adapter
 	 *

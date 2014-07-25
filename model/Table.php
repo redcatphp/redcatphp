@@ -41,6 +41,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#</workflow>
 	private static $__binded = array();
 	protected static $loadUniq = 'name';
+	protected static $loadUniqs = array();
 	static function getLoaderUniq(){
 		$l = static::$loadUniq;
 		if($f=static::getColumnDef($l,'readCol'))
@@ -53,7 +54,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	static $metaCast = array();
 	static $sync;
 	private $errors = array();
-	private $relationsKeysStore = array();
+	private $_relationsKeysStore = array();
 	protected $table;
 	protected $bean;
 	protected $creating;
@@ -99,16 +100,23 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		else
 			$this->errors[] = $k;
 	}
-	function relationsKeysRestore(){
-		foreach($this->relationsKeysStore as $k=>$v)
+	function _relationsKeysRestore(){
+		$r = array();
+		foreach($this->getKeys() as $k)
+			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
+				$r[] = $k;
+			elseif(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
+				$r[] = $k;
+			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
+				$r[] = $k;
+		foreach($this->_relationsKeysStore as $k=>$v)
 			$this->$k = $v;
-		
 	}
-	function relationsKeysStore($keys){
+	function _relationsKeysStore($keys){
 		$r = array();
 		foreach($keys as $k)
 			$r[$k] = $this->bean->$k;
-		$this->relationsKeysStore = $r;
+		$this->_relationsKeysStore = $r;
 	}
 	function getErrors(){
 		$e = $this->errors;
@@ -163,16 +171,28 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('read');
 	}
 	function update(){
-		$r = array();
-		foreach($this->getKeys() as $k)
-			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
-				$r[] = $k;
-			elseif(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
-				$r[] = $k;
-			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
-				$r[] = $k;
-		$this->relationsKeysStore($r);
+		$this->_relationsKeysStore();
+		$this->_filterConvention();
+		$this->_rulerConvention();
+		$this->_indexConvention();
 
+		$this->trigger('validate');
+		$e = $this->getErrors();
+		if($e&&$this->breakValidationOnError){
+			if(control::devHas(control::dev_model))
+				print_r($e);
+			throw new Exception_Validation('Données manquantes ou erronées',$e);
+		}
+			
+		if(!$e){
+			$this->trigger('change');
+			if($this->creating)
+				$this->trigger('create');
+			else
+				$this->trigger('update');
+		}
+	}
+	function _filterConvention(){
 		foreach(static::getDefColumns('filter') as $col=>$call){
 			foreach((array)$call as $f=>$a){
 				if(is_integer($f)){
@@ -185,6 +205,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$this->$col = call_user_func_array(array('control\\filter',$f),$a);
 			}
 		}
+	}
+	function _rulerConvention(){
 		foreach(static::getDefColumns('ruler') as $col=>$call){
 			foreach((array)$call as $f=>$a){
 				if(is_integer($f)){
@@ -198,44 +220,15 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}
-		$this->_uniqConvention();
-
-		$this->trigger('validate');
-		$this->trigger('change');
-		$e = $this->getErrors();
-		if($e&&$this->breakValidationOnError){
-			if(control::devHas(control::dev_model))
-				print_r($e);
-			throw new Exception_Validation('Données manquantes ou erronées',$e);
-		}
-			
-		if(!$e){
-			if($this->creating)
-				$this->trigger('create');
-			else
-				$this->trigger('update');
-		}
-	}
-	static function _keyExplode($k){
-		return AQueryWriter::camelsSnake($k);
-	}
-	static function _keyImplode($k){
-		$x = explode('_',$k);
-		foreach($x as &$_x)
-			$_x = ucfirst($_x);
-		return implode('',$x);
 	}
 	function _uniqConvention(){
 		$uniqs = array();
 		foreach($this->getKeys() as $key){
-			if($key==static::$loadUniq)
+			if(	$key==static::$loadUniq
+				||strpos($key,'uniq_')===0
+				||in_array($key,static::$loadUniqs)
+			)
 				$uniqs[$key] = $this->bean->$key;
-			elseif(strpos($key,'uniq_')===0){
-				$k = substr($key,5);
-				$bk = self::_keyImplode($k);
-				$uniqs[$k] = $this->bean->$bk = $this->bean->$key;
-				unset($this->bean->$key);
-			}
 		}
 		foreach(array_keys(static::getDefColumns('uniq')) as $col)
 			$uniqs[$col] = $this->bean->$col;
@@ -255,11 +248,38 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(isset($uniqs[static::$loadUniq]))
 				unset($uniqs[static::$loadUniq]);
 			if(!empty($uniqs)&&!R::getRedBean()->isFrozen())
-				$this->bean->setMeta('buildcommand.unique',array(array_keys($uniqs)));
+				//$this->bean->setMeta('buildcommand.unique',array(array_keys($uniqs)));
+				R::getWriter()->addUniqueIndex($this->table,array_keys($uniqs));
+		}
+	}
+	function _indexConvention(){
+		$this->_uniqConvention();
+		$this->_fulltextConvention();
+	}
+	function _fulltextConvention(){
+		$w = R::getWriter();
+		foreach(static::getDefColumns('fulltext') as $col=>$cols){
+			if(!in_array($col,array_keys(R::inspect($this->table)))){
+				$w->addColumnFulltext($this->table, $col);
+				$w->addIndexFullText($this->table, $col);
+			}
+			$columns = '';
+			foreach((array)$cols as $k=>$v){
+				$col = "to_tsvector(language, $k)";
+					$col = "setweight($col,'$v')";
+				$columns .= $col;
+			}
+			$this->onChanged(function($bean)use($col,&$w){
+				$model = $bean->box();
+				$table = $w->esc($model->getTable());
+				$col = $w->esc(R::toSnake($col));
+				R::exec('UPDATE '.$table.' SET '.$col.'='.$columns.' WHERE id=?',array($bean->id));
+			});
+			$this->$col = $columns;
 		}
 	}
 	function after_update(){
-		$this->relationsKeysRestore();
+		$this->_relationsKeysRestore();
 		if(empty($this->errors)){
 			if($this->creating)
 				$this->trigger('created');

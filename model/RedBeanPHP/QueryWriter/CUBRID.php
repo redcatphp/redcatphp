@@ -18,6 +18,7 @@ use \RedBeanPHP\Adapter as Adapter;
  */
 class CUBRID extends AQueryWriter implements QueryWriter
 {
+	protected $caseSupport = false;
 	/**
 	 * Data types
 	 */

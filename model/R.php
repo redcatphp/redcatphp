@@ -120,7 +120,7 @@ class R extends RedBeanPHP\Facade{
 		if(!control::devHas(control::dev_model)&&!$force)
 			return;
 		$path = 'model/schema.'.$table.'.php';
-		if(is_file($path)&&!R::getWriter()->tableExists($table)&&is_array($a=include($path)))
+		if(is_file($path)&&!self::getWriter()->tableExists($table)&&is_array($a=include($path)))
 			R::storeMultiArray($a);
 	}
 	static function getAll4D(){
@@ -135,7 +135,7 @@ class R extends RedBeanPHP\Facade{
 		return parent::__callStatic($f,$args);
 	}
 	static function toSnake($camel){
-		if(!self::$camelsSnakeCase)
+		if(!self::$camelsSnakeCase||!self::getWriter()->caseSupport)
 			return $camel;
 		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
 	}
