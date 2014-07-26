@@ -361,12 +361,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			return $this->bean->__get($k,$v);
 		if(method_exists($this,$method = '_get'.ucfirst($k)))
 			return $this->$method($v);
-		elseif(strpos($k,'link')===0&&ctype_upper(substr($k,4,1))){
-			$k = substr($k,4);
-			$key = 'shared'.ucfirst($k).'List';
-			$this->bean->via(lcfirst($k))->$key = $v;
-			return;
-		}
 		$ref = &$this->bean->$prop;
 		return $ref;
 	}
@@ -379,12 +373,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			return $this->bean->__set($k,$v);
 		if(method_exists($this,$method = '_set'.ucfirst($k)))
 			return $this->$method($v);
-		elseif(strpos($k,'link')===0&&ctype_upper(substr($k,4,1))){
-			$k = substr($k,4);
-			$key = 'shared'.ucfirst($k).'List';
-			$this->bean->via(lcfirst($k))->$key = $v;
-			return;
-		}
 		elseif(is_array($v)){
 			if(is_integer(key($v))){
 				foreach($v as &$_v)
@@ -427,6 +415,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
     }
     function getTable(){
 		return $this->table;
+    }
+    function getType(){
+		return $this->type;
 	}
 	static function getDefColumns($key=null){
 		$key = ucfirst($key);
