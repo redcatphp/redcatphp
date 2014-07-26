@@ -60,6 +60,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private $errors = array();
 	private $_relationsKeysStore = array();
 	protected $table;
+	protected $type;
 	protected $bean;
 	protected $creating;
 	protected $checkUniq = true;
@@ -83,6 +84,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function __construct($table){
 		$this->table = $table;
+		$this->type = R::toCamel($table);
 		self::_binder($table);
 	}
 	function getKeys(){
@@ -145,6 +147,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function dispense(){
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
+		$this->type = R::toCamel($this->table);
 		$c = get_class($this);
 		foreach($this->getKeys() as $k)
 			if($cast=$c::getColumnDef($k,'cast'))
@@ -169,6 +172,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function open(){
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
+		$this->type = R::toCamel($this->table);
 		$this->trigger('read');
 	}
 	function update(){
@@ -301,46 +305,43 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $this->__get('own'.ucfirst($this->table).'_'.$type);
 	}
 	function &__get($prop){
-		//if(substr($prop,-4)=='List'){
-			//$prop = strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '_$1$2', $prop ));
-			//$x = explode('_',$prop);
-			//$e = ucfirst(array_pop($x));
-			//$prop = array_shift($x);
-			//if(isset($x[0]))
-				//$x[0] = ucfirst($x[0]);
-			//$prop .= implode('_',$x);
-			//$prop .= $e;
-		//}
 		$ref = &$this->bean->$prop;
 		return $ref;
 	}
-	function arraySetter(&$k, $v){
+	function arraySetter($k, $v){
 		if(isset($v['id'])&&$id=$v['id']){
-			$v = R::load($k,$id);
+			$val = R::load($k,$id);
+			foreach($v as $_k=>$_v)
+				if($k!='id')
+					$v->$_k = $_v;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
-			if(!($v = R::load($k,$id)))
-				$v = R::newOne($k,array(static::$loadUniq=>$id));
+			if(!($val = R::load($k,$id)))
+				$val = R::newOne($k,$v);
+			foreach($v as $_k=>$_v)
+				if($k!=static::$loadUniq)
+					$v->$_k = $_v;
 		}
 		else
-			$v = R::newOne(ucfirst($this->table).ucfirst($k));
-		return $v;
+			$val = R::newOne($this->type.ucfirst($k),$v);
+		return array($k,$val);
 	}
-	function arraysSetter(&$k, $v){
+	function arraysSetter($k, $v){
+		$uk = ucfirst($k);
 		if(isset($v['id'])&&$id=$v['id']){
 			$v = R::load($k,$id);
-			$k = 'shared'.ucfirst($k);
+			$k = 'shared'.$uk;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
 			if(!($v = R::load($k,$id)))
-				$v = R::newOne($k,array(static::$loadUniq=>$id));
-			$k = 'shared'.ucfirst($k);
+				$v = R::newOne($k,$v);
+			$k = 'shared'.$uk;
 		}
 		else{
-			$k = 'xown'.ucfirst($this->table).ucfirst($k);
-			$v = R::newOne(ucfirst($this->table).ucfirst($k));
+			$v = R::newOne($this->type.$uk,$v);
+			$k = 'xown'.ucfirst($this->type).$uk;
 		}
-		return $v;
+		return array($k,$v);
 	}
 	function __set( $k, $v ){
 		if(method_exists($this,$method = '_set'.ucfirst($k)))
@@ -348,14 +349,15 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(is_array($v)){
 			if(is_integer(key($v))){
 				foreach($v as &$_v)
-					$_v = $this->arraysSetter($k,$_v);
+					list($key,$_v) = $this->arraysSetter($k,$_v);
+				$k = $key;
 			}
 			else
-				$v = $this->arraySetter($k,$v);
+				list($k,$v) = $this->arraySetter($k,$v);
 			if(!$v)
 				return;
 		}
-		$this->bean->$k = $v;
+		$this->bean->__set($k,$v);
 	}
 	function __isset( $key ){
 		return isset( $this->bean->$key );

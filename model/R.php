@@ -7,11 +7,20 @@ use surikat\model\RedBeanPHP\RedException;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 use surikat\model\Query4D;
 class R extends RedBeanPHP\Facade{
-	private static $camelsSnakeCase = true;
+	private static $camelsSnakeCase = false;
 	static function toSnake($camel){
 		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
 			return $camel;
 		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
+	}
+	static function toCamel($snake){
+		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
+			return $snake;
+		$snake = explode('-',$snake);
+		foreach($snake as &$v)
+			$v = ucfirst($v);
+		$snake = lcfirst(implode('',$snake));
+		return $snake;
 	}
 	static function camelsSnakeCase(){
 		if(func_num_args())
@@ -29,7 +38,7 @@ class R extends RedBeanPHP\Facade{
 			self::debug(true,2);
 	}
 	static function getModelClass($type){
-		$type = self::toSnake($type);
+		$type = self::toCamel($type);
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
 	}
 	static function getClassModel($c){
@@ -288,8 +297,8 @@ class R extends RedBeanPHP\Facade{
 		return $bean->box();
 	}
 
-	static function create($type,$values){
-		return self::newOne($type,self::_uniqSetter($values))->box();
+	static function create($type,$values=array()){
+		return self::newOne($type,self::_uniqSetter($type,$values))->box();
 	}
 	static function read($mix){
 		if(func_num_args()>1){
