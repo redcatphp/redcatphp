@@ -10,7 +10,7 @@ class Query /* implements ArrayAccess */{
 	protected $table;
 	protected $writer;
 	protected $composer;
-	function __construct($table=null,$writer=null,$composer='select'){
+	function __construct($table=null,$composer='select',$writer=null){
 		$this->table = $table;
 		if(!$writer)
 			$writer = R::getWriter();

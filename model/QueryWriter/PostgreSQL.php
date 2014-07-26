@@ -32,9 +32,10 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		catch (\Exception $e ) {
 		}
 	}
-	function handleFullText($table, $col, Array $cols, Table &$model){
+	function handleFullText($table, $col, Array $cols, Table &$model, $lang=''){
+		if($lang)
+			$lang .= ',';
 		$columns = array();
-		$join = '';
 		foreach((array)$cols as $k=>$v){
 			$weight = null;
 			if($pos=strpos($v,'/')!==false){
@@ -43,11 +44,13 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 				if(!in_array($weight,array('A','B','C','D')))
 					$weight = null;
 			}
-			$c = $this->esc(R::toSnake($v));
 			if(!is_integer($k)){ //relation
-				$c = $this->esc(R::toSnake($k)).'.'.$c;
+					// in dev ...
 			}
-			$c = "to_tsvector(language, $c)";
+			else{
+				
+			}
+			$c = "to_tsvector($lang $c)";
 			if($weight)
 				$c = "setweight($v,'$weight')";
 		}
@@ -56,9 +59,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 			$model = $bean->box();
 			$table = $w->esc($model->getTable());
 			$col = $w->esc(R::toSnake($col));
-			//$q = new Query4D($model->getTable(),'update');
-			//$q->exec();
-			//R::exec('UPDATE '.$table.$join.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',array($bean->id));
+			R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',array($bean->id));
 		});
 		
 	}

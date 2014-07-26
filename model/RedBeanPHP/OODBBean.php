@@ -7,6 +7,7 @@ use surikat\model\RedBeanPHP\BeanHelper as BeanHelper;
 use surikat\model\RedBeanPHP\RedException\Security as Security;
 use surikat\model\RedBeanPHP\RedException as RedException;
 use surikat\model\RedBeanPHP\OODBBean as OODBBean;
+use surikat\model\R;
 
 /**
  * OODBBean (Object Oriented DataBase Bean)
@@ -122,10 +123,9 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @return array
 	 */
-	private function getOwnList( $type, $redbean )
+	private function getOwnList( $type, $redbean, $toolbox )
 	{
 		$type = $this->beau( $type );
-
 		if ( $this->aliasName ) {
 			$parentField = $this->aliasName;
 			$myFieldLink = $parentField . '_id';
@@ -137,6 +137,8 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			$parentField = $this->__info['type'];
 			$myFieldLink = $parentField . '_id';
 		}
+		$writer = $toolbox->getWriter();
+		$myFieldLink = $writer->esc ($myFieldLink);
 
 		$beans = array();
 
@@ -156,7 +158,6 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 				$beans = $redbean->find( $type, array(), " $myFieldLink = :slot0 " . $this->withSql, $bindings );
 			} else {
 				$bindings = array_merge( array( $this->getID() ), $this->withParams );
-
 				$beans = $redbean->find( $type, array(), " $myFieldLink = ? " . $this->withSql, $bindings );
 			}
 		}
@@ -792,7 +793,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		if ( $this->noLoad ) {
 			$beans = array();
 		} elseif ( $isOwn ) {
-			$beans = $this->getOwnList( $listName, $redbean );
+			$beans = $this->getOwnList( $listName, $redbean, $toolbox );
 		} else {
 			$beans = $this->getSharedList( lcfirst( substr( $property, 6 ) ), $redbean, $toolbox );
 		}
@@ -860,7 +861,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			if ( !$this->noLoad ) {
 				list( $redbean, , , $toolbox ) = $this->beanHelper->getExtractedToolbox();
 				if ( $isOwn ) {
-					$beans = $this->getOwnList( $listName, $redbean );
+					$beans = $this->getOwnList( $listName, $redbean, $toolbox );
 				} else {
 					$beans = $this->getSharedList( lcfirst( substr( $property, 6 ) ), $redbean, $toolbox );
 				}
@@ -1386,7 +1387,8 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		} else {
 			$myFieldLink = $this->__info['type'] . '_id';
 		}
-
+		$writer = $this->beanHelper->getToolbox()->getWriter()->esc($myFieldLink);
+		
 		$count = 0;
 
 		if ( $this->getID() !== 0 ) {

@@ -292,7 +292,7 @@ abstract class Service_Kompiler{
 		C\FS::recurse($dir=control::$CWD.'apt',function($file)use($dir){
 			if(substr($file,strlen($seek='synaptic.json')*-1)!=$seek)
 				return;
-			$json = C\JSON::humanReadable(C\JSON::decode(file_get_contents($file)));
+			$json = json_encode(C\JSON::decode(file_get_contents($file)),JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
 			print "$file\r\n";
 			if($json&&file_put_contents($file,$json))
 				print $json."\r\n\r\n";

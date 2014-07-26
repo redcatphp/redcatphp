@@ -23,6 +23,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
 use surikat\control;
+use surikat\control\JSON;
 use surikat\control\sync;
 use BadMethodCallException;
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
@@ -42,6 +43,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private static $__binded = array();
 	protected static $loadUniq = 'name';
 	protected static $loadUniqs = array();
+	static function getLoadUniq(){
+		return static::$loadUniq;
+	}
 	static function getLoaderUniq(){
 		$l = static::$loadUniq;
 		if($f=static::getColumnDef($l,'readCol'))
@@ -101,6 +105,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->errors[] = $k;
 	}
 	function _relationsKeysRestore(){
+		foreach($this->_relationsKeysStore as $k=>$v)
+			$this->$k = $v;
+	}
+	function _relationsKeysStore(){
 		$r = array();
 		foreach($this->getKeys() as $k)
 			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
@@ -109,31 +117,24 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$r[] = $k;
 			elseif(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
 				$r[] = $k;
-		foreach($this->_relationsKeysStore as $k=>$v)
-			$this->$k = $v;
-	}
-	function _relationsKeysStore($keys){
-		$r = array();
-		foreach($keys as $k)
-			$r[$k] = $this->bean->$k;
 		$this->_relationsKeysStore = $r;
 	}
-	function getErrors(){
+	function getErrors($d=0){
 		$e = $this->errors;
 		foreach($this->bean as $k=>$o){
-			if(is_array($o)){
+			if($d!=1&&is_array($o)){
 				foreach($o as $i=>$_o){
 					if(!is_object($_o)){
 						unset($o[$i]);
 						continue;
 					}
-					$_e = $_o->getErrors();
+					$_e = $_o->getErrors(2);
 					if(!empty($_e))
 						$e[$k] = $_e;
 				}
 			}
-			elseif($o instanceof OODBBean){
-				$_e = $o->getErrors();
+			elseif($d<2&&$o instanceof OODBBean){
+				$_e = $o->getErrors(1);
 				if(!empty($_e))
 					$e[$k] = $_e;
 			}
@@ -293,11 +294,68 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		else
 			throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
 	}
-	function __get($prop){
-		return $this->bean->$prop;
+	function xownList($type){
+		return $this->__get('xown'.ucfirst($this->table).'_'.$type);
 	}
-	function __set( $prop, $value ){
-		$this->bean->$prop = $value;
+	function ownList($type){
+		return $this->__get('own'.ucfirst($this->table).'_'.$type);
+	}
+	function &__get($prop){
+		//if(substr($prop,-4)=='List'){
+			//$prop = strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '_$1$2', $prop ));
+			//$x = explode('_',$prop);
+			//$e = ucfirst(array_pop($x));
+			//$prop = array_shift($x);
+			//if(isset($x[0]))
+				//$x[0] = ucfirst($x[0]);
+			//$prop .= implode('_',$x);
+			//$prop .= $e;
+		//}
+		$ref = &$this->bean->$prop;
+		return $ref;
+	}
+	function arraySetter(&$k, $v){
+		if(isset($v['id'])&&$id=$v['id']){
+			$v = R::load($k,$id);
+		}
+		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
+			if(!($v = R::load($k,$id)))
+				$v = R::newOne($k,array(static::$loadUniq=>$id));
+		}
+		else
+			$v = R::newOne(ucfirst($this->table).ucfirst($k));
+		return $v;
+	}
+	function arraysSetter(&$k, $v){
+		if(isset($v['id'])&&$id=$v['id']){
+			$v = R::load($k,$id);
+			$k = 'shared'.ucfirst($k);
+		}
+		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
+			if(!($v = R::load($k,$id)))
+				$v = R::newOne($k,array(static::$loadUniq=>$id));
+			$k = 'shared'.ucfirst($k);
+		}
+		else{
+			$k = 'xown'.ucfirst($this->table).ucfirst($k);
+			$v = R::newOne(ucfirst($this->table).ucfirst($k));
+		}
+		return $v;
+	}
+	function __set( $k, $v ){
+		if(method_exists($this,$method = '_set'.ucfirst($k)))
+			return $this->$method($v);
+		if(is_array($v)){
+			if(is_integer(key($v))){
+				foreach($v as &$_v)
+					$_v = $this->arraysSetter($k,$_v);
+			}
+			else
+				$v = $this->arraySetter($k,$v);
+			if(!$v)
+				return;
+		}
+		$this->bean->$k = $v;
 	}
 	function __isset( $key ){
 		return isset( $this->bean->$key );
@@ -345,5 +403,13 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$p .= ucfirst($key);
 		if(property_exists($c,$p))
 			return $c::$$p;
+	}
+	function __toString(){
+		return "\n".json_encode($this->getArray(),
+			JSON_UNESCAPED_UNICODE
+			|JSON_PRETTY_PRINT
+			|JSON_NUMERIC_CHECK
+			|JSON_UNESCAPED_SLASHES
+		);
 	}
 }

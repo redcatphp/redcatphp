@@ -5,8 +5,14 @@ use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\RedException;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
+use surikat\model\Query4D;
 class R extends RedBeanPHP\Facade{
-	private static $camelsSnakeCase = false;
+	private static $camelsSnakeCase = true;
+	static function toSnake($camel){
+		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
+			return $camel;
+		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
+	}
 	static function camelsSnakeCase(){
 		if(func_num_args())
 			self::$camelsSnakeCase = func_get_arg(0);
@@ -23,6 +29,7 @@ class R extends RedBeanPHP\Facade{
 			self::debug(true,2);
 	}
 	static function getModelClass($type){
+		$type = self::toSnake($type);
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
 	}
 	static function getClassModel($c){
@@ -134,19 +141,15 @@ class R extends RedBeanPHP\Facade{
 			return self::loadUniq(array_shift($args),array_shift($args),lcfirst(substr($f,8)));
 		return parent::__callStatic($f,$args);
 	}
-	static function toSnake($camel){
-		if(!self::$camelsSnakeCase||!self::getWriter()->caseSupport)
-			return $camel;
-		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
-	}
 	static function loadUniq($table,$id,$column=null){
-		$c = R::getModelClass($table);
 		if(is_array($table)){
 			foreach($table as $tb)
 				if($r = self::loadUniq($tb,$id,$column))
 					return $r;
 		}
 		else{
+			$table = self::toSnake($table);
+			$c = R::getModelClass($table);
 			if(!$column)
 				$column = $c::getLoaderUniq($column);
 			if(is_array($column)){
@@ -159,11 +162,17 @@ class R extends RedBeanPHP\Facade{
 			}
 		}
 	}
-	static function load($type,$id){
-		$type = self::toSnake($type);
-		if(is_string($id)||func_num_args()>2)
-			return self::loadUniq($type,$id,func_get_arg(2));
-		return parent::load($type,$id);
+	static function load($type,$id,$column=null){
+		if(is_array($type)){
+			foreach($type as $tb)
+				if($r = self::load($tb,$id,$column))
+					return $r;
+		}
+		else{
+			if(is_string($id)||$column)
+				return self::loadUniq($type,$id,$column);
+			return parent::load(self::toSnake($type),$id);
+		}
 	}
 	static function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
 		if(is_array($typeOrBeanArray)){
@@ -183,7 +192,7 @@ class R extends RedBeanPHP\Facade{
 		return $beanOrBeans;
 	}
 	static function inspect($type=null){
-		return parent::inspect(self::toSnake($type));
+		return parent::inspect($type?self::toSnake($type):null);
 	}
 	static function loadMulti($types,$id){
 		if ( is_string( $types ) )
@@ -191,7 +200,7 @@ class R extends RedBeanPHP\Facade{
 		if ( !is_array( $types ) )
 			return array();
 		foreach ( $types as $k => $typeItem )
-			$types[$k] = self::$redbean->load( self::toSnake($typeItem), $id );
+			$types[$k] = self::load( $typeItem, $id );
 		return $types;
 	}
 	static function dispenseAll($order,$onlyArrays=false){
@@ -204,7 +213,7 @@ class R extends RedBeanPHP\Facade{
 				$type   = $order;
 				$amount = 1;
 			}
-			$list[] = self::dispense( self::toSnake($type), $amount, $onlyArrays );
+			$list[] = self::dispense( $type, $amount, $onlyArrays );
 		}
 		return $list;
 	}
@@ -241,8 +250,65 @@ class R extends RedBeanPHP\Facade{
 	static function wipe( $beanType ){
 		return parent::wipe( self::toSnake($beanType) );
 	}
-	static function count( $type, $addSQL = '', $bindings = array() ){
+	static function countSQL( $type, $addSQL = '', $bindings = array() ){
 		return parent::count( self::toSnake($type), $addSQL, $bindings );
 	}
+
+	static function queryObject( $type, $compo = array(), $composer='select', $writer=null ){
+		$type = self::toSnake($type);
+		$q = new Query4D($type,$method,$writer);
+		foreach($compo as $method=>$args)
+			call_user_func_array(array($q,$method),$args);
+		return $q;
+	}
+
+	static function _uniqSetter($type,$values){
+		if(is_string($values)){
+			$c = self::getModelClass($type);
+			$values = array($c::getLoadUniq()=>$values);
+		}
+		return $values;
+	}
+	
+	static function counter( $type, $compo = array() ){
+		return self::queryObject($type, $compo)->count();
+	}
+	static function readerAll($type,$compo){
+		$models = array();
+		foreach(self::convertToBeans(self::queryObject($type, $compo)->table()) as $bean)
+			$models[$bean->id] = $bean->box();
+		return $models;
+	}
+	static function updater($type,$compo){
+		return self::queryObject($type, $compo, 'update')->exec();
+	}
+	static function reader($type,$compo){
+		$bean = self::convertToBeans(array(self::queryObject($type, $compo)->row()));
+		$bean = array_shift($bean);
+		return $bean->box();
+	}
+
+	static function create($type,$values){
+		return self::newOne($type,self::_uniqSetter($values))->box();
+	}
+	static function read($mix){
+		if(func_num_args()>1){
+			$type = $mix;
+			$id = func_get_arg(1);
+		}
+		else
+			list($type,$id) = explode(':',$mix);
+		return self::load($type,$id)->box();
+	}
+	static function update($mix,$values){
+		$model = self::read($mix);
+		foreach($values as $k=>$v)
+			$model->$k = $v;
+		return $model;
+	}
+	static function delete($mix){
+		return self::trash(self::read($mix));
+	}
+	
 }
 R::initialize();
