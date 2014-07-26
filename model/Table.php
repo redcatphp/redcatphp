@@ -304,10 +304,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function ownList($type){
 		return $this->__get('own'.ucfirst($this->table).'_'.$type);
 	}
-	function &__get($prop){
-		$ref = &$this->bean->$prop;
-		return $ref;
-	}
+
 	function arraySetter($k, $v){
 		if(isset($v['id'])&&$id=$v['id']){
 			$val = R::load($k,$id);
@@ -343,12 +340,51 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		}
 		return array($k,$v);
 	}
-	function __set( $k, $v ){
+	function _keyMapperConvention($k){
+		$uk = ucfirst($k);
+		if(isset(static::${'column'.$uk.'Link'})){
+			if(static::${$col}===true)
+				$k = 'link'.ucfirst($k);
+			else
+				$k = 'link'.ucfirst(static::${'column'.$uk.'Link'});
+		}
+		if(isset(static::${'column'.$uk.'Is'}))
+			$k = (static::${'column'.$uk.'Is'}).ucfirst($k);
+		return $k;
+	}
+	function &__get($prop){
+		$k = $this->_keyMapperConvention($k);
+		if(	(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
+			||(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
+			||(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
+		)
+			return $this->bean->__get($k,$v);
+		if(method_exists($this,$method = '_get'.ucfirst($k)))
+			return $this->$method($v);
+		elseif(strpos($k,'link')===0&&ctype_upper(substr($k,4,1))){
+			$k = substr($k,4);
+			$key = 'shared'.ucfirst($k).'List';
+			$this->bean->via(lcfirst($k))->$key = $v;
+			return;
+		}
+		$ref = &$this->bean->$prop;
+		return $ref;
+	}
+	function __set($k,$v){
+		$k = $this->_keyMapperConvention($k);
+		if(	(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
+			||(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
+			||(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
+		)
+			return $this->bean->__set($k,$v);
 		if(method_exists($this,$method = '_set'.ucfirst($k)))
 			return $this->$method($v);
-		$col = 'column'.ucfirst($k).'Is';
-		if(isset(static::${$col}))
-			$k = (static::${$col}).ucfirst($k);
+		elseif(strpos($k,'link')===0&&ctype_upper(substr($k,4,1))){
+			$k = substr($k,4);
+			$key = 'shared'.ucfirst($k).'List';
+			$this->bean->via(lcfirst($k))->$key = $v;
+			return;
+		}
 		elseif(is_array($v)){
 			if(is_integer(key($v))){
 				foreach($v as &$_v)
