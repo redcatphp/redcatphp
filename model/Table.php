@@ -346,7 +346,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function __set( $k, $v ){
 		if(method_exists($this,$method = '_set'.ucfirst($k)))
 			return $this->$method($v);
-		if(is_array($v)){
+		$col = 'column'.ucfirst($k).'Is';
+		if(isset(static::${$col}))
+			$k = (static::${$col}).ucfirst($k);
+		elseif(is_array($v)){
 			if(is_integer(key($v))){
 				foreach($v as &$_v)
 					list($key,$_v) = $this->arraysSetter($k,$_v);
