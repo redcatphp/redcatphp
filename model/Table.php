@@ -57,6 +57,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	static $metaCast = array();
 	static $sync;
+	private static $_checkUniq;
 	private $errors = array();
 	private $_relationsKeysStore = array();
 	protected $table;
@@ -66,6 +67,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $checkUniq = true;
 	protected $__on = array();
 	protected $breakValidationOnError;
+	static function _checkUniq($b=null){
+		self::$_checkUniq = isset($b)?!!$b:true;
+	}
 	function checkUniq($b=null){
 		$this->checkUniq = isset($b)?!!$b:true;
 	}
@@ -238,7 +242,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		foreach(array_keys(static::getDefColumns('uniq')) as $col)
 			$uniqs[$col] = $this->bean->$col;
 		if(!empty($uniqs)){
-			if($this->checkUniq&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))){
+			if($this->checkUniq&&self::$_checkUniq!==false&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))){
 				$throwed = false;
 				foreach($uniqs as $k=>$v){
 					$bk = self::_keyImplode($k);
@@ -352,16 +356,16 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$k = (static::${'column'.$uk.'Is'}).ucfirst($k);
 		return $k;
 	}
-	function &__get($prop){
+	function &__get($k){
 		$k = $this->_keyMapperConvention($k);
 		if(	(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
 			||(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1)))
 			||(strpos($k,'shared')===0&&ctype_upper(substr($k,6,1)))
 		)
-			return $this->bean->__get($k,$v);
+			return $this->bean->__get($k);
 		if(method_exists($this,$method = '_get'.ucfirst($k)))
 			return $this->$method($v);
-		$ref = &$this->bean->$prop;
+		$ref = &$this->bean->$k;
 		return $ref;
 	}
 	function __set($k,$v){

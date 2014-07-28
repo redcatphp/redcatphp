@@ -14,7 +14,7 @@ class CsvImporter{
 	private $addCols;
 	private $addColsAfter;
 	function __construct($options=array()){
-		$this->csvDir = control::$CWD.'/.data/';
+		$this->csvDir = control::$CWD.'.data/';
 		foreach($options as $k=>$v)
 			$this->$k = $v;
 	}
@@ -52,7 +52,7 @@ class CsvImporter{
 			}
 			if($this->debug&&$this->debug!=3)
 				print_r($data);
-			$b = R::dispense($table);
+			$b = R::create($table);
 			foreach($data as $k=>$v){
 				if(strpos($k,'xown')===0&&ctype_upper(substr($k,4,1))){
 					foreach($v as $xown)
@@ -66,8 +66,10 @@ class CsvImporter{
 			foreach($allCols as $k)
 				if(!in_array($k,$missingCols)&&(!isset($data[$k])||!$data[$k]))
 					$missingCols[] = $k;
-			$b->breakOnError($this->breakOnError);
-			$b->checkUniq($this->checkUniq);
+			if(isset($this->breakOnError))
+				$b->breakOnError($this->breakOnError);
+			if(isset($this->checkUniq))
+				$b->checkUniq($this->checkUniq);
 			R::store($b);
 			unset($b);
 			if($this->freeze&&$i==1)

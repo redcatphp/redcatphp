@@ -131,14 +131,6 @@ class R extends RedBeanPHP\Facade{
 		}
 		return self::store($dataO);
 	}
-
-	static function schemaAuto($table,$force=false){
-		if(!control::devHas(control::dev_model)&&!$force)
-			return;
-		$path = 'model/schema.'.$table.'.php';
-		if(is_file($path)&&!self::getWriter()->tableExists($table)&&is_array($a=include($path)))
-			R::storeMultiArray($a);
-	}
 	static function getAll4D(){
 		return Query::explodeAggTable(call_user_func_array(array('self','getAll'),func_get_args()));
 	}
@@ -277,6 +269,10 @@ class R extends RedBeanPHP\Facade{
 			$values = array($c::getLoadUniq()=>$values);
 		}
 		return $values;
+	}
+
+	static function setUniqCheck($b=null){
+		Table::_checkUniq($b);
 	}
 	
 	static function counter( $type, $compo = array() ){

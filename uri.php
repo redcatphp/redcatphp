@@ -9,7 +9,7 @@ class uri implements ArrayAccess{
 	);
 	protected $separators = array(
 		'Eq'=>':',
-		'And'=>'|',
+		'And'=>'+',
 		'Or'=>'&',
 	);
 	protected $resolved;
