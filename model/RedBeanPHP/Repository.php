@@ -104,6 +104,8 @@ abstract class Repository
 	protected function processSharedAdditions( $bean, $sharedAdditions )
 	{
 		foreach ( $sharedAdditions as $addition ) {
+			if ( $addition instanceof SimpleModel )
+				$addition = $addition->unbox();
 			if ( $addition instanceof OODBBean ) {
 				$this->oodb->getAssociationManager()->associate( $addition, $bean );
 			} else {

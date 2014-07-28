@@ -99,6 +99,8 @@ class Frozen extends Repository
 
 		$cachedIndex = array();
 		foreach ( $ownAdditions as $addition ) {
+			if ( $addition instanceof SimpleModel )
+				$addition = $addition->unbox();
 			if ( $addition instanceof OODBBean ) {
 
 				$myFieldLink = $beanType . '_id';
