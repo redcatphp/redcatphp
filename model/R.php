@@ -314,6 +314,10 @@ class R extends RedBeanPHP\Facade{
 	static function delete($mix){
 		return self::trash(self::read($mix));
 	}
+	static function drop($type){
+		$type = self::toSnake($type);
+		return self::getWriter()->drop($type);
+	}
 	
 }
 R::initialize();

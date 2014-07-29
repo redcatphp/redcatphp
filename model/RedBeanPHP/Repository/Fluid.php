@@ -149,6 +149,7 @@ class Fluid extends Repository
 					$typeno = $this->writer->scanType( $value, FALSE );
 				}
 				$sqlt = $this->writer->code( $columns[$this->writer->esc( $property, TRUE )] );
+				//var_dump($property, $typeno , $sqlt);
 				if ( $typeno > $sqlt ) { //no, we have to widen the database column type
 					$this->writer->widenColumn( $table, $property, $typeno );
 					$bean->setMeta( 'buildreport.flags.widen', TRUE );

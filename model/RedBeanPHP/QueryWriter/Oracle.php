@@ -433,16 +433,16 @@ class Oracle extends AQueryWriter implements QueryWriter
 
 			switch ( $r['data_type'] ) {
 				case 'NUMBER':
-					$columns[$field] = $r['data_type'] . '(' . ( (int) $r['data_precision'] ) . ',0)';
+					$columns[$field] = trim($r['data_type']) . '(' . ( (int) $r['data_precision'] ) . ',0)';
 					break;
 				case 'NVARCHAR2':
-					$columns[$field] = $r['data_type'] . '(' . ( $r['data_length'] / 2 ) . ')';
+					$columns[$field] = trim($r['data_type']) . '(' . ( $r['data_length'] / 2 ) . ')';
 					break;
 				case 'FLOAT':
 				case 'TIMESTAMP(6)':
 				case 'CLOB':
 				case 'DATE':
-					$columns[$field] = $r['data_type'];
+					$columns[$field] = trim($r['data_type']);
 					break;
 			}
 		}
@@ -746,5 +746,8 @@ class Oracle extends AQueryWriter implements QueryWriter
 			END LOOP;
 
 			END;" );
+	}
+	public function drop($t){
+		$this->adapter->exec("drop table $t CASCADE CONSTRAINTS ';");
 	}
 }

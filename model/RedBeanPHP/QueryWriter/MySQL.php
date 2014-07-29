@@ -116,17 +116,17 @@ class MySQL extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter )
 	{
 		$this->typeno_sqltype = array(
-			MySQL::C_DATATYPE_BOOL             => ' TINYINT(1) UNSIGNED ',
-			MySQL::C_DATATYPE_UINT32           => ' INT(11) UNSIGNED ',
-			MySQL::C_DATATYPE_DOUBLE           => ' DOUBLE ',
-			MySQL::C_DATATYPE_TEXT8            => ' VARCHAR(255) ',
-			MySQL::C_DATATYPE_TEXT16           => ' TEXT ',
-			MySQL::C_DATATYPE_TEXT32           => ' LONGTEXT ',
-			MySQL::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
-			MySQL::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
-			MySQL::C_DATATYPE_SPECIAL_POINT    => ' POINT ',
-			MySQL::C_DATATYPE_SPECIAL_LINESTRING => ' LINESTRING ',
-			MySQL::C_DATATYPE_SPECIAL_POLYGON => ' POLYGON ',
+			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
+			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',
+			MySQL::C_DATATYPE_DOUBLE           => 'DOUBLE',
+			MySQL::C_DATATYPE_TEXT8            => 'VARCHAR(255)',
+			MySQL::C_DATATYPE_TEXT16           => 'TEXT',
+			MySQL::C_DATATYPE_TEXT32           => 'LONGTEXT',
+			MySQL::C_DATATYPE_SPECIAL_DATE     => 'DATE',
+			MySQL::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
+			MySQL::C_DATATYPE_SPECIAL_POINT    => 'POINT',
+			MySQL::C_DATATYPE_SPECIAL_LINESTRING => 'LINESTRING',
+			MySQL::C_DATATYPE_SPECIAL_POLYGON => 'POLYGON',
 		);
 
 		$this->sqltype_typeno = array();
@@ -181,7 +181,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 
 		$columns = array();
 		foreach ( $columnsRaw as $r ) {
-			$columns[$r['Field']] = $r['Type'];
+			$columns[$r['Field']] = trim($r['Type']);
 		}
 
 		return $columns;
@@ -386,6 +386,20 @@ class MySQL extends AQueryWriter implements QueryWriter
 			}
 		}
 
+		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 1;' );
+	}
+
+	public function drop($t){
+		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 0;' );
+		try {
+			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
+		} catch (\Exception $e ) {
+		}
+
+		try {
+			$this->adapter->exec( "DROP VIEW IF EXISTS `$t`" );
+		} catch (\Exception $e ) {
+		}
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 1;' );
 	}
 }

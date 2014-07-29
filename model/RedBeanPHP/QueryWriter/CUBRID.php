@@ -131,11 +131,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter )
 	{
 		$this->typeno_sqltype = array(
-			CUBRID::C_DATATYPE_INTEGER          => ' INTEGER ',
-			CUBRID::C_DATATYPE_DOUBLE           => ' DOUBLE ',
-			CUBRID::C_DATATYPE_STRING           => ' STRING ',
-			CUBRID::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
-			CUBRID::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
+			CUBRID::C_DATATYPE_INTEGER          => 'INTEGER',
+			CUBRID::C_DATATYPE_DOUBLE           => 'DOUBLE',
+			CUBRID::C_DATATYPE_STRING           => 'STRING',
+			CUBRID::C_DATATYPE_SPECIAL_DATE     => 'DATE',
+			CUBRID::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
 		);
 
 		$this->sqltype_typeno = array();
@@ -195,7 +195,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 		$columns = array();
 		foreach ( $columnsRaw as $r ) {
-			$columns[$r['Field']] = $r['Type'];
+			$columns[$r['Field']] = trim($r['Type']);
 		}
 
 		return $columns;
@@ -349,12 +349,15 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function wipeAll()
 	{
 		foreach ( $this->getTables() as $t ) {
-			foreach ( $this->getKeys( $t ) as $k ) {
-				$this->adapter->exec( "ALTER TABLE \"{$k['FKTABLE_NAME']}\" DROP FOREIGN KEY \"{$k['FK_NAME']}\"" );
-			}
-
-			$this->adapter->exec( "DROP TABLE \"$t\"" );
+			$this->drop($t);
 		}
+	}
+
+	public function drop($t){
+		foreach ( $this->getKeys( $t ) as $k ) {
+			$this->adapter->exec( "ALTER TABLE \"{$k['FKTABLE_NAME']}\" DROP FOREIGN KEY \"{$k['FK_NAME']}\"" );
+		}
+		$this->adapter->exec( "DROP TABLE \"$t\"" );
 	}
 
 	/**

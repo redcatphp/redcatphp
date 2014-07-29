@@ -7,6 +7,8 @@ use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 
+use surikat\control\str;
+
 /**
  * RedBean PostgreSQL Query Writer
  *
@@ -25,7 +27,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 * Data types
 	 */
 	const C_DATATYPE_INTEGER          = 0;
-	const C_DATATYPE_DOUBLE           = 1;
+	const C_DATATYPE_BIGINT           = 1;
+	const C_DATATYPE_DOUBLE           = 2;
 	const C_DATATYPE_TEXT             = 3;
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
@@ -124,16 +127,17 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter )
 	{
 		$this->typeno_sqltype = array(
-			self::C_DATATYPE_INTEGER          => ' integer ',
-			self::C_DATATYPE_DOUBLE           => ' double precision ',
-			self::C_DATATYPE_TEXT             => ' text ',
-			self::C_DATATYPE_SPECIAL_DATE     => ' date ',
-			self::C_DATATYPE_SPECIAL_DATETIME => ' timestamp without time zone ',
-			self::C_DATATYPE_SPECIAL_POINT    => ' point ',
-			self::C_DATATYPE_SPECIAL_LSEG     => ' lseg ',
-			self::C_DATATYPE_SPECIAL_CIRCLE   => ' circle ',
-			self::C_DATATYPE_SPECIAL_MONEY    => ' money ',
-			self::C_DATATYPE_SPECIAL_POLYGON  => ' polygon ',
+			self::C_DATATYPE_INTEGER          => 'integer',
+			self::C_DATATYPE_BIGINT           => 'bigint',
+			self::C_DATATYPE_DOUBLE           => 'double precision',
+			self::C_DATATYPE_TEXT             => 'text',
+			self::C_DATATYPE_SPECIAL_DATE     => 'date',
+			self::C_DATATYPE_SPECIAL_DATETIME => 'timestamp without time zone',
+			self::C_DATATYPE_SPECIAL_POINT    => 'point',
+			self::C_DATATYPE_SPECIAL_LSEG     => 'lseg',
+			self::C_DATATYPE_SPECIAL_CIRCLE   => 'circle',
+			self::C_DATATYPE_SPECIAL_MONEY    => 'money',
+			self::C_DATATYPE_SPECIAL_POLYGON  => 'polygon',
 		);
 
 		$this->sqltype_typeno = array();
@@ -153,7 +157,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function getTypeForID()
 	{
-		return self::C_DATATYPE_INTEGER;
+		//return self::C_DATATYPE_INTEGER;
+		return self::C_DATATYPE_BIGINT;
 	}
 
 	/**
@@ -185,7 +190,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 
 		$columns = array();
 		foreach ( $columnsRaw as $r ) {
-			$columns[$r['column_name']] = $r['data_type'];
+			$columns[$r['column_name']] = trim($r['data_type']);
 		}
 
 		return $columns;
@@ -194,57 +199,40 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::scanType
 	 */
-	public function scanType( $value, $flagSpecial = FALSE )
-	{
+	public function scanType( $value, $flagSpecial = FALSE ){
 		$this->svalue = $value;
-
-		if ( $flagSpecial && $value ) {
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) ) {
+		if( $flagSpecial && $value ) {
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_DATE;
-			}
-
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d(\.\d{1,6})?$/', $value ) ) {
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d(\.\d{1,6})?$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_DATETIME;
-			}
-
-			if ( preg_match( '/^\([\d\.]+,[\d\.]+\)$/', $value ) ) {
+			if ( preg_match( '/^\([\d\.]+,[\d\.]+\)$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_POINT;
-			}
-
-			if ( preg_match( '/^\[\([\d\.]+,[\d\.]+\),\([\d\.]+,[\d\.]+\)\]$/', $value ) ) {
+			if ( preg_match( '/^\[\([\d\.]+,[\d\.]+\),\([\d\.]+,[\d\.]+\)\]$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_LSEG;
-			}
-
-			if ( preg_match( '/^\<\([\d\.]+,[\d\.]+\),[\d\.]+\>$/', $value ) ) {
+			if ( preg_match( '/^\<\([\d\.]+,[\d\.]+\),[\d\.]+\>$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_CIRCLE;
-			}
 
-			if ( preg_match( '/^\((\([\d\.]+,[\d\.]+\),?)+\)$/', $value ) ) {
+			if ( preg_match( '/^\((\([\d\.]+,[\d\.]+\),?)+\)$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_POLYGON;
-			}
-
-			if ( preg_match( '/^\-?\$[\d,\.]+$/', $value ) ) {
+			if ( preg_match( '/^\-?\$[\d,\.]+$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_MONEY;
-			}
 		}
-
-		$sz = ( $this->startsWithZeros( $value ) );
-
-		if ( $sz ) {
+		if($this->startsWithZeros($value))
 			return self::C_DATATYPE_TEXT;
-		}
 
-		if ( $value === NULL || ( $value instanceof NULL ) || ( is_numeric( $value )
-				&& floor( $value ) == $value
-				&& $value < 2147483648
-				&& $value > -2147483648 )
-		) {
+		if ( $value === NULL || ( $value instanceof NULL ))
 			return self::C_DATATYPE_INTEGER;
-		} elseif ( is_numeric( $value ) ) {
+		
+		if ( is_numeric( $value )){
+			if(floor( $value )==$value){
+				if($value < 2147483648 && $value > -2147483648)
+					return self::C_DATATYPE_INTEGER;
+				return self::C_DATATYPE_BIGINT;
+			}
 			return self::C_DATATYPE_DOUBLE;
-		} else {
-			return self::C_DATATYPE_TEXT;
 		}
+		return self::C_DATATYPE_TEXT;
 	}
 
 	/**
@@ -252,6 +240,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function code( $typedescription, $includeSpecials = FALSE )
 	{
+
 		$r = ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription] : 99;
 
 		if ( $includeSpecials ) return $r;
@@ -388,14 +377,18 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	public function wipeAll()
 	{
 		$this->adapter->exec( 'SET CONSTRAINTS ALL DEFERRED' );
-
 		foreach ( $this->getTables() as $t ) {
 			$t = $this->esc( $t );
-
 			$this->adapter->exec( "DROP TABLE IF EXISTS $t CASCADE " );
 		}
-
 		$this->adapter->exec( 'SET CONSTRAINTS ALL IMMEDIATE' );
+	}
+	
+	public function drop($t){
+		$this->adapter->exec('SET CONSTRAINTS ALL DEFERRED');
+		$t = $this->esc($t);
+		$this->adapter->exec("DROP TABLE IF EXISTS $t CASCADE ");
+		$this->adapter->exec('SET CONSTRAINTS ALL IMMEDIATE');
 	}
 
 }

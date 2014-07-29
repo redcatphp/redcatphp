@@ -350,7 +350,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$columnsRaw = $this->adapter->get( "PRAGMA table_info('$table')" );
 
 		$columns    = array();
-		foreach ( $columnsRaw as $r ) $columns[$r['name']] = $r['type'];
+		foreach ( $columnsRaw as $r ) $columns[$r['name']] = trim($r['type']);
 
 		return $columns;
 	}
@@ -447,6 +447,18 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			}
 		}
 
+		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
+	}
+	public function drop($t){
+		$this->adapter->exec( 'PRAGMA foreign_keys = 0 ' );
+		try {
+			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
+		} catch (\Exception $e ) {
+		}
+		try {
+			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
+		} catch (\Exception $e ) {
+		}
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
 	}
 }
