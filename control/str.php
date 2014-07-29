@@ -434,5 +434,18 @@ class str{
 		return false;
 	}
 
+	static function is_numeric($var){
+		for ($i=0;$i<strlen($var);$i++){
+			$ascii_code=ord($var[$i]);
+			if ($ascii_code >=49 && $ascii_code <=57)
+				continue;
+			else
+				return false;
+		}
+		return true;
+	}
+	static function is_integer($var){
+		return self::is_numeric($var)&&floor($var)==$var;
+	}
 
 }
