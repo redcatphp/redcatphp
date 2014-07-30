@@ -180,11 +180,137 @@ class Query /* implements ArrayAccess */{
 		sort($rel);
 		$rel = implode('_',$rel);
 		$q = $this->writerQuoteCharacter;
-		return "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}
-				LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
+		$sql = "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}";
+		if($this->table!=$share)
+			$sql .= "LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
+		return $sql;
+	}
+	private function _typeAliasExtract($type){
+		$type = R::toSnake(trim($type));
+		$alias = null;
+		$superalias = null;
+		if(($p=strpos($type,':'))!==false){
+			if(isset($type[$p+1])&&$type[$p+1]==':'){
+				$superalias = trim(substr($type,$p+2));
+				$type = trim(substr($type,0,$p));
+			}
+			else{
+				$alias = trim(substr($type,$p+1));
+				$type = trim(substr($type,0,$p));
+			}
+		}
+		return array($type,$alias,$superalias);
+	}
+	function selectRelationnal($select,$colAlias=null){
+		if(is_array($select)){
+			$r = array();
+			foreach($select as $k=>$s)
+				if(is_integer($k))
+					$r[$k] = $this->selectRelationnal($s);
+				else
+					$r[$k] = $this->selectRelationnal($k,$s);
+			var_dump($r);exit;
+			return $r;
+		}
+		$l = strlen($select);
+		$type = '';
+		$types = array();
+		$typesTMP = array();
+		$q = $this->writerQuoteCharacter;
+		for($i=0;$i<$l;$i++){
+			switch($select[$i]){
+				case '.':
+				case '>':
+					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
+					$type = $type;
+					$rel = !empty($typesTMP)?end($typesTMP):$this->table;
+					$typesTMP[] = $type;
+					if($superalias)
+						$alias = $superalias.'::'.($alias?$alias:$type);
+					if($alias)
+						$type = array($type,$alias);
+					$types[] = $rel;
+					$types[] = $type;
+					$type = '';
+				break;
+				case '<':
+					//in DEV ...
+
+					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
+					if(isset($select[$i+1])&&$select[$i+1]=='>'){
+						$i++;
+						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
+						$typesTMP[] = $type;
+						if($superalias)
+							$alias = $superalias.'::'.($alias?$alias:$type);
+						$rels = array($rel,$type);
+						sort($rels);
+						$types[] = $rel;
+						$types[] = implode('_',$rels);
+						if($alias)
+							$type = array($type,$alias);
+						$types[] = $type;
+					}
+					else{
+						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
+						$typesTMP[] = $type;
+						if($superalias)
+							$alias = $superalias.'::'.($alias?$alias:$type);
+						if($alias)
+							$type = array($type,$alias);
+						$types[] = $type;
+						$types[] = $rel;
+					}
+
+
+					
+					$type = '';
+				break;
+				default:
+					$type .= $select[$i];
+				break;
+			}
+		}
+		$col = trim($type);
+		$table = !empty($typesTMP)?end($typesTMP):$this->table;
+		$nTypes = array();
+		foreach($types as $i=>$type){
+			if(is_array($type)){
+				list($type,$alias) = $type;
+			}
+			else{
+				$alias = $type;
+			}
+			if($i){
+				$join = "{$q}$lastType{$q}";
+				if($lastType!=$lastAlias)
+					$join .= " as {$q}$lastAlias{$q}";
+				$nTypes[] = "LEFT OUTER JOIN $join ON {$q}$lastAlias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$lastType}_id{$q}";
+			}
+			$lastType = $type;
+			$lastAlias = $alias;
+		}
+		//$types[] = $table.'.'.$col;
+		return $nTypes;
+	}
+	function selectNeed($n='id'){
+		if(!count($this->composer->select))
+			$this->select('*');
+		if(!$this->inSelect($n)&&!$this->inSelect($n))
+			$this->select($n);
+	}
+	function table(){
+		$this->selectNeed();
+		$data = $this->getAll();
+		if(control::devHas(control::dev_model_data))
+			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
+		return $data;
 	}
 	function count(){
-		return (int)$this->query('getCell',array('select'=>'COUNT(*)','from'=>'('.$this->buildQuery($compo).') as TMP_count'),(array)$params);
+		$queryCount = clone $this;
+		$queryCount->unSelect();
+		$queryCount->select('id');
+		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
 	}
 	
 	//public helpers api

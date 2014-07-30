@@ -65,7 +65,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $bean;
 	protected $creating;
 	protected $checkUniq = true;
-	protected $__on = array();
+	protected $_on = array();
 	protected $breakValidationOnError;
 	static function _checkUniq($b=null){
 		self::$_checkUniq = isset($b)?!!$b:true;
@@ -159,9 +159,10 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('new');
 	}
 	function on($f,$c){
-		if(!isset($this->__on[$f]))
-			$this->__on[$f] = array();
-		$this->__on[$f][] = $c;
+		if(!isset($this->_on[$f]))
+			$this->_on[$f] = array();
+		$this->_on[$f][] = $c;
+		var_dump($this->_on);
 	}
 	function trigger(){
 		$args = func_get_args();
@@ -169,8 +170,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$c = 'on'.ucfirst($f);
 		if(method_exists($this,$c))
 			call_user_func_array(array($this,$c),$args);
-		if(isset($this->__on[$f]))
-			foreach($this->__on[$f] as $c)
+		if(isset($this->_on[$f]))
+			foreach($this->_on[$f] as $c)
 				call_user_func($c,$this,$args);
 	}
 	function open(){
@@ -271,8 +272,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(!in_array($col,array_keys(R::inspect($this->table)))){
 				$w->addColumnFulltext($this->table, $col);
 				$w->addIndexFullText($this->table, $col);
-				$w->handleFullText($this->table, $col, $cols, $this);
 			}
+			$w->handleFullText($this->table, $col, $cols, $this);
 		}
 	}
 	function after_update(){
@@ -365,8 +366,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			return $this->bean->__get($k);
 		if(method_exists($this,$method = '_get'.ucfirst($k)))
 			return $this->$method($v);
-		$ref = &$this->bean->$k;
-		return $ref;
+		return $this->bean->__get($k);
 	}
 	function __set($k,$v){
 		$k = $this->_keyMapperConvention($k);

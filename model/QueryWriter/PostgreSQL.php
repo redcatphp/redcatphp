@@ -36,6 +36,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		if($lang)
 			$lang .= ',';
 		$columns = array();
+		$params = array();
 		foreach((array)$cols as $k=>$v){
 			$weight = null;
 			if($pos=strpos($v,'/')!==false){
@@ -45,21 +46,36 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 					$weight = null;
 			}
 			if(!is_integer($k)){ //relation
-					// in dev ...
+				foreach($model->$k as $b){
+					if($b->$v){
+						$params[] = $b->$v;						
+						$c = "to_tsvector($lang ?)";
+						if($weight)
+							$c = "setweight($v,'$weight')";
+						$columns[] = $c;
+					}
+				}
+						
 			}
 			else{
-				
+				if($model->$v){
+					$params[] = $b->$v;						
+					$c = "to_tsvector($lang ?)";
+					if($weight)
+						$c = "setweight($v,'$weight')";
+					$columns[] = $c;
+				}
 			}
-			$c = "to_tsvector($lang $c)";
-			if($weight)
-				$c = "setweight($v,'$weight')";
 		}
 		$w = &$this;
-		$model->onChanged(function($bean)use($col,$columns,&$w,$join){
+		var_dump($columns);exit;
+		$model->on('changed',function($bean)use($col,$columns,&$w,$join,$params){
 			$model = $bean->box();
 			$table = $w->esc($model->getTable());
 			$col = $w->esc(R::toSnake($col));
-			R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',array($bean->id));
+			$params[] = $bean->id;
+			R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',$params);
+			//R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',array($bean->id));
 		});
 		
 	}

@@ -13,7 +13,7 @@ class uploader{
 		),$conf);
 		extract($conf);
 		$func = 'file'.($multi?'s':'');
-		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename){
+		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename,$conversion){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 			if($conversion){
 				switch(exif_imagetype($file)){
@@ -47,7 +47,7 @@ class uploader{
 				throw new Exception_Upload('extension');
 		});
 	}
-	protected $extensionRewrite = array(
+	protected static $extensionRewrite = array(
 		'jpeg'=>'jpg',
 	);
 	static function formatFilename($name){
