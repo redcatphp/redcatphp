@@ -220,7 +220,7 @@ class Query /* implements ArrayAccess */{
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
 				case '.':
-				case '>':
+				case '>': //own
 					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
 					$type = $type;
 					$rel = !empty($typesTMP)?end($typesTMP):$this->table;
@@ -237,7 +237,7 @@ class Query /* implements ArrayAccess */{
 					//in DEV ...
 
 					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
-					if(isset($select[$i+1])&&$select[$i+1]=='>'){
+					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
 						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
 						$typesTMP[] = $type;
@@ -245,21 +245,19 @@ class Query /* implements ArrayAccess */{
 							$alias = $superalias.'::'.($alias?$alias:$type);
 						$rels = array($rel,$type);
 						sort($rels);
-						$types[] = $rel;
-						$types[] = implode('_',$rels);
-						if($alias)
-							$type = array($type,$alias);
-						$types[] = $type;
+							$types[] = $rel;
+						$imp = implode('_',$rels);
+						$types[] = ($alias?array($imp,$alias):$imp);
 					}
-					else{
+					else{ //parent
 						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
 						$typesTMP[] = $type;
 						if($superalias)
 							$alias = $superalias.'::'.($alias?$alias:$type);
 						if($alias)
 							$type = array($type,$alias);
-						$types[] = $type;
 						$types[] = $rel;
+						$types[] = $type;
 					}
 
 
@@ -291,7 +289,8 @@ class Query /* implements ArrayAccess */{
 			$lastAlias = $alias;
 		}
 		//$types[] = $table.'.'.$col;
-		return $nTypes;
+		//return $nTypes;
+		return $types;
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
