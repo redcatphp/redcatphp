@@ -185,10 +185,9 @@ class Query /* implements ArrayAccess */{
 			$sql .= "LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 		return $sql;
 	}
-	private function _typeAliasExtract($type){
+	private function _typeAliasExtract($type,&$superalias=null){
 		$type = R::toSnake(trim($type));
 		$alias = null;
-		$superalias = null;
 		if(($p=strpos($type,':'))!==false){
 			if(isset($type[$p+1])&&$type[$p+1]==':'){
 				$superalias = trim(substr($type,$p+2));
@@ -199,7 +198,7 @@ class Query /* implements ArrayAccess */{
 				$type = trim(substr($type,0,$p));
 			}
 		}
-		return array($type,$alias,$superalias);
+		return array($type,$alias);
 	}
 	function selectRelationnal($select,$colAlias=null){
 		if(is_array($select)){
@@ -209,59 +208,48 @@ class Query /* implements ArrayAccess */{
 					$r[$k] = $this->selectRelationnal($s);
 				else
 					$r[$k] = $this->selectRelationnal($k,$s);
-			var_dump($r);exit;
+			var_export($r);exit;
 			return $r;
 		}
 		$l = strlen($select);
 		$type = '';
-		$types = array();
-		$typesTMP = array();
+		$join = array();
+		$typeParent = $this->table;
 		$q = $this->writerQuoteCharacter;
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
 				case '.':
 				case '>': //own
-					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
-					$type = $type;
-					$rel = !empty($typesTMP)?end($typesTMP):$this->table;
-					$typesTMP[] = $type;
+					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
 					if($superalias)
 						$alias = $superalias.'::'.($alias?$alias:$type);
 					if($alias)
 						$type = array($type,$alias);
-					$types[] = $rel;
-					$types[] = $type;
+					$join[$typeParent][] = $type;
+					$typeParent = $type;
 					$type = '';
 				break;
 				case '<':
-					//in DEV ...
-
-					list($type,$alias,$superalias) = $this->_typeAliasExtract($type);
+					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
 					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
-						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
-						$typesTMP[] = $type;
 						if($superalias)
 							$alias = $superalias.'::'.($alias?$alias:$type);
-						$rels = array($rel,$type);
+						$rels = array($typeParent,$type);
 						sort($rels);
-							$types[] = $rel;
 						$imp = implode('_',$rels);
-						$types[] = ($alias?array($imp,$alias):$imp);
+						$join[$typeParent][] = $imp;
+						$join[$imp][] = ($alias?array($type,$alias):$type);
+						$typeParent = $type;
 					}
 					else{ //parent
-						$rel = !empty($typesTMP)?end($typesTMP):$this->table;
-						$typesTMP[] = $type;
 						if($superalias)
 							$alias = $superalias.'::'.($alias?$alias:$type);
 						if($alias)
 							$type = array($type,$alias);
-						$types[] = $rel;
-						$types[] = $type;
+						$join[$type][] = $typeParent;
+						$typeParent = $type;
 					}
-
-
-					
 					$type = '';
 				break;
 				default:
@@ -269,28 +257,28 @@ class Query /* implements ArrayAccess */{
 				break;
 			}
 		}
-		$col = trim($type);
-		$table = !empty($typesTMP)?end($typesTMP):$this->table;
-		$nTypes = array();
-		foreach($types as $i=>$type){
-			if(is_array($type)){
-				list($type,$alias) = $type;
-			}
-			else{
-				$alias = $type;
-			}
-			if($i){
-				$join = "{$q}$lastType{$q}";
-				if($lastType!=$lastAlias)
-					$join .= " as {$q}$lastAlias{$q}";
-				$nTypes[] = "LEFT OUTER JOIN $join ON {$q}$lastAlias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$lastType}_id{$q}";
-			}
-			$lastType = $type;
-			$lastAlias = $alias;
-		}
+		//$col = trim($type);
+		//$table = !empty($typesTMP)?end($typesTMP):$this->table;
+		//$nTypes = array();
+		//foreach($types as $i=>$type){
+			//if(is_array($type)){
+				//list($type,$alias) = $type;
+			//}
+			//else{
+				//$alias = $type;
+			//}
+			//if($i){
+				//$join = "{$q}$lastType{$q}";
+				//if($lastType!=$lastAlias)
+					//$join .= " as {$q}$lastAlias{$q}";
+				//$nTypes[] = "LEFT OUTER JOIN $join ON {$q}$lastAlias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$lastType}_id{$q}";
+			//}
+			//$lastType = $type;
+			//$lastAlias = $alias;
+		//}
 		//$types[] = $table.'.'.$col;
 		//return $nTypes;
-		return $types;
+		return $join;
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
