@@ -257,28 +257,21 @@ class Query /* implements ArrayAccess */{
 				break;
 			}
 		}
-		//$col = trim($type);
-		//$table = !empty($typesTMP)?end($typesTMP):$this->table;
-		//$nTypes = array();
-		//foreach($types as $i=>$type){
-			//if(is_array($type)){
-				//list($type,$alias) = $type;
-			//}
-			//else{
-				//$alias = $type;
-			//}
-			//if($i){
-				//$join = "{$q}$lastType{$q}";
-				//if($lastType!=$lastAlias)
-					//$join .= " as {$q}$lastAlias{$q}";
-				//$nTypes[] = "LEFT OUTER JOIN $join ON {$q}$lastAlias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$lastType}_id{$q}";
-			//}
-			//$lastType = $type;
-			//$lastAlias = $alias;
-		//}
-		//$types[] = $table.'.'.$col;
-		//return $nTypes;
-		return $join;
+		$col = trim($type);
+		$table = !empty($typesTMP)?end($typesTMP):$this->table;
+		$nTypes = array();
+		foreach($join as $parentType=>$types){
+			foreach($types as $type){
+				if(is_array($type))
+					list($type,$alias) = $type;
+				else
+					$alias = $type;
+				$nTypes[] = "LEFT OUTER JOIN $alias ON {$q}$alias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$parentType}_id{$q}";
+			}
+		}
+		$nTypes[] = $table.'.'.$col;
+		return $nTypes;
+		//return $join;
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
