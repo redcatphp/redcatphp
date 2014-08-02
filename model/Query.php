@@ -208,7 +208,6 @@ class Query /* implements ArrayAccess */{
 					$r[$k] = $this->selectRelationnal($s);
 				else
 					$r[$k] = $this->selectRelationnal($k,$s);
-			var_export($r);exit;
 			return $r;
 		}
 		$l = strlen($select);
@@ -216,7 +215,6 @@ class Query /* implements ArrayAccess */{
 		$typeParent = $this->table;
 		$aliasParent = $this->table;
 		$q = $this->writerQuoteCharacter;
-		$nTypes = array();
 		$shareds = array();
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
@@ -226,10 +224,11 @@ class Query /* implements ArrayAccess */{
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-					$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
+					$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
 					$aliasParent = $alias;
 					$type = '';
+					$relation = '>';
 				break;
 				case '<':
 					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
@@ -241,20 +240,21 @@ class Query /* implements ArrayAccess */{
 						sort($rels);
 						$imp = implode('_',$rels);
 						$join[$imp][] = $alias;
-						$nTypes[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
+						$this->join("LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+						$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
 						$shareds[] = $type;
 						$typeParent = $type;
+						$relation = '<>';
 					}
 					else{ //parent
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$join[$type][] = ($alias?array($typeParent,$alias):$typeParent);
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
-
+						$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
+						$relation = '<';
 					}
 					$type = '';
 				break;
@@ -265,9 +265,31 @@ class Query /* implements ArrayAccess */{
 		}
 		$table = $typeParent;
 		$col = trim($type);
-		$nTypes[] = $q.$table.$q.'.'.$q.$col.$q;
-		return $nTypes;
-		//return $join;
+		
+		$agg = $this->writerAgg;
+		$aggc = $this->writerAggCaster;
+		$sep = $this->writerSeparator;
+		$cc = $this->writerConcatenator;
+		if(!$colAlias)
+			$colAlias = $table.$relation.$col;
+		if($colAlias)
+			$colAlias = ' as '.$q.$colAlias.$q;
+		switch($relation){
+			case '<':
+				$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
+				$this->group_by($q.$table.$q.'.'.$q.'id'.$q);
+			break;
+			case '>':
+				$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
+			break;
+			case '<>':
+				$this->select("{$agg}(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
+			break;
+			//default:
+				//$this->select($q.$table.$q.'.'.$q.$col.$q.($colAlias?' as '.$q.$colAlias.$q:''));
+			//break;
+		}
+		$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))

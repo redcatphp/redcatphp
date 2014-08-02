@@ -57,7 +57,9 @@ abstract class Base {
 	protected $params = array();
 	protected $mysqli_types = array( );
 	function add_table($table, array $params = null, $mysqli_types = "") {
-		$this->tables = array_merge($this->tables, (array)$table);
+		if(!empty($params)||!in_array($table,$this->tables))
+			$this->tables[] = $table;
+		//var_dump($this->tables);
 		$this->_add_params('tables', $params, $mysqli_types);
 		return $this;
 	}
