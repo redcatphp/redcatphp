@@ -198,7 +198,7 @@ class Query /* implements ArrayAccess */{
 				$type = trim(substr($type,0,$p));
 			}
 		}
-		return array($type,$alias);
+		return array($type,$alias?$alias:$type);
 	}
 	function selectRelationnal($select,$colAlias=null){
 		if(is_array($select)){
@@ -213,20 +213,22 @@ class Query /* implements ArrayAccess */{
 		}
 		$l = strlen($select);
 		$type = '';
-		$join = array();
 		$typeParent = $this->table;
+		$aliasParent = $this->table;
 		$q = $this->writerQuoteCharacter;
+		$nTypes = array();
+		$shareds = array();
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
 				case '.':
 				case '>': //own
 					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
 					if($superalias)
-						$alias = $superalias.'::'.($alias?$alias:$type);
-					if($alias)
-						$type = array($type,$alias);
-					$join[$typeParent][] = $type;
+						$alias = $superalias.'__'.$alias;
+					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+					$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
 					$typeParent = $type;
+					$aliasParent = $alias;
 					$type = '';
 				break;
 				case '<':
@@ -234,20 +236,24 @@ class Query /* implements ArrayAccess */{
 					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
 						if($superalias)
-							$alias = $superalias.'::'.($alias?$alias:$type);
+							$alias = $superalias.'__'.($alias?$alias:$type);
 						$rels = array($typeParent,$type);
 						sort($rels);
 						$imp = implode('_',$rels);
-						$join[$typeParent][] = $imp;
-						$join[$imp][] = ($alias?array($type,$alias):$type);
+						$join[$imp][] = $alias;
+						$nTypes[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
+						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+						$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+						$shareds[] = $type;
 						$typeParent = $type;
 					}
 					else{ //parent
 						if($superalias)
-							$alias = $superalias.'::'.($alias?$alias:$type);
-						if($alias)
-							$type = array($type,$alias);
-						$join[$type][] = $typeParent;
+							$alias = $superalias.'__'.$alias;
+						$join[$type][] = ($alias?array($typeParent,$alias):$typeParent);
+						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+						$nTypes[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
+
 						$typeParent = $type;
 					}
 					$type = '';
@@ -257,19 +263,9 @@ class Query /* implements ArrayAccess */{
 				break;
 			}
 		}
+		$table = $typeParent;
 		$col = trim($type);
-		$table = !empty($typesTMP)?end($typesTMP):$this->table;
-		$nTypes = array();
-		foreach($join as $parentType=>$types){
-			foreach($types as $type){
-				if(is_array($type))
-					list($type,$alias) = $type;
-				else
-					$alias = $type;
-				$nTypes[] = "LEFT OUTER JOIN $alias ON {$q}$alias{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$parentType}_id{$q}";
-			}
-		}
-		$nTypes[] = $table.'.'.$col;
+		$nTypes[] = $q.$table.$q.'.'.$q.$col.$q;
 		return $nTypes;
 		//return $join;
 	}
