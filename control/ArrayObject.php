@@ -42,7 +42,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	static function __recurseKey($v,$key,$depth=null){
 		$c = new ArrayObject();
 		foreach($v as $k=>$v){
-			if($key==$k){
+			if($key===$k){
 				$c[] = $v;
 			}
 			elseif($depth&&$v instanceof ArrayObject){
