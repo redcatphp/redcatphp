@@ -297,6 +297,12 @@ class Query /* implements ArrayAccess */{
 		if(!$this->inSelect($n)&&!$this->inSelect($n))
 			$this->select($n);
 	}
+	function rowMD(){
+		return Query::explodeAgg($this->table());
+	}
+	function tableMD(){
+		return Query::explodeAggTable($this->table());
+	}
 	function table(){
 		$this->selectNeed();
 		$data = $this->getAll();
@@ -341,11 +347,16 @@ class Query /* implements ArrayAccess */{
 						$row[$tb] = array();
 				}
 				elseif($multi){
-					$_idx = explode($_gs,$data[$tb.$sep.'id']);
 					$_x = explode($_gs,$data[$col]);
-					foreach($_idx as $_i=>$_id)
-						if(!empty($_id))
-							$row[$tb][$_id][$_col] = isset($_x[$_i])?$_x[$_i]:null;
+					if(isset($data[$tb.$sep.'id'])){
+						$_idx = explode($_gs,$data[$tb.$sep.'id']);
+						foreach($_idx as $_i=>$_id)
+							$row[$tb][$_id][$_col] = $_x[$_i];
+					}
+					else{
+						foreach($_x as $_i=>$v)
+							$row[$tb][$_i][$_col] = $v;
+					}
 				}
 				else
 					$row[$tb][$_col] = $data[$col];
