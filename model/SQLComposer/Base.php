@@ -59,7 +59,6 @@ abstract class Base {
 	function add_table($table, array $params = null, $mysqli_types = "") {
 		if(!empty($params)||!in_array($table,$this->tables))
 			$this->tables[] = $table;
-		//var_dump($this->tables);
 		$this->_add_params('tables', $params, $mysqli_types);
 		return $this;
 	}

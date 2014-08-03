@@ -201,6 +201,10 @@ class Query /* implements ArrayAccess */{
 		return array($type,$alias?$alias:$type);
 	}
 	function selectRelationnal($select,$colAlias=null){
+		$this->getRelationnal($select,$colAlias,true);
+		
+	}
+	function getRelationnal($select,$colAlias=null,$autoSelectId=false){
 		if(is_array($select)){
 			$r = array();
 			foreach($select as $k=>$s)
@@ -274,16 +278,24 @@ class Query /* implements ArrayAccess */{
 			$colAlias = $table.$relation.$col;
 		if($colAlias)
 			$colAlias = ' as '.$q.$colAlias.$q;
+		if($autoSelectId)
+			$idAlias = ' as '.$q.$table.$relation.'id'.$q;
 		switch($relation){
 			case '<':
 				$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
+				if($autoSelectId)
+					$this->select($q.$table.$q.'.'.$q.'id'.$q.$idAlias);
 				$this->group_by($q.$table.$q.'.'.$q.'id'.$q);
 			break;
 			case '>':
 				$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
+				if($autoSelectId)
+					$this->select("{$agg}(COALESCE({$q}{$table}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
 			break;
 			case '<>':
 				$this->select("{$agg}(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
+				if($autoSelectId)
+					$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 			break;
 			//default:
 				//$this->select($q.$table.$q.'.'.$q.$col.$q.($colAlias?' as '.$q.$colAlias.$q:''));

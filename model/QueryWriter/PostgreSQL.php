@@ -31,6 +31,16 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		}
 		catch (\Exception $e ) {
 		}
+		/*
+			UPDATE "evenement" as "_evenement" SET devfulltext=to_tsvector((SELECT string_agg("taxonomy"."name"::text , ' ')||' '||"evenement"."title"||' '||"evenement"."presentation"
+			 FROM "evenement"
+			 LEFT OUTER JOIN "evenement_tag" ON "evenement"."id"="evenement_tag"."evenement_id"
+			 LEFT OUTER JOIN "evenement_taxonomy" ON "evenement"."id"="evenement_taxonomy"."evenement_id"
+			 LEFT OUTER JOIN "taxonomy" ON "taxonomy"."id"="evenement_taxonomy"."taxonomy_id"  
+			WHERE "evenement"."id"="_evenement"."id"
+			GROUP BY "evenement"."id"))
+
+		*/
 	}
 	function handleFullText($table, $col, Array $cols, Table &$model, $lang=''){
 		if($lang)
@@ -69,6 +79,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		}
 		$w = &$this;
 		var_dump($columns);exit;
+		
 		$model->on('changed',function($bean)use($col,$columns,&$w,$join,$params){
 			$model = $bean->box();
 			$table = $w->esc($model->getTable());
