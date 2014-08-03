@@ -71,7 +71,10 @@ class Select extends Where {
 			$this->select($select, $params, $mysqli_types);
 	}
 	function select($select, array $params = null, $mysqli_types = "") {
-		$this->columns = array_merge($this->columns, (array)$select);
+		foreach((array)$select as $s){
+			if(!empty($params)||!in_array($s,$this->columns))
+				$this->columns[] = $s;
+		}
 		$this->_add_params('select', $params, $mysqli_types);
 		return $this;
 	}
@@ -80,7 +83,8 @@ class Select extends Where {
 		return $this;
 	}
 	function group_by($group_by, array $params = null, $mysqli_types = "") {
-		$this->group_by = array_merge($this->group_by, (array)$group_by);
+		if(!empty($params)||!in_array($group_by,$this->group_by))
+			$this->group_by[] = $group_by;
 		$this->_add_params('group_by', $params, $mysqli_types);
 		return $this;
 	}
@@ -89,7 +93,8 @@ class Select extends Where {
 		return $this;
 	}
 	function order_by($order_by, array $params = null, $mysqli_types = "") {
-		$this->order_by = array_merge($this->order_by, (array)$order_by);
+		if(!empty($params)||!in_array($order_by,$this->order_by))
+			$this->order_by[] = $order_by;
 		$this->_add_params('order_by', $params, $mysqli_types);
 		return $this;
 	}
