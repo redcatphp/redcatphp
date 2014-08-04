@@ -113,16 +113,38 @@ class Query /* implements ArrayAccess */{
 	}
 	function selectTruncation($col,$truncation=369,$getl=true){
 		$c = $this->formatColumnName($col);
-		$this->select("SUBSTRING($c,1,$truncation) as $col");
+		$this->composer->select("SUBSTRING($c,1,$truncation) as $col");
 		if($getl)
-			$this->select("LENGTH($c) as {$col}_length");
+			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
 	}
-	function fullText($cols,$t){
+	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true){
+		if(!$t)
+			return $this->selectTruncation($col,$truncation,$getl);
+		$c = $this->formatColumnName($col);
+		$this->composer->select("ts_headline(SUBSTRING($c,1,$truncation),to_tsquery(?),'HighlightAll=true') as $col",array($t));
+		if($getl)
+			$this->composer->select("LENGTH($c) as {$col}_length");
+		return $this;
+	}
+	function selectFullTextHighlight($col,$t){
+		if(!$t)
+			return $this->select($col);
+		$c = $this->formatColumnName($col);
+		/*
+		StartSel=<b>, StopSel=</b>,
+		MaxWords=35, MinWords=15, ShortWord=3, HighlightAll=FALSE,
+		MaxFragments=0, FragmentDelimiter=" ... "
+		*/
+		$this->composer->select("ts_headline($col,to_tsquery(?),'HighlightAll=true') as $col",array($t));
+		return $this;
+	}
+	function whereFullText($cols,$t){
 		//pgsql full text search
 		foreach((array)$cols as $k=>$col)
 			$cols[$k] = 'to_tsvector('.$this->formatColumnName($col).')';
-		$this->where(implode(" || ' ' || ",$cols).' @@ to_tsquery(?)',array($t));
+		$this->where(implode('||',$cols).' @@ to_tsquery(?)',array($t));
+		return $this;
 	}
 	protected function composerSelect(){
 		$args = func_get_args();

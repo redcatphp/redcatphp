@@ -19,6 +19,21 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		$this->addColumn($table,$col,$this->code('tsvector'));
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){
+		$sqlUpdate = $this->buildColumnFulltextSQL($table, $col, $cols ,$lang);
+		echo $sqlUpdate;exit;
+		$this->adapter->exec($sqlUpdate);
+		/*
+			UPDATE "evenement" as "_evenement" SET devfulltext=to_tsvector((SELECT string_agg("taxonomy"."name"::text , ' ')||' '||"evenement"."title"||' '||"evenement"."presentation"
+			 FROM "evenement"
+			 LEFT OUTER JOIN "evenement_tag" ON "evenement"."id"="evenement_tag"."evenement_id"
+			 LEFT OUTER JOIN "evenement_taxonomy" ON "evenement"."id"="evenement_taxonomy"."evenement_id"
+			 LEFT OUTER JOIN "taxonomy" ON "taxonomy"."id"="evenement_taxonomy"."taxonomy_id"  
+			WHERE "evenement"."id"="_evenement"."id"
+			GROUP BY "evenement"."id"))
+
+		*/
+	}
+	function buildColumnFulltextSQL($table, $col, $cols ,$lang=''){
 		$agg = $this->agg;
 		$aggc = $this->aggCaster;
 		$sep = $this->separator;
@@ -95,19 +110,21 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 					break;
 				}
 			}
+			$localTable = $typeParent;
+			$localCol = trim($type);
 			switch($relation){
 				default:
 				case '<':
-					$c = Query::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col);
-					$gb = $q.$table.$q.'.'.$q.'id'.$q;
+					$c = Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol);
+					$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
 					if(!in_array($gb,$groupBy))
 						$groupBy[] = $gb;
 				break;
 				case '>':
-					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})";
+					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 				break;
 				case '<>':
-					$c = "{$agg}(".Query::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})";
+					$c = "{$agg}(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc} {$sep} {$cc})";
 				break;
 			}
 			$c = "to_tsvector($lang$c)";
@@ -123,20 +140,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		if(!empty($groupBy))
 			$sqlUpdate .= ' GROUP BY '.implode(',',$groupBy);
 		$sqlUpdate .= ')';
-		echo $sqlUpdate;exit;
-		R::exec($sqlUpdate);
-		/*
-			UPDATE "evenement" as "_evenement" SET devfulltext=to_tsvector((SELECT string_agg("taxonomy"."name"::text , ' ')||' '||"evenement"."title"||' '||"evenement"."presentation"
-			 FROM "evenement"
-			 LEFT OUTER JOIN "evenement_tag" ON "evenement"."id"="evenement_tag"."evenement_id"
-			 LEFT OUTER JOIN "evenement_taxonomy" ON "evenement"."id"="evenement_taxonomy"."evenement_id"
-			 LEFT OUTER JOIN "taxonomy" ON "taxonomy"."id"="evenement_taxonomy"."taxonomy_id"  
-			WHERE "evenement"."id"="_evenement"."id"
-			GROUP BY "evenement"."id"))
-
-		*/
-		
-
+		return $sqlUpdate;
 	}
 	function addIndexFullText($table, $col, $name = null ){
 		if(!isset($name))
