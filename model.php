@@ -4,10 +4,6 @@ use surikat\model\Query4D;
 class model {
 	static function __callStatic($f,$args){
 		$cl = 'surikat\model\Query';
-		if(substr($f,-2)=='4D'){
-			$cl .= '4D';
-			$f = substr($f,0,-2);
-		}
 		if(strpos($f,'new')===0&&ctype_upper(substr($f,3,1))){
 			$n = new $cl();
 			$m = substr($f,3);
