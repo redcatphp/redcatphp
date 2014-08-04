@@ -151,7 +151,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 			$lang .= ',';
 		$w =& $this;
 		$model->on('changed',function($bean)use(&$w,$table,$col,$cols,$lang){
-			$that->adapter->exec($w->buildColumnFulltextSQL($table,$col,$cols,$lang).' WHERE id=?',array($bean->id));
+			$w->adapter->exec($w->buildColumnFulltextSQL($table,$col,$cols,$lang).' WHERE id=?',array($bean->id));
 		});
 		
 	}
