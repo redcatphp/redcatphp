@@ -162,7 +162,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(!isset($this->_on[$f]))
 			$this->_on[$f] = array();
 		$this->_on[$f][] = $c;
-		var_dump($this->_on);
 	}
 	function trigger(){
 		$args = func_get_args();
@@ -269,10 +268,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function _fulltextConvention(){
 		$w = R::getWriter();
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
-			if(!in_array($col,array_keys(R::inspect($this->table)))){
-				$w->addColumnFulltext($this->table, $col);
+			$lang = static::getColumnDef($col,'fulltextLanguage');
+			//if(!in_array($col,array_keys(R::inspect($this->table)))){
+				//$w->addColumnFulltext($this->table, $col);
+				$w->buildColumnFulltext($this->table, $col, $cols, $lang);
 				$w->addIndexFullText($this->table, $col);
-			}
+			//}
 			$w->handleFullText($this->table, $col, $cols, $this);
 		}
 	}
