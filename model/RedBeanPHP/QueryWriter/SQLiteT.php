@@ -7,6 +7,8 @@ use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
+
 /**
  * RedBean SQLiteWriter with support for SQLite types
  *
@@ -21,6 +23,13 @@ use surikat\model\RedBeanPHP\Adapter as Adapter;
  */
 class SQLiteT extends AQueryWriter implements QueryWriter
 {
+	use XQueryWriter;
+	protected $separator = ',';
+	protected $agg = 'GROUP_CONCAT';
+	protected $aggCaster = '';
+	protected $sumCaster = '';
+	protected $concatenator = "cast(X'1D' as text)";
+	
 	/**
 	 * @var DBAdapter
 	 */

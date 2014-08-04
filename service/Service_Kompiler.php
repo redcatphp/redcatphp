@@ -5,9 +5,6 @@ use surikat\control\JSON;
 use surikat\control\Min\PHP as minPHP;
 use surikat\control\Min\JS as minJS;
 use surikat\control\Min\CSS as minCSS;
-//register_shutdown_function(function(){if($error=error_get_last()) static $errorType = array(E_ERROR =>'ERROR',E_WARNING=> 'WARNING',E_PARSE=>'PARSING ERROR',E_NOTICE=>'NOTICE',E_CORE_ERROR     => 'CORE ERROR',E_CORE_WARNING   => 'CORE WARNING',E_COMPILE_ERROR=>'COMPILE ERROR',E_COMPILE_WARNING=>'COMPILE WARNING',E_USER_ERROR=>'USER ERROR',E_USER_WARNING=>'USER WARNING',E_USER_NOTICE=>'USER NOTICE',E_STRICT=>'STRICT NOTICE',E_RECOVERABLE_ERROR =>'RECOVERABLE ERROR'); if(in_array($error['type'],array(E_PARSE,E_ERROR,E_CORE_ERROR,E_COMPILE_ERROR,E_USER_ERROR))) echo @$errorType[$error['type']].': '.$error['message'].' in '.$error['file'].' at line '.$error['line']; });
-//require __DIR__.'/../control/S_Kompiler.php';
-//S_Kompiler::method();
 use ReflectionClass;
 use ReflectionMethod;
 use ZipArchive;
@@ -123,6 +120,7 @@ abstract class Service_Kompiler{
 			FS::mkdir($dir.'.tmp');
 		}
 	}
+	/*
 	static function Update_RedBean4(){
 		ob_implicit_flush(true);
 		ob_end_flush();
@@ -180,6 +178,8 @@ abstract class Service_Kompiler{
 		print 'OK - experimental';
 		print '</pre>';
 	}
+	*/
+	/*
 	static function Update_Geocoder(){
 		ob_implicit_flush(true);
 		ob_end_flush();
@@ -231,6 +231,7 @@ abstract class Service_Kompiler{
 		print 'OK - experimental';
 		print '</pre>';
 	}
+	*/
 	/*
 	static function Update_CssSelector(){
 		ob_implicit_flush(true);

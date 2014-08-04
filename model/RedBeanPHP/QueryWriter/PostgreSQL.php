@@ -7,6 +7,11 @@ use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
+use surikat\model\R;
+use surikat\model\Table;
+use surikat\model\Query;
+
 use surikat\control\str;
 
 /**
@@ -23,15 +28,19 @@ use surikat\control\str;
  */
 class PostgreSQL extends AQueryWriter implements QueryWriter
 {
+	use XQueryWriter;
+	
 	/**
 	 * Data types
 	 */
-	const C_DATATYPE_INTEGER          = 0;
-	const C_DATATYPE_BIGINT           = 1;
-	const C_DATATYPE_DOUBLE           = 2;
-	const C_DATATYPE_TEXT             = 3;
+	const C_DATATYPE_INTEGER          = 1;
+	const C_DATATYPE_BIGINT           = 2;
+	const C_DATATYPE_DOUBLE           = 3;
+	const C_DATATYPE_TEXT             = 4;
+	const C_DATATYPE_FULLTEXT         = 20;
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
+	//const C_DATATYPE_SPECIAL_BOOL     = 85;
 	const C_DATATYPE_SPECIAL_POINT    = 90;
 	const C_DATATYPE_SPECIAL_LSEG     = 91;
 	const C_DATATYPE_SPECIAL_CIRCLE   = 92;
@@ -131,6 +140,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			self::C_DATATYPE_BIGINT           => 'bigint',
 			self::C_DATATYPE_DOUBLE           => 'double precision',
 			self::C_DATATYPE_TEXT             => 'text',
+			self::C_DATATYPE_FULLTEXT		  => 'tsvector',
+			//self::C_DATATYPE_SPECIAL_BOOL     => 'boolean',
 			self::C_DATATYPE_SPECIAL_DATE     => 'date',
 			self::C_DATATYPE_SPECIAL_DATETIME => 'timestamp without time zone',
 			self::C_DATATYPE_SPECIAL_POINT    => 'point',
@@ -202,6 +213,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	public function scanType( $value, $flagSpecial = FALSE ){
 		$this->svalue = $value;
 		if( $flagSpecial && $value ) {
+			//if(is_bool($value)||$value==='f'||||$value==='t')
+				//return self::C_DATATYPE_SPECIAL_BOOL;
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_DATE;
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d(\.\d{1,6})?$/', $value ) )
@@ -389,6 +402,153 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$t = $this->esc($t);
 		$this->adapter->exec("DROP TABLE IF EXISTS $t CASCADE ");
 		$this->adapter->exec('SET CONSTRAINTS ALL IMMEDIATE');
+	}
+
+	
+	protected $separator = ',';
+	protected $agg = 'string_agg';
+	protected $aggCaster = '::text';
+	protected $sumCaster = '::int';
+	protected $concatenator = 'chr(29)';
+	function addColumnFulltext($table, $col){
+		$this->addColumn($table,$col,$this->code('tsvector'));
+	}
+	function buildColumnFulltext($table, $col, $cols ,$lang=''){
+		$sqlUpdate = $this->buildColumnFulltextSQL($table, $col, $cols ,$lang);
+		$this->adapter->exec($sqlUpdate);
+	}
+	function buildColumnFulltextSQL($table, $col, $cols ,$lang=''){
+		$agg = $this->agg;
+		$aggc = $this->aggCaster;
+		$sep = $this->separator;
+		$cc = "' '";
+		$q = $this->quoteCharacter;
+		$id = $this->esc('id');
+		$tb = $this->esc($table);
+		$_tb = $this->esc('_'.$table);
+		$groupBy = array();
+		$columns = array();
+		$tablesJoin = array();
+		if($lang)
+			$lang = "'$lang',";
+		foreach($cols as $select){
+			$shareds = array();
+			$typeParent = $table;
+			$aliasParent = $table;
+			$type = '';
+			$l = strlen($select);
+			$weight = '';
+			$relation = null;
+			for($i=0;$i<$l;$i++){
+				switch($select[$i]){
+					case '/':
+						$i++;
+						while(isset($select[$i])){
+							$weight .= $select[$i];
+							$i++;
+						}
+						$weight = trim($weight);
+					break;
+					case '.':
+					case '>': //own
+						list($type,$alias) = Query::typeAliasExtract($type,$superalias);
+						if($superalias)
+							$alias = $superalias.'__'.$alias;
+						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+						$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
+						$typeParent = $type;
+						$aliasParent = $alias;
+						$type = '';
+						$relation = '>';
+					break;
+					case '<':
+						list($type,$alias) = Query::typeAliasExtract($type,$superalias);
+						if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
+							$i++;
+							if($superalias)
+								$alias = $superalias.'__'.($alias?$alias:$type);
+							$rels = array($typeParent,$type);
+							sort($rels);
+							$imp = implode('_',$rels);
+							$join[$imp][] = $alias;
+							$tablesJoin[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
+							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+							$shareds[] = $type;
+							$typeParent = $type;
+							$relation = '<>';
+						}
+						else{ //parent
+							if($superalias)
+								$alias = $superalias.'__'.$alias;
+							$join[$type][] = ($alias?array($typeParent,$alias):$typeParent);
+							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
+							$typeParent = $type;
+							$relation = '<';
+						}
+						$type = '';
+					break;
+					default:
+						$type .= $select[$i];
+					break;
+				}
+			}
+			$localTable = $typeParent;
+			$localCol = trim($type);
+			switch($relation){
+				default:
+				case '<':
+					$c = Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol);
+					$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
+					if(!in_array($gb,$groupBy))
+						$groupBy[] = $gb;
+				break;
+				case '>':
+					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+				break;
+				case '<>':
+					$c = "{$agg}(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc} {$sep} {$cc})";
+				break;
+			}
+			$c = "to_tsvector($lang$c)";
+			if($weight)
+				$c = "setweight($c,'$weight')";
+			$columns[] = $c;
+		}
+		$sqlUpdate = 'UPDATE '.$tb.' as '.$_tb;
+		$sqlUpdate .= ' SET '.$col.'=(SELECT '.implode("||",$columns);
+		$sqlUpdate .= ' FROM '.$tb;
+		$sqlUpdate .= implode(" \n",$tablesJoin);
+		$sqlUpdate .= ' WHERE '.$tb.'.'.$id.'='.$_tb.'.'.$id;
+		if(!empty($groupBy))
+			$sqlUpdate .= ' GROUP BY '.implode(',',$groupBy);
+		$sqlUpdate .= ')';
+		return $sqlUpdate;
+	}
+	function addIndexFullText($table, $col, $name = null ){
+		if(!isset($name))
+			$name = $table.'_'.$col.'_fulltext';
+		$col  = $this->esc($col);
+		$table  = $this->esc( $table );
+		$name   = preg_replace( '/\W/', '', $name );
+		if($this->adapter->getCell( "SELECT COUNT(*) FROM pg_class WHERE relname = '$name'" ))
+			return;
+		try{
+			$this->adapter->exec("CREATE INDEX $name ON $table USING gin($col) ");
+		}
+		catch (\Exception $e ) {
+		}
+	}
+	function handleFullText($table, $col, Array $cols, Table &$model, $lang=''){
+		//$col = $this->esc(R::toSnake($col));
+		if($lang)
+			$lang .= ',';
+		$w =& $this;
+		$model->on('changed',function($bean)use(&$w,$table,$col,$cols,$lang){
+			$w->adapter->exec($w->buildColumnFulltextSQL($table,$col,$cols,$lang).' WHERE id=?',array($bean->id));
+		});
+		
 	}
 
 }

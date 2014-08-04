@@ -6,6 +6,7 @@ use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 
 /**
  * RedBean MySQLWriter
@@ -21,7 +22,13 @@ use surikat\model\RedBeanPHP\Adapter as Adapter;
  */
 class MySQL extends AQueryWriter implements QueryWriter
 {
-
+	use XQueryWriter;
+	protected $separator = 'SEPARATOR';
+	protected $agg = 'GROUP_CONCAT';
+	protected $aggCaster = '';
+	protected $sumCaster = '';
+	protected $concatenator = '0x1D';
+	
 	/**
 	 * Data types
 	 */
@@ -402,4 +409,5 @@ class MySQL extends AQueryWriter implements QueryWriter
 		}
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 1;' );
 	}
+	
 }

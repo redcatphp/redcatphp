@@ -1,14 +1,10 @@
-<?php namespace surikat\model\QueryWriter;
-trait AQueryWriter{
+<?php namespace surikat\model\RedBeanPHP\QueryWriter;
+trait XQueryWriter{
 	private static $_allTables = null;
 	private static $_allColumns = array();
 	function __get($k){
 		if(property_exists($this,$k))
 			return $this->$k;
-	}
-	function addSqlColumnType($k,$v){
-		$this->typeno_sqltype[$k] = $v;
-		$this->sqltype_typeno[trim(strtolower($v))] = $k;
 	}
 	function createTable($table){
 		if(isset(self::$_allTables)&&!in_array($table,self::$_allTables))
