@@ -269,11 +269,11 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$w = R::getWriter();
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
-			//if(!in_array($col,array_keys(R::inspect($this->table)))){
-				//$w->addColumnFulltext($this->table, $col);
+			if(!in_array($col,array_keys(R::inspect($this->table)))){
+				$w->addColumnFulltext($this->table, $col);
 				$w->buildColumnFulltext($this->table, $col, $cols, $lang);
 				$w->addIndexFullText($this->table, $col);
-			//}
+			}
 			$w->handleFullText($this->table, $col, $cols, $this);
 		}
 	}
