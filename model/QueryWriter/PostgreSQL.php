@@ -20,18 +20,7 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){
 		$sqlUpdate = $this->buildColumnFulltextSQL($table, $col, $cols ,$lang);
-		echo $sqlUpdate;exit;
 		$this->adapter->exec($sqlUpdate);
-		/*
-			UPDATE "evenement" as "_evenement" SET devfulltext=to_tsvector((SELECT string_agg("taxonomy"."name"::text , ' ')||' '||"evenement"."title"||' '||"evenement"."presentation"
-			 FROM "evenement"
-			 LEFT OUTER JOIN "evenement_tag" ON "evenement"."id"="evenement_tag"."evenement_id"
-			 LEFT OUTER JOIN "evenement_taxonomy" ON "evenement"."id"="evenement_taxonomy"."evenement_id"
-			 LEFT OUTER JOIN "taxonomy" ON "taxonomy"."id"="evenement_taxonomy"."taxonomy_id"  
-			WHERE "evenement"."id"="_evenement"."id"
-			GROUP BY "evenement"."id"))
-
-		*/
 	}
 	function buildColumnFulltextSQL($table, $col, $cols ,$lang=''){
 		$agg = $this->agg;
@@ -157,50 +146,12 @@ class PostgreSQL extends \surikat\model\RedBeanPHP\QueryWriter\PostgreSQL {
 		}
 	}
 	function handleFullText($table, $col, Array $cols, Table &$model, $lang=''){
+		//$col = $this->esc(R::toSnake($col));
 		if($lang)
 			$lang .= ',';
-		$columns = array();
-		$params = array();
-		foreach((array)$cols as $k=>$v){
-			$weight = null;
-			if($pos=strpos($v,'/')!==false){
-				$weight = trim(substr($v,$pos));
-				$v = trim(substr($v,0,$pos));
-				if(!in_array($weight,array('A','B','C','D')))
-					$weight = null;
-			}
-			if(!is_integer($k)){ //relation
-				foreach($model->$k as $b){
-					if($b->$v){
-						$params[] = $b->$v;						
-						$c = "to_tsvector($lang ?)";
-						if($weight)
-							$c = "setweight($v,'$weight')";
-						$columns[] = $c;
-					}
-				}
-						
-			}
-			else{
-				if($model->$v){
-					$params[] = $b->$v;						
-					$c = "to_tsvector($lang ?)";
-					if($weight)
-						$c = "setweight($v,'$weight')";
-					$columns[] = $c;
-				}
-			}
-		}
-		$w = &$this;
-		var_dump($columns);exit;
-		
-		$model->on('changed',function($bean)use($col,$columns,&$w,$join,$params){
-			$model = $bean->box();
-			$table = $w->esc($model->getTable());
-			$col = $w->esc(R::toSnake($col));
-			$params[] = $bean->id;
-			R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',$params);
-			//R::exec('UPDATE '.$table.' SET '.$col.'='.implode(" || ' ' || ",$columns).' WHERE id=?',array($bean->id));
+		$w =& $this;
+		$model->on('changed',function($bean)use(&$w,$table,$col,$cols,$lang){
+			$that->adapter->exec($w->buildColumnFulltextSQL($table,$col,$cols,$lang).' WHERE id=?',array($bean->id));
 		});
 		
 	}

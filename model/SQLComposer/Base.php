@@ -7,6 +7,8 @@
 abstract class Base {
 
 	private function _remove_params($clause,$i=null,$params=null){
+		if($clause=='columns')
+			$clause = 'select';
 		if(isset($this->params[$clause])){
 			if(!isset($i))
 				$i = count($this->params[$clause])-1;

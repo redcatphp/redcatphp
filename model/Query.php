@@ -50,6 +50,10 @@ class Query /* implements ArrayAccess */{
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
+				if(control::devHas(control::dev_model_sql)){
+					print(str_replace(',',",\n",$this->composer->getQuery()).'<br>');
+					print_r($params);
+				}
 				return R::$f($this->composer->getQuery(),$params);
 			}
 			return;
@@ -118,11 +122,13 @@ class Query /* implements ArrayAccess */{
 			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
 	}
-	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true){
+	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true,$lang=null){
 		if(!$t)
 			return $this->selectTruncation($col,$truncation,$getl);
+		if($lang)
+			$lang .= ',';
 		$c = $this->formatColumnName($col);
-		$this->composer->select("ts_headline(SUBSTRING($c,1,$truncation),to_tsquery(?),'HighlightAll=true') as $col",array($t));
+		$this->composer->select("ts_headline({$lang}SUBSTRING($c,1,$truncation),to_tsquery(?),'HighlightAll=true') as $col",array($t));
 		if($getl)
 			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
@@ -224,7 +230,7 @@ class Query /* implements ArrayAccess */{
 	}
 	function selectRelationnal($select,$colAlias=null){
 		$this->getRelationnal($select,$colAlias,true);
-		
+		return $this;
 	}
 	function getRelationnal($select,$colAlias=null,$autoSelectId=false){
 		if(is_array($select)){
@@ -344,6 +350,7 @@ class Query /* implements ArrayAccess */{
 		$queryCount = clone $this;
 		$queryCount->unSelect();
 		$queryCount->select('id');
+		//var_dump($queryCount->getParams());exit;
 		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
 	}
 	
