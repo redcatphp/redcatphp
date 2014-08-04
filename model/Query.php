@@ -185,7 +185,7 @@ class Query /* implements ArrayAccess */{
 			$sql .= "LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 		return $sql;
 	}
-	private function _typeAliasExtract($type,&$superalias=null){
+	static function typeAliasExtract($type,&$superalias=null){
 		$type = R::toSnake(trim($type));
 		$alias = null;
 		if(($p=strpos($type,':'))!==false){
@@ -206,13 +206,12 @@ class Query /* implements ArrayAccess */{
 	}
 	function getRelationnal($select,$colAlias=null,$autoSelectId=false){
 		if(is_array($select)){
-			$r = array();
 			foreach($select as $k=>$s)
 				if(is_integer($k))
-					$r[$k] = $this->selectRelationnal($s);
+					$this->selectRelationnal($s);
 				else
-					$r[$k] = $this->selectRelationnal($k,$s);
-			return $r;
+					$this->selectRelationnal($k,$s);
+			return;
 		}
 		$l = strlen($select);
 		$type = '';
@@ -224,7 +223,7 @@ class Query /* implements ArrayAccess */{
 			switch($select[$i]){
 				case '.':
 				case '>': //own
-					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
+					list($type,$alias) = self::typeAliasExtract($type,$superalias);
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
@@ -235,7 +234,7 @@ class Query /* implements ArrayAccess */{
 					$relation = '>';
 				break;
 				case '<':
-					list($type,$alias) = $this->_typeAliasExtract($type,$superalias);
+					list($type,$alias) = self::typeAliasExtract($type,$superalias);
 					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
 						if($superalias)
@@ -297,9 +296,6 @@ class Query /* implements ArrayAccess */{
 				if($autoSelectId)
 					$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 			break;
-			//default:
-				//$this->select($q.$table.$q.'.'.$q.$col.$q.($colAlias?' as '.$q.$colAlias.$q:''));
-			//break;
 		}
 		$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
