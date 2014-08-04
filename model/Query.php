@@ -129,7 +129,7 @@ class Query /* implements ArrayAccess */{
 		$c = $this->formatColumnName($col);
 		if($lang)
 			$lang .= ',';
-		$this->composer->order_by("ts_rank({$c}, to_tsquery({$lang}?), 1)",array($t));
+		$this->composer->order_by("ts_rank({$c}, to_tsquery({$lang}?))",array($t));
 		return $this;
 	}
 	function selectFullTextRank($col,$t,$alias=null,$lang=null){
@@ -140,7 +140,7 @@ class Query /* implements ArrayAccess */{
 			$lang .= ',';
 		if(!$alias)
 			$alias = $col.'_rank';
-		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?), 1) as $alias",array($t));
+		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?)) as $alias",array($t));
 		return $this;
 	}
 	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true,$lang=null){
@@ -149,7 +149,7 @@ class Query /* implements ArrayAccess */{
 		if($lang)
 			$lang .= ',';
 		$c = $this->formatColumnName($col);
-		$this->composer->select("ts_headline({$lang}SUBSTRING($c,1,$truncation),to_tsquery(?),'HighlightAll=true') as $col",array($t));
+		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery(?),'HighlightAll=true'),1,$truncation) as $col",array($t));
 		if($getl)
 			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
