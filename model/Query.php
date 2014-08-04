@@ -122,6 +122,26 @@ class Query /* implements ArrayAccess */{
 			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
 	}
+	function orderByFullTextRank($col,$t,$alias=null,$lang=null){
+		if(!$t)
+			return $this;
+		$c = $this->formatColumnName($col);
+		if($lang)
+			$lang .= ',';
+		$this->composer->order_by("ts_rank({$c}, to_tsquery({$lang}?), 1)",array($t));
+		return $this;
+	}
+	function selectFullTextRank($col,$t,$alias=null,$lang=null){
+		if(!$t)
+			return $this;
+		$c = $this->formatColumnName($col);
+		if($lang)
+			$lang .= ',';
+		if(!$alias)
+			$alias = $col.'_rank';
+		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?), 1) as $alias",array($t));
+		return $this;
+	}
 	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true,$lang=null){
 		if(!$t)
 			return $this->selectTruncation($col,$truncation,$getl);
@@ -145,10 +165,15 @@ class Query /* implements ArrayAccess */{
 		$this->composer->select("ts_headline($col,to_tsquery(?),'HighlightAll=true') as $col",array($t));
 		return $this;
 	}
-	function whereFullText($cols,$t){
+	function whereFullText($cols,$t,$toVector=null){
 		//pgsql full text search
-		foreach((array)$cols as $k=>$col)
-			$cols[$k] = 'to_tsvector('.$this->formatColumnName($col).')';
+		if(!is_array($cols))
+			$cols = (array)$cols;
+		foreach(array_keys($cols) as $k){
+			$cols[$k] = $this->formatColumnName($cols[$k]);
+			if($toVector)
+				$cols[$k] = 'to_tsvector('.$cols[$k].')';
+		}
 		$this->where(implode('||',$cols).' @@ to_tsquery(?)',array($t));
 		return $this;
 	}
