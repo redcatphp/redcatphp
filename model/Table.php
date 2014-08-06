@@ -272,7 +272,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(!in_array($col,array_keys(R::inspect($this->table)))){
 				$w->addColumnFulltext($this->table, $col);
 				$w->buildColumnFulltext($this->table, $col, $cols, $lang);
-				$w->addIndexFullText($this->table, $col);
+				$w->addIndexFullText($this->table, $col, null , $lang);
 			}
 			$w->handleFullText($this->table, $col, $cols, $this);
 		}

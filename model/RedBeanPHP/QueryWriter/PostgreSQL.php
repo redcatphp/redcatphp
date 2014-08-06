@@ -11,6 +11,7 @@ use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 use surikat\model\R;
 use surikat\model\Table;
 use surikat\model\Query;
+use surikat\control;
 
 use surikat\control\str;
 
@@ -415,6 +416,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){
 		$sqlUpdate = $this->buildColumnFulltextSQL($table, $col, $cols ,$lang);
+		if(control::devHas(control::dev_model_sql))
+			print(str_replace(',',",\n",$sqlUpdate).'<br>');
 		$this->adapter->exec($sqlUpdate);
 	}
 	function buildColumnFulltextSQL($table, $col, $cols ,$lang=''){
@@ -499,7 +502,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			switch($relation){
 				default:
 				case '<':
-					$c = Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol);
+					$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
 					$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
 					if(!in_array($gb,$groupBy))
 						$groupBy[] = $gb;
@@ -508,7 +511,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 				break;
 				case '<>':
-					$c = "{$agg}(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc} {$sep} {$cc})";
+					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 				break;
 			}
 			$c = "to_tsvector($lang$c)";
@@ -526,7 +529,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$sqlUpdate .= ')';
 		return $sqlUpdate;
 	}
-	function addIndexFullText($table, $col, $name = null ){
+	function addIndexFullText($table, $col, $name = null, $lang=null ){
 		if(!isset($name))
 			$name = $table.'_'.$col.'_fulltext';
 		$col  = $this->esc($col);
@@ -536,6 +539,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			return;
 		try{
 			$this->adapter->exec("CREATE INDEX $name ON $table USING gin($col) ");
+			//if($lang)
+				//$this->adapter->exec("ALTER TABLE $table ADD language text NOT NULL DEFAULT('$lang');");
 		}
 		catch (\Exception $e ) {
 		}
