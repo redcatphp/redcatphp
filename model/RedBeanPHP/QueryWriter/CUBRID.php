@@ -128,8 +128,9 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter )
+	public function __construct( Adapter $adapter, $prefix=false )
 	{
+		$this->prefix = $prefix;
 		$this->typeno_sqltype = array(
 			CUBRID::C_DATATYPE_INTEGER          => 'INTEGER',
 			CUBRID::C_DATATYPE_DOUBLE           => 'DOUBLE',

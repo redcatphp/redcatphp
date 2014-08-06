@@ -33,7 +33,8 @@ class R extends RedBeanPHP\Facade{
 		if(!isset($frozen))
 			$frozen = !control::devHas(control::dev_model);
 		$port = isset($port)&&$port?';port='.$port:'';
-		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen);
+		$prefix = isset($prefix)?$prefix:'';
+		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen,$prefix);
 		if(control::devHas(control::dev_model_redbean))
 			self::debug(true,2);
 	}

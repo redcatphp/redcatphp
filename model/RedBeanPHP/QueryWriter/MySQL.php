@@ -120,8 +120,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter )
+	public function __construct( Adapter $adapter, $prefix=false )
 	{
+		$this->prefix = $prefix;
 		$this->typeno_sqltype = array(
 			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
 			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',

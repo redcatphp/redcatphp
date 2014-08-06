@@ -144,8 +144,9 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return string table name
 	 */
-	public function __construct( RedBean_Adapter $a )
+	public function __construct( Adapter $a, $prefix=false )
 	{
+		$this->prefix = $prefix;
 		$this->adapter        = $a;
 		$this->typeno_sqltype = array(
 			RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL              => 'NUMBER(1,0)',

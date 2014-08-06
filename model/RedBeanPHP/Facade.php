@@ -200,13 +200,13 @@ class Facade
 	 *
 	 * @return ToolBox
 	 */
-	public static function setup( $dsn = NULL, $username = NULL, $password = NULL, $frozen = FALSE )
+	public static function setup( $dsn = NULL, $username = NULL, $password = NULL, $frozen = FALSE, $prefix = '' )
 	{
 		if ( is_null( $dsn ) ) {
 			$dsn = 'sqlite:/' . sys_get_temp_dir() . '/red.db';
 		}
 
-		self::addDatabase( 'default', $dsn, $username, $password, $frozen );
+		self::addDatabase( 'default', $dsn, $username, $password, $frozen, $prefix );
 		self::selectDatabase( 'default' );
 
 		return self::$toolbox;
@@ -291,7 +291,7 @@ class Facade
 	 *
 	 * @return void
 	 */
-	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE )
+	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '' )
 	{
 		if ( isset( self::$toolboxes[$key] ) ) {
 			throw new RedException( 'A database has already be specified for this key.' );
@@ -315,7 +315,7 @@ class Facade
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
 		$writerClass = '\\surikat\\model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
-		$writer      = new $writerClass( $adapter );
+		$writer      = new $writerClass( $adapter, $prefix );
 		$redbean     = new OODB( $writer );
 
 		$redbean->freeze( ( $frozen === TRUE ) );

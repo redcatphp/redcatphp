@@ -508,19 +508,6 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	}
 
 	/**
-	 * Globally available service method for RedBeanPHP.
-	 * Converts a camel cased string to a snake cased string.
-	 *
-	 * @param string $camel a camelCased string
-	 *
-	 * @return string
-	 */
-	public static function camelsSnake( $camel )
-	{
-		return R::toSnake($camel);
-	}
-
-	/**
 	 * Checks whether the specified type (i.e. table) already exists in the database.
 	 * Not part of the Object Database interface!
 	 *
@@ -958,5 +945,10 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	public function safeTable( $table, $noQuotes = FALSE )
 	{
 		return $this->esc( $table, $noQuotes );
+	}
+
+	protected $prefix = '';
+	function getPrefix(){
+		return $this->prefix;
 	}
 }

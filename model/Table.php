@@ -153,9 +153,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->table = $this->getMeta('type');
 		$this->type = R::toCamel($this->table);
 		$c = get_class($this);
-		foreach($this->getKeys() as $k)
-			if($cast=$c::getColumnDef($k,'cast'))
-				$this->bean->setMeta('cast.'.$k,$cast);
+		foreach($c::getDefColumns('cast') as $k=>$cast)
+			$this->bean->setMeta('cast.'.$k,$cast);
 		$this->trigger('new');
 	}
 	function on($f,$c){

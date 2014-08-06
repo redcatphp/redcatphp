@@ -134,8 +134,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter )
+	public function __construct( Adapter $adapter, $prefix=false )
 	{
+		$this->prefix = $prefix;
 		$this->typeno_sqltype = array(
 			self::C_DATATYPE_INTEGER          => 'integer',
 			self::C_DATATYPE_BIGINT           => 'bigint',
