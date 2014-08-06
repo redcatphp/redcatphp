@@ -266,14 +266,18 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function _fulltextConvention(){
 		$w = R::getWriter();
+		$t = $this->getTable();
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
-			if(!in_array($col,array_keys(R::inspect($this->table)))){
-				$w->addColumnFulltext($this->table, $col);
-				$w->buildColumnFulltext($this->table, $col, $cols, $lang);
-				$w->addIndexFullText($this->table, $col, null , $lang);
-			}
-			$w->handleFullText($this->table, $col, $cols, $this);
+			$this->on('changed',function($entry)use($t,&$w,$col,$cols,$lang){
+			//$this->on('created',function($entry)use($t,&$w,$col,$cols,$lang){
+				if(!in_array($col,array_keys(R::inspect($t)))){
+					$w->addColumnFulltext($t, $col);
+					$w->buildColumnFulltext($t, $col, $cols, $lang);
+					$w->addIndexFullText($t, $col, null , $lang);
+				}
+				$w->adapter->exec($w->buildColumnFulltextSQL($t,$col,$cols,$lang).' WHERE id=?',array($entry->id));
+			});
 		}
 	}
 	function after_update(){

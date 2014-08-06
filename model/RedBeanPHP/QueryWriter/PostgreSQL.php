@@ -459,7 +459,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
+						if($this->tableExists($type))
+							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
 						$typeParent = $type;
 						$aliasParent = $alias;
 						$type = '';
@@ -475,9 +476,11 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							sort($rels);
 							$imp = implode('_',$rels);
 							$join[$imp][] = $alias;
-							$tablesJoin[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
-							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+							if($this->tableExists($type)&&$this->tableExists($imp)){
+								$tablesJoin[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
+								$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+							}
 							$shareds[] = $type;
 							$typeParent = $type;
 							$relation = '<>';
@@ -487,7 +490,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 								$alias = $superalias.'__'.$alias;
 							$join[$type][] = ($alias?array($typeParent,$alias):$typeParent);
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
+							if($this->tableExists($type))
+								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
 							$typeParent = $type;
 							$relation = '<';
 						}
@@ -498,27 +502,29 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 					break;
 				}
 			}
-			$localTable = $typeParent;
-			$localCol = trim($type);
-			switch($relation){
-				default:
-				case '<':
-					$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
-					$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
-					if(!in_array($gb,$groupBy))
-						$groupBy[] = $gb;
-				break;
-				case '>':
-					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
-				break;
-				case '<>':
-					$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
-				break;
+			if($this->tableExists($typeParent)){
+				$localTable = $typeParent;
+				$localCol = trim($type);
+				switch($relation){
+					default:
+					case '<':
+						$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
+						$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
+						if(!in_array($gb,$groupBy))
+							$groupBy[] = $gb;
+					break;
+					case '>':
+						$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+					break;
+					case '<>':
+						$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+					break;
+				}
+				$c = "to_tsvector($lang$c)";
+				if($weight)
+					$c = "setweight($c,'$weight')";
+				$columns[] = $c;
 			}
-			$c = "to_tsvector($lang$c)";
-			if($weight)
-				$c = "setweight($c,'$weight')";
-			$columns[] = $c;
 		}
 		$sqlUpdate = 'UPDATE '.$tb.' as '.$_tb;
 		$sqlUpdate .= ' SET '.$col.'=(SELECT '.implode("||",$columns);
@@ -545,16 +551,6 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 		catch (\Exception $e ) {
 		}
-	}
-	function handleFullText($table, $col, Array $cols, Table &$model, $lang=''){
-		//$col = $this->esc(R::toSnake($col));
-		if($lang)
-			$lang .= ',';
-		$w =& $this;
-		$model->on('changed',function($bean)use(&$w,$table,$col,$cols,$lang){
-			$w->adapter->exec($w->buildColumnFulltextSQL($table,$col,$cols,$lang).' WHERE id=?',array($bean->id));
-		});
-		
 	}
 
 }
