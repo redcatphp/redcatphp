@@ -66,6 +66,7 @@ class R extends RedBeanPHP\Facade{
 	static function findOrNewOne($type,$params=array(),$insert=null){
 		$query = array();
 		$bind = array();
+		$params = self::_uniqSetter($type,$params);
 		foreach($params as $k=>$v){
 			$query[] = $k.'=?';
 			$bind[] = $v;
@@ -80,7 +81,7 @@ class R extends RedBeanPHP\Facade{
 				$params = array_merge($params,$insert);
 			$bean = R::newOne(array_pop($type),$params);
 		}
-		return $bean;
+		return $bean->box();
 	}
 	static function newOne($type,$params=array()){
 		$bean = self::dispense($type);
