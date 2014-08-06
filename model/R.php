@@ -73,9 +73,10 @@ class R extends RedBeanPHP\Facade{
 		}
 		$query = implode(' AND ',$query);
 		$type = (array)$type;
-		foreach($type as $t)
+		foreach($type as $t){
 			if($bean = R::findOne($t,$query,$bind))
 				break;
+		}
 		if(!$bean){
 			if(is_array($insert))
 				$params = array_merge($params,$insert);

@@ -109,6 +109,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->errors[$k] = func_get_arg(1);
 		else
 			$this->errors[] = $k;
+		return $this;
 	}
 	function _relationsKeysRestore(){
 		foreach($this->_relationsKeysStore as $k=>$v)
