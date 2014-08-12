@@ -9,7 +9,7 @@ use surikat\control\Geocoder\Provider\NominatimProvider;
 use surikat\control\Geocoder\Provider\OpenStreetMapProvider;
 
 class RadiusFinder{
-	static function byAddress($val,&$lat=null,&$lon=null){
+	static function byAddress($val,&$lat=null,&$lon=null,$debug=false){
 		$oLat = $lat;
 		$oLon = $lon;
 		$geocoder = new Geocoder();
@@ -23,11 +23,18 @@ class RadiusFinder{
 			
 		));
 		$geocoder->registerProvider($chain);
-		$geocode = $geocoder->geocode($val);
+		try{
+			$geocode = $geocoder->geocode($val);
+		}
+		catch(\surikat\control\Geocoder\Exception\ChainNoResultException $e){
+			if($debug)
+				echo $e->getMessage()."\r\n";
+			return 0;
+		}
 		$bounds = $geocode->getBounds();
 		$lon = $geocode->getLongitude();
 		$lat = $geocode->getLatitude();
-		if(!($bounds&&$lon&&$lat)){
+		if(!$bounds){
 			$geocode = $geocoder->geocode(self::geocodeToAddr($geocode));
 			$bounds = $geocode->getBounds();
 			$lon = $geocode->getLongitude();
