@@ -365,6 +365,8 @@ abstract class Repository
 	 */
 	public function store( $bean )
 	{
+		if($bean instanceof SimpleModel)
+			$bean = $bean->unbox();
 		$processLists = $this->hasListsOrObjects( $bean );
 		if ( !$processLists && !$bean->getMeta( 'tainted' ) ) {
 			return $bean->getID(); //bail out!
