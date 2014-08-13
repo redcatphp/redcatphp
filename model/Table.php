@@ -270,8 +270,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$t = $this->getTable();
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
-			$this->on('changed',function($entry)use($t,&$w,$col,$cols,$lang){
-			//$this->on('created',function($entry)use($t,&$w,$col,$cols,$lang){
+			$this->on('created',function($entry)use($t,&$w,$col,$cols,$lang){
 				if(!in_array($col,array_keys(R::inspect($t)))){
 					$w->addColumnFulltext($t, $col);
 					$w->buildColumnFulltext($t, $col, $cols, $lang);
