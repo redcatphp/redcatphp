@@ -1,5 +1,11 @@
 <?php namespace surikat\control;
 class post{
+	private static $postObject;
+	static function getObject(){
+		if(!isset(self::$postObject))
+			self::$postObject = new ArrayObject($_POST);
+		return self::$postObject;
+	}
 	static $key = 'persistant';
 	static function get_text($k,$default=null,$persistant=null){
 		return htmlentities((string)self::get($k,$default,$persistant));
