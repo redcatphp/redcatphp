@@ -36,9 +36,12 @@ class Exception_Upload extends Exception{
                 $message = "Unable to write uploaded file in target directory";
             break;
             default:
-                $message = "Unknown upload error ";
+				if(is_string($code))
+					$message = "Upload error (custom): $code";
+				else
+					$message = "Unknown upload error code: $code";
             break;
         }
         return $message;
     }
-} 
+}
