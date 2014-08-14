@@ -67,6 +67,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $checkUniq = true;
 	protected $_on = array();
 	protected $breakValidationOnError;
+	protected $queryWriter;
 	static function _checkUniq($b=null){
 		self::$_checkUniq = isset($b)?!!$b:true;
 	}
@@ -87,6 +88,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		}
 	}
 	function __construct($table){
+		$this->queryWriter = R::getWriter();
 		$this->table = $table;
 		$this->type = R::toCamel($table);
 		self::_binder($table);
@@ -258,7 +260,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				unset($uniqs[static::$loadUniq]);
 			if(!empty($uniqs)&&!R::getRedBean()->isFrozen())
 				//$this->bean->setMeta('buildcommand.unique',array(array_keys($uniqs)));
-				R::getWriter()->addUniqueIndex($this->table,array_keys($uniqs));
+				$this->queryWriter->addUniqueIndex($this->table,array_keys($uniqs));
 		}
 	}
 	function _indexConvention(){
@@ -266,7 +268,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->_fulltextConvention();
 	}
 	function _fulltextConvention(){
-		$w = R::getWriter();
+		$w = &$this->queryWriter;
 		$t = $this->getTable();
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
@@ -432,7 +434,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$a = array();
 		$lk = strlen($key);
 		foreach(get_class_vars(get_called_class()) as $k=>$v)
-			if(strpos($k,'column')===0&&ctype_upper(substr($k,6,1))&&($p=strrpos($k,$key)===strlen($k)-$lk)&&($k=lcfirst(substr($k,6,-1*$lk))))
+			if(strpos($k,'column')===0&&ctype_upper(substr($k,6,1))&&($p=strrpos($k,$key)===strlen($k)-$lk)&&($k=lcfirst(substr($k,6,-1*$lk)))&&isset($v))
 				$a[$k] = $v;
 		return $a;
 	}
