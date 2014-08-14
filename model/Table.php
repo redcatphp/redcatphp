@@ -434,7 +434,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$a = array();
 		$lk = strlen($key);
 		foreach(get_class_vars(get_called_class()) as $k=>$v)
-			if(strpos($k,'column')===0&&ctype_upper(substr($k,6,1))&&($p=strrpos($k,$key)===strlen($k)-$lk)&&($k=lcfirst(substr($k,6,-1*$lk)))&&isset($v))
+			if(strpos($k,'column')===0&&ctype_upper(substr($k,6,1))&&($p=strrpos($k,$key)===strlen($k)-$lk)&&($k=lcfirst(substr($k,6,-1*$lk))))
 				$a[$k] = $v;
 		return $a;
 	}
