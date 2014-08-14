@@ -308,7 +308,7 @@ class Facade
 		$adapter = new DBAdapter( $db );
 
 		$writers     = array(
-			'mysql'  => 'MySQL'
+			'mysql'  => 'MySQL',
 			'pgsql'  => 'PostgreSQL',
 			'sqlite' => 'SQLiteT',
 			'pgsql9'  => 'PostgreSQL',
