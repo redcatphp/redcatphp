@@ -521,7 +521,6 @@ class Query /* implements ArrayAccess */{
 	static function autoWrapCol($s,$table,$col){
 		if($func=R::getTableColumnDef($table,$col,'readCol'))
 			$s = $func.'('.$s.')';
-		//Table::_binder($table); //if enable, disable two lines up
 		if(isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table])&&isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col]))
 			$s = AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col];
 		return $s;
