@@ -608,6 +608,15 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if(!isset($this->metaAttribution[$to])&&isset($this->metaAttribution[$from])){
 			$this->metaAttribution[$to] = $this->metaAttribution[$from];
 			unset($this->metaAttribution[$from]);
+			if(is_integer($from)){
+				$afrom = $this->metaAttribution[$to];
+				$ato = $to;
+			}
+			else
+				$ato = $afrom = $from;
+			if(isset($this->attributes[$afrom]))
+				unset($this->attributes[$afrom]);
+			$this->attributes[$ato] = &$this->metaAttribution[$to];
 		}
 	}
 
