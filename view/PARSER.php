@@ -9,9 +9,9 @@ abstract class PARSER{
 	const STATE_PARSING_COMMENT = 6;
 	const STATE_NOPARSING = 7;
 	const STATE_PARSING_OPENER = 8;
-	const STATE_ATTR_NONE = 0;
-	const STATE_ATTR_KEY = 1;
-	const STATE_ATTR_VALUE = 2;
+	const STATE_ATTR_NONE = 9;
+	const STATE_ATTR_KEY = 10;
+	const STATE_ATTR_VALUE = 11;
 	
 	 //const PIO = '#PHP_ID_OPEN#';
 	 //const PIC = '#PHP_ID_CLOSE#';
@@ -141,6 +141,7 @@ abstract class PARSER{
 			$xmlText .= $xml;		
 		$state = self::STATE_PROLOG_NONE;
 		$charContainer = '';
+		$quoteType = '';
 		$xmlText = trim($xmlText);
 		$total = strlen($xmlText);
 		for($i=0;$i<$total;$i++){
@@ -240,6 +241,20 @@ abstract class PARSER{
 								$charContainer .= $currentChar;
 							break;
 						}
+					break;
+					case '"':
+					case "'":
+						switch($state){
+							case self::STATE_PARSING_OPENER:
+								$state = self::STATE_ATTR_VALUE;
+								$quoteType = $currentChar;
+							break;
+							case self::STATE_ATTR_VALUE:
+								if($quoteType==$currentChar)
+									$state = self::STATE_PARSING_OPENER;
+							break;
+						}
+						$charContainer .= $currentChar;
 					break;
 					case '>':
 						switch($state){
