@@ -407,8 +407,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	}
 
 	
+
 	protected $separator = ',';
-	protected $agg = 'string_agg';
+	protected $agg = 'string_agg'; //as of pgsql 9
 	protected $aggCaster = '::text';
 	protected $sumCaster = '::int';
 	protected $concatenator = 'chr(29)';

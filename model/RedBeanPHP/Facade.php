@@ -307,10 +307,14 @@ class Facade
 
 		$adapter = new DBAdapter( $db );
 
-		$writers     = array('pgsql'  => 'PostgreSQL',
-									'sqlite' => 'SQLiteT',
-									'cubrid' => 'CUBRID',
-									'mysql'  => 'MySQL');
+		$writers     = array(
+			'mysql'  => 'MySQL'
+			'pgsql'  => 'PostgreSQL',
+			'sqlite' => 'SQLiteT',
+			'pgsql9'  => 'PostgreSQL',
+			'pgsql8'  => 'PostgreSQL8BC',
+			'cubrid' => 'CUBRID',
+		);
 
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
