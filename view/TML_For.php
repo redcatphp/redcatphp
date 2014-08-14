@@ -2,6 +2,7 @@
 class TML_For extends TML {
 	protected $hiddenWrap = true;
 	function load(){
+		$this->remapAttr('for');
 		$c = $this->for;
 		if(!$c&&$this->i)
 			$c = '$i=0;$i<'.$this->attributes['i'].';$i++';
