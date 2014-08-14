@@ -62,7 +62,6 @@ trait Mixin_Geopoint{
 		$R = $this->getEarthRadius();
 
 		/*
-		*/
 			//Naïve approch don't work in somes special cases
 			$latVector = $rad?rad2deg($rad/$R):0;
 			$lonVector = $rad?rad2deg($rad/$R/cos(deg2rad($lat))):0;
@@ -70,8 +69,46 @@ trait Mixin_Geopoint{
 			$maxLat = $lat + $latVector;
 			$minLon = $lon - $lonVector;
 			$maxLon = $lon + $lonVector;
+		*/
 		
-
+		// coordinate limits
+		$MIN_LAT = deg2rad(-90);
+		$MAX_LAT = deg2rad(90);
+		$MIN_LON = deg2rad(-180);
+		$MAX_LON = deg2rad(180);
+		$radDist = $rad/$R; // angular distance in radians on a great circle
+		// center point coordinates (rad)
+		$radLat = deg2rad($lat);
+		$radLon = deg2rad($lon);
+		// minimum and maximum latitudes for given distance
+		$minLat = $radLat - $radDist;
+		$maxLat = $radLat + $radDist;
+		// minimum and maximum longitudes for given distance
+		$minLon = 0;
+		$maxLon = 0;
+		// define deltaLon to help determine min and max longitudes
+		$deltaLon = asin(sin($radDist) / cos($radLat));
+		if ($minLat > $MIN_LAT && $maxLat < $MAX_LAT) {
+			$minLon = $radLon - $deltaLon;
+			$maxLon = $radLon + $deltaLon;
+			if ($minLon < $MIN_LON) {
+				$minLon = $minLon + 2 * pi();
+			}
+			if ($maxLon > $MAX_LON) {
+				$maxLon = $maxLon - 2 * pi();
+			}
+		}
+		// a pole is within the given distance
+		else {
+			$minLat = max($minLat, $MIN_LAT);
+			$maxLat = min($maxLat, $MAX_LAT);
+			$minLon = $MIN_LON;
+			$maxLon = $MAX_LON;
+		}
+		$minLon = rad2deg($minLon);
+		$minLat = rad2deg($minLat);
+		$maxLon = rad2deg($maxLon);
+		$maxLat = rad2deg($maxLat);
 
 		return array(
 			$minLon,
