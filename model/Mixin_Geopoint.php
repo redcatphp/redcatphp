@@ -53,18 +53,31 @@ trait Mixin_Geopoint{
 		$this->point = $this->LatLon2Point($lat,$lon);
 	}
 	function setBounds($lat,$lon,$rad){
+		list($this->west, $this->south, $this->east, $this->north) = $this->getBoundingBox(array($lat,$lon),$rad);
+	}
+	function getBoundingBox(array $center,$rad){
+		list($lat,$lon) = $center;
 		if(!$rad)
-			$rad = 0;
+			return array($lon,$lat,$lon,$lat);
 		$R = $this->getEarthRadius();
-		$latVector = $rad?rad2deg($rad/$R):0;
-		$lonVector = $rad?rad2deg($rad/$R/cos(deg2rad($lat))):0;
-		$minLat = $lat - $latVector;
-		$maxLat = $lat + $latVector;
-		$minLon = $lon - $lonVector;
-		$maxLon = $lon + $lonVector;
-		$this->south = $minLat;
-		$this->west = $minLon;
-		$this->north = $maxLat;
-		$this->east = $maxLon;
+
+		/*
+		*/
+			//Naïve approch don't work in somes special cases
+			$latVector = $rad?rad2deg($rad/$R):0;
+			$lonVector = $rad?rad2deg($rad/$R/cos(deg2rad($lat))):0;
+			$minLat = $lat - $latVector;
+			$maxLat = $lat + $latVector;
+			$minLon = $lon - $lonVector;
+			$maxLon = $lon + $lonVector;
+		
+
+
+		return array(
+			$minLon,
+			$minLat,
+			$maxLon,
+			$maxLat,
+		);
 	}
 }
