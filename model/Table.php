@@ -77,7 +77,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function breakOnError($b=null){
 		$this->breakValidationOnError = isset($b)?!!$b:true;
 	}
-	static function _binder($table){
+	function _binder($table){
 		if(!in_array($table,self::$__binded)){
 			$c = R::getModelClass($table);
 			foreach($c::getDefColumns('readCol') as $col=>$func)
@@ -91,7 +91,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->queryWriter = R::getWriter();
 		$this->table = $table;
 		$this->type = R::toCamel($table);
-		self::_binder($table);
+		$this->_binder($table);
 	}
 	function getKeys(){
 		return array_keys($this->getProperties());
