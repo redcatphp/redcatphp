@@ -2,13 +2,12 @@
 class TML_Foreach extends TML {
 	protected $hiddenWrap = true;
 	function getForeach(){
-		$c = $this->foreach;
-		if(!$c)
-			$c = $this->e;
+		$this->remapAttr('e');
+		$this->remapAttr('e','foreach');
 		$k = isset($this->key)?$this->key:'key';
 		$v = isset($this->val)?$this->val:(isset($this->assign)?$this->assign:'val');
-		$as = strpos($c,' as ')!==false?'':' as $'.$k.'=>$'.$v;
-		return $c.$as;
+		$as = strpos($this->e,' as ')!==false?'':' as $'.$k.'=>$'.$v;
+		return $this->e.$as;
 	}
 	function load(){
 		array_unshift($this->head,'<?php foreach('.$this->getForeach().'){?>');

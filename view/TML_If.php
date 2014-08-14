@@ -8,6 +8,7 @@ class TML_If extends TML {
 	}
 	
 	function evalSource($justCode=null){
+		$this->remapAttr('e');
 		return $this->e&&$this->e!=='e'?$this->e:'';
 	}
 	function extendLoad($extend = null){ #untested
