@@ -8,7 +8,8 @@ trait Mixin_Geopoint{
 	private $_pointPrefix = '';
 	private $_pointSeparator = ',';
 	protected static $earthRadiusTypes = array(
-		'km'=>6371
+		'km'=>6371,
+		'miles'=>3959,
 	);
 	protected $earthRadius = 'km';
 	function _binder($table){
