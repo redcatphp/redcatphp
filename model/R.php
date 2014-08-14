@@ -321,6 +321,16 @@ class R extends RedBeanPHP\Facade{
 		$type = self::toSnake($type);
 		return self::getWriter()->drop($type);
 	}
+	static function execMulti($sql,$bindings=array()){
+		$pdo = self::getDatabaseAdapter()->getDatabase()->getPDO();
+		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+		$r = self::exec($sql, $bindings);
+		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+		return $r;
+	}
+	static function execFile($file,$bindings=array()){
+		return self::execMulti(file_get_contents($file),$bindings);
+	}
 	
 }
 R::initialize();
