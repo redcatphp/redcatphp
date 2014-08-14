@@ -15,16 +15,20 @@ class uploader{
 		$func = 'file'.($multi?'s':'');
 		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename,$conversion){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
-			if($conversion){
-				switch(exif_imagetype($file)){
+			if($conversion&&$ext!=$conversion&&($imgFormat=exif_imagetype($file))!=constant('IMAGETYPE_'.strtoupper($conversion))){
+				switch($imgFormat){
 					case IMAGETYPE_GIF :
 						$img = imagecreatefromgif($file);
 					break;
 					case IMAGETYPE_JPEG :
 						$img = imagecreatefromjpeg($file);
 					break;
-					default :
-					throw new Exception_Upload('extension conversion');
+					case IMAGETYPE_PNG :
+						$img = imagecreatefrompng($file);
+					break;
+					default:
+						throw new Exception_Upload('image format conversion not supported');
+					break;
 				}
 				$file = substr($file,0,-1*strlen($ext)).$conversion;
 				$ext = $conversion;
