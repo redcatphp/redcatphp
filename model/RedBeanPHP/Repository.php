@@ -15,6 +15,7 @@ use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\OODB as OODB;
 
 use surikat\model\R;
+use surikat\control;
 
 /**
  * Abstract Repository
@@ -106,11 +107,15 @@ abstract class Repository
 	protected function processSharedAdditions( $bean, $sharedAdditions )
 	{
 		foreach ( $sharedAdditions as $addition ) {
+			if ( !$addition )
+				continue;
 			if ( $addition instanceof SimpleModel )
 				$addition = $addition->unbox();
 			if ( $addition instanceof OODBBean ) {
 				$this->oodb->getAssociationManager()->associate( $addition, $bean );
 			} else {
+				if(control::devHas(control::dev_model))
+					var_dump($sharedAdditions);
 				throw new RedException( 'Array may only contain OODBBeans' );
 			}
 		}
