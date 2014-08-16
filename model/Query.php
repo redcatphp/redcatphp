@@ -149,9 +149,10 @@ class Query /* implements ArrayAccess */{
 		if($lang)
 			$lang .= ',';
 		$c = $this->formatColumnName($col);
-		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery(?),'HighlightAll=true'),1,$truncation) as $col",array($t));
+		$q = $this->writerQuoteCharacter;
+		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery(?),'HighlightAll=true'),1,$truncation) as $q$col$q",array($t));
 		if($getl)
-			$this->composer->select("LENGTH($c) as {$col}_length");
+			$this->composer->select("LENGTH($c) as $q{$col}_length$q");
 		return $this;
 	}
 	function selectFullTextHighlight($col,$t){
