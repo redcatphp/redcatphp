@@ -5,7 +5,7 @@ trait Mixin_Pagination{
 	protected $offset	    		= 0;
 	protected function pagination(){
 		$this->pagination = new ArrayObject(array(
-			'prefix'			=>'|page:',
+			'prefix'			=>'+page:',
 			'maxCols'			=>3,
 		));
 		if($this->limitation)
