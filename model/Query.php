@@ -143,28 +143,58 @@ class Query /* implements ArrayAccess */{
 		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?)) as $alias",array($t));
 		return $this;
 	}
-	function selectFullTextHighlite($col,$t,$truncation=369,$getl=true,$lang=null){
+	function selectFullTextHighlite($col,$t,$truncation=369,$config=array(
+		'MaxFragments'=>5,
+		'MaxWords'=>15,
+		'MinWords'=>5,
+		'ShortWord'=>3,
+		'FragmentDelimiter'=>' ... ',
+		'StartSel'=>'<b>',
+		'StopSel'=>'</b>',
+		'HighlightAll'=>'FALSE',
+	),$getl=true,$lang=null){
 		if(!$t)
 			return $this->selectTruncation($col,$truncation,$getl);
-		if($lang)
-			$lang .= ',';
+		$lang = $lang?"'$lang',":'';
+		$conf = '';
+		foreach($config as $k=>$v){
+			if($k=='FragmentDelimiter')
+				$conf .= $k.'="'.$v.'",';
+			else
+				$conf .= $k.'='.$v.',';
+		}
+		$conf = rtrim($conf,',');
 		$c = $this->formatColumnName($col);
 		$q = $this->writerQuoteCharacter;
-		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery(?),'HighlightAll=true'),1,$truncation) as $q$col$q",array($t));
+		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
 		if($getl)
 			$this->composer->select("LENGTH($c) as $q{$col}_length$q");
 		return $this;
 	}
-	function selectFullTextHighlight($col,$t){
+	function selectFullTextHighlight($col,$t,$lang=null,$config=array(
+		'MaxFragments'=>5,
+		'MaxWords'=>15,
+		'MinWords'=>5,
+		'ShortWord'=>3,
+		'FragmentDelimiter'=>' ... ',
+		'StartSel'=>'<b>',
+		'StopSel'=>'</b>',
+		'HighlightAll'=>'FALSE',
+	)){
 		if(!$t)
 			return $this->select($col);
 		$c = $this->formatColumnName($col);
-		/*
-		StartSel=<b>, StopSel=</b>,
-		MaxWords=35, MinWords=15, ShortWord=3, HighlightAll=FALSE,
-		MaxFragments=0, FragmentDelimiter=" ... "
-		*/
-		$this->composer->select("ts_headline($col,to_tsquery(?),'HighlightAll=true') as $col",array($t));
+		$lang = $lang?"'$lang',":'';
+		$conf = '';
+		foreach($config as $k=>$v){
+			if($k=='FragmentDelimiter')
+				$conf .= $k.'="'.$v.'",';
+			else
+				$conf .= $k.'='.$v.',';
+		}
+		$q = $this->writerQuoteCharacter;
+		$conf = rtrim($conf,',');
+		$this->composer->select("ts_headline($col,to_tsquery($lang?),?) as $q$col$q",array($t,$conf));
 		return $this;
 	}
 	function whereFullText($cols,$t,$toVector=null){
