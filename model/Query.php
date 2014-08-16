@@ -97,10 +97,10 @@ class Query /* implements ArrayAccess */{
 	function unJoinOn($on){
 		$this->unJoin(implode((array)$this->joinOnSQL($on)));
 	}
-	function joinWhere($w){
+	function joinWhere($w,$params=null){
 		if(empty($w))
 			return;
-		$this->having($this->joinWhereSQL($w));
+		$this->having($this->joinWhereSQL($w),$params);
 	}
 	function unJoinWhere($w){
 		if(empty($w))
@@ -143,7 +143,7 @@ class Query /* implements ArrayAccess */{
 		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?)) as $alias",array($t));
 		return $this;
 	}
-	function selectFullTextHighlite($col,$t,$truncation=369,$config=array(
+	function selectFullTextHighlite($col,$t,$truncation=369,$lang=null,$config=array(
 		'MaxFragments'=>5,
 		'MaxWords'=>15,
 		'MinWords'=>5,
@@ -152,7 +152,7 @@ class Query /* implements ArrayAccess */{
 		'StartSel'=>'<b>',
 		'StopSel'=>'</b>',
 		'HighlightAll'=>'FALSE',
-	),$getl=true,$lang=null){
+	),$getl=true){
 		if(!$t)
 			return $this->selectTruncation($col,$truncation,$getl);
 		$lang = $lang?"'$lang',":'';
