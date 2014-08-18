@@ -554,4 +554,23 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 	}
 
+	private static $FulltextHeadlineDefaultConfig = array(
+		'MaxFragments'=>2,
+		'MaxWords'=>25,
+		'MinWords'=>20,
+		'ShortWord'=>3,
+		'FragmentDelimiter'=>' ... ',
+		'StartSel'=>'<b>',
+		'StopSel'=>'</b>',
+		'HighlightAll'=>'FALSE',
+	);
+	function getFulltextHeadlineDefaultConfig(){
+		return self::$FulltextHeadlineDefaultConfig;
+	}
+	function setFulltextHeadlineDefaultConfig($config){
+		if(func_num_args()>1)
+			$config = array($config=>func_get_arg(1));
+		self::$FulltextHeadlineDefaultConfig = array_merge(self::$FulltextHeadlineDefaultConfig,$config);
+	}
+
 }

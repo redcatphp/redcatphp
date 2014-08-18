@@ -143,19 +143,11 @@ class Query /* implements ArrayAccess */{
 		$this->composer->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",array($t));
 		return $this;
 	}
-	function selectFullTextHighlite($col,$t,$truncation=369,$lang=null,$config=array(
-		'MaxFragments'=>2,
-		'MaxWords'=>25,
-		'MinWords'=>20,
-		'ShortWord'=>3,
-		'FragmentDelimiter'=>' ... ',
-		'StartSel'=>'<b>',
-		'StopSel'=>'</b>',
-		'HighlightAll'=>'FALSE',
-	),$getl=true){
+	function selectFullTextHighlite($col,$t,$truncation=369,$lang=null,$config=array(),$getl=true){
 		if(!$t)
 			return $this->selectTruncation($col,$truncation,$getl);
 		$lang = $lang?"'$lang',":'';
+		$config = array_merge($this->writer->getFulltextHeadlineDefaultConfig(),$config);
 		$conf = '';
 		foreach($config as $k=>$v){
 			if($k=='FragmentDelimiter')
@@ -171,20 +163,12 @@ class Query /* implements ArrayAccess */{
 			$this->composer->select("LENGTH($c) as $q{$col}_length$q");
 		return $this;
 	}
-	function selectFullTextHighlight($col,$t,$lang=null,$config=array(
-		'MaxFragments'=>2,
-		'MaxWords'=>25,
-		'MinWords'=>20,
-		'ShortWord'=>3,
-		'FragmentDelimiter'=>' ... ',
-		'StartSel'=>'<b>',
-		'StopSel'=>'</b>',
-		'HighlightAll'=>'FALSE',
-	)){
+	function selectFullTextHighlight($col,$t,$lang=null,$config=array()){
 		if(!$t)
 			return $this->select($col);
 		$c = $this->formatColumnName($col);
 		$lang = $lang?"'$lang',":'';
+		$config = array_merge($this->writer->getFulltextHeadlineDefaultConfig(),$config);
 		$conf = '';
 		foreach($config as $k=>$v){
 			if($k=='FragmentDelimiter')
