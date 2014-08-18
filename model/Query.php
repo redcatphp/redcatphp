@@ -129,7 +129,7 @@ class Query /* implements ArrayAccess */{
 		$c = $this->formatColumnName($col);
 		if($lang)
 			$lang .= ',';
-		$this->composer->order_by("ts_rank({$c}, to_tsquery({$lang}?))",array($t));
+		$this->composer->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",array($t));
 		return $this;
 	}
 	function selectFullTextRank($col,$t,$alias=null,$lang=null){
@@ -140,13 +140,13 @@ class Query /* implements ArrayAccess */{
 			$lang .= ',';
 		if(!$alias)
 			$alias = $col.'_rank';
-		$this->composer->select("ts_rank({$c}, to_tsquery({$lang}?)) as $alias",array($t));
+		$this->composer->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",array($t));
 		return $this;
 	}
 	function selectFullTextHighlite($col,$t,$truncation=369,$lang=null,$config=array(
-		'MaxFragments'=>5,
-		'MaxWords'=>15,
-		'MinWords'=>5,
+		'MaxFragments'=>2,
+		'MaxWords'=>25,
+		'MinWords'=>20,
 		'ShortWord'=>3,
 		'FragmentDelimiter'=>' ... ',
 		'StartSel'=>'<b>',
@@ -166,15 +166,15 @@ class Query /* implements ArrayAccess */{
 		$conf = rtrim($conf,',');
 		$c = $this->formatColumnName($col);
 		$q = $this->writerQuoteCharacter;
-		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,to_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
+		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
 		if($getl)
 			$this->composer->select("LENGTH($c) as $q{$col}_length$q");
 		return $this;
 	}
 	function selectFullTextHighlight($col,$t,$lang=null,$config=array(
-		'MaxFragments'=>5,
-		'MaxWords'=>15,
-		'MinWords'=>5,
+		'MaxFragments'=>2,
+		'MaxWords'=>25,
+		'MinWords'=>20,
 		'ShortWord'=>3,
 		'FragmentDelimiter'=>' ... ',
 		'StartSel'=>'<b>',
@@ -206,7 +206,7 @@ class Query /* implements ArrayAccess */{
 			if($toVector)
 				$cols[$k] = 'to_tsvector('.$cols[$k].')';
 		}
-		$this->where(implode('||',$cols).' @@ to_tsquery(?)',array($t));
+		$this->where(implode('||',$cols).' @@ plainto_tsquery(?)',array($t));
 		return $this;
 	}
 	protected function composerSelect(){
