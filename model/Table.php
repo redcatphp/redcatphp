@@ -26,6 +26,7 @@ use surikat\control;
 use surikat\control\JSON;
 use surikat\control\sync;
 use BadMethodCallException;
+use model\Exception_Validation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
 	function onNew(){}
@@ -111,7 +112,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->errors[$k] = func_get_arg(1);
 		else
 			$this->errors[] = $k;
+		if(func_num_args()>2&&func_get_arg(2))
+			$this->throwValidationError($this->getErrors());
 		return $this;
+	}
+	function throwValidationError($e=null){
+		throw new Exception_Validation('Données manquantes ou erronées',$e);
 	}
 	function _relationsKeysRestore(){
 		foreach($this->_relationsKeysStore as $k=>$v)
@@ -181,27 +187,53 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->type = R::toCamel($this->table);
 		$this->trigger('read');
 	}
+	private static $_transactDepth = 0;
 	function update(){
+		if(self::$_transactDepth==0)
+			R::begin();
+		self::$_transactDepth++;
+			
 		$this->_relationsKeysStore();
 		$this->_filterConvention();
 		$this->_rulerConvention();
 		$this->_indexConvention();
 
 		$this->trigger('validate');
-		$e = $this->getErrors();
-		if($e&&$this->breakValidationOnError){
+		if($this->breakValidationOnError&&($e=$this->getErrors())){
 			if(control::devHas(control::dev_model))
 				print_r($e);
-			throw new Exception_Validation('Données manquantes ou erronées',$e);
+			$this->throwValidationError($e);
 		}
 			
-		if(!$e){
+		$e = $this->getErrors();
+		self::$_transactDepth--;
+		if($e){
+			R::rollback();
+			$this->throwValidationError($e);
+		}
+		else{		
+			if(self::$_transactDepth==0)
+				R::commit();
 			$this->trigger('change');
 			if($this->creating)
 				$this->trigger('create');
 			else
 				$this->trigger('update');
 		}
+		
+	}
+	function after_update(){
+		$this->_relationsKeysRestore();
+		if(empty($this->errors)){
+			if($this->creating)
+				$this->trigger('created');
+			else
+				$this->trigger('updated');
+			if(static::$sync)
+				sync::update('model.'.$this->table);
+		}
+		$this->trigger('changed');
+
 	}
 	function _filterConvention(){
 		foreach(static::getDefColumns('filter') as $col=>$call){
@@ -281,18 +313,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$w->adapter->exec($w->buildColumnFulltextSQL($t,$col,$cols,$lang).' WHERE id=?',array($entry->id));
 			});
 		}
-	}
-	function after_update(){
-		$this->_relationsKeysRestore();
-		if(empty($this->errors)){
-			if($this->creating)
-				$this->trigger('created');
-			else
-				$this->trigger('updated');
-			if(static::$sync)
-				sync::update('model.'.$this->table);
-		}
-		$this->trigger('changed');
 	}
 	function delete(){
 		$this->trigger('delete');
