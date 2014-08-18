@@ -135,7 +135,12 @@ class uri implements ArrayAccess{
 						&&!in_array($this->uriParams[$i],$ints)
 						&&(!$validate||$this->resolvedParams[$i])
 					){
-						$uri .= $this->separators['And'].$this->uriParams[$i];
+						if(is_array($this->uriParams[$i])){
+							$uri .= $this->separators['And'].implode($this->separators['Or'],$this->uriParams[$i]);
+						}
+						else{
+							$uri .= $this->separators['And'].$this->uriParams[$i];
+						}
 						$ints[] = $this->uriParams[$i];
 					}
 				}
