@@ -47,10 +47,12 @@ trait Mixin_Geopoint{
 		return $this->_pointPrefix.'('.$lat.$this->_pointSeparator.$lon.')';
 	}
 	function setPoint($lat,$lon){
-		$this->point = $this->LatLon2Point($lat,$lon);
+		if($lat&&$lon)
+			$this->point = $this->LatLon2Point($lat,$lon);
 	}
 	function setBounds($lat,$lon,$rad){
-		list($this->west, $this->south, $this->east, $this->north) = Geocoding::getBoundingBox(array($lat,$lon),$rad,$this->getEarthRadius());
+		if($lat&&$lon)
+			list($this->west, $this->south, $this->east, $this->north) = Geocoding::getBoundingBox(array($lat,$lon),$rad,$this->getEarthRadius());
 	}
 	
 }
