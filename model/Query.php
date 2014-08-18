@@ -194,7 +194,7 @@ class Query /* implements ArrayAccess */{
 		}
 		$q = $this->writerQuoteCharacter;
 		$conf = rtrim($conf,',');
-		$this->composer->select("ts_headline($col,to_tsquery($lang?),?) as $q$col$q",array($t,$conf));
+		$this->composer->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",array($t,$conf));
 		return $this;
 	}
 	function whereFullText($cols,$t,$toVector=null){
