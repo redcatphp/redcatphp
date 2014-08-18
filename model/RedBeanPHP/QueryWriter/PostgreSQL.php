@@ -573,4 +573,68 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		self::$FulltextHeadlineDefaultConfig = array_merge(self::$FulltextHeadlineDefaultConfig,$config);
 	}
 
+	function orderByFullTextRank($query,$col,$t,$alias=null,$lang=null){
+		if($t){
+			$c = $query->formatColumnName($col);
+			if($lang)
+				$lang .= ',';
+			$query->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",array($t));
+		}
+	}
+	function selectFullTextRank($query,$col,$t,$alias=null,$lang=null){
+		if($t){
+			$c = $this->formatColumnName($col);
+			if($lang)
+				$lang .= ',';
+			if(!$alias)
+				$alias = $col.'_rank';
+			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",array($t));
+		}
+	}
+	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=array(),$getl=true){
+		if(!$t)
+			return $query->selectTruncation($col,$truncation,$getl);
+		$lang = $lang?"'$lang',":'';
+		$config = array_merge($this->getFulltextHeadlineDefaultConfig(),$config);
+		$conf = '';
+		foreach($config as $k=>$v){
+			if($k=='FragmentDelimiter')
+				$conf .= $k.'="'.$v.'",';
+			else
+				$conf .= $k.'='.$v.',';
+		}
+		$conf = rtrim($conf,',');
+		$c = $query->formatColumnName($col);
+		$q = $this->quoteCharacter;
+		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
+		if($getl)
+			$query->select("LENGTH($c) as $q{$col}_length$q");
+	}
+	function selectFullTextHighlight($query,$col,$t,$lang=null,$config=array()){
+		if(!$t)
+			return $$query->select($col);
+		$c = $query->formatColumnName($col);
+		$lang = $lang?"'$lang',":'';
+		$config = array_merge($this->getFulltextHeadlineDefaultConfig(),$config);
+		$conf = '';
+		foreach($config as $k=>$v){
+			if($k=='FragmentDelimiter')
+				$conf .= $k.'="'.$v.'",';
+			else
+				$conf .= $k.'='.$v.',';
+		}
+		$q = $this->quoteCharacter;
+		$conf = rtrim($conf,',');
+		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",array($t,$conf));
+	}
+	function whereFullText($query,$cols,$t,$toVector=null){
+		if(!is_array($cols))
+			$cols = (array)$cols;
+		foreach(array_keys($cols) as $k){
+			$cols[$k] = $query->formatColumnName($cols[$k]);
+			if($toVector)
+				$cols[$k] = 'to_tsvector('.$cols[$k].')';
+		}
+		$query->where(implode('||',$cols).' @@ plainto_tsquery(?)',array($t));
+	}
 }

@@ -59,29 +59,44 @@ class Query /* implements ArrayAccess */{
 			}
 			return;
 		}
-		elseif(method_exists($this->composer,$f)){
-			$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
-			if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
-				$args = call_user_func_array(array($this,$m),$args);
-			$sql = array_shift($args);
-			$binds = array_shift($args);
-			if($sql instanceof SQLComposerBase){
-				if(is_array($binds))
-					$binds = array_merge($sql->getParams(),$binds);
-				else
-					$binds = $sql->getParams();
-				$sql = $sql->getQuery();
+		else{
+			switch($f){
+				case 'orderByFullTextRank':
+				case 'selectFullTextRank':
+				case 'selectFullTextHighlite':
+				case 'selectFullTextHighlight':
+				case 'whereFullText':
+					array_unshift($args,$this);
+					call_user_func_array(array($this->writer,$f),$args);
+					return $this;
+				break;
+				default:					
+					if(method_exists($this->composer,$f)){
+						$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
+						if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
+							$args = call_user_func_array(array($this,$m),$args);
+						$sql = array_shift($args);
+						$binds = array_shift($args);
+						if($sql instanceof SQLComposerBase){
+							if(is_array($binds))
+								$binds = array_merge($sql->getParams(),$binds);
+							else
+								$binds = $sql->getParams();
+							$sql = $sql->getQuery();
+						}
+						if(is_array($binds))
+							$args = self::nestBinding($sql,$binds);
+						else
+							$args = array($sql,$binds);
+						if($un){
+							if(is_array($args[1])&&empty($args[1]))
+								$args[1] = null;
+						}
+						call_user_func_array(array($this->composer,$f),$args);
+						return $this;
+					}
+				break;
 			}
-			if(is_array($binds))
-				$args = self::nestBinding($sql,$binds);
-			else
-				$args = array($sql,$binds);
-			if($un){
-				if(is_array($args[1])&&empty($args[1]))
-					$args[1] = null;
-			}
-			call_user_func_array(array($this->composer,$f),$args);
-			return $this;
 		}
 		throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$f);
 	}
@@ -121,76 +136,6 @@ class Query /* implements ArrayAccess */{
 		$this->composer->select("SUBSTRING($c,1,$truncation) as $col");
 		if($getl)
 			$this->composer->select("LENGTH($c) as {$col}_length");
-		return $this;
-	}
-	function orderByFullTextRank($col,$t,$alias=null,$lang=null){
-		if(!$t)
-			return $this;
-		$c = $this->formatColumnName($col);
-		if($lang)
-			$lang .= ',';
-		$this->composer->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",array($t));
-		return $this;
-	}
-	function selectFullTextRank($col,$t,$alias=null,$lang=null){
-		if(!$t)
-			return $this;
-		$c = $this->formatColumnName($col);
-		if($lang)
-			$lang .= ',';
-		if(!$alias)
-			$alias = $col.'_rank';
-		$this->composer->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",array($t));
-		return $this;
-	}
-	function selectFullTextHighlite($col,$t,$truncation=369,$lang=null,$config=array(),$getl=true){
-		if(!$t)
-			return $this->selectTruncation($col,$truncation,$getl);
-		$lang = $lang?"'$lang',":'';
-		$config = array_merge($this->writer->getFulltextHeadlineDefaultConfig(),$config);
-		$conf = '';
-		foreach($config as $k=>$v){
-			if($k=='FragmentDelimiter')
-				$conf .= $k.'="'.$v.'",';
-			else
-				$conf .= $k.'='.$v.',';
-		}
-		$conf = rtrim($conf,',');
-		$c = $this->formatColumnName($col);
-		$q = $this->writerQuoteCharacter;
-		$this->composer->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
-		if($getl)
-			$this->composer->select("LENGTH($c) as $q{$col}_length$q");
-		return $this;
-	}
-	function selectFullTextHighlight($col,$t,$lang=null,$config=array()){
-		if(!$t)
-			return $this->select($col);
-		$c = $this->formatColumnName($col);
-		$lang = $lang?"'$lang',":'';
-		$config = array_merge($this->writer->getFulltextHeadlineDefaultConfig(),$config);
-		$conf = '';
-		foreach($config as $k=>$v){
-			if($k=='FragmentDelimiter')
-				$conf .= $k.'="'.$v.'",';
-			else
-				$conf .= $k.'='.$v.',';
-		}
-		$q = $this->writerQuoteCharacter;
-		$conf = rtrim($conf,',');
-		$this->composer->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",array($t,$conf));
-		return $this;
-	}
-	function whereFullText($cols,$t,$toVector=null){
-		//pgsql full text search
-		if(!is_array($cols))
-			$cols = (array)$cols;
-		foreach(array_keys($cols) as $k){
-			$cols[$k] = $this->formatColumnName($cols[$k]);
-			if($toVector)
-				$cols[$k] = 'to_tsvector('.$cols[$k].')';
-		}
-		$this->where(implode('||',$cols).' @@ plainto_tsquery(?)',array($t));
 		return $this;
 	}
 	protected function composerSelect(){
