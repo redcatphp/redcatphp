@@ -141,7 +141,10 @@ class Select extends Where {
 		return $this;
 	}
 	function close_having() {
-		$this->having[] = array( ')' );
+		if(is_array($e=end($this->having))&&count($e)>1)
+			array_pop($this->having);
+		else
+			$this->having[] = array( ')' );
 		return $this;
 	}
 	protected function _render_having() {
