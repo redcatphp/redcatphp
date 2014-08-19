@@ -108,19 +108,23 @@ class Query /* implements ArrayAccess */{
 	}
 	function joinOn($on){
 		$this->join(implode((array)$this->joinOnSQL($on)));
+		return $this;
 	}
 	function unJoinOn($on){
 		$this->unJoin(implode((array)$this->joinOnSQL($on)));
+		return $this;
 	}
 	function joinWhere($w,$params=null){
 		if(empty($w))
 			return;
 		$this->having($this->joinWhereSQL($w),$params);
+		return $this;
 	}
 	function unJoinWhere($w){
 		if(empty($w))
 			return;
 		$this->unHaving($this->joinWhereSQL($w));
+		return $this;
 	}
 	protected function joinWhereSQL($w){
 		if(empty($w))
