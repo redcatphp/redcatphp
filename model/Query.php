@@ -239,36 +239,6 @@ class Query /* implements ArrayAccess */{
 		$shareds = array();
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
-				case '.': //INNER
-					list($type,$alias) = self::typeAliasExtract($type,$superalias);
-					if(isset($select[$i+1])&&$select[$i+1]=='.'){ //shared
-						$i++;
-						if($superalias)
-							$alias = $superalias.'__'.($alias?$alias:$type);
-						$rels = array($typeParent,$type);
-						sort($rels);
-						$imp = implode('_',$rels);
-						$aImp = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
-						$xImp = $superalias?$q.$superalias.'__'.$imp.$q:$q.$imp.$q;
-						$this->join("RIGHT OUTER JOIN $aImp ON {$q}$typeParent{$q}.{$q}id{$q}=$xImp.{$q}{$typeParent}_id{$q}");
-						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$this->join("INNER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}=$xImp.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
-						$shareds[] = $type;
-						$typeParent = $type;
-						$relation = '..';
-						$type = '';
-					}
-					else{ //own						
-						if($superalias)
-							$alias = $superalias.'__'.$alias;
-						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$this->join("INNER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
-						$typeParent = $type;
-						$aliasParent = $alias;
-						$type = '';
-						$relation = '.';
-					}
-				break;
 				case '>': //own
 					list($type,$alias) = self::typeAliasExtract($type,$superalias);
 					if($superalias)
@@ -289,8 +259,10 @@ class Query /* implements ArrayAccess */{
 						$rels = array($typeParent,$type);
 						sort($rels);
 						$imp = implode('_',$rels);
-						//$aImp = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
-						$this->join("LEFT OUTER JOIN $imp ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
+						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
+						if($superalias)
+							$imp = $superalias.'__'.$imp;
+						$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 						$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
 						$shareds[] = $type;
