@@ -157,4 +157,11 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
                 $a[$k] = self::array2object($v);
         return new ArrayObject($a);
     }
+    function __call($f,$args){
+		if(strpos($f,'array_')===0)
+			array_unshift($args,$this->getArray());
+		else
+			array_push($args,$this->getArray());
+		return call_user_func_array($f,$args);
+	}
 }
