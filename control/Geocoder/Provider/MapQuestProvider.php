@@ -69,7 +69,7 @@ class MapQuestProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->apiKey) {
             throw new InvalidCredentialsException('No API Key provided.');
@@ -113,10 +113,10 @@ class MapQuestProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not find results for given query: %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($locations as $location) {
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'      => $location['latLng']['lat'],
                 'longitude'     => $location['latLng']['lng'],
                 'streetName'    => $location['street'] ?: null,
@@ -125,7 +125,7 @@ class MapQuestProvider extends AbstractProvider implements ProviderInterface
                 'county'        => $location['adminArea4'] ?: null,
                 'region'        => $location['adminArea3'] ?: null,
                 'country'       => $location['adminArea1'] ?: null,
-            ));
+            ]);
         }
 
         return $results;

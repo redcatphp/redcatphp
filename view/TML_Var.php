@@ -15,6 +15,6 @@ class TML_Var extends TML{
 		else{
 			$this->innerHead('<?php $'.$var.'=eval(\'?>'.str_replace("'","\'",$this->getInnerTml()).'\');?>');
 		}
-		$this->childNodes = array();
+		$this->childNodes = [];
 	}
 }

@@ -1,7 +1,7 @@
 <?php namespace surikat\control\Min; 
 class PHP {
 	var $minifyHTML;
-	private $tokens = array();
+	private $tokens = [];
 	private $head;
 	private $result;
 	static function minify($out,$head='',$minifyHTML=true){
@@ -74,10 +74,10 @@ class PHP {
 		for($i = 0; $i < count($this->tokens) - 1; $i++) {
 			if($this->tokens[$i][0] == T_PUBLIC){
 				if($this->tokens[$i-1][0] == T_STATIC){
-					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? array("", "") : array(-1, ""); //added by surikat
+					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? ["", ""] : [-1, ""]; //added by surikat
 				}
 				else{
-					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? array(T_VAR, "var") : array(-1, "");
+					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? [T_VAR, "var"] : [-1, ""];
 				}
 			}
 		}            
@@ -96,7 +96,7 @@ class PHP {
 		$pending_whitespace = count($this->tokens) ? "\n" : "";
 		foreach($tokens as $t) {
 			if(!is_array($t))
-				$t = array(-1, $t);
+				$t = [-1, $t];
 			if($t[0] == T_COMMENT || $t[0] == T_DOC_COMMENT)
 				continue;
 			if($t[0] == T_WHITESPACE) {

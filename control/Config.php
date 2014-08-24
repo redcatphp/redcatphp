@@ -1,6 +1,6 @@
 <?php namespace surikat\control; 
 class Config {
-	private static $factory = array();
+	private static $factory = [];
 	static function __callStatic($f,$args){
 		if(!isset(self::$factory[$f]))
 			self::$factory[$f] = is_file($file=str_replace('_',DIRECTORY_SEPARATOR,$f).'/config.php')?include($file):false;

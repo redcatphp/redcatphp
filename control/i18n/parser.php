@@ -1,8 +1,8 @@
 <?php namespace surikat\control\i18n;
 use surikat\control;
 class parser{
-	static $directories = array();
-	private static $tpl_extensions = array('tml','atml','btml','tpl','php');
+	static $directories = [];
+	private static $tpl_extensions = ['tml','atml','btml','tpl','php'];
 	static $potfile = 'langs/messages.pot';
 	private static $lang_compil_path;
 	static function add_dates(){
@@ -34,8 +34,8 @@ class parser{
 	}
 	
 	static function compile_pot_from_sources(){
-		self::$directories[] = array(control::$CWD,true);
-		call_user_func_array(array('self','sources_compiler'),self::$directories);
+		self::$directories[] = [control::$CWD,true];
+		call_user_func_array(['self','sources_compiler'],self::$directories);
 	}
 	static function compile_set_obsolete(){
 		R::exec("UPDATE i18n_messages SET is_obsolete=1");
@@ -44,7 +44,7 @@ class parser{
 		$msgs = $parser->entryStore->read();
 		array_shift($msgs);
 		foreach($msgs as $msg){
-			$r = R::find('i18n_messages',"reference = ? AND msgid = ?",array($msg['reference'],$msg['msgid']));
+			$r = R::find('i18n_messages',"reference = ? AND msgid = ?",[$msg['reference'],$msg['msgid']]);
 			if(is_object($r)){
 				$r->is_obsolete = 0;
 				R::store($r);
@@ -73,10 +73,10 @@ class parser{
 		file_put_contents($potfile,$add);
 		foreach(func_get_args() as $arg){
 			if(is_array($arg)){
-				self::tsmarty2c(array($arg[0],@$arg[1]));
+				self::tsmarty2c([$arg[0],@$arg[1]]);
 			}
 			else{
-				self::tsmarty2c(array($arg,true));
+				self::tsmarty2c([$arg,true]);
 			}
 		}
 	}
@@ -182,7 +182,7 @@ class parser{
 			}
 			$outc .= "\n";
 		}
-		file_put_contents(self::$lang_compil_path.str_replace(array('/','\\'),'_',$file).'.c',$outc);
+		file_put_contents(self::$lang_compil_path.str_replace(['/','\\'],'_',$file).'.c',$outc);
 	}
 	
 	/**
@@ -249,9 +249,9 @@ class parser{
 		}
 
 		// results array
-		$hash = array ();
+		$hash =  [];
 		// temporary array
-		$temp = array ();
+		$temp =  [];
 		// state
 		$state = null;
 		$fuzzy = false;
@@ -277,7 +277,7 @@ class parser{
 					if (sizeof($temp) && array_key_exists('msgid', $temp) && array_key_exists('msgstr', $temp)) {
 						if (!$fuzzy)
 							$hash[] = $temp;
-						$temp = array ();
+						$temp =  [];
 						$state = null;
 						$fuzzy = false;
 					}
@@ -329,7 +329,7 @@ class parser{
 
 		// Cleanup data, merge multiline entries, reindex hash for ksort
 		$temp = $hash;
-		$hash = array ();
+		$hash =  [];
 		foreach ($temp as $entry) {
 			foreach ($entry as & $v) {
 				$v = self::phpmo_clean_helper($v);
@@ -352,7 +352,7 @@ class parser{
 		// our mo file data
 		$mo = '';
 		// header data
-		$offsets = array ();
+		$offsets =  [];
 		$ids = '';
 		$strings = '';
 
@@ -366,9 +366,9 @@ class parser{
 			// plural msgstrs are NUL-separated
 			$str = implode("\x00", $entry['msgstr']);
 			// keep track of offsets
-			$offsets[] = array (
+			$offsets[] =  [
 				strlen($ids
-			), strlen($id), strlen($strings), strlen($str));
+			), strlen($id), strlen($strings), strlen($str)];
 			// plural msgids are not stored (?)
 			$ids .= $id . "\x00";
 			$strings .= $str . "\x00";
@@ -379,8 +379,8 @@ class parser{
 		// values start right after the keys
 		$value_start = $key_start +strlen($ids);
 		// first all key offsets, then all value offsets
-		$key_offsets = array ();
-		$value_offsets = array ();
+		$key_offsets =  [];
+		$value_offsets =  [];
 		// calculate
 		foreach ($offsets as $v) {
 			list ($o1, $l1, $o2, $l2) = $v;

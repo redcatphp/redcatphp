@@ -23,9 +23,9 @@ class Git {
             $submodules = parse_ini_file(".gitmodules", true);
         }
         else {
-            $submodules = array();
+            $submodules = [];
         }
-        $submodule_paths = array();
+        $submodule_paths = [];
 
         foreach ($submodules as $submodule) {
             $submodule_paths[] = $submodule['path'];
@@ -37,13 +37,13 @@ class Git {
             $command = "ls-files";
         }
 
-        $return = array(
-            'upload' => array(),
-            'delete' => array(),
+        $return = [
+            'upload' => [],
+            'delete' => [],
             'submodules' => $submodule_paths
-        );
+        ];
 
-        $command = str_replace(array("\n","\r\n"), '', $command);
+        $command = str_replace(["\n","\r\n"], '', $command);
         $result = $this->exec($command);
 
         if (empty($result)) {

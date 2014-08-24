@@ -48,7 +48,7 @@ class InputStream {
     /**
      * Parse errors.
      */
-    public $errors = array();
+    public $errors = [];
 
     /**
      * @param $data Data to parse
@@ -89,10 +89,10 @@ class InputStream {
         by U+FFFD REPLACEMENT CHARACTERs. Any occurrences of such
         characters is a parse error. */
         for ($i = 0, $count = substr_count($data, "\0"); $i < $count; $i++) {
-            $this->errors[] = array(
+            $this->errors[] = [
                 'type' => Tokenizer::PARSEERROR,
                 'data' => 'null-character'
-            );
+            ];
         }
         /* U+000D CARRIAGE RETURN (CR) characters and U+000A LINE FEED
         (LF) characters are treated specially. Any CR characters
@@ -102,16 +102,16 @@ class InputStream {
         by LF characters, and there are never any CR characters in the
         input to the tokenization stage. */
         $data = str_replace(
-            array(
+            [
                 "\0",
                 "\r\n",
                 "\r"
-            ),
-            array(
+            ],
+            [
                 "\xEF\xBF\xBD",
                 "\n",
                 "\n"
-            ),
+            ],
             $data
         );
 
@@ -145,10 +145,10 @@ class InputStream {
                 $matches
             );
             for ($i = 0; $i < $count; $i++) {
-                $this->errors[] = array(
+                $this->errors[] = [
                     'type' => Tokenizer::PARSEERROR,
                     'data' => 'invalid-codepoint'
-                );
+                ];
             }
         } else {
             // XXX: Need non-PCRE impl, probably using substr_count

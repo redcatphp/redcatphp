@@ -57,7 +57,7 @@ class RPDO implements Driver
 	/**
 	 * @var array
 	 */
-	protected $connectInfo = array();
+	protected $connectInfo = [];
 
 	/**
 	 * @var boolean
@@ -121,7 +121,7 @@ class RPDO implements Driver
 	 *
 	 * @throws SQL
 	 */
-	protected function runQuery( $sql, $bindings, $options = array() )
+	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
 
@@ -131,7 +131,7 @@ class RPDO implements Driver
 
 		try {
 			if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
-				$statement = $this->pdo->prepare( $sql, array(\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ) );
+				$statement = $this->pdo->prepare( $sql, [\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ] );
 			} else {
 				$statement = $this->pdo->prepare( $sql );
 			}
@@ -152,7 +152,7 @@ class RPDO implements Driver
 					$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
 				}
 			} else {
-				$this->resultArray = array();
+				$this->resultArray = [];
 			}
 		} catch (\PDOException $e ) {
 			//Unfortunately the code field is supposed to be int by default (php)
@@ -225,7 +225,7 @@ class RPDO implements Driver
 		} else {
 			$this->dsn = $dsn;
 
-			$this->connectInfo = array( 'pass' => $pass, 'user' => $user );
+			$this->connectInfo = [ 'pass' => $pass, 'user' => $user ];
 		}
 	}
 
@@ -263,9 +263,9 @@ class RPDO implements Driver
 				$this->dsn,
 				$user,
 				$pass,
-				array(\PDO::ATTR_ERRMODE            =>\PDO::ERRMODE_EXCEPTION,
+				[\PDO::ATTR_ERRMODE            =>\PDO::ERRMODE_EXCEPTION,
 					  \PDO::ATTR_DEFAULT_FETCH_MODE =>\PDO::FETCH_ASSOC,
-				)
+				]
 			);
 
 			$this->setEncoding();
@@ -273,7 +273,7 @@ class RPDO implements Driver
 
 			$this->isConnected = TRUE;
 		} catch (\PDOException $exception ) {
-			$matches = array();
+			$matches = [];
 
 			$dbname  = ( preg_match( '/dbname=(\w+)/', $this->dsn, $matches ) ) ? $matches[1] : '?';
 
@@ -299,7 +299,7 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::GetAll
 	 */
-	public function GetAll( $sql, $bindings = array() )
+	public function GetAll( $sql, $bindings = [] )
 	{
 		$this->runQuery( $sql, $bindings );
 
@@ -309,11 +309,11 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::GetAssocRow
 	 */
-	public function GetAssocRow( $sql, $bindings = array() )
+	public function GetAssocRow( $sql, $bindings = [] )
 	{
-		$this->runQuery( $sql, $bindings, array(
+		$this->runQuery( $sql, $bindings, [
 				'fetchStyle' => \PDO::FETCH_ASSOC
-			)
+			]
 		);
 
 		return $this->resultArray;
@@ -322,11 +322,11 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::GetCol
 	 */
-	public function GetCol( $sql, $bindings = array() )
+	public function GetCol( $sql, $bindings = [] )
 	{
 		$rows = $this->GetAll( $sql, $bindings );
 
-		$cols = array();
+		$cols = [];
 		if ( $rows && is_array( $rows ) && count( $rows ) > 0 ) {
 			foreach ( $rows as $row ) {
 				$cols[] = array_shift( $row );
@@ -339,7 +339,7 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::GetCell
 	 */
-	public function GetCell( $sql, $bindings = array() )
+	public function GetCell( $sql, $bindings = [] )
 	{
 		$arr = $this->GetAll( $sql, $bindings );
 
@@ -352,7 +352,7 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::GetRow
 	 */
-	public function GetRow( $sql, $bindings = array() )
+	public function GetRow( $sql, $bindings = [] )
 	{
 		$arr = $this->GetAll( $sql, $bindings );
 
@@ -362,7 +362,7 @@ class RPDO implements Driver
 	/**
 	 * @see Driver::Excecute
 	 */
-	public function Execute( $sql, $bindings = array() )
+	public function Execute( $sql, $bindings = [] )
 	{
 		$this->runQuery( $sql, $bindings );
 

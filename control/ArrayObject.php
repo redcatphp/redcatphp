@@ -1,7 +1,7 @@
 <?php namespace surikat\control;
 use surikat\control;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	function __construct($a=array()){
+	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))
                 $a[$k] = self::array2object($v);
@@ -151,7 +151,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 					$a[$k] = self::object2array($v);
         return $a instanceof \ArrayObject?$a->getArrayCopy():(array)$a;
 	}
-	static function array2object(array $a){
+	static function array2object( array $a){
         foreach($a as $k=>$v)
             if(is_array($v))
                 $a[$k] = self::array2object($v);

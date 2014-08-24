@@ -38,7 +38,7 @@ class IpGeoBaseProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::ENDPOINT_URL, $address);
@@ -53,20 +53,20 @@ class IpGeoBaseProvider extends AbstractProvider implements ProviderInterface
 
         $result = $xml->ip;
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => (double) $result->lat,
             'longitude'    => (double) $result->lng,
             'city'         => (string) $result->city,
             'cityDistrict' => (string) $result->district,
             'region'       => (string) $result->region,
             'countryCode'  => (string) $result->country,
-        )));
+        ])];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The IpGeoBaseProvider is not able to do reverse geocoding.');
     }

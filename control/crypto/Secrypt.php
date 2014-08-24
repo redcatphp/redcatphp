@@ -1,11 +1,11 @@
 <?php namespace surikat\control\crypto;
 
 class Secrypt {
-    var $Keys = array('public' => '', 'private' => '', 'xfactor' => '', 'yfactor' => '', 'zfactor' => '');
+    var $Keys = ['public' => '', 'private' => '', 'xfactor' => '', 'yfactor' => '', 'zfactor' => ''];
     var $Data = '';
     var $Zip = TRUE;
-    var $Errors = array();
-    var $Locks = array();
+    var $Errors = [];
+    var $Locks = [];
     function Secrypt(){
         if (!function_exists('gzdeflate')){
             $this->Zip = FALSE;
@@ -208,7 +208,7 @@ class Secrypt {
                 $return .= '[-] '.$Error."\n";
             }
         }
-        $this->Errors = array();
+        $this->Errors = [];
         if ($returnVal){
             return $return;
 

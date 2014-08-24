@@ -14,14 +14,14 @@ class RadiusFinder{
 		$oLon = $lon;
 		$geocoder = new Geocoder();
 		$adapter  = new CurlHttpAdapter();
-		$chain    = new ChainProvider(array(
+		$chain    = new ChainProvider([
 			new NominatimProvider($adapter),
 			new OpenStreetMapProvider($adapter),
 			new GoogleMapsProvider($adapter), //new GoogleMapsProvider($adapter, 'fr_FR', 'France', true),
 			new FreeGeoIpProvider($adapter),
 			new HostIpProvider($adapter),
 			
-		));
+		]);
 		$geocoder->registerProvider($chain);
 		try{
 			$geocode = $geocoder->geocode($val);
@@ -50,7 +50,7 @@ class RadiusFinder{
 		}
 	}
 	static function byBounds($bounds){
-		return call_user_func_array(array('self','distance'),$bounds)/2.0;
+		return call_user_func_array(['self','distance'],$bounds)/2.0;
 	}
 	static function distance($lat1, $lon1, $lat2, $lon2){
 		$R = 6371.0; // Radius of the earth in km
@@ -59,7 +59,7 @@ class RadiusFinder{
 		$a = 0.5 - cos($dLat)/2.0 + cos($lat1 * pi() / 180.0) * cos($lat2 * pi() / 180.0) * (1 - cos($dLon))/2;
 		return $R * 2 * asin(sqrt($a));
 	}
-	static function geocodeToAddr($geocode,$keys=array(
+	static function geocodeToAddr($geocode,$keys=[
 			'streetNumber',
 			'streetName',
 			'cityDistrict',
@@ -70,7 +70,7 @@ class RadiusFinder{
 			//'regionCode',
 			//'countyCode',
 			//'county',
-	)){
+	]){
 		$addr = '';
 		foreach($keys as $k){
 			$m = 'get'.ucfirst($k);

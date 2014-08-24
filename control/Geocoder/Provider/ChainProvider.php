@@ -21,14 +21,14 @@ class ChainProvider implements ProviderInterface
     /**
      * @var ProviderInterface[]
      */
-    private $providers = array();
+    private $providers = [];
 
     /**
      * Constructor
      *
      * @param ProviderInterface[] $providers
      */
-    public function __construct(array $providers = array())
+    public function __construct( array $providers = [])
     {
         $this->providers = $providers;
     }
@@ -48,7 +48,7 @@ class ChainProvider implements ProviderInterface
      */
     public function getGeocodedData($address)
     {
-        $exceptions = array();
+        $exceptions = [];
 
         foreach ($this->providers as $provider) {
             try {
@@ -66,9 +66,9 @@ class ChainProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
-        $exceptions = array();
+        $exceptions = [];
 
         foreach ($this->providers as $provider) {
             try {

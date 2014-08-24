@@ -41,7 +41,7 @@ class OODB extends Observable
 	/**
 	 * @var array
 	 */
-	protected $chillList = array();
+	protected $chillList = [];
 
 
 	/**
@@ -213,7 +213,7 @@ class OODB extends Observable
 	public function dispense( $type, $number = 1, $alwaysReturnArray = FALSE )
 	{
 		if ( $number < 1 ) {
-			if ( $alwaysReturnArray ) return array();
+			if ( $alwaysReturnArray ) return [];
 			return NULL;
 		}
 
@@ -286,7 +286,7 @@ class OODB extends Observable
 	 *
 	 * @throws SQL
 	 */
-	public function find( $type, $conditions = array(), $sql = NULL, $bindings = array() )
+	public function find( $type, $conditions = [], $sql = NULL, $bindings = [] )
 	{
 		return $this->repository->find( $type, $conditions, $sql, $bindings );
 	}
@@ -429,7 +429,7 @@ class OODB extends Observable
 	 *
 	 * @throws SQL
 	 */
-	public function count( $type, $addSQL = '', $bindings = array() )
+	public function count( $type, $addSQL = '', $bindings = [] )
 	{
 		return $this->repository->count( $type, $addSQL, $bindings );
 	}

@@ -54,7 +54,7 @@ class Facade
 	/**
 	 * @var array
 	 */
-	private static $toolboxes = array();
+	private static $toolboxes = [];
 
 	/**
 	 * @var ToolBox
@@ -109,7 +109,7 @@ class Facade
 	/**
 	 * @var array
 	 */
-	private static $plugins = array();
+	private static $plugins = [];
 
 	/**
 	 * @var string
@@ -119,7 +119,7 @@ class Facade
 	/**
 	 * @var array
 	 */
-	private static $sqlFilters = array();
+	private static $sqlFilters = [];
 
 	/**
 	 * Internal Query function, executes the desired query. Used by
@@ -140,12 +140,12 @@ class Facade
 				$rs = Facade::$adapter->$method( $sql, $bindings );
 			} catch ( SQL $exception ) {
 				if ( self::$writer->sqlStateIn( $exception->getSQLState(),
-					array(
+					[
 						QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
-						QueryWriter::C_SQLSTATE_NO_SUCH_TABLE )
+						QueryWriter::C_SQLSTATE_NO_SUCH_TABLE ]
 					)
 				) {
-					return ( $method === 'getCell' ) ? NULL : array();
+					return ( $method === 'getCell' ) ? NULL : [];
 				} else {
 					throw $exception;
 				}
@@ -307,14 +307,14 @@ class Facade
 
 		$adapter = new DBAdapter( $db );
 
-		$writers     = array(
+		$writers     = [
 			'mysql'  => 'MySQL',
 			'pgsql'  => 'PostgreSQL',
 			'sqlite' => 'SQLiteT',
 			'pgsql9'  => 'PostgreSQL',
 			'pgsql8'  => 'PostgreSQL8BC',
 			'cubrid' => 'CUBRID',
-		);
+		];
 
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
@@ -462,7 +462,7 @@ class Facade
 		}
 
 		if ( !is_array( $types ) ) {
-			return array();
+			return [];
 		}
 
 		foreach ( $types as $k => $typeItem ) {
@@ -580,7 +580,7 @@ class Facade
 	public static function dispenseAll( $order, $onlyArrays = FALSE )
 	{
 
-		$list = array();
+		$list = [];
 
 		foreach( explode( ',', $order ) as $order ) {
 			if ( strpos( $order, '*' ) !== false ) {
@@ -606,7 +606,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function findOrDispense( $type, $sql = NULL, $bindings = array() )
+	public static function findOrDispense( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->findOrDispense( $type, $sql, $bindings );
 	}
@@ -624,7 +624,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function find( $type, $sql = NULL, $bindings = array() )
+	public static function find( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->find( $type, $sql, $bindings );
 	}
@@ -644,7 +644,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function findAll( $type, $sql = NULL, $bindings = array() )
+	public static function findAll( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->find( $type, $sql, $bindings );
 	}
@@ -659,7 +659,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function findAndExport( $type, $sql = NULL, $bindings = array() )
+	public static function findAndExport( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->findAndExport( $type, $sql, $bindings );
 	}
@@ -674,7 +674,7 @@ class Facade
 	 *
 	 * @return OODBBean
 	 */
-	public static function findOne( $type, $sql = NULL, $bindings = array() )
+	public static function findOne( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->findOne( $type, $sql, $bindings );
 	}
@@ -689,7 +689,7 @@ class Facade
 	 *
 	 * @return OODBBean
 	 */
-	public static function findLast( $type, $sql = NULL, $bindings = array() )
+	public static function findLast( $type, $sql = NULL, $bindings = [] )
 	{
 		return self::$finder->findLast( $type, $sql, $bindings );
 	}
@@ -740,7 +740,7 @@ class Facade
 	 *
 	 * @return integer
 	 */
-	public static function exec( $sql, $bindings = array() )
+	public static function exec( $sql, $bindings = [] )
 	{
 		return self::query( 'exec', $sql, $bindings );
 	}
@@ -754,7 +754,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function getAll( $sql, $bindings = array() )
+	public static function getAll( $sql, $bindings = [] )
 	{
 		return self::query( 'get', $sql, $bindings );
 	}
@@ -768,7 +768,7 @@ class Facade
 	 *
 	 * @return string
 	 */
-	public static function getCell( $sql, $bindings = array() )
+	public static function getCell( $sql, $bindings = [] )
 	{
 		return self::query( 'getCell', $sql, $bindings );
 	}
@@ -782,7 +782,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function getRow( $sql, $bindings = array() )
+	public static function getRow( $sql, $bindings = [] )
 	{
 		return self::query( 'getRow', $sql, $bindings );
 	}
@@ -796,7 +796,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function getCol( $sql, $bindings = array() )
+	public static function getCol( $sql, $bindings = [] )
 	{
 		return self::query( 'getCol', $sql, $bindings );
 	}
@@ -815,7 +815,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function getAssoc( $sql, $bindings = array() )
+	public static function getAssoc( $sql, $bindings = [] )
 	{
 		return self::query( 'getAssoc', $sql, $bindings );
 	}
@@ -831,7 +831,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function getAssocRow( $sql, $bindings = array() )
+	public static function getAssocRow( $sql, $bindings = [] )
 	{
 		return self::query( 'getAssocRow', $sql, $bindings );
 	}
@@ -857,7 +857,7 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function dup( $bean, $trail = array(), $pid = FALSE, $filters = array() )
+	public static function dup( $bean, $trail = [], $pid = FALSE, $filters = [] )
 	{
 		self::$duplicationManager->setFilters( $filters );
 		return self::$duplicationManager->dup( $bean, $trail, $pid );
@@ -877,7 +877,7 @@ class Facade
 	 *
 	 * @return    array
 	 */
-	public static function exportAll( $beans, $parents = FALSE, $filters = array())
+	public static function exportAll( $beans, $parents = FALSE, $filters = [])
 	{
 		return self::$duplicationManager->exportAll( $beans, $parents, $filters, self::$exportCaseStyle );
 	}
@@ -902,7 +902,7 @@ class Facade
 	 */
 	public static function useExportCase( $caseStyle = 'default' )
 	{
-		if ( !in_array( $caseStyle, array( 'default', 'camel', 'dolphin' ) ) ) throw new RedException( 'Invalid case selected.' );
+		if ( !in_array( $caseStyle, [ 'default', 'camel', 'dolphin' ] ) ) throw new RedException( 'Invalid case selected.' );
 		self::$exportCaseStyle = $caseStyle;
 	}
 
@@ -1048,7 +1048,7 @@ class Facade
 	 *
 	 * @throws SQL
 	 */
-	public static function count( $type, $addSQL = '', $bindings = array() )
+	public static function count( $type, $addSQL = '', $bindings = [] )
 	{
 		return Facade::$redbean->count( $type, $addSQL, $bindings );
 	}
@@ -1193,7 +1193,7 @@ class Facade
 	 */
 	public static function storeAll( $beans )
 	{
-		$ids = array();
+		$ids = [];
 		foreach ( $beans as $bean ) {
 			$ids[] = self::store( $bean );
 		}
@@ -1454,12 +1454,12 @@ class Facade
 	 */
 	public static function getExtractedToolbox()
 	{
-		return array(
+		return [
 			self::$redbean,
 			self::$adapter,
 			self::$writer,
 			self::$toolbox
-		);
+		];
 	}
 
 	/**
@@ -1488,7 +1488,7 @@ class Facade
 	 */
 	public static function beansToArray( $beans )
 	{
-		$list = array();
+		$list = [];
 		foreach( $beans as $bean ) {
 			$list[] = $bean->export();
 		}
@@ -1508,7 +1508,7 @@ class Facade
 	 */
 	public static function dump( $data )
 	{
-		$array = array();
+		$array = [];
 
 		if ( $data instanceof OODBBean ) {
 			$str = strval( $data );
@@ -1553,8 +1553,8 @@ class Facade
 		list( $type, $property ) = explode( '.', $field );
 		$mode = ($mode === 'write') ? QueryWriter::C_SQLFILTER_WRITE : QueryWriter::C_SQLFILTER_READ;
 
-		if ( !isset( self::$sqlFilters[$mode] ) ) self::$sqlFilters[$mode] = array();
-		if ( !isset( self::$sqlFilters[$mode][$type] ) ) self::$sqlFilters[$mode][$type] = array();
+		if ( !isset( self::$sqlFilters[$mode] ) ) self::$sqlFilters[$mode] = [];
+		if ( !isset( self::$sqlFilters[$mode][$type] ) ) self::$sqlFilters[$mode][$type] = [];
 
 		if ( is_null( $function ) ) {
 			unset( self::$sqlFilters[$mode][$type][$property] );

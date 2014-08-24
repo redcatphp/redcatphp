@@ -5,10 +5,10 @@ trait Mixin_Pagination{
 	protected $limit				= 5;
 	protected $offset	    		= 0;
 	protected function pagination(){
-		$this->pagination = new ArrayObject(array(
+		$this->pagination = new ArrayObject([
 			'prefix'			=>'+page:',
 			'maxCols'			=>3,
-		));
+		]);
 		if($this->limitation)
 			$this->limit = $this->limitation;
 		if($this->page===null)

@@ -52,7 +52,7 @@ class GeoIP2Provider extends AbstractProvider implements ProviderInterface
 
         $result = json_decode($this->executeQuery($address));
 
-        return array($this->fixEncoding(array_merge($this->getDefaults(), array(
+        return [$this->fixEncoding(array_merge($this->getDefaults(), [
             'countryCode' => (isset($result->country->iso_code) ? $result->country->iso_code : null),
             'country'     => (isset($result->country->names->{$this->locale}) ? $result->country->names->{$this->locale} : null),
             'city'        => (isset($result->city->names->{$this->locale}) ? $result->city->names->{$this->locale} : null),
@@ -60,13 +60,13 @@ class GeoIP2Provider extends AbstractProvider implements ProviderInterface
             'longitude'   => (isset($result->location->longitude) ? $result->location->longitude : null),
             'timezone'    => (isset($result->location->timezone) ? $result->location->timezone : null),
             'zipcode'     => (isset($result->location->postalcode) ? $result->location->postalcode : null),
-        ))));
+        ]))];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException(sprintf('The %s is not able to do reverse geocoding.', __CLASS__));
     }

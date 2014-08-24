@@ -41,17 +41,17 @@ class DuplicationManager
 	/**
 	 * @var array
 	 */
-	protected $tables = array();
+	protected $tables = [];
 
 	/**
 	 * @var array
 	 */
-	protected $columns = array();
+	protected $columns = [];
 
 	/**
 	 * @var array
 	 */
-	protected $filters = array();
+	protected $filters = [];
 
 	/**
 	 * @var array
@@ -68,7 +68,7 @@ class DuplicationManager
 	 * @return array
 	 */
 	public function camelfy( $array, $dolphinMode = false ) {
-		$newArray = array();
+		$newArray = [];
 		foreach( $array as $key => $element ) {
 			$newKey = preg_replace_callback( '/_(\w)/', function( &$matches ){
 				return strtoupper( $matches[1] );
@@ -94,7 +94,7 @@ class DuplicationManager
 	 */
 	private function copySharedBeans( OODBBean $copy, $shared, $beans )
 	{
-		$copy->$shared = array();
+		$copy->$shared = [];
 
 		foreach ( $beans as $subBean ) {
 			array_push( $copy->$shared, $subBean );
@@ -116,7 +116,7 @@ class DuplicationManager
 	 */
 	private function copyOwnBeans( OODBBean $copy, $owned, $beans, $trail, $preserveIDs )
 	{
-		$copy->$owned = array();
+		$copy->$owned = [];
 		foreach ( $beans as $subBean ) {
 			array_push( $copy->$owned, $this->duplicate( $subBean, $trail, $preserveIDs ) );
 		}
@@ -182,7 +182,7 @@ class DuplicationManager
 		$owned  = 'own' . ucfirst( $typeName );
 		$shared = 'shared' . ucfirst( $typeName );
 
-		return array( $owned, $shared );
+		return [ $owned, $shared ];
 	}
 
 	/**
@@ -210,7 +210,7 @@ class DuplicationManager
 	 */
 	protected function hasSharedList( $type, $target )
 	{
-		return in_array( AQueryWriter::getAssocTableFormat( array( $type, $target ) ), $this->tables );
+		return in_array( AQueryWriter::getAssocTableFormat( [ $type, $target ] ), $this->tables );
 	}
 
 	/**
@@ -222,7 +222,7 @@ class DuplicationManager
 	 *
 	 * @return OODBBean
 	 */
-	protected function duplicate( OODBBean $bean, $trail = array(), $preserveIDs = FALSE )
+	protected function duplicate( OODBBean $bean, $trail = [], $preserveIDs = FALSE )
 	{
 		if ( $this->inTrailOrAdd( $trail, $bean ) ) return $bean;
 
@@ -328,7 +328,7 @@ class DuplicationManager
 	public function setFilters( $filters )
 	{
 		if ( !is_array( $filters ) ) {
-			$filters = array( $filters );
+			$filters = [ $filters ];
 		}
 
 		$this->filters = $filters;
@@ -359,7 +359,7 @@ class DuplicationManager
 	 *
 	 * @return OODBBean
 	 */
-	public function dup( OODBBean $bean, $trail = array(), $preserveIDs = FALSE )
+	public function dup( OODBBean $bean, $trail = [], $preserveIDs = FALSE )
 	{
 		if ( !count( $this->tables ) ) {
 			$this->tables = $this->toolbox->getWriter()->getTables();
@@ -374,8 +374,8 @@ class DuplicationManager
 		$rs = $this->duplicate( clone( $bean ), $trail, $preserveIDs );
 
 		if ( !$this->cacheTables ) {
-			$this->tables  = array();
-			$this->columns = array();
+			$this->tables  = [];
+			$this->columns = [];
 		}
 
 		return $this->duplicate( $rs, $trail, $preserveIDs );
@@ -396,18 +396,18 @@ class DuplicationManager
 	 *
 	 * @return array
 	 */
-	public function exportAll( $beans, $parents = FALSE, $filters = array(), $caseStyle = 'snake')
+	public function exportAll( $beans, $parents = FALSE, $filters = [], $caseStyle = 'snake')
 	{
-		$array = array();
+		$array = [];
 
 		if ( !is_array( $beans ) ) {
-			$beans = array( $beans );
+			$beans = [ $beans ];
 		}
 
 		foreach ( $beans as $bean ) {
 			$this->setFilters( $filters );
 
-			$duplicate = $this->dup( $bean, array(), TRUE );
+			$duplicate = $this->dup( $bean, [], TRUE );
 
 			$array[]   = $duplicate->export( FALSE, $parents, FALSE, $filters );
 		}

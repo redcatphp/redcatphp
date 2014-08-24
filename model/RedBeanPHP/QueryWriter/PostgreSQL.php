@@ -137,7 +137,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
 		$this->prefix = $prefix;
-		$this->typeno_sqltype = array(
+		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER          => 'integer',
 			self::C_DATATYPE_BIGINT           => 'bigint',
 			self::C_DATATYPE_DOUBLE           => 'double precision',
@@ -151,9 +151,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			self::C_DATATYPE_SPECIAL_CIRCLE   => 'circle',
 			self::C_DATATYPE_SPECIAL_MONEY    => 'money',
 			self::C_DATATYPE_SPECIAL_POLYGON  => 'polygon',
-		);
+		];
 
-		$this->sqltype_typeno = array();
+		$this->sqltype_typeno = [];
 
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
@@ -201,7 +201,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 
 		$columnsRaw = $this->adapter->get( "SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'" );
 
-		$columns = array();
+		$columns = [];
 		foreach ( $columnsRaw as $r ) {
 			$columns[$r['column_name']] = trim($r['data_type']);
 		}
@@ -327,11 +327,11 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		$stateMap = array(
+		$stateMap = [
 			'42P01' => QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 			'42703' => QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
 			'23505' => QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
-		);
+		];
 
 		return in_array( ( isset( $stateMap[$state] ) ? $stateMap[$state] : '0' ), $list );
 	}
@@ -372,7 +372,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				AND table_schema = \'public\'
 				AND table_name = ?
 				AND column_name = ?
-		', array($db, $type, $field));
+		', [$db, $type, $field]);
 
 		try{
 			if (!$cfks) {
@@ -431,13 +431,13 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$id = $this->esc('id');
 		$tb = $this->esc($table);
 		$_tb = $this->esc('_'.$table);
-		$groupBy = array();
-		$columns = array();
-		$tablesJoin = array();
+		$groupBy = [];
+		$columns = [];
+		$tablesJoin = [];
 		if($lang)
 			$lang = "'$lang',";
 		foreach($cols as $select){
-			$shareds = array();
+			$shareds = [];
 			$typeParent = $table;
 			$aliasParent = $table;
 			$type = '';
@@ -473,7 +473,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$i++;
 							if($superalias)
 								$alias = $superalias.'__'.($alias?$alias:$type);
-							$rels = array($typeParent,$type);
+							$rels = [$typeParent,$type];
 							sort($rels);
 							$imp = implode('_',$rels);
 							$join[$imp][] = $alias;
@@ -489,7 +489,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						else{ //parent
 							if($superalias)
 								$alias = $superalias.'__'.$alias;
-							$join[$type][] = ($alias?array($typeParent,$alias):$typeParent);
+							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 							if($this->tableExists($type))
 								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
@@ -554,7 +554,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 	}
 
-	private static $FulltextHeadlineDefaultConfig = array(
+	private static $FulltextHeadlineDefaultConfig = [
 		'MaxFragments'=>2,
 		'MaxWords'=>25,
 		'MinWords'=>20,
@@ -563,13 +563,13 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		'StartSel'=>'<b>',
 		'StopSel'=>'</b>',
 		'HighlightAll'=>'FALSE',
-	);
+	];
 	function getFulltextHeadlineDefaultConfig(){
 		return self::$FulltextHeadlineDefaultConfig;
 	}
 	function setFulltextHeadlineDefaultConfig($config){
 		if(func_num_args()>1)
-			$config = array($config=>func_get_arg(1));
+			$config = [$config=>func_get_arg(1)];
 		self::$FulltextHeadlineDefaultConfig = array_merge(self::$FulltextHeadlineDefaultConfig,$config);
 	}
 
@@ -578,7 +578,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$c = $query->formatColumnName($col);
 			if($lang)
 				$lang .= ',';
-			$query->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",array($t));
+			$query->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",[$t]);
 		}
 	}
 	function selectFullTextRank($query,$col,$t,$alias=null,$lang=null){
@@ -588,10 +588,10 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				$lang .= ',';
 			if(!$alias)
 				$alias = $col.'_rank';
-			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",array($t));
+			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",[$t]);
 		}
 	}
-	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=array(),$getl=true){
+	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=[],$getl=true){
 		if(!$t)
 			return $query->selectTruncation($col,$truncation,$getl);
 		$lang = $lang?"'$lang',":'';
@@ -606,11 +606,11 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$conf = rtrim($conf,',');
 		$c = $query->formatColumnName($col);
 		$q = $this->quoteCharacter;
-		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",array($t,$conf,$truncation));
+		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",[$t,$conf,$truncation]);
 		if($getl)
 			$query->select("LENGTH($c) as $q{$col}_length$q");
 	}
-	function selectFullTextHighlight($query,$col,$t,$lang=null,$config=array()){
+	function selectFullTextHighlight($query,$col,$t,$lang=null,$config=[]){
 		if(!$t)
 			return $$query->select($col);
 		$c = $query->formatColumnName($col);
@@ -625,7 +625,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 		$q = $this->quoteCharacter;
 		$conf = rtrim($conf,',');
-		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",array($t,$conf));
+		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",[$t,$conf]);
 	}
 	function whereFullText($query,$cols,$t,$toVector=null){
 		if(!is_array($cols))
@@ -635,6 +635,6 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			if($toVector)
 				$cols[$k] = 'to_tsvector('.$cols[$k].')';
 		}
-		$query->where(implode('||',$cols).' @@ plainto_tsquery(?)',array($t));
+		$query->where(implode('||',$cols).' @@ plainto_tsquery(?)',[$t]);
 	}
 }

@@ -58,7 +58,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::exec
 	 */
-	public function exec( $sql, $bindings = array(), $noevent = FALSE )
+	public function exec( $sql, $bindings = [], $noevent = FALSE )
 	{
 		if ( !$noevent ) {
 			$this->sql = $sql;
@@ -71,7 +71,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::get
 	 */
-	public function get( $sql, $bindings = array() )
+	public function get( $sql, $bindings = [] )
 	{
 		$this->sql = $sql;
 		$this->signal( 'sql_exec', $this );
@@ -82,7 +82,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::getRow
 	 */
-	public function getRow( $sql, $bindings = array() )
+	public function getRow( $sql, $bindings = [] )
 	{
 		$this->sql = $sql;
 		$this->signal( 'sql_exec', $this );
@@ -93,7 +93,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::getCol
 	 */
-	public function getCol( $sql, $bindings = array() )
+	public function getCol( $sql, $bindings = [] )
 	{
 		$this->sql = $sql;
 		$this->signal( 'sql_exec', $this );
@@ -104,7 +104,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::getAssoc
 	 */
-	public function getAssoc( $sql, $bindings = array() )
+	public function getAssoc( $sql, $bindings = [] )
 	{
 		$this->sql = $sql;
 
@@ -112,7 +112,7 @@ class DBAdapter extends Observable implements Adapter
 
 		$rows  = $this->db->GetAll( $sql, $bindings );
 
-		$assoc = array();
+		$assoc = [];
 		if ( !$rows ) {
 			return $assoc;
 		}
@@ -137,7 +137,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::getAssocRow
 	 */
-	public function getAssocRow($sql, $bindings = array())
+	public function getAssocRow($sql, $bindings = [])
 	{
 		$this->sql = $sql;
 		$this->signal( 'sql_exec', $this );
@@ -148,7 +148,7 @@ class DBAdapter extends Observable implements Adapter
 	/**
 	 * @see Adapter::getCell
 	 */
-	public function getCell( $sql, $bindings = array(), $noSignal = NULL )
+	public function getCell( $sql, $bindings = [], $noSignal = NULL )
 	{
 		$this->sql = $sql;
 

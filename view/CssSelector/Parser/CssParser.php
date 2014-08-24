@@ -143,8 +143,8 @@ class CssParser extends TextParser
      */
     public function __construct($target, $charset = "", $mimetype = "")
     {
-        $this->_pseudoFilters = array();
-        $this->_combinators = array();
+        $this->_pseudoFilters = [];
+        $this->_combinators = [];
         
         if ($target instanceof DOMDocument) {
             $this->_node = $target->documentElement;
@@ -268,17 +268,17 @@ class CssParser extends TextParser
     {
         if (is_callable($object)) {
             // user defined pseudo-filter
-            $this->_pseudoFilters[$name] = array(
+            $this->_pseudoFilters[$name] = [
                 "classname" => "CssParserFilterPseudoUserDefined",
                 "user_def_function" => $object,
                 "entity" => $entity
-            );
+            ];
         } else {
-            $this->_pseudoFilters[$name] = array(
+            $this->_pseudoFilters[$name] = [
                 "classname" => $object,
                 "user_def_function" => null,
                 "entity" => $entity
-            );
+            ];
         }
     }
     
@@ -314,15 +314,15 @@ class CssParser extends TextParser
     public function registerCombinator($name, $object)
     {
         if (is_callable($object)) {
-            $this->_combinators[$name] = array(
+            $this->_combinators[$name] = [
                 "classname" => "CssParserCombinatorUserDefined",
                 "user_def_function" => $object
-            );
+            ];
         } else {
-            $this->_combinators[$name] = array(
+            $this->_combinators[$name] = [
                 "classname" => $object,
                 "user_def_function" => null
-            );
+            ];
         }
     }
     
@@ -376,7 +376,7 @@ class CssParser extends TextParser
     protected function identifier()
     {
         if (list($id) = $this->match(CssParser::IDENTIFIER)) {
-            return array($id);
+            return [$id];
         }
         return false;
     }
@@ -403,7 +403,7 @@ class CssParser extends TextParser
         ) {
             return false;
         }
-        return array($value);
+        return [$value];
     }
     
     /**
@@ -664,7 +664,7 @@ class CssParser extends TextParser
      */
     protected function selectorList()
     {
-        $nodes = array();
+        $nodes = [];
         
         do {
             if (!$selector = $this->is("selector")) {
@@ -797,7 +797,7 @@ class CssParser extends TextParser
             $content = $result;
         }
         
-        return array($content, $mimetype, $charset);
+        return [$content, $mimetype, $charset];
     }
     
     /**

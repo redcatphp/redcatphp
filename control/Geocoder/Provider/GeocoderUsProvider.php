@@ -41,7 +41,7 @@ class GeocoderUsProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The GeocoderUsProvider is not able to do reverse geocoding.');
     }
@@ -73,9 +73,9 @@ class GeocoderUsProvider extends AbstractProvider implements ProviderInterface
         $lat  = $xpath->xpath('//geo:lat');
         $long = $xpath->xpath('//geo:long');
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'  => isset($lat[0]) ? (double) $lat[0] : null,
             'longitude' => isset($long[0]) ? (double) $long[0] : null,
-        )));
+        ])];
     }
 }

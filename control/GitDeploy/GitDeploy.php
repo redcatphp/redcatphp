@@ -40,7 +40,7 @@ abstract class GitDeploy{
 		# Add trailing slash
 		$folder = (substr($folder, strlen($folder) - 1, 1) == '/') ? $folder : $folder . '/';
 
-		$return = array();
+		$return = [];
 
 		foreach (clean_scandir($folder) as $file) {
 			if (is_dir($folder . $file)) {
@@ -53,11 +53,11 @@ abstract class GitDeploy{
 		return $return;
 	}
 
-	static function clean_scandir($folder, $ignore = array()) {
+	static function clean_scandir($folder, $ignore = []) {
 		$ignore[] = '.';
 		$ignore[] = '..';
 		$ignore[] = '.DS_Store';
-		$return = array();
+		$return = [];
 
 		foreach (scandir($folder) as $file) {
 			if (!in_array($file, $ignore)) {

@@ -11,7 +11,7 @@ class FILE {
 	static $DIRCACHE;
 	static $DIRCOMPILE;
 	static $FORCECOMPILE;
-	static $COMPILE = array();
+	static $COMPILE = [];
 	static function initialize(){
 		self::$DIRCWD = control::$CWD.'view/';
 		self::$DIRCOMPILE = control::$TMP.'view_compile/';
@@ -23,12 +23,12 @@ class FILE {
 	var $dirCompile;
 	var $dirCache;
 	var $compile;
-	var $toCachePHP = array();
-	var $toCacheV = array();
-	var $childNodes = array();
+	var $toCachePHP = [];
+	var $toCacheV = [];
+	var $childNodes = [];
 	var $isXhtml;
 	var $present;
-	function __construct($path,$options=array()){
+	function __construct($path,$options=[]){
 		$this->dirCompile = self::$DIRCOMPILE;
 		$this->dirCache = self::$DIRCACHE;
 		$this->dirCwd = self::$DIRCWD;
@@ -48,8 +48,8 @@ class FILE {
 				$this->$k = $v;
 		}
 	}
-	private static $__factory = array();
-	static function factoy($path,$options=array(),$instance=0){
+	private static $__factory = [];
+	static function factoy($path,$options=[],$instance=0){
 		if(!isset(self::$__factory[$path])||!isset(self::$__factory[$path][$instance]))
 			self::$__factory[$path][$instance] = new FILE($path,$options);		
 		foreach($options as $k=>$v)
@@ -57,13 +57,13 @@ class FILE {
 				self::$__factory[$path][$instance]->$k = $v;
 		return self::$__factory[$path][$instance];
 	}
-	static function display($path,$options=array()){
+	static function display($path,$options=[]){
 		return self::factoy($path,$options)->__display();
 	}
-	static function evalue($path,$options=array()){
+	static function evalue($path,$options=[]){
 		return self::factoy($path,$options)->__evalue();
 	}
-	static function evalFree($path,$options=array()){
+	static function evalFree($path,$options=[]){
 		return self::factoy($path,$options)->__eval();
 	}
 	function path($path=null){
@@ -131,10 +131,10 @@ class FILE {
 		echo $str;
 	}
 	function cacheV($file,$str){
-		$this->toCacheV[] = array($file,$str);
+		$this->toCacheV[] = [$file,$str];
 	}
 	function cachePHP($file,$str){
-		$this->toCachePHP[] = array($file,$str);
+		$this->toCachePHP[] = [$file,$str];
 	}
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file;

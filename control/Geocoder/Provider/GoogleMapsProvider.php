@@ -84,7 +84,7 @@ class GoogleMapsProvider extends AbstractProvider implements LocaleAwareProvider
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         return $this->getGeocodedData(sprintf('%F,%F', $coordinates[0], $coordinates[1]));
     }
@@ -160,7 +160,7 @@ class GoogleMapsProvider extends AbstractProvider implements LocaleAwareProvider
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($json->results as $result) {
             $resultset = $this->getDefaults();
@@ -179,20 +179,20 @@ class GoogleMapsProvider extends AbstractProvider implements LocaleAwareProvider
 
             $resultset['bounds'] = null;
             if (isset($result->geometry->bounds)) {
-                $resultset['bounds'] = array(
+                $resultset['bounds'] = [
                     'south' => $result->geometry->bounds->southwest->lat,
                     'west'  => $result->geometry->bounds->southwest->lng,
                     'north' => $result->geometry->bounds->northeast->lat,
                     'east'  => $result->geometry->bounds->northeast->lng
-                );
+                ];
             } elseif ('ROOFTOP' === $result->geometry->location_type) {
                 // Fake bounds
-                $resultset['bounds'] = array(
+                $resultset['bounds'] = [
                     'south' => $coordinates->lat,
                     'west'  => $coordinates->lng,
                     'north' => $coordinates->lat,
                     'east'  => $coordinates->lng
-                );
+                ];
             }
 
             $results[] = array_merge($this->getDefaults(), $resultset);

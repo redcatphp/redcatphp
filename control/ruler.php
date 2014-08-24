@@ -2,7 +2,7 @@
 class ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
 	static function unique($v){
-		return $this->model->id||!R::findOne($this->model->tableName,' WHERE '.$this->col.'=?',array($v));
+		return $this->model->id||!R::findOne($this->model->tableName,' WHERE '.$this->col.'=?',[$v]);
 	}
 	static function required($v){
 		return !empty($v);
@@ -18,12 +18,12 @@ class ruler {
 	}
 	static function maxchar($v,$arg){
 		$v = strip_tags($v);
-		$v = str_replace(array(' ',"\n","\r","\t"),'',$v);
+		$v = str_replace([' ',"\n","\r","\t"],'',$v);
 		return self::maxlength($v,$arg);
 	}
 	static function minchar($v,$arg){
 		$v = strip_tags($v);
-		$v = str_replace(array(' ',"\n","\r","\t"),'',$v);
+		$v = str_replace([' ',"\n","\r","\t"],'',$v);
 		return self::minlength($v,$arg);
 	}
 	static function maxlength($v,$arg){
@@ -60,7 +60,7 @@ class ruler {
 		return filter_var($v, FILTER_VALIDATE_URL);
 	}
 	static function url_exists($v){
-		$v = str_replace(array('http://','https://','ftp://'),'',strtolower($v)); 
+		$v = str_replace(['http://','https://','ftp://'],'',strtolower($v)); 
 		return function_exists('checkdnsrr')?checkdnsrr($v):gethostbyname($v)!=$v;
 	}
 	static function ip($v){

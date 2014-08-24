@@ -95,7 +95,7 @@ class Geocoded extends AbstractResult implements ResultInterface
      */
     public function getCoordinates()
     {
-        return array($this->getLatitude(), $this->getLongitude());
+        return [$this->getLatitude(), $this->getLongitude()];
     }
 
     /**
@@ -221,7 +221,7 @@ class Geocoded extends AbstractResult implements ResultInterface
     /**
      * {@inheritDoc}
      */
-    public function fromArray(array $data = array())
+    public function fromArray( array $data = [])
     {
         if (isset($data['latitude'])) {
             $this->latitude = (double) $data['latitude'];
@@ -232,12 +232,12 @@ class Geocoded extends AbstractResult implements ResultInterface
         }
 
         if (isset($data['bounds']) && is_array($data['bounds'])) {
-            $this->bounds = array(
+            $this->bounds = [
                 'south' => (double) $data['bounds']['south'],
                 'west'  => (double) $data['bounds']['west'],
                 'north' => (double) $data['bounds']['north'],
                 'east'  => (double) $data['bounds']['east']
-            );
+            ];
         }
 
         if (isset($data['streetNumber'])) {
@@ -294,7 +294,7 @@ class Geocoded extends AbstractResult implements ResultInterface
      */
     public function toArray()
     {
-        return array(
+        return [
             'latitude'      => $this->latitude,
             'longitude'     => $this->longitude,
             'bounds'        => $this->bounds,
@@ -310,6 +310,6 @@ class Geocoded extends AbstractResult implements ResultInterface
             'country'       => $this->country,
             'countryCode'   => $this->countryCode,
             'timezone'      => $this->timezone,
-        );
+        ];
     }
 }

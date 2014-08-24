@@ -140,7 +140,7 @@ abstract class TextParser extends TextTokenizer
             );
         }
         
-        if (!is_callable(array($this, $methodName))) {
+        if (!is_callable([$this, $methodName])) {
             throw new TextParserException(
                 "The method `$methodName` is inaccessible"
             );
@@ -151,7 +151,7 @@ abstract class TextParser extends TextTokenizer
         
         // calls user function
         $ret = call_user_func_array(
-            array($this, $methodName),
+            [$this, $methodName],
             array_slice(func_get_args(), 1)
         );
         

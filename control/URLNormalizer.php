@@ -17,8 +17,8 @@ class URLNormalizer {
     private $path;
     private $query;
     private $fragment;
-    private $default_scheme_ports = array( 'http:' => 80, 'https:' => 443, );
-    private $components = array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment', );
+    private $default_scheme_ports = [ 'http:' => 80, 'https:' => 443, ];
+    private $components = [ 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment', ];
 	private $singleton;
 	static function get($url){
 		if(!isset(self::$singleton))
@@ -42,7 +42,7 @@ class URLNormalizer {
         }
     }
     private function getQuery($query) {
-        $qs = array();
+        $qs = [];
         foreach($query as $qk => $qv) {
             if(is_array($qv)) {
                 $qs[rawurldecode($qk)] = $this->getQuery($qv);
@@ -218,21 +218,21 @@ class URLNormalizer {
     public function urlDecodeUnreservedChars( $string ) {
         $string = rawurldecode( $string );
         $string = rawurlencode( $string );
-        $string = str_replace( array( '%2F', '%3A', '%40' ), array( '/', ':', '@' ), $string );
+        $string = str_replace( [ '%2F', '%3A', '%40' ], [ '/', ':', '@' ], $string );
 
         return $string;
     }
     /* Decode reserved sub-delims
      @link http://www.apps.ietf.org/rfc/rfc3986.html#sec-2.2 */
     public function urlDecodeReservedSubDelimChars( $string ) {
-        return str_replace( array( '%21', '%24', '%26', '%27', '%28', '%29', '%2A', '%2B', '%2C', '%3B', '%3D' ), 
-                            array( '!', '$', '&', "'", '(', ')', '*', '+', ',', ';', '=' ), $string );
+        return str_replace( [ '%21', '%24', '%26', '%27', '%28', '%29', '%2A', '%2B', '%2C', '%3B', '%3D' ], 
+                            [ '!', '$', '&', "'", '(', ')', '*', '+', ',', ';', '=' ], $string );
     }
     /* Replacement for PHP's parse_string which does not deal with spaces or dots in key names
      * @param string $string URL query string
      * @return array key value pairs */
      private function parseStr( $string ) {
-        $params = array();               
+        $params = [];               
         $pairs = explode( '&', $string );
         foreach ( $pairs as $pair ) {
             $var = explode( '=', $pair, 2 );

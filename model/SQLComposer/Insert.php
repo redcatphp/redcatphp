@@ -29,7 +29,7 @@ class Insert extends Base {
 	 *
 	 * @var array
 	 */
-	protected $on_duplicate = array( );
+	protected $on_duplicate = [ ];
 
 
 	/*******************
@@ -113,7 +113,7 @@ class Insert extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerInsert
 	 */
-	public function values(array $values, $mysqli_types = "") {
+	public function values( array $values, $mysqli_types = "") {
 		if (isset($this->select)) throw new SQLComposerException("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
 
 		return $this->_add_params('values', $values, $mysqli_types);
@@ -127,7 +127,7 @@ class Insert extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerSelect
 	 */
-	public function select($select = null, array $params = null, $mysqli_types = "") {
+	public function select($select = null,  array $params = null, $mysqli_types = "") {
 		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
@@ -149,7 +149,7 @@ class Insert extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerInsert
 	 */
-	public function on_duplicate($update, array $params = null, $mysqli_types = "") {
+	public function on_duplicate($update,  array $params = null, $mysqli_types = "") {
 		$this->on_duplicate = array_merge($this->on_duplicate, (array)$update);
 		$this->_add_params('on_duplicate', $params, $mysqli_types);
 		return $this;
@@ -201,7 +201,7 @@ class Insert extends Base {
 
 		} else {
 
-			$params = array( );
+			$params = [ ];
 			$columns = $this->_get_columns();
 			$num_cols = $this->_num_columns();
 			foreach ($this->params["values"] as $values) {
@@ -244,7 +244,7 @@ class Insert extends Base {
 			return array_keys($this->params['values'][0]);
 		}
 		else {
-			return array( );
+			return [ ];
 		}
 	}
 

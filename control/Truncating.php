@@ -3,25 +3,25 @@ use DOMDocument;
 use surikat\control\HTML5Lib\Parser;
 class Truncating {
 	static function truncatehtml($html,$lenght='20',$elipsis ='...'){
-		return self::truncate($html, $lenght, array('length_in_chars' => true, 'ellipsis' => $elipsis, 'xml' => true));
+		return self::truncate($html, $lenght, ['length_in_chars' => true, 'ellipsis' => $elipsis, 'xml' => true]);
 	}
 	
-	public static $default_options = array(
+	public static $default_options = [
 		'ellipsis' => '…',
 		'length_in_chars' => false,
-	);
+	];
 
 	// These tags are allowed to have an ellipsis inside
-	public static $ellipsable_tags = array(
+	public static $ellipsable_tags = [
 		'p', 'ol', 'ul', 'li',
 		'div', 'header', 'article', 'nav',
 		'section', 'footer', 'aside',
 		'dd', 'dt', 'dl',
-	);
+	];
 
-	public static $self_closing_tags = array(
+	public static $self_closing_tags = [
 		'br', 'hr', 'img',
-	);
+	];
 
 	/**
 	 * Truncate given HTML string to specified length.
@@ -33,8 +33,8 @@ class Truncating {
 	 * @param  string|array  $opts
 	 * @return string
 	 */
-	public static function truncate($html, $length, $opts=array()) {
-		if (is_string($opts)) $opts = array('ellipsis' => $opts);
+	public static function truncate($html, $length, $opts=[]) {
+		if (is_string($opts)) $opts = ['ellipsis' => $opts];
 		$opts = array_merge(static::$default_options, $opts);
 		// wrap the html in case it consists of adjacent nodes like <p>foo</p><p>bar</p>
 		$html = "<div>".$html."</div>";
@@ -74,11 +74,11 @@ class Truncating {
 
 	protected static function _truncate_node($doc, $node, $length, $opts) {
 		if ($length === 0 && !static::ellipsable($node)) {
-			return array('', 1, $opts);
+			return ['', 1, $opts];
 		}
 		list($inner, $remaining, $opts) = static::_inner_truncate($doc, $node, $length, $opts);
 		if (0 === strlen($inner)) {
-			return array(in_array(strtolower($node->nodeName), static::$self_closing_tags) ? $doc->saveXML($node) : "", $length - $remaining, $opts);
+			return [in_array(strtolower($node->nodeName), static::$self_closing_tags) ? $doc->saveXML($node) : "", $length - $remaining, $opts];
 		}
 		while($node->firstChild) {
 			$node->removeChild($node->firstChild);
@@ -86,7 +86,7 @@ class Truncating {
 		$newNode = $doc->createDocumentFragment();
 		$newNode->appendXml($inner);
 		$node->appendChild($newNode);
-		return array($doc->saveXML($node), $length - $remaining, $opts);
+		return [$doc->saveXML($node), $length - $remaining, $opts];
 	}
 
 	protected static function _inner_truncate($doc, $node, $length, $opts) {
@@ -110,7 +110,7 @@ class Truncating {
 				break;
 			}
 		}
-		return array($inner, $remaining, $opts);
+		return [$inner, $remaining, $opts];
 	}
 
 	protected static function _truncate_text($doc, $node, $length, $opts) {
@@ -120,7 +120,7 @@ class Truncating {
 		if ($opts['length_in_chars']) {
 			$count = strlen($xhtml);
 			if ($count <= $length && $length > 0) {
-				return array($xhtml, $count, $opts);
+				return [$xhtml, $count, $opts];
 			}
 			if (count($words) > 1) {
 				$content = array_reduce($words, function($result, $word) use ($length) {
@@ -129,16 +129,16 @@ class Truncating {
 					}
 					return $result;
 				}, '');
-				return array($content, $count, $opts);
+				return [$content, $count, $opts];
 			}
-			return array(substr($node->textContent, 0, $length), $count, $opts);
+			return [substr($node->textContent, 0, $length), $count, $opts];
 		}
 		else {
 			$count = count($words);
 			if ($count <= $length && $length > 0) {
-				return array($xhtml, $count, $opts);
+				return [$xhtml, $count, $opts];
 			}
-			return array(implode('', array_slice($words, 0, $length)), $count, $opts);
+			return [implode('', array_slice($words, 0, $length)), $count, $opts];
 		}
 	}
 

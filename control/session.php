@@ -13,7 +13,7 @@ class session{
 		$ref =& $_SESSION;
 		foreach($args as $k){
 			if(!is_array($ref))
-				$ref = array();
+				$ref = [];
 			$ref =& $ref[$k];
 		}
 		$ref = $v;
@@ -43,7 +43,7 @@ class session{
 	}
 	static function destroy($name='project'){
 		self::start($name);
-		$_SESSION = array();
+		$_SESSION = [];
 		session_destroy();
 		session_write_close();
 	}
@@ -55,12 +55,12 @@ class session{
 		FS::mkdir($d);
 		$handler = new session_handler();
 		session_set_save_handler(
-			array($handler, 'open'),
-			array($handler, 'close'),
-			array($handler, 'read'),
-			array($handler, 'write'),
-			array($handler, 'destroy'),
-			array($handler, 'gc')
+			[$handler, 'open'],
+			[$handler, 'close'],
+			[$handler, 'read'],
+			[$handler, 'write'],
+			[$handler, 'destroy'],
+			[$handler, 'gc']
 		);
 		register_shutdown_function('session_write_close');
 	}

@@ -15,14 +15,14 @@ class Update extends Where {
 	 *
 	 * @var array
 	 */
-	protected $set = array( );
+	protected $set = [ ];
 
 	/**
 	 * ORDER BY
 	 *
 	 * @var array
 	 */
-	protected $order_by = array( );
+	protected $order_by = [ ];
 
 	/**
 	 * LIMIT
@@ -90,7 +90,7 @@ class Update extends Where {
 	 * @param null $mysqli_types
 	 * @return SQLComposerUpdate
 	 */
-	public function set($set, array $params = null, $mysqli_types = null) {
+	public function set($set,  array $params = null, $mysqli_types = null) {
 		$set = (array)$set;
 
 		if (SQLComposer::is_assoc($set)) {

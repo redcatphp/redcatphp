@@ -31,7 +31,7 @@ class RDefault implements Logger
 	/**
 	 * @var array
 	 */
-	protected $logs = array();
+	protected $logs = [];
 
 	/**
 	 * Default logger method logging to STDOUT.
@@ -83,7 +83,7 @@ class RDefault implements Logger
 	 */
 	public function clear()
 	{
-		$this->logs = array();
+		$this->logs = [];
 		return $this;
 	}
 	
@@ -115,7 +115,7 @@ class RDefault implements Logger
 	 */
 	public function grep( $needle )
 	{
-		$found = array();
+		$found = [];
 		foreach( $this->logs as $logEntry ) {
 			if (strpos( $logEntry, $needle ) !== false) $found[] = $logEntry;
 		}

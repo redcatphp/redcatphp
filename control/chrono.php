@@ -16,7 +16,7 @@ class chrono {
 		return sprintf("%.{$dec}f", $v*(float)1000)." ms";
 	}
 
-	private static $__times = array();
+	private static $__times = [];
 	static function start($k){
 		return self::$__times[$k] = microtime(true);
 	}

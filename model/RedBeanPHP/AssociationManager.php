@@ -54,9 +54,9 @@ class AssociationManager extends Observable
 	private function handleException(\Exception $exception )
 	{
 		if ( $this->oodb->isFrozen() || !$this->writer->sqlStateIn( $exception->getSQLState(),
-			array(
+			[
 				QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
-				QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN )
+				QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN ]
 			)
 		) {
 			throw $exception;
@@ -78,15 +78,15 @@ class AssociationManager extends Observable
 	 * @throws Security
 	 * @throws SQL
 	 */
-	private function relatedRows( $bean, $type, $sql = '', $bindings = array() )
+	private function relatedRows( $bean, $type, $sql = '', $bindings = [] )
 	{
-		$ids = array( $bean->id );
+		$ids = [ $bean->id ];
 		$sourceType = $bean->getMeta( 'type' );
 		try {
 			return $this->writer->queryRecordRelated( $sourceType, $type, $ids, $sql, $bindings );
 		} catch ( SQL $exception ) {
 			$this->handleException( $exception );
-			return array();
+			return [];
 		}
 	}
 
@@ -116,7 +116,7 @@ class AssociationManager extends Observable
 		//Dont mess with other tables, only add the unique constraint if:
 		//1. the table exists (otherwise we cant inspect it)
 		//2. the table only contains N-M fields: ID, N-ID, M-ID.
-		$unique = array( $property1, $property2 );
+		$unique = [ $property1, $property2 ];
 		$type = $bean->getMeta( 'type' );
 		$tables = $this->writer->getTables();
 		if ( in_array( $type, $tables ) && !$this->oodb->isChilled( $type ) ) {
@@ -125,7 +125,7 @@ class AssociationManager extends Observable
 				&& isset( $columns[ 'id' ] )
 				&& isset( $columns[ $property1 ] ) 
 				&& isset( $columns[ $property2 ] ) ) {
-				$bean->setMeta( 'buildcommand.unique', array( $unique ) );
+				$bean->setMeta( 'buildcommand.unique', [ $unique ] );
 			}
 		}
 
@@ -133,7 +133,7 @@ class AssociationManager extends Observable
 		$indexName1 = 'index_for_' . $bean->getMeta( 'type' ) . '_' . $property1;
 		$indexName2 = 'index_for_' . $bean->getMeta( 'type' ) . '_' . $property2;
 
-		$bean->setMeta( 'buildcommand.indexes', array( $property1 => $indexName1, $property2 => $indexName2 ) );
+		$bean->setMeta( 'buildcommand.indexes', [ $property1 => $indexName1, $property2 => $indexName2 ] );
 
 		$this->oodb->store( $bean1 );
 		$this->oodb->store( $bean2 );
@@ -144,7 +144,7 @@ class AssociationManager extends Observable
 		$bean->$property1 = $bean1->id;
 		$bean->$property2 = $bean2->id;
 
-		$results   = array();
+		$results   = [];
 		try {
 			$id = $this->oodb->store( $bean );
 
@@ -160,7 +160,7 @@ class AssociationManager extends Observable
 			$results[] = $id;
 		} catch ( SQL $exception ) {
 			if ( !$this->writer->sqlStateIn( $exception->getSQLState(),
-				array( QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION ) )
+				[ QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION ] )
 			) {
 				throw $exception;
 			}
@@ -212,17 +212,17 @@ class AssociationManager extends Observable
 	public function associate( $beans1, $beans2 )
 	{
 		if ( !is_array( $beans1 ) ) {
-			$beans1 = array( $beans1 );
+			$beans1 = [ $beans1 ];
 		}
 
 		if ( !is_array( $beans2 ) ) {
-			$beans2 = array( $beans2 );
+			$beans2 = [ $beans2 ];
 		}
 
-		$results = array();
+		$results = [];
 		foreach ( $beans1 as $bean1 ) {
 			foreach ( $beans2 as $bean2 ) {
-				$table     = $this->getTable( array( $bean1->getMeta( 'type' ), $bean2->getMeta( 'type' ) ) );
+				$table     = $this->getTable( [ $bean1->getMeta( 'type' ), $bean2->getMeta( 'type' ) ] );
 				$bean      = $this->oodb->dispense( $table );
 				$results[] = $this->associateBeans( $bean1, $bean2, $bean );
 			}
@@ -246,7 +246,7 @@ class AssociationManager extends Observable
 	 *
 	 * @throws Security
 	 */
-	public function relatedCount( $bean, $type, $sql = NULL, $bindings = array() )
+	public function relatedCount( $bean, $type, $sql = NULL, $bindings = [] )
 	{
 		if ( !( $bean instanceof OODBBean ) ) {
 			throw new RedException(
@@ -286,8 +286,8 @@ class AssociationManager extends Observable
 	 */
 	public function unassociate( $beans1, $beans2, $fast = NULL )
 	{
-		$beans1 = ( !is_array( $beans1 ) ) ? array( $beans1 ) : $beans1;
-		$beans2 = ( !is_array( $beans2 ) ) ? array( $beans2 ) : $beans2;
+		$beans1 = ( !is_array( $beans1 ) ) ? [ $beans1 ] : $beans1;
+		$beans2 = ( !is_array( $beans2 ) ) ? [ $beans2 ] : $beans2;
 
 		foreach ( $beans1 as $bean1 ) {
 			foreach ( $beans2 as $bean2 ) {
@@ -299,15 +299,15 @@ class AssociationManager extends Observable
 					$type2 = $bean2->getMeta( 'type' );
 
 					$row      = $this->writer->queryRecordLink( $type1, $type2, $bean1->id, $bean2->id );
-					$linkType = $this->getTable( array( $type1, $type2 ) );
+					$linkType = $this->getTable( [ $type1, $type2 ] );
 
 					if ( $fast ) {
-						$this->writer->deleteRecord( $linkType, array( 'id' => $row['id'] ) );
+						$this->writer->deleteRecord( $linkType, [ 'id' => $row['id'] ] );
 
 						return;
 					}
 
-					$beans = $this->oodb->convertToBeans( $linkType, array( $row ) );
+					$beans = $this->oodb->convertToBeans( $linkType, [ $row ] );
 
 					if ( count( $beans ) > 0 ) {
 						$bean = reset( $beans );
@@ -365,16 +365,16 @@ class AssociationManager extends Observable
 	 *
 	 * @return array
 	 */
-	public function related( $bean, $type, $sql = '', $bindings = array() )
+	public function related( $bean, $type, $sql = '', $bindings = [] )
 	{
 		$sql   = $this->writer->glueSQLCondition( $sql );
 
 		$rows  = $this->relatedRows( $bean, $type, $sql, $bindings );
 
-		$links = array();
+		$links = [];
 		foreach ( $rows as $key => $row ) {
 			if ( !isset( $links[$row['id']] ) ) {
-				$links[$row['id']] = array();
+				$links[$row['id']] = [];
 			}
 
 			$links[$row['id']][] = $row['linked_by'];

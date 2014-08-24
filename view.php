@@ -55,7 +55,7 @@ class view {
 			$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
 		}
 		$href = is_bool(static::$xDom)?'':static::$xDom;
-		$s = array();
+		$s = [];
 		$TML->recursive(function($el)use($TML,$head,$href,&$s){
 			if(
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
@@ -88,7 +88,7 @@ class view {
 	static function initialize(){
 		if(control::devHas(control::dev_view))
 			FILE::$FORCECOMPILE = 1;
-		FILE::$COMPILE[] = array('view','document');
+		FILE::$COMPILE[] = ['view','document'];
 		static::$URI = uri::factory(0,isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'');
 	}
 }

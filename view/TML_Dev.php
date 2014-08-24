@@ -13,7 +13,7 @@ class TML_Dev extends TML{
 		}
 		elseif(control::$DEV)
 			return;
-		$this->childNodes = array();
+		$this->childNodes = [];
 	}
 	
 }

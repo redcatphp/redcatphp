@@ -50,22 +50,22 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @var array
 	 */
-	protected $cache = array();
+	protected $cache = [];
 
 	/**
 	 * @var array
 	 */
-	public static $renames = array();
+	public static $renames = [];
 
 	/**
 	 * @var array
 	 */
-	public static $sqlFilters = array();
+	public static $sqlFilters = [];
 
 	/**
 	 * @var array
 	 */
-	public $typeno_sqltype = array();
+	public $typeno_sqltype = [];
 
 	/**
 	 * Clears renames.
@@ -74,7 +74,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public static function clearRenames()
 	{
-		self::$renames = array();
+		self::$renames = [];
 	}
 
 	/**
@@ -133,7 +133,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	protected function getSQLFilterSnippet( $type )
 	{
-		$sqlFilters = array();
+		$sqlFilters = [];
 		if ( isset( self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$type] ) ) {
 			foreach( self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$type] as $property => $sqlFilter ) {
 				$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
@@ -167,8 +167,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			$key = key( $otherBindings );
 
 			if ( !is_numeric($key) ) {
-				$filler  = array();
-				$newList = (!$offset) ? array() : $valueList;
+				$filler  = [];
+				$newList = (!$offset) ? [] : $valueList;
 				$counter = $offset;
 
 				foreach( $valueList as $value ) {
@@ -237,7 +237,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		if ( strpos( $sql, '-- keep-cache' ) !== strlen( $sql ) - 13 ) {
 			// If SQL has been taken place outside of this method then something else then
 			// a select query might have happened! (or instruct to keep cache)
-			$this->cache = array();
+			$this->cache = [];
 			return FALSE;
 		}
 		return TRUE;
@@ -260,9 +260,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	private function putResultInCache( $cacheTag, $key, $values )
 	{
-		$this->cache[$cacheTag] = array(
+		$this->cache[$cacheTag] = [
 			$key => $values
-		);
+		];
 	}
 
 	/**
@@ -287,14 +287,14 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$paramTypeIsNum = ( is_numeric( $firstKey ) );
 		$counter        = 0;
 
-		$sqlConditions = array();
+		$sqlConditions = [];
 		foreach ( $conditions as $column => $values ) {
 			if ( !count( $values ) ) continue;
 
 			$sql = $this->esc( $column );
 			$sql .= ' IN ( ';
 
-			if ( !is_array( $values ) ) $values = array( $values );
+			if ( !is_array( $values ) ) $values = [ $values ];
 
 			// If it's safe to skip bindings, do so...
 			if ( ctype_digit( implode( '', $values ) ) ) {
@@ -316,7 +316,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 					}
 				} else {
 
-					$slots = array();
+					$slots = [];
 
 					foreach( $values as $k => $v ) {
 						$slot            = ':slot'.$counter++;
@@ -354,7 +354,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	private function getRelationalTablesAndColumns( $sourceType, $destType, $noQuote = FALSE )
 	{
-		$linkTable   = $this->esc( $this->getAssocTable( array( $sourceType, $destType ) ), $noQuote );
+		$linkTable   = $this->esc( $this->getAssocTable( [ $sourceType, $destType ] ), $noQuote );
 		$sourceCol   = $this->esc( $sourceType . '_id', $noQuote );
 
 		if ( $sourceType === $destType ) {
@@ -366,7 +366,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$sourceTable = $this->esc( $sourceType, $noQuote );
 		$destTable   = $this->esc( $destType, $noQuote );
 
-		return array( $sourceTable, $destTable, $linkTable, $sourceCol, $destCol );
+		return [ $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ];
 	}
 
 	/**
@@ -419,7 +419,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 
 		if ( count( $insertvalues ) > 0 && is_array( $insertvalues[0] ) && count( $insertvalues[0] ) > 0 ) {
 
-			$insertSlots = array();
+			$insertSlots = [];
 			foreach ( $insertcolumns as $k => $v ) {
 				$insertcolumns[$k] = $this->esc( $v );
 
@@ -433,7 +433,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			$insertSQL = "INSERT INTO $table ( id, " . implode( ',', $insertcolumns ) . " ) VALUES
 			( $default, " . implode( ',', $insertSlots ) . " ) $suffix";
 
-			$ids = array();
+			$ids = [];
 			foreach ( $insertvalues as $i => $insertvalue ) {
 				$ids[] = $this->adapter->getCell( $insertSQL, $insertvalue, $i );
 			}
@@ -527,7 +527,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public function glueSQLCondition( $sql, $glue = NULL )
 	{
-		static $snippetCache = array();
+		static $snippetCache = [];
 
 		if ( trim( $sql ) === '' ) {
 			return $sql;
@@ -587,7 +587,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$table = $type;
 
 		if ( !$id ) {
-			$insertcolumns = $insertvalues = array();
+			$insertcolumns = $insertvalues = [];
 
 			foreach ( $updatevalues as $pair ) {
 				$insertcolumns[] = $pair['property'];
@@ -595,7 +595,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			}
 
 			//Otherwise psql returns string while MySQL/SQLite return numeric causing problems with additions (array_diff)
-			return (string) $this->insertRecord( $table, $insertcolumns, array( $insertvalues ) );
+			return (string) $this->insertRecord( $table, $insertcolumns, [ $insertvalues ] );
 		}
 
 		if ( $id && !count( $updatevalues ) ) {
@@ -605,7 +605,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$table = $this->esc( $table );
 		$sql   = "UPDATE $table SET ";
 
-		$p = $v = array();
+		$p = $v = [];
 
 		foreach ( $updatevalues as $uv ) {
 
@@ -630,13 +630,13 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::queryRecord
 	 */
-	public function queryRecord( $type, $conditions = array(), $addSql = NULL, $bindings = array() )
+	public function queryRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
 		$addSql = $this->glueSQLCondition( $addSql, ( count($conditions) > 0) ? QueryWriter::C_GLUE_AND : NULL );
 
 		$key = NULL;
 		if ( $this->flagUseCache ) {
-			$key = $this->getCacheKey( array( $conditions, $addSql, $bindings, 'select' ) );
+			$key = $this->getCacheKey( [ $conditions, $addSql, $bindings, 'select' ] );
 
 			if ( $cached = $this->getCached( $type, $key ) ) {
 				return $cached;
@@ -666,13 +666,13 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::queryRecordRelated
 	 */
-	public function queryRecordRelated( $sourceType, $destType, $linkIDs, $addSql = '', $bindings = array() )
+	public function queryRecordRelated( $sourceType, $destType, $linkIDs, $addSql = '', $bindings = [] )
 	{
 		$addSql = $this->glueSQLCondition( $addSql, QueryWriter::C_GLUE_WHERE );
 
 		list( $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ) = $this->getRelationalTablesAndColumns( $sourceType, $destType );
 
-		$key = $this->getCacheKey( array( $sourceType, $destType, implode( ',', $linkIDs ), $addSql, $bindings ) );
+		$key = $this->getCacheKey( [ $sourceType, $destType, implode( ',', $linkIDs ), $addSql, $bindings ] );
 
 		if ( $this->flagUseCache && $cached = $this->getCached( $destType, $key ) ) {
 			return $cached;
@@ -729,7 +729,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		list( $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ) = $this->getRelationalTablesAndColumns( $sourceType, $destType );
 
-		$key = $this->getCacheKey( array( $sourceType, $destType, $sourceID, $destID ) );
+		$key = $this->getCacheKey( [ $sourceType, $destType, $sourceID, $destID ] );
 
 		if ( $this->flagUseCache && $cached = $this->getCached( $linkTable, $key ) ) {
 			return $cached;
@@ -744,11 +744,11 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			$sql = "SELECT {$linkTable}.* {$sqlFilterStr} FROM {$linkTable}
 				WHERE ( {$sourceCol} = ? AND {$destCol} = ? ) OR
 				 ( {$destCol} = ? AND {$sourceCol} = ? ) -- keep-cache";
-			$row = $this->adapter->getRow( $sql, array( $sourceID, $destID, $sourceID, $destID ) );
+			$row = $this->adapter->getRow( $sql, [ $sourceID, $destID, $sourceID, $destID ] );
 		} else {
 			$sql = "SELECT {$linkTable}.* {$sqlFilterStr} FROM {$linkTable}
 				WHERE {$sourceCol} = ? AND {$destCol} = ? -- keep-cache";
-			$row = $this->adapter->getRow( $sql, array( $sourceID, $destID ) );
+			$row = $this->adapter->getRow( $sql, [ $sourceID, $destID ] );
 		}
 
 		$this->putResultInCache( $linkTable, $key, $row );
@@ -759,7 +759,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::queryRecordCount
 	 */
-	public function queryRecordCount( $type, $conditions = array(), $addSql = NULL, $bindings = array() )
+	public function queryRecordCount( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
 		$addSql = $this->glueSQLCondition( $addSql );
 
@@ -776,7 +776,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::queryRecordCountRelated
 	 */
-	public function queryRecordCountRelated( $sourceType, $destType, $linkID, $addSql = '', $bindings = array() )
+	public function queryRecordCountRelated( $sourceType, $destType, $linkID, $addSql = '', $bindings = [] )
 	{
 		list( $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ) = $this->getRelationalTablesAndColumns( $sourceType, $destType );
 
@@ -791,7 +791,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			{$addSql}
 			-- keep-cache";
 
-			$bindings = array_merge( array( $linkID, $linkID ), $bindings );
+			$bindings = array_merge( [ $linkID, $linkID ], $bindings );
 		} else {
 			$sql = "
 			SELECT COUNT(*) FROM {$linkTable}
@@ -800,7 +800,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			{$addSql}
 			-- keep-cache";
 
-			$bindings = array_merge( array( $linkID ), $bindings );
+			$bindings = array_merge( [ $linkID ], $bindings );
 		}
 
 		return (int) $this->adapter->getCell( $sql, $bindings );
@@ -809,7 +809,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::deleteRecord
 	 */
-	public function deleteRecord( $type, $conditions = array(), $addSql = NULL, $bindings = array() )
+	public function deleteRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
 		$addSql = $this->glueSQLCondition( $addSql );
 
@@ -834,12 +834,12 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 				( {$destCol} = ?  )
 			";
 
-			$this->adapter->exec( $sql, array( $sourceID, $sourceID ) );
+			$this->adapter->exec( $sql, [ $sourceID, $sourceID ] );
 		} else {
 			$sql = "DELETE FROM {$linkTable}
 				WHERE {$sourceCol} = ? ";
 
-			$this->adapter->exec( $sql, array( $sourceID ) );
+			$this->adapter->exec( $sql, [ $sourceID ] );
 		}
 	}
 
@@ -918,7 +918,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public function flushCache()
 	{
-		$this->cache = array();
+		$this->cache = [];
 	}
 
 	/**

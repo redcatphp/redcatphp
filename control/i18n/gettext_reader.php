@@ -154,7 +154,7 @@ class gettext_reader {
     }
 
     if ($this->enable_cache) {
-      $this->cache_translations = array ();
+      $this->cache_translations =  [];
       /* read all strings in the cache */
       for ($i = 0; $i < $this->total; $i++) {
         $this->STREAM->seekto($this->table_originals[$i * 2 + 2]);

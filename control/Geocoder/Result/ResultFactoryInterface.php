@@ -20,7 +20,7 @@ interface ResultFactoryInterface
      *
      * @return ResultInterface
      */
-    public function createFromArray(array $data);
+    public function createFromArray( array $data);
 
     /**
      * @return ResultInterface

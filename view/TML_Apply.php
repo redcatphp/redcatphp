@@ -21,7 +21,7 @@ class TML_Apply extends TML {
 		}
 		$this->preventLoad = false;
 	}
-	static function manualLoad($file,&$obj,$params=array()){
+	static function manualLoad($file,&$obj,$params=[]){
 		$apply = new self($obj);
 		$apply->parseFile($file,$params,__CLASS__);
 		foreach($apply->childNodes as $extender)

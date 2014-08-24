@@ -32,8 +32,8 @@ class GeoPluginProvider extends AbstractProvider implements ProviderInterface
             throw new UnsupportedException('The GeoPluginProvider does not support street addresses.');
         }
 
-        if (in_array($address, array('127.0.0.1', '::1'))) {
-            return array($this->getLocalhostDefaults());
+        if (in_array($address, ['127.0.0.1', '::1'])) {
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::GEOCODE_ENDPOINT_URL, $address);
@@ -44,7 +44,7 @@ class GeoPluginProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The GeoPluginProvider is not able to do reverse geocoding.');
     }
@@ -82,7 +82,7 @@ class GeoPluginProvider extends AbstractProvider implements ProviderInterface
 
         $data = array_filter($json);
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'city'        => isset($data['geoplugin_city']) ? $data['geoplugin_city'] : null,
             'country'     => isset($data['geoplugin_countryName']) ? $data['geoplugin_countryName'] : null,
             'countryCode' => isset($data['geoplugin_countryCode']) ? $data['geoplugin_countryCode'] : null,
@@ -90,6 +90,6 @@ class GeoPluginProvider extends AbstractProvider implements ProviderInterface
             'regionCode'  => isset($data['geoplugin_regionCode']) ? $data['geoplugin_regionCode'] : null,
             'latitude'    => isset($data['geoplugin_latitude']) ? $data['geoplugin_latitude'] : null,
             'longitude'   => isset($data['geoplugin_longitude']) ? $data['geoplugin_longitude'] : null,
-        )));
+        ])];
     }
 }

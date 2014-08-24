@@ -12,9 +12,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	var $nodeName;
 	var $parent;
 	var $constructor;
-	var $childNodes = array();
-	var $attributes = array();
-	var $metaAttribution = array();
+	var $childNodes = [];
+	var $attributes = [];
+	var $metaAttribution = [];
 	var $previousSibling;
 	var $nextSibling;
 	var $namespace;
@@ -32,14 +32,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function recursiveMethod($callback,$node=null,$args=null){
 		if(func_num_args()<2)
 			$node = &$this;
-		call_user_func_array(array(&$node,$callback),(array)$args);
+		call_user_func_array([&$node,$callback],(array)$args);
 		foreach($node->childNodes as $el)
 			$this->recursiveMethod($callback,$el,$args);
 	}
 	function recursive($callback,$node=null,$break=false){
 		if(func_num_args()<2)
 			$node = &$this;
-		call_user_func_array($callback,array(&$node,&$break));
+		call_user_func_array($callback,[&$node,&$break]);
 		if($break)
 			return;
 		foreach($node->childNodes as $el){
@@ -53,7 +53,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$node = &$this;
 		foreach($node->childNodes as $el)
 			$this->arecursive($callback,$el);
-		call_user_func_array($callback,array(&$node));
+		call_user_func_array($callback,[&$node]);
 	}
 	function vFileOf($file){
 		return FILE::factoy(dirname($this->vFile->path).'/'.$file);
@@ -120,7 +120,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	protected static function varExport($var,$singlequote=null){
 		if(is_array($var)){
-			$toImplode = array();
+			$toImplode = [];
 			foreach($var as $key=>$value)
 				$toImplode[] = self::varExport($key,$singlequote).'=>'.self::varExport($value,$singlequote);
 			$code = 'array('.implode(',', $toImplode).')';
@@ -132,7 +132,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $var;
 	}
 	protected static function exportVars(){
-		$args = array();
+		$args = [];
 		foreach(func_get_args() as $arg)
 			$args[] = self::varExport($arg);
 		return implode(',',$args);
@@ -235,7 +235,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	
 	function __invoke(){
-		return call_user_func_array(array($this,'find'),func_get_args());
+		return call_user_func_array([$this,'find'],func_get_args());
 	}
 	function offsetUnset($k){
 		unset($this->childNodes[$k]);
@@ -344,7 +344,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if(is_array($selector)){
 			$inv = $this;
 			foreach($selector as $select){
-				$r = array();
+				$r = [];
 				foreach($inv($select) as $o)
 					$r[] = $o;
 			}
@@ -353,7 +353,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$r = $this->childNodes;
 		}
 		else{
-			$r = array();
+			$r = [];
 			foreach($this->childNodes  as $el)
 				$r = array_merge($r,(array)$el->selector($selector));
 		}
@@ -376,7 +376,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			&&get_class($node)==get_class($this);
 	}
 	function getAttributes(){
-		$a = array();
+		$a = [];
 		foreach($this->metaAttribution as $k=>$v)
 			$a[$k] = (string)$v;
 		return $a;
@@ -388,7 +388,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return isset($this->attributes[$k]);
 	}
 	function getElementsByTagName($nodeName){
-		$a = array();
+		$a = [];
 		$this->recursive(function($el)use(&$a,$nodeName){
 			if($el->nodeName&&($nodeName=='*'||$el->nodeName==$nodeName))
 				$a[] = $el;
@@ -420,7 +420,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			if($nodes instanceof Iterator)
 				$nodes = $nodes->getIterator();
 			if(!is_array($nodes))
-				$nodes = array($nodes);
+				$nodes = [$nodes];
 			foreach($nodes as $node){
 				if(is_scalar($node))
 					$node = new TML($node,$this);
@@ -461,7 +461,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		return $obj;
 	}
-	function applyFile($tpl,$params=array()){
+	function applyFile($tpl,$params=[]){
 		if(($pos=strpos($tpl,':'))!==false)
 			$tpl = '../'.substr($tpl,0,$pos).'/'.($base=substr($tpl,$pos+1)).(strpos($base,'/')===false?'/'.$base:'').'.tpl';
 		TML_Apply::manualLoad($tpl,$this,$params);
@@ -469,13 +469,13 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function before($arg){
 		if(is_scalar($arg))
 			$arg = new TML($arg,$this->parent);
-		array_splice($this->parent->childNodes, $this->getIndex()-1, 0, array($arg));
+		array_splice($this->parent->childNodes, $this->getIndex()-1, 0, [$arg]);
 		return $arg;
 	}
 	function after($arg){
 		if(is_scalar($arg))
 			$arg = new TML($arg,$this->parent);
-		array_splice($this->parent->childNodes, $this->getIndex()+1, 0, array($arg));
+		array_splice($this->parent->childNodes, $this->getIndex()+1, 0, [$arg]);
 		return $arg;
 	}
 	function getIndex(){
@@ -526,15 +526,15 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$this->clearInner();
 	}
 	function clearInner(){
-		$this->innerHead = array();
-		$this->innerFoot = array();
-		$this->childNodes = array();
+		$this->innerHead = [];
+		$this->innerFoot = [];
+		$this->childNodes = [];
 	}
 	function clean(){
 		$this->clearInner();
 		$this->hiddenWrap = true;
-		$this->head = array();
-		$this->foot = array();
+		$this->head = [];
+		$this->foot = [];
 	}
 	function delete(){
 		if($this->nextSibling)
@@ -545,43 +545,43 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$this->nodeName = null;
 		$this->previousSibling = null;
 		$this->nextSibling = null;
-		$this->childNodes = array();
-		$this->attributes = array();
+		$this->childNodes = [];
+		$this->attributes = [];
 		$this->hiddenWrap = true;
-		$this->innerHead = array();
-		$this->innerFoot = array();
-		$this->head = array();
-		$this->foot = array();
+		$this->innerHead = [];
+		$this->innerFoot = [];
+		$this->head = [];
+		$this->foot = [];
 	}
 	
-	protected $foot = array();
-	protected $head = array();
-	protected $innerFoot = array();
-	protected $innerHead = array();
+	protected $foot = [];
+	protected $head = [];
+	protected $innerFoot = [];
+	protected $innerHead = [];
 	function &head($arg){
 		if(func_num_args()>1)
-			array_splice($this->head, func_get_arg(1), 0,array($arg));
+			array_splice($this->head, func_get_arg(1), 0,[$arg]);
 		else
 			array_unshift($this->head,$arg);
 		return $arg;
 	}
 	function &foot($arg){
 		if(func_num_args()>1)
-			array_splice($this->foot, func_get_arg(1), 0,array($arg));
+			array_splice($this->foot, func_get_arg(1), 0,[$arg]);
 		else
 			array_push($this->foot,$arg);
 		return $arg;
 	}
 	function &innerHead($arg){
 		if(func_num_args()>1)
-			array_splice($this->innerHead, func_get_arg(1), 0,array($arg));
+			array_splice($this->innerHead, func_get_arg(1), 0,[$arg]);
 		else
 			array_unshift($this->innerHead,$arg);
 		return $arg;
 	}
 	function &innerFoot($arg){
 		if(func_num_args()>1)
-			array_splice($this->innerFoot, func_get_arg(1), 0,array($arg));
+			array_splice($this->innerFoot, func_get_arg(1), 0,[$arg]);
 		else
 			array_push($this->innerFoot,$arg);
 		return $arg;
@@ -620,7 +620,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 	}
 
-	private $__metaData = array();
+	private $__metaData = [];
 	function data($k,$v=null){
 		if(func_num_args()>1)
 			$this->__metaData[$k] = $v;
@@ -695,7 +695,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$arg->selfClosed = null;
 		}
 		$arg->parent = $this->parent;
-		array_splice($this->parent->childNodes, $this->getIndex(), 1, array($arg));
+		array_splice($this->parent->childNodes, $this->getIndex(), 1, [$arg]);
 		$arg->childNodes[] = $this;
 		$this->parent = $arg;
 	}

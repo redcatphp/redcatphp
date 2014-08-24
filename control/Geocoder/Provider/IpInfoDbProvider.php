@@ -60,7 +60,7 @@ class IpInfoDbProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::ENDPOINT_URL, $this->apiKey, $address);
@@ -71,7 +71,7 @@ class IpInfoDbProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The IpInfoDbProvider is not able to do reverse geocoding.');
     }
@@ -108,7 +108,7 @@ class IpInfoDbProvider extends AbstractProvider implements ProviderInterface
             $timezone = timezone_name_from_abbr("", (int) substr($data['timeZone'], 0, strpos($data['timeZone'], ':')) * 3600, 0);
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'    => isset($data['latitude']) ? $data['latitude'] : null,
             'longitude'   => isset($data['longitude']) ? $data['longitude'] : null,
             'city'        => isset($data['cityName']) ? $data['cityName'] : null,
@@ -117,6 +117,6 @@ class IpInfoDbProvider extends AbstractProvider implements ProviderInterface
             'country'     => isset($data['countryName']) ? $data['countryName'] : null,
             'countryCode' => isset($data['countryName']) ? $data['countryCode'] : null,
             'timezone'    => $timezone,
-        )));
+        ])];
     }
 }

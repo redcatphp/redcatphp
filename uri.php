@@ -2,18 +2,18 @@
 use ArrayAccess;
 class uri implements ArrayAccess{
 	protected $separatorWord = '-';
-	protected $forbiddenChrParam = array(
+	protected $forbiddenChrParam = [
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
 		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
 		';','.'
-	);
-	protected $separators = array(
+	];
+	protected $separators = [
 		'Eq'=>':',
 		'And'=>'+',
 		'Or'=>'&',
-	);
+	];
 	protected $resolved;
-	private static $__factory = array();
+	private static $__factory = [];
 	static function factory($k=0,$path=null){
 		if(!isset(self::$__factory[$k]))
 			self::$__factory[$k] = new URI($path);
@@ -49,9 +49,9 @@ class uri implements ArrayAccess{
 	}
 	
 	protected $PATH;
-	protected $uriParams = array();
-	protected $resolvedParams = array();
-	protected $orderParams = array();
+	protected $uriParams = [];
+	protected $resolvedParams = [];
+	protected $orderParams = [];
 	function __construct($path=''){
 		$this->PATH = (string)$path;
 		$this->uriParams = $this->parseUriParams(ltrim($this->PATH,'/'));
@@ -62,8 +62,8 @@ class uri implements ArrayAccess{
 		return $this->PATH;
 	}
 	function parseUriParams($path){
-		$uriParams = array();
-		$min = array();
+		$uriParams = [];
+		$min = [];
 		if(($pos=strpos($path,$this->separators['Eq']))!==false)
 			$min[] = $pos;
 		if(($pos=strpos($path,$this->separators['And']))!==false)
@@ -128,7 +128,7 @@ class uri implements ArrayAccess{
 				$callback = null;
 			}
 			if($k==':int'){
-				$ints = array();
+				$ints = [];
 				foreach(array_keys($this->uriParams) as $i){
 					if($i
 						&&is_integer($i)

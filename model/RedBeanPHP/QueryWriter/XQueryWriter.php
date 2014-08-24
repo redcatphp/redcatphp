@@ -1,7 +1,7 @@
 <?php namespace surikat\model\RedBeanPHP\QueryWriter;
 trait XQueryWriter{
 	private static $_allTables = null;
-	private static $_allColumns = array();
+	private static $_allColumns = [];
 	function __get($k){
 		if(property_exists($this,$k))
 			return $this->$k;
@@ -42,8 +42,8 @@ trait XQueryWriter{
 	}
 	public function wipeAll(){
 		parent::wipeAll();
-		self::$_allTables = array();
-		self::$_allColumns = array();
+		self::$_allTables = [];
+		self::$_allColumns = [];
 	}
 	public function drop($t){
 		if(isset(self::$_allTables)&&($i=array_search($t,self::$_allTables))!==false)

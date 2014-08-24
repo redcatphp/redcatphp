@@ -1,14 +1,14 @@
 <?php namespace surikat\control;
 class Geocoding{
-	static $earthRadiusTypes = array(
+	static $earthRadiusTypes = [
 		'km'=>6371,
 		'miles'=>3959,
-	);
+	];
 	static function getEarthRadius($type='km'){
 		if(isset(Geocoding::$earthRadiusTypes[$type]))
 			return Geocoding::$earthRadiusTypes[$type];
 	}
-	static function getBoundingBox(array $center,$rad,$R='km'){
+	static function getBoundingBox( array $center,$rad,$R='km'){
 		list($lat,$lon) = $center;
 		if(is_string($R))
 			$R = $this->getEarthRadius($R);	
@@ -48,11 +48,11 @@ class Geocoding{
 		$minLat = rad2deg($minLat);
 		$maxLon = rad2deg($maxLon);
 		$maxLat = rad2deg($maxLat);
-		return array(
+		return [
 			$minLon,
 			$minLat,
 			$maxLon,
 			$maxLat,
-		);
+		];
 	}
 }

@@ -70,11 +70,11 @@ abstract class Repository
 	 */
 	protected function processGroups( $originals, $current, $additions, $trashcan, $residue )
 	{
-		return array(
+		return [
 			array_merge( $additions, array_diff( $current, $originals ) ),
 			array_merge( $trashcan, array_diff( $originals, $current ) ),
 			array_merge( $residue, array_intersect( $current, $originals ) )
-		);
+		];
 	}
 
 	/**
@@ -326,7 +326,7 @@ abstract class Repository
 	 *
 	 * @throws SQL
 	 */
-	public function find( $type, $conditions = array(), $sql = NULL, $bindings = array() )
+	public function find( $type, $conditions = [], $sql = NULL, $bindings = [] )
 	{
 		//for backward compatibility, allow mismatch arguments:
 		if ( is_array( $sql ) ) {
@@ -343,7 +343,7 @@ abstract class Repository
 			$this->handleException( $exception );
 		}
 
-		return array();
+		return [];
 	}
 
 	/**
@@ -405,18 +405,18 @@ abstract class Repository
 	public function batch( $type, $ids )
 	{
 		if ( !$ids ) {
-			return array();
+			return [];
 		}
-		$collection = array();
+		$collection = [];
 		try {
-			$rows = $this->writer->queryRecord( $type, array( 'id' => $ids ) );
+			$rows = $this->writer->queryRecord( $type, [ 'id' => $ids ] );
 		} catch ( SQL $e ) {
 			$this->handleException( $e );
 			$rows = FALSE;
 		}
-		$this->stash[$this->nesting] = array();
+		$this->stash[$this->nesting] = [];
 		if ( !$rows ) {
-			return array();
+			return [];
 		}
 		foreach ( $rows as $row ) {
 			$this->stash[$this->nesting][$row['id']] = $row;
@@ -442,8 +442,8 @@ abstract class Repository
 	 */
 	public function convertToBeans( $type, $rows )
 	{
-		$collection                  = array();
-		$this->stash[$this->nesting] = array();
+		$collection                  = [];
+		$this->stash[$this->nesting] = [];
 		foreach ( $rows as $row ) {
 			$id                               = $row['id'];
 			$this->stash[$this->nesting][$id] = $row;
@@ -467,7 +467,7 @@ abstract class Repository
 	 *
 	 * @throws SQL
 	 */
-	public function count( $type, $addSQL = '', $bindings = array() )
+	public function count( $type, $addSQL = '', $bindings = [] )
 	{
 		$type = R::toSnake( $type );
 		if ( count( explode( '_', $type ) ) > 2 ) {
@@ -475,11 +475,11 @@ abstract class Repository
 		}
 
 		try {
-			return (int) $this->writer->queryRecordCount( $type, array(), $addSQL, $bindings );
+			return (int) $this->writer->queryRecordCount( $type, [], $addSQL, $bindings );
 		} catch ( SQL $exception ) {
-			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), array(
+			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), [
 				 QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
-				 QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN ) ) ) {
+				 QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN ] ) ) {
 				throw $exception;
 			}
 		}
@@ -514,7 +514,7 @@ abstract class Repository
 			}
 		}
 		try {
-			$this->writer->deleteRecord( $bean->getMeta( 'type' ), array( 'id' => array( $bean->id ) ), NULL );
+			$this->writer->deleteRecord( $bean->getMeta( 'type' ), [ 'id' => [ $bean->id ] ], NULL );
 		} catch ( SQL $exception ) {
 			$this->handleException( $exception );
 		}
@@ -553,7 +553,7 @@ abstract class Repository
 
 			return TRUE;
 		} catch ( SQL $exception ) {
-			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), array( QueryWriter::C_SQLSTATE_NO_SUCH_TABLE ) ) ) {
+			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), [ QueryWriter::C_SQLSTATE_NO_SUCH_TABLE ] ) ) {
 				throw $exception;
 			}
 

@@ -9,11 +9,11 @@ class present extends ArrayObject{
 	static function load(TML $tml){
 		$c = get_called_class();
 		$o = new $c();
-		$o->merge(array(
+		$o->merge([
 			'templatePath'		=> $tml->vFile->path,
 			'presentAttributes'	=> $tml->getAttributes(),
 			'presentNamespaces'	=> $tml->_namespaces,
-		));
+		]);
 		$o->assign();
 		$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID,'i'";
 		//$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID|EXTR_REFS,'i'";

@@ -46,7 +46,7 @@ class CssParserModelElement
      */
     public function __construct($tagName)
     {
-        $this->_filters = array();
+        $this->_filters = [];
         $this->_tagName = $tagName;
     }
     

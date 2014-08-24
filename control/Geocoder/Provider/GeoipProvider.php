@@ -46,7 +46,7 @@ class GeoipProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $results = @geoip_record_by_name($address);
@@ -58,7 +58,7 @@ class GeoipProvider extends AbstractProvider implements ProviderInterface
         $timezone = @geoip_time_zone_by_country_and_region($results['country_code'], $results['region']) ?: null;
         $region   = @geoip_region_name_by_code($results['country_code'], $results['region']) ?: $results['region'];
 
-        return array($this->fixEncoding(array_merge($this->getDefaults(), array(
+        return [$this->fixEncoding(array_merge($this->getDefaults(), [
             'latitude'    => $results['latitude'],
             'longitude'   => $results['longitude'],
             'city'        => $results['city'],
@@ -68,13 +68,13 @@ class GeoipProvider extends AbstractProvider implements ProviderInterface
             'country'     => $results['country_name'],
             'countryCode' => $results['country_code'],
             'timezone'    => $timezone,
-        ))));
+        ]))];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The GeoipProvider is not able to do reverse geocoding.');
     }

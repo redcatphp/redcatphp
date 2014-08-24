@@ -68,7 +68,7 @@ class GeonamesProvider extends AbstractProvider implements LocaleAwareProviderIn
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->username) {
             throw new InvalidCredentialsException('No Username provided');
@@ -119,20 +119,20 @@ class GeonamesProvider extends AbstractProvider implements LocaleAwareProviderIn
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $bounds = null;
             if (isset($item->bbox)) {
-                $bounds = array(
+                $bounds = [
                     'south' => $item->bbox->south,
                     'west'  => $item->bbox->west,
                     'north' => $item->bbox->north,
                     'east'  => $item->bbox->east
-                );
+                ];
             }
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'    => isset($item->lat) ? $item->lat : null,
                 'longitude'   => isset($item->lng) ? $item->lng : null,
                 'bounds'      => $bounds,
@@ -142,7 +142,7 @@ class GeonamesProvider extends AbstractProvider implements LocaleAwareProviderIn
                 'country'     => isset($item->countryName) ? $item->countryName : null,
                 'countryCode' => isset($item->countryCode) ? $item->countryCode : null,
                 'timezone'    => isset($item->timezone->timeZoneId)  ? $item->timezone->timeZoneId : null,
-            ));
+            ]);
         }
 
         return $results;

@@ -1,19 +1,19 @@
 <?php namespace surikat\control;
 class str{
-	static $utf8CharsMin = array(
+	static $utf8CharsMin = [
 		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
 		"v", "w", "x", "y", "z", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï",
 		"ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "а", "б", "в", "г", "д", "е", "ё", "ж",
 		"з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы",
 		"ь", "э", "ю", "я"
-	);
-	static $utf8CharsMaj = array(
+	];
+	static $utf8CharsMaj = [
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
 		"V", "W", "X", "Y", "Z", "À", "Á", "Â", "Ã", "Ä", "Å", "Æ", "Ç", "È", "É", "Ê", "Ë", "Ì", "Í", "Î", "Ï",
 		"Ð", "Ñ", "Ò", "Ó", "Ô", "Õ", "Ö", "Ø", "Ù", "Ú", "Û", "Ü", "Ý", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж",
 		"З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ъ",
 		"Ь", "Э", "Ю", "Я"
-	);
+	];
 	static function ucfirst($str){
 		return self::toupper(substr($str,0,1)).substr($str,1);
 	}
@@ -28,7 +28,7 @@ class str{
 	}
 	// An example string like ÀØėÿᾜὨζὅБю will be translated to AOeyIOzoBY More complete than : strtr((string)$str,"ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ","aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn"); @author http://www.evaisse.net/2008/php-translit-remove-accent-unaccent-21001
     static function unaccent($str, $utf8 = true){
-		static $transliteration = array(
+		static $transliteration = [
 			'Ĳ' => 'I', 'Ö' => 'O', 'Œ' => 'O', 'Ü' => 'U', 'ä' => 'a', 'æ' => 'a',
 			'ĳ' => 'i', 'ö' => 'o', 'œ' => 'o', 'ü' => 'u', 'ß' => 's', 'ſ' => 's',
 			'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A',
@@ -122,7 +122,7 @@ class str{
 			'უ' => 'u', 'ფ' => 'p', 'ქ' => 'k', 'ღ' => 'g', 'ყ' => 'q', 'შ' => 's',
 			'ჩ' => 'c', 'ც' => 't', 'ძ' => 'd', 'წ' => 't', 'ჭ' => 'c', 'ხ' => 'k',
 			'ჯ' => 'j', 'ჰ' => 'h',
-		);
+		];
 		$str = (string)$str;
 		if(is_null($utf8)){
 			if(!function_exists('mb_detect_encoding'))
@@ -154,7 +154,7 @@ class str{
     }
 	
 	static function html_convert_entities($string) {
-		return preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/S',array('self','convert_entity'), $string);
+		return preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/S',['self','convert_entity'], $string);
 	}
 	 
 	/* Swap HTML named entity with its numeric equivalent. If the entity
@@ -162,7 +162,7 @@ class str{
 	* destroys the character in the output - this is probably the
 	* desired behaviour when producing XML. */
 	static function convert_entity($matches) {
-		static $table = array('quot' => '&#34;',
+		static $table = ['quot' => '&#34;',
 			'amp' => '&#38;',
 			'lt' => '&#60;',
 			'gt' => '&#62;',
@@ -414,7 +414,7 @@ class str{
 			'yacute' => '&#253;',
 			'thorn' => '&#254;',
 			'yuml' => '&#255;'
-		);
+		];
 		return isset($table[$matches[1]]) ? $table[$matches[1]] : ''; // Entity not found? Destroy it.
 	}
 	static function cleanXhtml($str){

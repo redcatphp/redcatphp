@@ -31,7 +31,7 @@ abstract class SQLComposer {
 	 *
 	 * @var array
 	 */
-	public static $operators = array(
+	public static $operators = [
 		'greater than' => '>',
 		'greater than or equal' => '>=',
 		'less than' => '<',
@@ -40,7 +40,7 @@ abstract class SQLComposer {
 		'not equal' => '!=',
 		'between' => 'between',
 		'in' => 'in'
-	);
+	];
 
 	/**************
 	 **  SELECT  **
@@ -55,7 +55,7 @@ abstract class SQLComposer {
 	 * @param string $mysqli_types
 	 * @return SQLComposerSelect
 	 */
-	public static function select($select = null, array $params = null, $mysqli_types = null) {
+	public static function select($select = null,  array $params = null, $mysqli_types = null) {
 		return new SQLComposerSelect($select, $params, $mysqli_types);
 	}
 
@@ -174,11 +174,11 @@ abstract class SQLComposer {
 	 * @param string $mysqli_types
 	 * @return array
 	 */
-	public static function in($sql, array $params, $mysqli_types="") {
+	public static function in($sql,  array $params, $mysqli_types="") {
 		$given_params = $params;
 
-		$placeholders = array( );
-		$params = array();
+		$placeholders = [ ];
+		$params = [];
 
 		foreach ($given_params as $p) {
 			if ($p instanceof SQLComposerExpr) {
@@ -198,7 +198,7 @@ abstract class SQLComposer {
 
 		$placeholders = implode(", ", $placeholders);
 		$sql = str_replace("?", $placeholders, $sql);
-		return array($sql, $params, $mysqli_types);
+		return [$sql, $params, $mysqli_types];
 	}
 
 	/**
@@ -230,12 +230,12 @@ abstract class SQLComposer {
 	 * @param string $mysqli_types
 	 * @return string
 	 */
-	public static function applyOperator($column, $op, array $params=null, $mysqli_types="") {
+	public static function applyOperator($column, $op,  array $params=null, $mysqli_types="") {
 		switch ($op) {
 			case '>': case '>=':
 			case '<': case '<=':
 			case '=': case '!=':
-				return array("{$column} {$op} ?", $params, $mysqli_types);
+				return ["{$column} {$op} ?", $params, $mysqli_types];
 			case 'in':
 				return self::in("{$column} in (?)", $params, $mysqli_types);
 			case 'between':
@@ -255,7 +255,7 @@ abstract class SQLComposer {
 					$sql .= "?";
 					array_push($params, $p);
 				}
-				return array($sql, $params, $mysqli_types);
+				return [$sql, $params, $mysqli_types];
 			default:
 				throw new SQLComposerException("Invalid operator: {$op}");
 		}
@@ -269,7 +269,7 @@ abstract class SQLComposer {
 	 * @param string $mysqli_types
 	 * @return SQLComposerExpr
 	 */
-	public static function expr($val, array $params=array(), $mysqli_types="") {
+	public static function expr($val,  array $params=[], $mysqli_types="") {
 		return new SQLComposerExpr($val, $params, $mysqli_types);
 	}
 }

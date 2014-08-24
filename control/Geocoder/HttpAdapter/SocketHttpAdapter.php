@@ -100,7 +100,7 @@ class SocketHttpAdapter implements HttpAdapterInterface
      */
     protected function buildHttpRequest($path, $hostname)
     {
-        $r = array();
+        $r = [];
         $r[] = "GET {$path} HTTP/1.1";
         $r[] = "Host: {$hostname}";
         $r[] = "Connection: Close";
@@ -119,8 +119,8 @@ class SocketHttpAdapter implements HttpAdapterInterface
      */
     protected function getParsedHttpResponse($socketHandle)
     {
-        $httpResponse = array();
-        $httpResponse['headers'] = array();
+        $httpResponse = [];
+        $httpResponse['headers'] = [];
         $httpResponse['content'] = '';
 
         $reachedEndOfHeaders = false;

@@ -1,6 +1,6 @@
 <?php namespace surikat\control; 
 abstract class FS {
-	static function recurse($file,$arg,$pattern=null,$asc=null,&$ret=array(),$skiplink=null){
+	static function recurse($file,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
 		foreach(glob($file.'/'.($pattern?$pattern:'*')) as $f){
 			if($skiplink&&is_link($f)){
 				continue;
@@ -34,9 +34,9 @@ abstract class FS {
 		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];  
     }
     static function get_absolute_path($path) {
-        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = array();
+        $absolutes = [];
         foreach ($parts as $part) {
             if ('.' == $part) continue;
             if ('..' == $part) {

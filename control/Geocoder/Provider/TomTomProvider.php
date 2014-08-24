@@ -69,7 +69,7 @@ class TomTomProvider extends AbstractProvider implements LocaleAwareProviderInte
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->apiKey) {
             throw new InvalidCredentialsException('No Map API Key provided');
@@ -127,10 +127,10 @@ class TomTomProvider extends AbstractProvider implements LocaleAwareProviderInte
 
 
         if (0 === count($data)) {
-            return array($this->getResultArray($data));
+            return [$this->getResultArray($data)];
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $results[] = $this->getResultArray($item);
@@ -146,7 +146,7 @@ class TomTomProvider extends AbstractProvider implements LocaleAwareProviderInte
      */
     protected function getResultArray(\SimpleXmlElement $data)
     {
-        return array_merge($this->getDefaults(), array(
+        return array_merge($this->getDefaults(), [
             'latitude'    => isset($data->latitude) ? (double) $data->latitude : null,
             'longitude'   => isset($data->longitude) ? (double) $data->longitude : null,
             'streetName'  => isset($data->street) ? (string) $data->street : null,
@@ -154,6 +154,6 @@ class TomTomProvider extends AbstractProvider implements LocaleAwareProviderInte
             'region'      => isset($data->state) ? (string) $data->state : null,
             'country'     => isset($data->country) ? (string) $data->country : null,
             'countryCode' => isset($data->countryISO3) ? (string) $data->countryISO3 : null,
-        ));
+        ]);
     }
 }

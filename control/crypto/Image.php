@@ -4,7 +4,7 @@ class Image {
     var $Name = '';
     var $Width = 0;
     var $Height = 0;
-    var $PixelPointer = array('x' => 0, 'y' => 0);
+    var $PixelPointer = ['x' => 0, 'y' => 0];
     var $EOF = TRUE;
     function Image($image){
         if ($image){
@@ -103,7 +103,7 @@ class Image {
         $R = ($RGB >> 16) & 0xFF;
         $G = ($RGB >>  8) & 0xFF;
         $B = ($RGB >>  0) & 0xFF;
-        return array($R, $G, $B);
+        return [$R, $G, $B];
     }
     function SetPixel($rgb){
         if (is_string($rgb) && strlen($rgb) == 3){

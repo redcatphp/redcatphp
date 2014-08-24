@@ -44,7 +44,7 @@ class DataScienceToolkitProvider extends AbstractProvider implements ProviderInt
         $endpoint = filter_var($address, FILTER_VALIDATE_IP) ? self::ENDPOINT_IP_URL : self::ENDPOINT_ADRESS_URL;
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf($endpoint, urlencode($address));
@@ -55,7 +55,7 @@ class DataScienceToolkitProvider extends AbstractProvider implements ProviderInt
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The DataScienceToolkitProvider is not able to do reverse geocoding.');
     }
@@ -84,7 +84,7 @@ class DataScienceToolkitProvider extends AbstractProvider implements ProviderInt
 
         $result = array_shift($result);
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => isset($result['latitude']) ? $result['latitude'] : null,
             'longitude'    => isset($result['longitude']) ? $result['longitude'] : null,
             'city'         => isset($result['locality']) ? $result['locality'] : null,
@@ -93,6 +93,6 @@ class DataScienceToolkitProvider extends AbstractProvider implements ProviderInt
             'zipcode'	   => isset($result['postal_code']) ? $result['postal_code'] : null,
             'streetName'   => isset($result['street_name']) ? $result['street_name'] : null,
             'streetNumber' => isset($result['street_number']) ? $result['street_number'] : null,
-        )));
+        ])];
     }
 }

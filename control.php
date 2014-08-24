@@ -33,7 +33,7 @@ class control{
 	}
 	static function dev(){
 		$dev = 0;
-		$args = func_num_args()?func_get_args():array(self::dev_default);
+		$args = func_num_args()?func_get_args():[self::dev_default];
 		foreach($args as $d)
 			$dev = $d|$dev;
 		self::$DEV = $dev;
@@ -46,8 +46,8 @@ class control{
 		self::$CWD_X = self::$CWD;
 		self::$TMP = self::$CWD.'.tmp'.DIRECTORY_SEPARATOR;
 		set_include_path('.');
-		spl_autoload_register(array('surikat\\control','classLoad'));
-		set_exception_handler(array('surikat\\control','catchException'));
+		spl_autoload_register(['surikat\\control','classLoad']);
+		set_exception_handler(['surikat\\control','catchException']);
 	}
 	static function errorReport($e=true){
 		if($e){

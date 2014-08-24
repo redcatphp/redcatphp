@@ -2,73 +2,73 @@
 class POParser{
 	
   public $fileHandle;
-  protected $context = array();
+  protected $context = [];
   public $entryStore;
 	
-	protected $match_expressions = array(
-		array(
+	protected $match_expressions = [
+		[
 			'type' => 'translator-comments',
 			're_match' => '/(^# )|(^#$)/',
 			're_capture' => '/#\s*(.*)$/',
-		),
-		array(
+		],
+		[
 			'type' => 'extracted-comments',
 			're_match' => '/^#. /',
 			're_capture' => '/#.\s+(.*)$/',
-		),
-		array(
+		],
+		[
 			'type' => 'reference',
 			're_match' => '/^#: /',
 			're_capture' => '/#:\s+(.*)$/',
 
-		),
-		array(
+		],
+		[
 			'type' => 'flags',
 			're_match' => '/^#, /',
 			're_capture' => '/#,\s+(.*)$/',
-		),
-		array(
+		],
+		[
 			'type' => 'previous-untranslated-string',
 			're_match' => '/^#\| /',
 			're_capture' => '/#\|\s+(.*)$/',
-		),
-		array(
+		],
+		[
 			'type' => 'msgid',
 			're_match' => '/^msgid /',
 			're_capture' => '/msgid\s+(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'msgstr',
 			're_match' => '/^msgstr /',
 			're_capture' => '/msgstr\s+(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'string',
 			're_match' => '/^\s*"/',
 			're_capture' => '/^\s*(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'obsolete-msgid',
 			're_match' => '/^#~\s+msgid /',
 			're_capture' => '/#~\s+msgid\s+(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'obsolete-msgstr',
 			're_match' => '/^#~\s+msgstr /',
 			're_capture' => '/#~\s+msgstr\s+(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'obsolete-string',
 			're_match' => '/^#~\s+\s*"/',
 			're_capture' => '/^#~\s+(".*")/',
-		),
-		array(
+		],
+		[
 			'type' => 'empty',
 			're_match' => '/^$/',
 			're_capture' => '/^()$/'
-		)
+		]
 		
-	);
+	];
 
   public function __construct($entryStore){
     $this->entryStore = $entryStore;
@@ -86,7 +86,7 @@ class POParser{
 	public function parseEntriesFromStream($fh) {
     $this->lineNumber = 0;
     $entry_count = 0;
-    $entry_lines = array();
+    $entry_lines = [];
 
     while( ($line = fgets($fh)) !== false ) {
       $this->lineNumber++;
@@ -97,7 +97,7 @@ class POParser{
       else {
         $entry = $this->reduceLines($entry_lines);
         $this->saveEntry( $entry, $entry_count++ );
-        $entry_lines = array();
+        $entry_lines = [];
       }
     }
     if ( $entry_lines ){
@@ -108,7 +108,7 @@ class POParser{
   
 	function parseLine( $line ){
 		$this->line_count++;
-    $line_object = array();
+    $line_object = [];
 		foreach($this->match_expressions as $m) {
 			if(preg_match($m['re_match'],$line) ) {
 				preg_match($m['re_capture'],$line,$matches);
@@ -127,7 +127,7 @@ class POParser{
   public function decodeStringFormat( $str ){
     if ( substr($str, 0, 1) == '"' && substr($str, -1,1) == '"' ){
       $result = substr($str, 1, -1);
-      $translations = array("\\\\"=>"\\", "\\n"=>"\n",'\\"'=>'"');
+      $translations = ["\\\\"=>"\\", "\\n"=>"\n",'\\"'=>'"'];
       $result = strtr($result, $translations);
     } else {
       throw new Exception("Invalid PO string (should be surrounded by quotes)\n$str\n");
@@ -145,7 +145,7 @@ class POParser{
 	*/
 	public function encodeStringFormat($message_string){
 		// translate the characters to escapted versions.
-		$translations = array("\n"=>"\\n",'"'=>'\\"',"\\"=>"\\\\");
+		$translations = ["\n"=>"\\n",'"'=>'\\"',"\\"=>"\\\\"];
     $result = strtr($message_string, $translations);
 
 		// put the \n's at the end of the lines.
@@ -206,7 +206,7 @@ class POParser{
     $this->entryStore->write($entry, $entry_count == 0 );
   }
   public function reduceLines( $entry_lines ){
-    $entry = array();
+    $entry = [];
     $context = "";
 		$is_obsolete = false;
 
@@ -235,7 +235,7 @@ class POParser{
     }
 
     foreach($entry as $k=>&$v){
-      if( in_array($k,array('msgid',"msgstr")) ){
+      if( in_array($k,['msgid',"msgstr"]) ){
         $v  = implode('',$v);
       } else{
         $v = implode("\n",$v);
@@ -247,13 +247,13 @@ class POParser{
   }
 
   public function convertEntryToString( $entry ){
-    $prefixes = array(
+    $prefixes = [
 			"comments"=>"# ", 
 			"extracted_comments"=>"#. ", 
 			"reference"=>"#: ", 
 			"flags"=>"#, ", 
 			"previous_untranslated_string"=>"#| "
-		);
+		];
 		
     $msg = "";
     foreach ( $entry as $k=>$v ){

@@ -10,7 +10,7 @@ class Query /* implements ArrayAccess */{
 	protected $table;
 	protected $writer;
 	protected $composer;
-	protected $_ignore = array();
+	protected $_ignore = [];
 	function __construct($table=null,$composer='select',$writer=null){
 		$this->table = $table;
 		if(!$writer)
@@ -39,7 +39,7 @@ class Query /* implements ArrayAccess */{
 		$c = clone $this;
 		foreach(func_get_args() as $arg)
 			foreach((array)$arg as $m=>$a)
-				call_user_func_array(array($c,$m),$a);
+				call_user_func_array([$c,$m],$a);
 		return $c;
 	}
 	function __clone(){
@@ -67,14 +67,14 @@ class Query /* implements ArrayAccess */{
 				case 'selectFullTextHighlight':
 				case 'whereFullText':
 					array_unshift($args,$this);
-					call_user_func_array(array($this->writer,$f),$args);
+					call_user_func_array([$this->writer,$f],$args);
 					return $this;
 				break;
 				default:					
 					if(method_exists($this->composer,$f)){
 						$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
 						if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
-							$args = call_user_func_array(array($this,$m),$args);
+							$args = call_user_func_array([$this,$m],$args);
 						$sql = array_shift($args);
 						$binds = array_shift($args);
 						if($sql instanceof SQLComposerBase){
@@ -87,12 +87,12 @@ class Query /* implements ArrayAccess */{
 						if(is_array($binds))
 							$args = self::nestBinding($sql,$binds);
 						else
-							$args = array($sql,$binds);
+							$args = [$sql,$binds];
 						if($un){
 							if(is_array($args[1])&&empty($args[1]))
 								$args[1] = null;
 						}
-						call_user_func_array(array($this->composer,$f),$args);
+						call_user_func_array([$this->composer,$f],$args);
 						return $this;
 					}
 				break;
@@ -181,7 +181,7 @@ class Query /* implements ArrayAccess */{
 			$v = $this->quote($this->table).'.'.$this->quote($v);
 		return $v;
 	}	
-	protected $listOfColumns = array();
+	protected $listOfColumns = [];
 	function listOfColumns($t,$details=null,$reload=null){
 		if(!isset($this->listOfColumns[$t])||$reload)
 			$this->listOfColumns[$t] = R::inspect($t);
@@ -189,12 +189,12 @@ class Query /* implements ArrayAccess */{
 	}
 	function joinOnSQL($share){
 		if(is_array($share)){
-			$r = array();
+			$r = [];
 			foreach($share as $k=>$v)
 				$r[$k] = $this->joinOnSQL($this->table,$v);
 			return $r;
 		}
-		$rel = array($this->table,$share);
+		$rel = [$this->table,$share];
 		sort($rel);
 		$rel = implode('_',$rel);
 		$q = $this->writerQuoteCharacter;
@@ -216,7 +216,7 @@ class Query /* implements ArrayAccess */{
 				$type = trim(substr($type,0,$p));
 			}
 		}
-		return array($type,$alias?$alias:$type);
+		return [$type,$alias?$alias:$type];
 	}
 	function selectRelationnal($select,$colAlias=null){
 		$this->getRelationnal($select,$colAlias,true);
@@ -236,7 +236,7 @@ class Query /* implements ArrayAccess */{
 		$typeParent = $this->table;
 		$aliasParent = $this->table;
 		$q = $this->writerQuoteCharacter;
-		$shareds = array();
+		$shareds = [];
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
 				case '>': //own
@@ -256,7 +256,7 @@ class Query /* implements ArrayAccess */{
 						$i++;
 						if($superalias)
 							$alias = $superalias.'__'.($alias?$alias:$type);
-						$rels = array($typeParent,$type);
+						$rels = [$typeParent,$type];
 						sort($rels);
 						$imp = implode('_',$rels);
 						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
@@ -359,7 +359,7 @@ class Query /* implements ArrayAccess */{
 	}
 	static function explodeAgg($data){
 		$_gs = chr(0x1D);
-		$row = array();
+		$row = [];
 		foreach(array_keys($data) as $col){
 			$multi = stripos($col,'>');
 			$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
@@ -368,10 +368,10 @@ class Query /* implements ArrayAccess */{
 				$tb = &$x[0];
 				$_col = &$x[1];
 				if(!isset($row[$tb]))
-					$row[$tb] = array();
+					$row[$tb] = [];
 				if(empty($data[$col])){
 					if(!isset($row[$tb]))
-						$row[$tb] = array();
+						$row[$tb] = [];
 				}
 				elseif($multi){
 					$_x = explode($_gs,$data[$col]);
@@ -394,7 +394,7 @@ class Query /* implements ArrayAccess */{
 		return $row;
 	}
 	static function explodeAggTable($data){
-		$table = array();
+		$table = [];
 		if(is_array($data)||$data instanceof \ArrayAccess)
 			foreach($data as $i=>$d){
 				$id = isset($d['id'])?$d['id']:$i;
@@ -424,10 +424,10 @@ class Query /* implements ArrayAccess */{
 					break;
 		}
 		while($containA);
-		return array($sql,$binds);
+		return [$sql,$binds];
 	}
 	private static function nestBindingLoop($sql,$binds){
-		$nBinds = array();
+		$nBinds = [];
 		$ln = 0;
 		foreach($binds as $k=>$v){
 			if(is_array($v)){
@@ -435,7 +435,7 @@ class Query /* implements ArrayAccess */{
 					$find = '?';
 				else
 					$find = ':'.ltrim($k,':');
-				$binder = array();
+				$binder = [];
 				foreach(array_keys($v) as $_k){
 					if(is_integer($_k))
 						$binder[] = '?';
@@ -480,7 +480,7 @@ class Query /* implements ArrayAccess */{
 				}
 			}
 		}
-		return array($sql,$nBinds);
+		return [$sql,$nBinds];
 	}
 	static function autoWrapCol($s,$table,$col){
 		if($func=R::getTableColumnDef($table,$col,'readCol'))
@@ -511,7 +511,7 @@ class Query /* implements ArrayAccess */{
 			$this->_ignore['select'] = $ignore;
 	}
 	function ignoreJoin(){
-		return call_user_func_array(array($this,'ignoreFrom'),func_get_args());
+		return call_user_func_array([$this,'ignoreFrom'],func_get_args());
 	}
 	function select(){
 		if(!$this->ignoring('select',func_get_arg(0)))
@@ -530,12 +530,12 @@ class Query /* implements ArrayAccess */{
 			if(!isset(self::$listOfTables))
 				self::$listOfTables = R::inspect();
 			$tableL = strlen($this->table);
-			$h = array();
-			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):array();
-			$h['shareds'] = array();
-			$h['parents'] = array();
-			$h['fieldsOwn'] = array();
-			$h['owns'] = array();
+			$h = [];
+			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):[];
+			$h['shareds'] = [];
+			$h['parents'] = [];
+			$h['fieldsOwn'] = [];
+			$h['owns'] = [];
 			foreach(self::$listOfTables as $table) //shared
 				if((strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
 					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1)))))
@@ -592,7 +592,7 @@ class Query /* implements ArrayAccess */{
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
 				$this->select("{$agg}(".self::autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
-			$rel = array($this->table,$share);
+			$rel = [$this->table,$share];
 			sort($rel);
 			$rel = implode('_',$rel);
 			$this->join(" LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
@@ -623,7 +623,7 @@ class Query /* implements ArrayAccess */{
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
 	}
-	function row4D($compo=array(),$params=array()){
+	function row4D($compo=[],$params=[]){
 		$this->selectNeed();
 		$this->autoSelectJoin();
 		$this->limit(1);

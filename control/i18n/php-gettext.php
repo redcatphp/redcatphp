@@ -45,9 +45,9 @@ if (!defined('LC_MESSAGES')) {
 // Variables
 
 global $text_domains, $default_domain, $LC_CATEGORIES, $EMULATEGETTEXT, $CURRENTLOCALE;
-$text_domains = array();
+$text_domains = [];
 $default_domain = 'messages';
-$LC_CATEGORIES = array('LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL');
+$LC_CATEGORIES = ['LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL'];
 $EMULATEGETTEXT = 0;
 $CURRENTLOCALE = '';
 
@@ -68,7 +68,7 @@ function get_list_of_locales($locale) {
    * specific ones.  I.e. for sr_CS.UTF-8@latin, look through all of
    * sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
    */
-  $locale_names = array();
+  $locale_names = [];
   $lang = NULL;
   $country = NULL;
   $charset = NULL;

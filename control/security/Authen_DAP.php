@@ -206,7 +206,7 @@ class Authen_DAP {
       throw $e;
     }
     if (!isset($records)) {
-      $records = array();
+      $records = [];
     }
     return $records;
   }
@@ -230,9 +230,9 @@ class Authen_DAP {
         $this->_delete_expired_records($records);
       }
       else {
-        $records = array();
+        $records = [];
       }
-      array_push($records, array($identity, time()));
+      array_push($records, [$identity, time()]);
 	  $s = serialize((array)$records);
       $shm->store($s);
       $shm->transaction_finish();

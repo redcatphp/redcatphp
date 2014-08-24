@@ -39,7 +39,7 @@ class CssParserCombinatorAdjacent extends CssParserCombinator
      */
     public function filter($node, $tagname)
     {
-        $ret = array();
+        $ret = [];
         if ($element = CssParserHelper::getNextSiblingElement($node)) {
             array_push($ret, $element);
         }

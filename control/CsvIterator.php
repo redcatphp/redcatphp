@@ -57,7 +57,7 @@ class CsvIterator implements Iterator{
 			}
 		}
 		if($this->callback)
-			call_user_func_array($this->callback,array(&$this->currentElement));
+			call_user_func_array($this->callback,[&$this->currentElement]);
         return $this->currentElement;
     }
     function key() {

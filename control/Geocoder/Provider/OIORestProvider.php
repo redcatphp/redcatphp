@@ -44,7 +44,7 @@ class OIORestProvider extends AbstractProvider implements ProviderInterface
 
         $data = $this->executeQuery($query);
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $results[] = $this->getResultArray($item);
@@ -56,13 +56,13 @@ class OIORestProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         $query = sprintf(self::REVERSE_ENDPOINT_URL, $coordinates[0], $coordinates[1]);
 
         $data = $this->executeQuery($query);
 
-        return array($this->getResultArray($data));
+        return [$this->getResultArray($data)];
     }
 
     /**
@@ -100,9 +100,9 @@ class OIORestProvider extends AbstractProvider implements ProviderInterface
      *
      * @return array
      */
-    protected function getResultArray(array $data)
+    protected function getResultArray( array $data)
     {
-        return array_merge($this->getDefaults(), array(
+        return array_merge($this->getDefaults(), [
             'latitude'     => isset($data['wgs84koordinat']['bredde']) ? $data['wgs84koordinat']['bredde'] : null,
             'longitude'    => isset($data['wgs84koordinat']['længde']) ? $data['wgs84koordinat']['længde'] : null,
             'streetNumber' => isset($data['husnr']) ? $data['husnr'] : null,
@@ -115,6 +115,6 @@ class OIORestProvider extends AbstractProvider implements ProviderInterface
             'country'      => 'Denmark',
             'countryCode'  => 'DK',
             'timezone'     => 'Europe/Copenhagen'
-        ));
+        ]);
     }
 }

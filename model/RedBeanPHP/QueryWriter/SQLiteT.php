@@ -71,12 +71,12 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$indexes   = $this->getIndexes( $type );
 		$keys      = $this->getKeys( $type );
 
-		$table = array(
+		$table = [
 			'columns' => $columns,
 			'indexes' => $indexes,
 			'keys' => $keys,
 			'name' => $tableName
-		);
+		];
 
 		$this->tableArchive[$tableName] = $table;
 
@@ -94,7 +94,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	protected function putTable( $tableMap )
 	{
 		$table = $tableMap['name'];
-		$q     = array();
+		$q     = [];
 		$q[]   = "DROP TABLE IF EXISTS tmp_backup;";
 
 		$oldColumnNames = array_keys( $this->getColumns( $table ) );
@@ -149,7 +149,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$table   = $this->esc( $type, TRUE );
 		$indexes = $this->adapter->get( "PRAGMA index_list('$table')" );
 
-		$indexInfoList = array();
+		$indexInfoList = [];
 		foreach ( $indexes as $i ) {
 			$indexInfoList[$i['name']] = $this->adapter->getRow( "PRAGMA index_info('{$i['name']}') " );
 
@@ -171,7 +171,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$table = $this->esc( $type, TRUE );
 		$keys  = $this->adapter->get( "PRAGMA foreign_key_list('$table')" );
 
-		$keyInfoList = array();
+		$keyInfoList = [];
 		foreach ( $keys as $k ) {
 			$keyInfoList['from_' . $k['from'] . '_to_table_' . $k['table'] . '_col_' . $k['to']] = $k;
 		}
@@ -204,13 +204,13 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			if ($key['from'] === $field) return FALSE;
 		}
 
-		$t['keys'][$label] = array(
+		$t['keys'][$label] = [
 			'table'     => $targetType,
 			'from'      => $field,
 			'to'        => $targetField,
 			'on_update' => $consSQL,
 			'on_delete' => $consSQL
-		);
+		];
 
 		$this->putTable( $t );
 
@@ -244,13 +244,13 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
 		$this->prefix = $prefix;
-		$this->typeno_sqltype = array(
+		$this->typeno_sqltype = [
 			SQLiteT::C_DATATYPE_INTEGER => 'INTEGER',
 			SQLiteT::C_DATATYPE_NUMERIC => 'NUMERIC',
 			SQLiteT::C_DATATYPE_TEXT    => 'TEXT',
-		);
+		];
 
-		$this->sqltype_typeno = array();
+		$this->sqltype_typeno = [];
 
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[$v] = $k;
@@ -359,7 +359,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 
 		$columnsRaw = $this->adapter->get( "PRAGMA table_info('$table')" );
 
-		$columns    = array();
+		$columns    = [];
 		foreach ( $columnsRaw as $r ) $columns[$r['name']] = trim($r['type']);
 
 		return $columns;
@@ -376,7 +376,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 
 		if ( isset( $t['indexes'][$name] ) ) return;
 
-		$t['indexes'][$name] = array( 'name' => $name );
+		$t['indexes'][$name] = [ 'name' => $name ];
 
 		$this->putTable( $t );
 	}
@@ -386,10 +386,10 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		$stateMap = array(
+		$stateMap = [
 			'HY000' => QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 			'23000' => QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
-		);
+		];
 
 		return in_array( ( isset( $stateMap[$state] ) ? $stateMap[$state] : '0' ), $list );
 	}
@@ -412,7 +412,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			}
 
 			$t = $this->getTable( $type );
-			$t['indexes'][$name] = array( 'name' => $column );
+			$t['indexes'][$name] = [ 'name' => $column ];
 
 			$this->putTable( $t );
 		} catch( \Exception $exception ) {

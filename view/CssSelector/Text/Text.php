@@ -68,12 +68,12 @@ class Text
     public static function concat($glue)
     {
         $ret = "";
-        $args = array();
+        $args = [];
         $len = func_num_args();
         
         for ($i = 1; $i < $len; $i++) {
             $value = func_get_arg($i);
-            $values = is_array($value)? array_values($value) : array($value);
+            $values = is_array($value)? array_values($value) : [$value];
             $args = array_merge($args, $values);
         }
 

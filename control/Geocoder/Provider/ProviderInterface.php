@@ -43,7 +43,7 @@ interface ProviderInterface
      *
      * @return array
      */
-    public function getReversedData(array $coordinates);
+    public function getReversedData( array $coordinates);
 
     /**
      * Returns the provider's name.

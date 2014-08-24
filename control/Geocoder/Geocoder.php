@@ -32,7 +32,7 @@ class Geocoder implements GeocoderInterface
     /**
      * @var ProviderInterface[]
      */
-    private $providers = array();
+    private $providers = [];
 
     /**
      * @var ProviderInterface
@@ -97,7 +97,7 @@ class Geocoder implements GeocoderInterface
     {
         if (empty($value)) {
             // let's save a request
-            return $this->returnResult(array());
+            return $this->returnResult([]);
         }
 
         $provider = $this->getProvider()->setMaxResults($this->getMaxResults());
@@ -114,11 +114,11 @@ class Geocoder implements GeocoderInterface
     {
         if (empty($latitude) || empty($longitude)) {
             // let's save a request
-            return $this->returnResult(array());
+            return $this->returnResult([]);
         }
 
         $provider = $this->getProvider()->setMaxResults($this->getMaxResults());
-        $data     = $provider->getReversedData(array($latitude, $longitude));
+        $data     = $provider->getReversedData([$latitude, $longitude]);
         $result   = $this->returnResult($data);
 
         return $result;
@@ -147,7 +147,7 @@ class Geocoder implements GeocoderInterface
      *
      * @return GeocoderInterface
      */
-    public function registerProviders(array $providers = array())
+    public function registerProviders( array $providers = [])
     {
         foreach ($providers as $provider) {
             $this->registerProvider($provider);
@@ -205,7 +205,7 @@ class Geocoder implements GeocoderInterface
      *
      * @return ResultInterface
      */
-    protected function returnResult(array $data = array())
+    protected function returnResult( array $data = [])
     {
         return $this->resultFactory->createFromArray($data);
     }

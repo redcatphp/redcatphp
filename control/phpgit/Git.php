@@ -73,7 +73,7 @@ class Git extends GitBase
         }
        
         $object_id = $this->branch[$branch];
-        $history   = array();
+        $history   = [];
         $e         = 0;
         do {   
             $commit = $this->getObject($object_id, $type);
@@ -103,7 +103,7 @@ class Git extends GitBase
     {
         $tags = $this->getRefInfo('tags');
         if (count($tags) == 0) {
-            return array();
+            return [];
         }
         return array_combine(array_values($tags),
                 array_keys($tags));
@@ -149,14 +149,14 @@ class Git extends GitBase
             break;
         case OBJ_COMMIT:
             /* A tag can be a commit, so simulate it */
-            $nobj = array(
+            $nobj = [
                 "object"  => $id,
                 "type"    => "commit",
                 "tag"     => "",
                 "tagger"  => $obj["committer"],
                 "comment" => $obj["comment"],
                 "Tree"    => $this->getObject($obj['tree'])
-            );
+            ];
             $obj  = $nobj;
             break;
         default:

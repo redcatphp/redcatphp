@@ -144,7 +144,7 @@ abstract class GitCheckout extends GitBase
             return false;
         }
 
-        $return = array();
+        $return = [];
         $offset = 12;
         $null   = chr(0);
         for ($i=0; $i < $nrofiles; $i++) {
@@ -161,7 +161,7 @@ abstract class GitCheckout extends GitBase
             $end       = strpos($text, $null, $offset);
             $file_name = substr($text, $offset, $end - $offset);
             $offset   += strlen($file_name)+1;
-            $return[]  = array(
+            $return[]  = [
                 "ctime"    => $info[1],
                 "mtime"    => $info[3],
                 "idev"     => $info[5],
@@ -173,7 +173,7 @@ abstract class GitCheckout extends GitBase
                 "sha1"     => $sha1,
                 "flags"    => $flags,
                 "filename" => $file_name
-            );
+            ];
             while( ($offset - $start) % 8 != 0 && $offset++);
         }
         while ($text[$offset] == $null && $offset++);

@@ -26,7 +26,7 @@ class sync{
 	static $spaceName = 'sync';
 	static $className;
 	static function __callStatic($c,$args){
-		$id = sha1(serialize(array($c,$args)));
+		$id = sha1(serialize([$c,$args]));
 		$file = control::$TMP.self::CACHE.static::$spaceName.'/'.$id;
 		if(strpos($c,'static')===0&&ctype_upper(substr($c,6,1)))
 			return self::_statical(lcfirst(substr($c,6)),$args,$id,$file);
@@ -39,7 +39,7 @@ class sync{
 		FS::mkdir($file,true);
 		$data = null;
 		try{
-			file_put_contents($file,serialize($data=call_user_func_array(array((static::$className?static::$className:static::$spaceName),$c),$args)),LOCK_EX);
+			file_put_contents($file,serialize($data=call_user_func_array([(static::$className?static::$className:static::$spaceName),$c],$args)),LOCK_EX);
 		}
 		catch(\PDOException $e){
 			$data = unserialize(file_get_contents($file));

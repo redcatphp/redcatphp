@@ -86,7 +86,7 @@ class TagManager
 	 */
 	protected function findTagByTitle( $title )
 	{
-		$beans = $this->redbean->find( 'tag', array( 'title' => array( $title ) ) );
+		$beans = $this->redbean->find( 'tag', [ 'title' => [ $title ] ] );
 
 		if ( $beans ) {
 			$bean = reset( $beans );
@@ -173,7 +173,7 @@ class TagManager
 		if ( is_null( $tagList ) ) {
 			
 			$tags = $bean->sharedTag;
-			$foundTags = array();
+			$foundTags = [];
 
 			foreach ( $tags as $tag ) {
 				$foundTags[] = $tag->title;
@@ -238,9 +238,9 @@ class TagManager
 	{
 		$tags       = $this->extractTagsIfNeeded( $tagList );
 
-		$collection = array();
+		$collection = [];
 
-		$tags       = $this->redbean->find( 'tag', array( 'title' => $tags ) );
+		$tags       = $this->redbean->find( 'tag', [ 'title' => $tags ] );
 
 		$list       = 'shared'.ucfirst( $beanType );
 		
@@ -268,7 +268,7 @@ class TagManager
 	{
 		$tags  = $this->extractTagsIfNeeded( $tagList );
 
-		$beans = array();
+		$beans = [];
 		foreach ( $tags as $tag ) {
 			$beans = $this->tagged( $beanType, $tag );
 			

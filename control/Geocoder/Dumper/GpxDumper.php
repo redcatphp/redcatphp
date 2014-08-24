@@ -70,7 +70,7 @@ GPX;
     {
         $name  = '';
         $array = $result->toArray();
-        $attrs = array('streetNumber', 'streetName', 'zipcode', 'city', 'county', 'region', 'country');
+        $attrs = ['streetNumber', 'streetName', 'zipcode', 'city', 'county', 'region', 'country'];
 
         foreach ($attrs as $attr) {
             if (isset($array[$attr]) && !empty($array[$attr])) {

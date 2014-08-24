@@ -28,7 +28,7 @@ interface Driver
 	 *
 	 * @return array
 	 */
-	public function GetAll( $sql, $bindings = array() );
+	public function GetAll( $sql, $bindings = [] );
 
 	/**
 	 * Runs a query and fetches results as a column.
@@ -38,7 +38,7 @@ interface Driver
 	 *
 	 * @return array
 	 */
-	public function GetCol( $sql, $bindings = array() );
+	public function GetCol( $sql, $bindings = [] );
 
 	/**
 	 * Runs a query and returns results as a single cell.
@@ -48,7 +48,7 @@ interface Driver
 	 *
 	 * @return mixed
 	 */
-	public function GetCell( $sql, $bindings = array() );
+	public function GetCell( $sql, $bindings = [] );
 	
 	/**
 	 * Runs a query and returns results as an associative array
@@ -59,7 +59,7 @@ interface Driver
 	 *
 	 * @return mixed
 	 */
-	public function GetAssocRow( $sql, $bindings = array() );
+	public function GetAssocRow( $sql, $bindings = [] );
 	
 	/**
 	 * Runs a query and returns a flat array containing the values of
@@ -70,7 +70,7 @@ interface Driver
 	 * 
 	 * @return array
 	 */
-	public function GetRow( $sql, $bindings = array() );
+	public function GetRow( $sql, $bindings = [] );
 
 	/**
 	 * Executes SQL code and allows key-value binding.
@@ -87,7 +87,7 @@ interface Driver
 	 *
 	 * @return array Affected Rows
 	 */
-	public function Execute( $sql, $bindings = array() );
+	public function Execute( $sql, $bindings = [] );
 
 	/**
 	 * Returns the latest insert ID if driver does support this

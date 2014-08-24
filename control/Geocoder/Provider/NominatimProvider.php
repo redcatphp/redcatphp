@@ -42,7 +42,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query   = sprintf($this->getGeocodeEndpointUrl(), urlencode($address), $this->getMaxResults());
@@ -64,7 +64,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($places as $place) {
             $boundsAttr = $place->getAttribute('boundingbox');
@@ -72,7 +72,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
                 ? explode(',', $boundsAttr)
                 : null;
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'     => $place->getAttribute('lat'),
                 'longitude'    => $place->getAttribute('lon'),
                 'bounds'       => $bounds,
@@ -85,7 +85,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
                 'cityDistrict' => $this->getNodeValue($place->getElementsByTagName('suburb')),
                 'country'      => $this->getNodeValue($place->getElementsByTagName('country')),
                 'countryCode'  => strtoupper($this->getNodeValue($place->getElementsByTagName('country_code'))),
-            ));
+            ]);
         }
 
         return $results;
@@ -94,7 +94,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         $query   = sprintf($this->getReverseEndpointUrl(), $coordinates[0], $coordinates[1]);
         $content = $this->executeQuery($query);
@@ -112,7 +112,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
         $addressParts = $searchResult->getElementsByTagName('addressparts')->item(0);
         $result       = $searchResult->getElementsByTagName('result')->item(0);
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => $result->getAttribute('lat'),
             'longitude'    => $result->getAttribute('lon'),
             'zipcode'      => $this->getNodeValue($addressParts->getElementsByTagName('postcode')),
@@ -124,7 +124,7 @@ class NominatimProvider extends AbstractProvider implements LocaleAwareProviderI
             'cityDistrict' => $this->getNodeValue($addressParts->getElementsByTagName('suburb')),
             'country'      => $this->getNodeValue($addressParts->getElementsByTagName('country')),
             'countryCode'  => strtoupper($this->getNodeValue($addressParts->getElementsByTagName('country_code'))),
-        )));
+        ])];
     }
 
     /**

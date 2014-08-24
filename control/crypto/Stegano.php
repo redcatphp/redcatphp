@@ -183,7 +183,7 @@ Stegano::Encrypt($SecretData, $Image, $Key, $Image);
     var $Image;
     var $BitStream;
     var $BitBoundry;
-    var $RawData = array();
+    var $RawData = [];
     function __construct(){
         // set_time_limit(0);
         $this->SetEnvironment();
@@ -381,14 +381,14 @@ Stegano::Encrypt($SecretData, $Image, $Key, $Image);
         switch ($this->GetArgumentType($data)){
             case 'message':
                 if (strlen($data) > 0){
-                    array_push($this->RawData, array('type' => 'message', 'message' => base64_encode(gzdeflate($data))));
+                    array_push($this->RawData, ['type' => 'message', 'message' => base64_encode(gzdeflate($data))]);
                     return TRUE;
                 }
             break;
             case 'uploaded':
                 $Contents = file_get_contents($data['tmp_name']);
                 if (strlen($Contents) > 0){
-                    array_push($this->RawData, array('type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $data['name']));
+                    array_push($this->RawData, ['type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $data['name']]);
                     return TRUE;
                 }
             break;
@@ -396,7 +396,7 @@ Stegano::Encrypt($SecretData, $Image, $Key, $Image);
                 foreach(glob($data) as $File){
                     $Contents = file_get_contents($File);
                     if (strlen($Contents) > 0){
-                        array_push($this->RawData, array('type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $File));
+                        array_push($this->RawData, ['type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $File]);
                     }
                 }
                 return TRUE;
@@ -404,7 +404,7 @@ Stegano::Encrypt($SecretData, $Image, $Key, $Image);
             case 'file':
                 $Contents = file_get_contents($data);
                 if (strlen($Contents) > 0){
-                    array_push($this->RawData, array('type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $data));
+                    array_push($this->RawData, ['type' => 'file', 'file' => base64_encode(gzdeflate($Contents)), 'filename' => $data]);
                     return TRUE;
                 }
             break;
@@ -467,7 +467,7 @@ Stegano::Encrypt($SecretData, $Image, $Key, $Image);
             $Secrypt = new Secrypt();
             if ($Secrypt->Encrypt($this->DataString, $key)){
                 $this->DataString = $Secrypt->Data;
-                $this->RawData = array(); unset($Secrypt);
+                $this->RawData = []; unset($Secrypt);
                 while (strstr($this->DataString, @$Boundry) || strlen(@$Boundry) <= 0){
                     $Boundry = chr(rand(33, 127)).chr(rand(33, 127)).chr(rand(33, 127));
                 }

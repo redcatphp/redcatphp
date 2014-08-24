@@ -57,14 +57,14 @@ class RTF{
 	var $dfl_FontID;
 	var $dfl_FontSize = 20;
 	var $FontID;
-	var $FontIDS = array(
+	var $FontIDS = [
 		"Times New Roman" => "froman",
 		"Arial" => "fswiss",
 		"Arial Black" => "fswiss",
 		"Verdana" => "fswiss",
 		"Tahoma" => "fswiss",
 		"Courier New" => "fmodern",
-	);
+	];
 	var $TextDecoration;
     var $previousResult = 0;
 

@@ -59,7 +59,7 @@ class Finder
 	 *
 	 * @throws Security
 	 */
-	public function find( $type, $sql = NULL, $bindings = array() )
+	public function find( $type, $sql = NULL, $bindings = [] )
 	{
 		if ( !is_array( $bindings ) ) {
 			throw new RedException(
@@ -67,7 +67,7 @@ class Finder
 			);
 		}
 
-		return $this->redbean->find( $type, array(), $sql, $bindings );
+		return $this->redbean->find( $type, [], $sql, $bindings );
 	}
 
 	/**
@@ -80,9 +80,9 @@ class Finder
 	 *
 	 * @return array
 	 */
-	public function findAndExport( $type, $sql = NULL, $bindings = array() )
+	public function findAndExport( $type, $sql = NULL, $bindings = [] )
 	{
-		$arr = array();
+		$arr = [];
 		foreach ( $this->find( $type, $sql, $bindings ) as $key => $item ) {
 			$arr[] = $item->export();
 		}
@@ -100,7 +100,7 @@ class Finder
 	 *
 	 * @return OODBBean
 	 */
-	public function findOne( $type, $sql = NULL, $bindings = array() )
+	public function findOne( $type, $sql = NULL, $bindings = [] )
 	{
 		$items = $this->find( $type, $sql, $bindings );
 
@@ -121,7 +121,7 @@ class Finder
 	 *
 	 * @return OODBBean
 	 */
-	public function findLast( $type, $sql = NULL, $bindings = array() )
+	public function findLast( $type, $sql = NULL, $bindings = [] )
 	{
 		$items = $this->find( $type, $sql, $bindings );
 
@@ -143,12 +143,12 @@ class Finder
 	 *
 	 * @return array
 	 */
-	public function findOrDispense( $type, $sql = NULL, $bindings = array() )
+	public function findOrDispense( $type, $sql = NULL, $bindings = [] )
 	{
 		$foundBeans = $this->find( $type, $sql, $bindings );
 
 		if ( empty( $foundBeans ) ) {
-			return array( $this->redbean->dispense( $type ) );
+			return [ $this->redbean->dispense( $type ) ];
 		} else {
 			return $foundBeans;
 		}

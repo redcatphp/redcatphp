@@ -118,7 +118,7 @@ abstract class AbstractProvider
      */
     protected function getDefaults()
     {
-        return array(
+        return [
             'latitude'      => null,
             'longitude'     => null,
             'bounds'        => null,
@@ -134,7 +134,7 @@ abstract class AbstractProvider
             'country'       => null,
             'countryCode'   => null,
             'timezone'      => null,
-        );
+        ];
     }
 
     /**
@@ -144,12 +144,12 @@ abstract class AbstractProvider
      */
     protected function getLocalhostDefaults()
     {
-        return array(
+        return [
             'city'      => 'localhost',
             'region'    => 'localhost',
             'county'    => 'localhost',
             'country'   => 'localhost',
-        );
+        ];
     }
 
     /**
@@ -157,7 +157,7 @@ abstract class AbstractProvider
      *
      * @return array
      */
-    protected function fixEncoding(array $results)
+    protected function fixEncoding( array $results)
     {
         return array_map(function ($value) {
             return is_string($value) ? utf8_encode($value) : $value;

@@ -13,12 +13,12 @@ class CsvImporter{
 	private $checkUniq;
 	private $addCols;
 	private $addColsAfter;
-	function __construct($options=array()){
+	function __construct($options=[]){
 		$this->csvDir = control::$CWD.'.data/';
 		foreach($options as $k=>$v)
 			$this->$k = $v;
 	}
-	static function importation($table,$allCols,$orderCols=null,$options=array()){
+	static function importation($table,$allCols,$orderCols=null,$options=[]){
 		$o = new CsvImporter($options);
 		$r = $o->import($table,$allCols,$orderCols);
 		unset($o);
@@ -40,12 +40,12 @@ class CsvImporter{
 				}
 			}
 		});
-		$missingCols = array();
-		$completesCols = array();
+		$missingCols = [];
+		$completesCols = [];
 		$continue = false;
 		foreach($csvIterator as $i=>$data){
 			if($this->callback)
-				call_user_func_array($this->callback,array(&$data,&$continue));
+				call_user_func_array($this->callback,[&$data,&$continue]);
 			if($continue){
 				$continue = false;
 				continue;

@@ -75,7 +75,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('No results found for query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($json->locations as $location) {
             $data = $location->feature->attributes;
@@ -89,7 +89,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
             $county       = !empty($data->Subregion) ? $data->Subregion : null;
             $countryCode  = !empty($data->Country) ? $data->Country : null;
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'     => $coordinates['y'],
                 'longitude'    => $coordinates['x'],
                 'streetNumber' => $streetNumber,
@@ -99,7 +99,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
                 'region'       => $region,
                 'countryCode'  => $countryCode,
                 'county'       => $county,
-            ));
+            ]);
         }
 
         return $results;
@@ -108,7 +108,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         $query = sprintf(self::REVERSE_ENDPOINT_URL, $this->protocol, $coordinates[1], $coordinates[0]);
 
@@ -127,7 +127,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
         $county       = !empty($data->Subregion) ? $data->Subregion : null;
         $countryCode  = !empty($data->CountryCode) ? $data->CountryCode : null;
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => $coordinates[0],
             'longitude'    => $coordinates[1],
             'streetName'   => $streetName,
@@ -136,7 +136,7 @@ class ArcGISOnlineProvider extends AbstractProvider implements ProviderInterface
             'region'       => $region,
             'countryCode'  => $countryCode,
             'county'       => $county,
-        )));
+        ])];
     }
 
     /**

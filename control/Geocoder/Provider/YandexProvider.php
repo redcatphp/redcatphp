@@ -64,7 +64,7 @@ class YandexProvider extends AbstractProvider implements LocaleAwareProviderInte
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         $query = sprintf(self::REVERSE_ENDPOINT_URL, $coordinates[1], $coordinates[0]);
 
@@ -105,11 +105,11 @@ class YandexProvider extends AbstractProvider implements LocaleAwareProviderInte
 
         $data = $json['response']['GeoObjectCollection']['featureMember'];
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $bounds = null;
-            $details = array('pos' => ' ');
+            $details = ['pos' => ' '];
 
             array_walk_recursive(
                 $item['GeoObject'],
@@ -130,7 +130,7 @@ class YandexProvider extends AbstractProvider implements LocaleAwareProviderInte
 
             $coordinates = explode(' ', $details['pos']);
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'      => $coordinates[1],
                 'longitude'     => $coordinates[0],
                 'bounds'        => $bounds,
@@ -141,7 +141,7 @@ class YandexProvider extends AbstractProvider implements LocaleAwareProviderInte
                 'region'        => isset($details['AdministrativeAreaName']) ? $details['AdministrativeAreaName'] : null,
                 'country'       => isset($details['CountryName']) ? $details['CountryName'] : null,
                 'countryCode'   => isset($details['CountryNameCode']) ? $details['CountryNameCode'] : null,
-            ));
+            ]);
         }
 
         return $results;

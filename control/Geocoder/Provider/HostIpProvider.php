@@ -38,7 +38,7 @@ class HostIpProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::ENDPOINT_URL, $address);
@@ -49,7 +49,7 @@ class HostIpProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The HostIpProvider is not able to do reverse geocoding.');
     }
@@ -77,12 +77,12 @@ class HostIpProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'    => $data['lat'],
             'longitude'   => $data['lng'],
             'city'        => $data['city'],
             'country'     => $data['country_name'],
             'countryCode' => $data['country_code'],
-        )));
+        ])];
     }
 }

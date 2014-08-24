@@ -68,7 +68,7 @@ class CloudMadeProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->apiKey) {
             throw new InvalidCredentialsException('No API Key provided');
@@ -112,19 +112,19 @@ class CloudMadeProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $coordinates = (array) $item['centroid']['coordinates'];
 
             $bounds = null;
             if (isset($item['bounds']) && is_array($item['bounds']) && count($item['bounds']) > 0) {
-                $bounds = array(
+                $bounds = [
                     'south' => $item['bounds'][0][0],
                     'west'  => $item['bounds'][0][1],
                     'north' => $item['bounds'][1][0],
                     'east'  => $item['bounds'][1][1]
-                );
+                ];
             }
 
             $properties = (array) $item['properties'];
@@ -143,7 +143,7 @@ class CloudMadeProvider extends AbstractProvider implements ProviderInterface
                 $streetName = $item['location']['road'];
             }
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'     => $coordinates[0],
                 'longitude'    => $coordinates[1],
                 'bounds'       => $bounds,
@@ -154,7 +154,7 @@ class CloudMadeProvider extends AbstractProvider implements ProviderInterface
                 'region'       => isset($item['location']['county']) ? $item['location']['county'] : null,
                 'county'       => isset($item['location']['county']) ? $item['location']['county'] : null,
                 'country'      => isset($item['location']['country']) ? $item['location']['country'] : null,
-            ));
+            ]);
         }
 
         return $results;

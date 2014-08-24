@@ -32,8 +32,8 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
             throw new UnsupportedException('The FreeGeoIpProvider does not support Street addresses.');
         }
 
-        if (in_array($address, array('127.0.0.1', '::1'))) {
-            return array($this->getLocalhostDefaults());
+        if (in_array($address, ['127.0.0.1', '::1'])) {
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::ENDPOINT_URL, $address);
@@ -44,7 +44,7 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The FreeGeoIpProvider is not able to do reverse geocoding.');
     }
@@ -82,7 +82,7 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
             $data['region_code'] = is_numeric($newRegionCode) ? $newRegionCode : null;
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'    => isset($data['latitude']) ? $data['latitude'] : null,
             'longitude'   => isset($data['longitude']) ? $data['longitude'] : null,
             'city'        => isset($data['city']) ? $data['city'] : null,
@@ -91,7 +91,7 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
             'regionCode'  => isset($data['region_code']) ? $data['region_code'] : null,
             'country'     => isset($data['country_name']) ? $data['country_name'] : null,
             'countryCode' => isset($data['country_code']) ? $data['country_code'] : null,
-        )));
+        ])];
     }
 
     /**
@@ -116,7 +116,7 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
      */
     private function getRegionCodes()
     {
-        return array(
+        return [
             'AK' => 2, //ALASKA
             'AL' => 1, //ALABAMA
             'AR' => 5, //ARKANSAS
@@ -171,6 +171,6 @@ class FreeGeoIpProvider extends AbstractProvider implements ProviderInterface
             'WA' => 53, //WASHINGTON
             'WI' => 55, //WISCONSIN
             'WV' => 54, //WEST VIRGINIA
-        );
+        ];
     }
 }

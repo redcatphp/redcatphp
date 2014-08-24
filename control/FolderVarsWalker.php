@@ -1,12 +1,12 @@
 <?php namespace surikat\control;
 class FolderVarsWalker{
 	protected $document = null;
-	protected $dirs = array();
+	protected $dirs = [];
 	function __call($func,$args){
-		$r = array();
+		$r = [];
 		foreach($this->dirs as $k=>$o){
 			if(isset($this->dirs[$k])){
-				$r[$k] = call_user_func_array(array($this->dirs[$k],$func),$args);
+				$r[$k] = call_user_func_array([$this->dirs[$k],$func],$args);
 			}
 		}
 		return $r;
@@ -17,7 +17,7 @@ class FolderVarsWalker{
 		}
 	}
 	function __get($key){
-		$r = array();
+		$r = [];
 		foreach($this->dirs as $k=>$o){
 			$r[$k] = $o->$key;
 		}

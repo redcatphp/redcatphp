@@ -86,13 +86,13 @@ class GoogleMapsBusinessProvider extends GoogleMapsProvider
         $urlPartToSign = $url['path'] . '?' . $url['query'];
 
         // Decode the private key into its binary format
-        $decodedKey = base64_decode(str_replace(array('-', '_'), array('+', '/'), $this->privateKey));
+        $decodedKey = base64_decode(str_replace(['-', '_'], ['+', '/'], $this->privateKey));
 
         // Create a signature using the private key and the URL-encoded
         // string using HMAC SHA1. This signature will be binary.
         $signature = hash_hmac('sha1', $urlPartToSign, $decodedKey, true);
 
-        $encodedSignature = str_replace(array('+', '/'), array('-', '_'), base64_encode($signature));
+        $encodedSignature = str_replace(['+', '/'], ['-', '_'], base64_encode($signature));
 
         return sprintf('%s&signature=%s', $query, $encodedSignature);
     }

@@ -126,11 +126,11 @@ class GeoIP2Adapter implements HttpAdapterInterface
      */
     protected function isSupportedGeoIP2Model($method)
     {
-        $availableMethods = array(
+        $availableMethods = [
             self::GEOIP2_MODEL_CITY,
             self::GEOIP2_MODEL_COUNTRY,
             self::GEOIP2_MODEL_OMNI
-        );
+        ];
 
         return in_array($method, $availableMethods);
     }

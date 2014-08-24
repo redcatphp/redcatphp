@@ -1,7 +1,7 @@
 <?php namespace surikat\view; 
 class TML_Loop extends TML{
 	protected $hiddenWrap = true;
-	protected $loop = array();
+	protected $loop = [];
 	function loaded(){
 		foreach($this->metaAttribution as $k=>$v){
 			$sp = ($pos=strpos($k,'-'))?substr($k,0,$pos):$k;

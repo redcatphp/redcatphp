@@ -142,7 +142,7 @@ interface ResultInterface
      *
      * @param array $data An array.
      */
-    public function fromArray(array $data = array());
+    public function fromArray( array $data = []);
 
     /**
      * Returns an array with data indexed by name.

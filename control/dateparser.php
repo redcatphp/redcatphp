@@ -36,11 +36,11 @@ class dateparser{
 	var $date;
 	var $patrVal;
 	var $timezone;
-	var $days3 = array("Mon","Tue","Wed","Thu","Fri","Sat","Sun");
-	var $days = array("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday");
-	var $month3 = array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
-	var $month = array("January","February","March","April","May","June","July","August","September","October","November","December");
-	var $types=array(
+	var $days3 = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+	var $days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+	var $month3 = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+	var $month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+	var $types=[
 		"d"=>"([0-9]{2})",
 		"D"=>"([a-zA-z]{3})",
 		"j"=>"([0-9]{1,2})",
@@ -78,7 +78,7 @@ class dateparser{
 		"c"=>"(\d\d\d\d)(?:-?(\d\d)(?:-?(\d\d)(?:[T](\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(?:Z|(?:([-+])(\d\d)(?::?(\d\d))?)?)?)?)?)?",
 		"r"=>"([a-zA-Z]{2,}),\040(\d{1,})\040([a-zA-Z]{2,})\040([0-9]{4})\040([0-9]{2}):([0-9]{2}):([0-9]{2})\040([+-][0-9]{4})",
 		"U"=>"(\d+)"
-	);
+	];
 	
 
 	 /**
@@ -116,7 +116,7 @@ class dateparser{
 	function generatePattern($dateformat){
 		$k=0;
 		$datearray = preg_split("//",$dateformat);
-		$patternkey = array();
+		$patternkey = [];
 		for($i=0;$i<count($datearray);$i++){ 
 			if($datearray[$i-1]=="@"){ $patternkey[$i]=$datearray[$i];}
 			elseif($datearray[$i]=="@"){$patternkey[$i]="";}
@@ -141,40 +141,40 @@ class dateparser{
 	 */
 	function parseDate($dateformat,$date,$localize=false){
 		$newdate="";
-		$dateformat = str_replace(array("\\","\t"),array("@","@t"),$dateformat);
+		$dateformat = str_replace(["\\","\t"],["@","@t"],$dateformat);
 		$pattern = $this->generatePattern($dateformat);
 		$this->preg_test($pattern);
 		// Exception will be thrown here when its trying to match a non-valid regex (which Glenn Plas fixed)
 		preg_match_all($pattern,$date,$newdate);
 		$newdate = array_slice($newdate,1);		
 		if($this->patrVal[0]==34){
-			$resultvar = array("Year"=>$newdate[0],
+			$resultvar = ["Year"=>$newdate[0],
 			"Year"=>$newdate[0][0],
 			"Month"=>$newdate[1][0],
 			"Day"=>$newdate[2][0],
 			"Hour"=>$newdate[3][0],
 			"Minute"=>$newdate[4][0],
 			"Second"=>$newdate[5][0],
-			"Timezone"=>$newdate[6][0].$newdate[7][0].$newdate[8][0]);
+			"Timezone"=>$newdate[6][0].$newdate[7][0].$newdate[8][0]];
 		}elseif($this->patrVal[0]==35){
-			$resultvar = array("Year"=>$newdate[0],
+			$resultvar = ["Year"=>$newdate[0],
 			"Year"=>$newdate[3][0],
 			"Month"=>(array_search($newdate[2][0],$this->month3)+1),
 			"Day"=>$newdate[1][0],
 			"Hour"=>$newdate[4][0],
 			"Minute"=>$newdate[5][0],
 			"Second"=>$newdate[6][0],
-			"Timezone"=>$newdate[7][0]);
+			"Timezone"=>$newdate[7][0]];
 		}elseif($this->patrVal[0]==36){
 			$result = getdate(mktime($newdate));
-			$resultvar = array(
+			$resultvar = [
 			"Year"=>$result["year"],
 			"Month"=>array_search($result["month"],$this->month)+1,
 			"Day"=>$result["mday"],
 			"Hour"=>$result["hours"],
 			"Minute"=>$result["minutes"],
 			"Second"=>$result["seconds"],
-			"Timezone"=>date("O"));
+			"Timezone"=>date("O")];
 		}else{
 			$labels = array_keys($this->types);
 			for($i=0;$i<count($newdate);$i++)$result[$labels[$this->patrVal[$i]]]=$newdate[$i][0];
@@ -213,7 +213,7 @@ class dateparser{
 			$minutes = $result["i"];
 			$seconds = $result["s"];
 			
-			$resultvar = array(
+			$resultvar = [
 			"Year"=>$year,
 			"Month"=>$month,
 			"Day"=>$day,
@@ -221,7 +221,7 @@ class dateparser{
 			"Hour"=>$hour,
 			"Minute"=>$minutes,
 			"Second"=>$seconds,
-			"Timezone"=>$timezone);
+			"Timezone"=>$timezone];
 		}
 		
 		//set unset value (Contributor : Babbo Naria)
@@ -266,7 +266,7 @@ class dateparser{
 			$ndate = $pdate2;
 			$odate = $pdate1;
 		}else{
-			return array("Year"=>0,"Month"=>0,"Day"=>0,"Hour"=>0,"Minute"=>0,"Second"=>0);
+			return ["Year"=>0,"Month"=>0,"Day"=>0,"Hour"=>0,"Minute"=>0,"Second"=>0];
 		}
 		$hour = intval($ndate["Hour"])-intval($odate["Hour"]);
 		$minute = intval($ndate["Minute"])-intval($odate["Minute"]);
@@ -276,14 +276,14 @@ class dateparser{
 		$year = intval($ndate["Year"])-intval($odate["Year"]);
 		$difference = mktime($hour,$minute,$second,($month+1),($day+1),($year+1970));
 		$result = getdate($difference);
-			$resultvar = array(
+			$resultvar = [
 			"Year"=>$result["year"]-1970,
 			"Month"=>array_search($result["month"],$this->month),
 			"Day"=>$result["mday"]-1,
 			"Hour"=>$result["hours"],
 			"Minute"=>$result["minutes"],
 			"Second"=>$result["seconds"],
-			"Timezone"=>$this->timezone);
+			"Timezone"=>$this->timezone];
 		return $resultvar;
 	}
 	/**
@@ -310,14 +310,14 @@ class dateparser{
 		$zonemin = $date["Minute"] + intval(substr($this->timezone,3,2));
 		$newdate = mktime($zonehour,$zonemin,intval($date["Second"]),intval($date["Month"]),intval($date["Day"]),intval($date["Year"])); //Burada bir hata oldu.
 		$result = getdate($newdate);
-			$resultvar = array(
+			$resultvar = [
 			"Year"=>$result["year"],
 			"Month"=>array_search($result["month"],$this->month)+1,
 			"Day"=>$result["mday"],
 			"Hour"=>$result["hours"],
 			"Minute"=>$result["minutes"],
 			"Second"=>$result["seconds"],
-			"Timezone"=>"");
+			"Timezone"=>""];
 		return $resultvar;
 	}
 	/**

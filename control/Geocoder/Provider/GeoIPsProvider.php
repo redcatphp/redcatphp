@@ -73,7 +73,7 @@ class GeoIPsProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ('127.0.0.1' === $address) {
-            return array($this->getLocalhostDefaults());
+            return [$this->getLocalhostDefaults()];
         }
 
         $query = sprintf(self::GEOCODE_ENDPOINT_URL, $address, $this->apiKey);
@@ -84,7 +84,7 @@ class GeoIPsProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The GeoIPsProvider is not able to do reverse geocoding.');
     }
@@ -161,9 +161,9 @@ class GeoIPsProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Invalid response from GeoIPs server for query %s', $query));
         }
 
-        $locations = array();
+        $locations = [];
         $location = $response['location'];
-        $locations[] = array_merge($this->getDefaults(), array(
+        $locations[] = array_merge($this->getDefaults(), [
             'country'     => '' === $location['country_name'] ? null : $location['country_name'],
             'countryCode' => '' === $location['country_code'] ? null : $location['country_code'],
             'region'      => '' === $location['region_name']  ? null : $location['region_name'],
@@ -173,7 +173,7 @@ class GeoIPsProvider extends AbstractProvider implements ProviderInterface
             'latitude'    => '' === $location['latitude']     ? null : $location['latitude'],
             'longitude'   => '' === $location['longitude']    ? null : $location['longitude'],
             'timezone'    => '' === $location['timezone']     ? null : $location['timezone'],
-        ));
+        ]);
 
         return $locations;
     }

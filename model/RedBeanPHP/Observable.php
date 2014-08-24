@@ -22,7 +22,7 @@ abstract class Observable { //bracket must be here - otherwise coverage software
 	/**
 	 * @var array
 	 */
-	private $observers = array();
+	private $observers = [];
 
 	/**
 	 * Implementation of the Observer Pattern.
@@ -39,7 +39,7 @@ abstract class Observable { //bracket must be here - otherwise coverage software
 	public function addEventListener( $eventname, Observer $observer )
 	{
 		if ( !isset( $this->observers[$eventname] ) ) {
-			$this->observers[$eventname] = array();
+			$this->observers[$eventname] = [];
 		}
 
 		foreach ( $this->observers[$eventname] as $o ) {
@@ -65,7 +65,7 @@ abstract class Observable { //bracket must be here - otherwise coverage software
 	public function signal( $eventname, $info )
 	{
 		if ( !isset( $this->observers[$eventname] ) ) {
-			$this->observers[$eventname] = array();
+			$this->observers[$eventname] = [];
 		}
 
 		foreach ( $this->observers[$eventname] as $observer ) {

@@ -19,7 +19,7 @@ class ArrayTools{
 		return $merged;
 	}
 	static function array_values_recursive($key,$arr){
-		$val = array();
+		$val = [];
 		array_walk_recursive($arr, function($v, $k) use($key, &$val){
 			if($k == $key) array_push($val, $v);
 		});

@@ -22,8 +22,8 @@ class Service_Synaptic {
 
 		}
 	}
-	private static $__loaded = array();
-	private static $__synapses = array();
+	private static $__loaded = [];
+	private static $__synapses = [];
 	protected static function get($k,$from=null){
 		$tmp = self::$SEND_HEADERS;
 		self::$SEND_HEADERS = false;
@@ -32,7 +32,7 @@ class Service_Synaptic {
 		self::$SEND_HEADERS = $tmp;
 		return ob_get_clean();
 	}
-	protected static function load($k,$from=null,$exclude=array()){
+	protected static function load($k,$from=null,$exclude=[]){
 		//var_dump($k);
 		$remote = strpos($k,'://')!==false;
 		$dir = '';
@@ -55,7 +55,7 @@ class Service_Synaptic {
 		if(is_string($synaptic))
 			$synaptic = (array)$synaptic;
 		if(is_array($synaptic))
-			$synaptic = (object)array('dependencies'=>$synaptic);
+			$synaptic = (object)['dependencies'=>$synaptic];
 		if($synaptic){
 			if(isset($synaptic->realpath))
 				return self::load($synaptic->realpath,$k,$exclude);
@@ -67,12 +67,12 @@ class Service_Synaptic {
 			return;
 		self::$__loaded[] = $k;
 		if($remote){
-			$args = array($k);
+			$args = [$k];
 			if($synaptic&&isset($synaptic->updateDay))
 				$args[] = $synaptic->updateDay;
 			if($synaptic&&isset($synaptic->cacheAlias))
 				$args[] = $synaptic->cacheAlias;
-			call_user_func_array(array('self','cacheRemote'),$args);
+			call_user_func_array(['self','cacheRemote'],$args);
 		}
 		elseif(is_file($k)){
 			switch($extension=strtolower(pathinfo($k,PATHINFO_EXTENSION))){
@@ -167,7 +167,7 @@ class Service_Synaptic {
 		return file_put_contents($file,$str,LOCK_EX);
 	}
 	protected static function cacheRemote($rf,$day=7,$alias=null){
-		$file = self::cacheFile($alias?$alias:str_replace(array('://','/'),'.',$rf));
+		$file = self::cacheFile($alias?$alias:str_replace(['://','/'],'.',$rf));
 		if((!is_file($file)||!filesize($file)||$day===true)||($day&&(time()-filemtime($file))>(86400*$day)))
 			self::cacheStore($file,file_get_contents($rf));
 		readfile($file);

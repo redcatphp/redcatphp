@@ -43,9 +43,9 @@ class post{
 		}
 		$p = $p===null?sha1($_SERVER['PATH_INFO']):$p;
 		if($persistant&&!isset($_SESSION[self::$key]))
-			$_SESSION[self::$key] = array();
+			$_SESSION[self::$key] = [];
 		if($persistant&&!isset($_SESSION[self::$key][$p]))
-			$_SESSION[self::$key][$p] = array();
+			$_SESSION[self::$key][$p] = [];
 		if($ifn&&!isset($_POST[$k]))
 			$_POST[$k] = false;
 		if(isset($_POST[$k]))

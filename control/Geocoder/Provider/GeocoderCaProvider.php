@@ -76,16 +76,16 @@ class GeocoderCaProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'  => $this->getNodeValue($content->getElementsByTagName('latt')),
             'longitude' => $this->getNodeValue($content->getElementsByTagName('longt'))
-        )));
+        ])];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         $query = sprintf(self::REVERSE_ENDPOINT_URL, $this->scheme, $coordinates[0], $coordinates[1], $this->apiKey);
 
@@ -99,7 +99,7 @@ class GeocoderCaProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not resolve coordinates %s', implode(', ', $coordinates)));
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => $this->getNodeValue($content->getElementsByTagName('latt')),
             'longitude'    => $this->getNodeValue($content->getElementsByTagName('longt')),
             'streetNumber' => $this->getNodeValue($content->getElementsByTagName('stnumber')),
@@ -107,7 +107,7 @@ class GeocoderCaProvider extends AbstractProvider implements ProviderInterface
             'city'         => $this->getNodeValue($content->getElementsByTagName('city')),
             'zipcode'      => $this->getNodeValue($content->getElementsByTagName('postal')),
             'cityDistrict' => $this->getNodeValue($content->getElementsByTagName('prov')),
-        )));
+        ])];
     }
 
     /**

@@ -18,7 +18,7 @@ class DefaultResultFactory implements ResultFactoryInterface
     /**
      * {@inheritDoc}
      */
-    final public function createFromArray(array $data)
+    final public function createFromArray( array $data)
     {
         $result = $this->newInstance();
         $result->fromArray(isset($data[0]) ? $data[0] : $data);

@@ -9,13 +9,13 @@ use ReflectionClass;
 use ReflectionMethod;
 use ZipArchive;
 /* preload dependencies for manual compilation use */
-foreach(array(
+foreach([
 	'Min/PHP',
 	'Min/JS',
 	'Min/CSS',
 	'FS',
 	'JSON'
-) as $inc)
+] as $inc)
 	require dirname(__FILE__).'/../control/'.$inc.'.php';
 abstract class Service_Kompiler{
 	static $httpCache = 4000; //in second

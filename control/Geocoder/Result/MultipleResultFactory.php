@@ -18,7 +18,7 @@ class MultipleResultFactory implements ResultFactoryInterface
     /**
      * {@inheritDoc}
      */
-    final public function createFromArray(array $data)
+    final public function createFromArray( array $data)
     {
         $result = new \SplObjectStorage();
         foreach ($data as $row) {

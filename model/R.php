@@ -51,11 +51,11 @@ class R extends RedBeanPHP\Facade{
 	}
 	function __call($f,$args){
 		if(substr($f,-4)=='Call'&&method_exists($method=substr($f,0,-4)))
-			return call_user_func_array(array($this,$method),array(array_shift($args),$args));
-		return call_user_func_array(array('parent',$f),$args);
+			return call_user_func_array([$this,$method],[array_shift($args),$args]);
+		return call_user_func_array(['parent',$f],$args);
 	}
-	static function loadRow($type,$sql,$binds=array()){
-		$b = R::convertToBeans($type,array(self::getRow($type,$sql,$binds)));
+	static function loadRow($type,$sql,$binds=[]){
+		$b = R::convertToBeans($type,[self::getRow($type,$sql,$binds)]);
 		return $b[0];
 	}
 	static function getRowX(){
@@ -63,9 +63,9 @@ class R extends RedBeanPHP\Facade{
 		$sql = array_shift($a);
 		
 	}
-	static function findOrNewOne($type,$params=array(),$insert=null){
-		$query = array();
-		$bind = array();
+	static function findOrNewOne($type,$params=[],$insert=null){
+		$query = [];
+		$bind = [];
 		$params = self::_uniqSetter($type,$params);
 		foreach($params as $k=>$v){
 			$query[] = $k.'=?';
@@ -84,10 +84,10 @@ class R extends RedBeanPHP\Facade{
 		}
 		return $bean->box();
 	}
-	static function newOne($type,$params=array()){
+	static function newOne($type,$params=[]){
 		$bean = self::dispense($type);
 		if(is_string($params))
-			$params = array('label'=>$params);
+			$params = ['label'=>$params];
 		foreach((array)$params as $k=>$v)
 			$bean->$k = $v;
 		return $bean;
@@ -101,11 +101,11 @@ class R extends RedBeanPHP\Facade{
 		$query = $s;
 		return $query;
 	}
-	static function storeMultiArray(array $a){
+	static function storeMultiArray( array $a){
 		foreach($a as $v)
 			self::storeArray($v);
 	}
-	static function storeArray(array $a){
+	static function storeArray( array $a){
 		$dataO = self::dispense($a['type']);
 		foreach($a as $k=>$v){
 			if($k=='type')
@@ -124,7 +124,7 @@ class R extends RedBeanPHP\Facade{
 				foreach((array)$v as $v2){
 					$type = lcfirst(substr($k,6));
 					if(!is_integer(filter_var($v2, FILTER_VALIDATE_INT)))
-						$v2 = self::__callStatic('cell',array($type,array('select'=>'id','where'=>'label=?'),array($v2)));
+						$v2 = self::__callStatic('cell',[$type,['select'=>'id','where'=>'label=?'],[$v2]]);
 					if($v2)
 						$dataO->{$k}[] = self::load($type,$v2);
 				}
@@ -135,10 +135,10 @@ class R extends RedBeanPHP\Facade{
 		return self::store($dataO);
 	}
 	static function getAll4D(){
-		return Query::explodeAggTable(call_user_func_array(array('self','getAll'),func_get_args()));
+		return Query::explodeAggTable(call_user_func_array(['self','getAll'],func_get_args()));
 	}
 	static function getRow4D(){
-		return Query::explodeAgg(call_user_func_array(array('self','getRow'),func_get_args()));
+		return Query::explodeAgg(call_user_func_array(['self','getRow'],func_get_args()));
 	}
 	static function __callStatic($f,$args){
 		if(strpos($f,'loadUniq')===0&&ctype_upper(substr($f,8,1)))
@@ -162,7 +162,7 @@ class R extends RedBeanPHP\Facade{
 						return $r;
 			}
 			else{
-				return R::findOne($table,'WHERE '.$column.'=?',array($c::loadUniqFilter($id)));
+				return R::findOne($table,'WHERE '.$column.'=?',[$c::loadUniqFilter($id)]);
 			}
 		}
 	}
@@ -202,13 +202,13 @@ class R extends RedBeanPHP\Facade{
 		if ( is_string( $types ) )
 			$types = explode( ',', $types );
 		if ( !is_array( $types ) )
-			return array();
+			return [];
 		foreach ( $types as $k => $typeItem )
 			$types[$k] = self::load( $typeItem, $id );
 		return $types;
 	}
 	static function dispenseAll($order,$onlyArrays=false){
-		$list = array();
+		$list = [];
 		foreach( explode( ',', $order ) as $order ) {
 			if ( strpos( $order, '*' ) !== false ) {
 				list( $type, $amount ) = explode( '*', $order );
@@ -221,22 +221,22 @@ class R extends RedBeanPHP\Facade{
 		}
 		return $list;
 	}
-	static function findOrDispense($type,$sql=NULL,$bindings=array()){
+	static function findOrDispense($type,$sql=NULL,$bindings=[]){
 		return parent::findOrDispense( self::toSnake($type), $sql, $bindings );
 	}
-	static function find( $type, $sql = NULL, $bindings = array() ){
+	static function find( $type, $sql = NULL, $bindings = [] ){
 		return parent::find( self::toSnake($type), $sql, $bindings );
 	}
-	static function findAll( $type, $sql = NULL, $bindings = array() ){
+	static function findAll( $type, $sql = NULL, $bindings = [] ){
 		return parent::findAll( self::toSnake($type), $sql, $bindings );
 	}
-	static function findAndExport( $type, $sql = NULL, $bindings = array() ){
+	static function findAndExport( $type, $sql = NULL, $bindings = [] ){
 		return parent::findAndExport( self::toSnake($type), $sql, $bindings );
 	}
-	static function findOne( $type, $sql = NULL, $bindings = array() ){
+	static function findOne( $type, $sql = NULL, $bindings = [] ){
 		return parent::findOne( self::toSnake($type), $sql, $bindings );
 	}
-	static function findLast( $type, $sql = NULL, $bindings = array() ){
+	static function findLast( $type, $sql = NULL, $bindings = [] ){
 		return parent::findLast( self::toSnake($type), $sql, $bindings );
 	}
 	static function batch( $type, $ids ){
@@ -254,22 +254,22 @@ class R extends RedBeanPHP\Facade{
 	static function wipe( $beanType ){
 		return parent::wipe( self::toSnake($beanType) );
 	}
-	static function countSQL( $type, $addSQL = '', $bindings = array() ){
+	static function countSQL( $type, $addSQL = '', $bindings = [] ){
 		return parent::count( self::toSnake($type), $addSQL, $bindings );
 	}
 
-	static function queryObject( $type, $compo = array(), $composer='select', $writer=null ){
+	static function queryObject( $type, $compo = [], $composer='select', $writer=null ){
 		$type = self::toSnake($type);
 		$q = new Query4D($type,$method,$writer);
 		foreach($compo as $method=>$args)
-			call_user_func_array(array($q,$method),$args);
+			call_user_func_array([$q,$method],$args);
 		return $q;
 	}
 
 	static function _uniqSetter($type,$values){
 		if(is_string($values)){
 			$c = self::getModelClass($type);
-			$values = array($c::getLoadUniq()=>$values);
+			$values = [$c::getLoadUniq()=>$values];
 		}
 		return $values;
 	}
@@ -278,11 +278,11 @@ class R extends RedBeanPHP\Facade{
 		Table::_checkUniq($b);
 	}
 	
-	static function counter( $type, $compo = array() ){
+	static function counter( $type, $compo = [] ){
 		return self::queryObject($type, $compo)->count();
 	}
 	static function readerAll($type,$compo){
-		$models = array();
+		$models = [];
 		foreach(self::convertToBeans(self::queryObject($type, $compo)->table()) as $bean)
 			$models[$bean->id] = $bean->box();
 		return $models;
@@ -291,12 +291,12 @@ class R extends RedBeanPHP\Facade{
 		return self::queryObject($type, $compo, 'update')->exec();
 	}
 	static function reader($type,$compo){
-		$bean = self::convertToBeans(array(self::queryObject($type, $compo)->row()));
+		$bean = self::convertToBeans([self::queryObject($type, $compo)->row()]);
 		$bean = array_shift($bean);
 		return $bean->box();
 	}
 
-	static function create($type,$values=array()){
+	static function create($type,$values=[]){
 		return self::newOne($type,self::_uniqSetter($type,$values))->box();
 	}
 	static function read($mix){
@@ -321,14 +321,14 @@ class R extends RedBeanPHP\Facade{
 		$type = self::toSnake($type);
 		return self::getWriter()->drop($type);
 	}
-	static function execMulti($sql,$bindings=array()){
+	static function execMulti($sql,$bindings=[]){
 		$pdo = self::getDatabaseAdapter()->getDatabase()->getPDO();
 		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
 		$r = self::exec($sql, $bindings);
 		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 		return $r;
 	}
-	static function execFile($file,$bindings=array()){
+	static function execFile($file,$bindings=[]){
 		return self::execMulti(file_get_contents($file),$bindings);
 	}
 	

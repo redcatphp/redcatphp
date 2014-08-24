@@ -68,7 +68,7 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->apiKey) {
             throw new InvalidCredentialsException('No API Key provided');
@@ -110,7 +110,7 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
             throw new InvalidCredentialsException('API Key provided is not valid.');
         }
 
-        return array(array_merge($this->getDefaults(), array(
+        return [array_merge($this->getDefaults(), [
             'latitude'     => isset($data['result']['location']['lat']) ? $data['result']['location']['lat'] : null,
             'longitude'    => isset($data['result']['location']['lng']) ? $data['result']['location']['lng'] : null,
             'streetNumber' => isset($data['result']['addressComponent']['street_number']) ? $data['result']['addressComponent']['street_number'] : null,
@@ -119,6 +119,6 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
             'cityDistrict' => isset($data['result']['addressComponent']['district']) ? $data['result']['addressComponent']['district'] : null,
             'county'       => isset($data['result']['addressComponent']['province']) ? $data['result']['addressComponent']['province'] : null,
             'countyCode'   => isset($data['result']['cityCode']) ? $data['result']['cityCode'] : null,
-        )));
+        ])];
     }
 }

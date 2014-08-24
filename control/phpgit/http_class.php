@@ -31,7 +31,7 @@ class http_class
 	var $proxy_workstation;
 	var $request_uri="";
 	var $request="";
-	var $request_headers=array();
+	var $request_headers=[];
 	var $request_user;
 	var $request_password;
 	var $request_realm;
@@ -41,7 +41,7 @@ class http_class
 	var $proxy_request_realm;
 	var $proxy_request_workstation;
 	var $request_body="";
-	var $request_arguments=array();
+	var $request_arguments=[];
 	var $protocol_version="1.1";
 	var $timeout=0;
 	var $data_timeout=0;
@@ -49,7 +49,7 @@ class http_class
 	var $debug_response_body=1;
 	var $html_debug=0;
 	var $support_cookies=1;
-	var $cookies=array();
+	var $cookies=[];
 	var $error="";
 	var $exclude_address="";
 	var $follow_redirect=0;
@@ -75,7 +75,7 @@ class http_class
 	var $chunked=0;
 	var $remaining_chunk=0;
 	var $last_chunk_read=0;
-	var $months=array(
+	var $months=[
 		"Jan"=>"01",
 		"Feb"=>"02",
 		"Mar"=>"03",
@@ -87,7 +87,7 @@ class http_class
 		"Sep"=>"09",
 		"Oct"=>"10",
 		"Nov"=>"11",
-		"Dec"=>"12");
+		"Dec"=>"12"];
 	var $session='';
 	var $connection_close=0;
 
@@ -422,12 +422,12 @@ class http_class
 								$error = $this->SetDataAccessError($receive_error);
 							else
 							{
-								$socks_errors = array(
+								$socks_errors = [
 									"\x5a"=>'',
 									"\x5b"=>'request rejected',
 									"\x5c"=>'request failed because client is not running identd (or not reachable from the server)',
 									"\x5d"=>'request failed because client\'s identd could not confirm the user ID string in the request',
-								);
+								];
 								$error_code = $response[1];
 								$error = (IsSet($socks_errors[$error_code]) ? $socks_errors[$error_code] : 'unknown');
 								if(strlen($error))
@@ -464,7 +464,7 @@ class http_class
 										$error = $this->SetDataAccessError($receive_error);
 									else
 									{
-										$socks_errors = array(
+										$socks_errors = [
 											"\x00"=>'',
 											"\x01"=>'general SOCKS server failure',
 											"\x02"=>'connection not allowed by ruleset',
@@ -474,7 +474,7 @@ class http_class
 											"\x06"=>'TTL expired',
 											"\x07"=>'Command not supported',
 											"\x08"=>'Address type not supported'
-										);
+										];
 										$error_code = $response[1];
 										$error = (IsSet($socks_errors[$error_code]) ? $socks_errors[$error_code] : 'unknown');
 										if(strlen($error))
@@ -534,7 +534,7 @@ class http_class
 	Function GetRequestArguments($url, &$arguments)
 	{
 		$this->error = '';
-		$arguments=array();
+		$arguments=[];
 		$url = str_replace(' ', '%20', $url);
 		$parameters=@parse_url($url);
 		if(!$parameters)
@@ -553,7 +553,7 @@ class http_class
 		if(!IsSet($parameters["host"]))
 			return($this->SetError("it was not specified the connection host argument"));
 		$arguments["HostName"]=$parameters["host"];
-		$arguments["Headers"]=array("Host"=>$parameters["host"].(IsSet($parameters["port"]) ? ":".$parameters["port"] : ""));
+		$arguments["Headers"]=["Host"=>$parameters["host"].(IsSet($parameters["port"]) ? ":".$parameters["port"] : "")];
 		if(IsSet($parameters["user"]))
 		{
 			$arguments["AuthUser"]=UrlDecode($parameters["user"]);
@@ -910,10 +910,10 @@ class http_class
 		}
 		else
 			$content_type="application/octet-stream";
-		$definition=array(
+		$definition=[
 			"Content-Type"=>$content_type,
 			"NAME"=>$name
-		);
+		];
 		if(IsSet($file["FileName"]))
 		{
 			if(GetType($length=@filesize($file["FileName"]))!="integer")
@@ -1029,7 +1029,7 @@ class http_class
 		|| substr($this->request_uri,0,1)!="/")
 			return($this->SetError("4 it was not specified a valid request URI"));
 		$this->request_arguments=$arguments;
-		$this->request_headers=(IsSet($arguments["Headers"]) ? $arguments["Headers"] : array());
+		$this->request_headers=(IsSet($arguments["Headers"]) ? $arguments["Headers"] : []);
 		$body_length=0;
 		$this->request_body="";
 		$get_body=1;
@@ -1047,7 +1047,7 @@ class http_class
 			{
 				$boundary="--".md5(uniqid(time()));
 				$this->request_headers["Content-Type"]="multipart/form-data; boundary=".$boundary.(IsSet($arguments["CharSet"]) ? "; charset=".$arguments["CharSet"] : "");
-				$post_parts=array();
+				$post_parts=[];
 				if(IsSet($arguments["PostValues"]))
 				{
 					$values=$arguments["PostValues"];
@@ -1058,12 +1058,12 @@ class http_class
 						$input=Key($values);
 						$headers="--".$boundary."\r\nContent-Disposition: form-data; name=\"".$input."\"\r\n\r\n";
 						$data=$values[$input];
-						$post_parts[]=array("HEADERS"=>$headers,"DATA"=>$data);
+						$post_parts[]=["HEADERS"=>$headers,"DATA"=>$data];
 						$body_length+=strlen($headers)+strlen($data)+strlen("\r\n");
 					}
 				}
 				$body_length+=strlen("--".$boundary."--\r\n");
-				$files=(IsSet($arguments["PostFiles"]) ? $arguments["PostFiles"] : array());
+				$files=(IsSet($arguments["PostFiles"]) ? $arguments["PostFiles"] : []);
 				Reset($files);
 				$end=(GetType($input=Key($files))!="string");
 				for(;!$end;)
@@ -1072,7 +1072,7 @@ class http_class
 						return("3 ".$error);
 					$headers="--".$boundary."\r\nContent-Disposition: form-data; name=\"".$input."\"; filename=\"".$definition["NAME"]."\"\r\nContent-Type: ".$definition["Content-Type"]."\r\n\r\n";
 					$part=count($post_parts);
-					$post_parts[$part]=array("HEADERS"=>$headers);
+					$post_parts[$part]=["HEADERS"=>$headers];
 					if(IsSet($definition["FILENAME"]))
 					{
 						$post_parts[$part]["FILENAME"]=$definition["FILENAME"];
@@ -1196,7 +1196,7 @@ class http_class
 		if($body_length
 		|| ($body_length=strlen($this->request_body)))
 			$this->request_headers["Content-Length"]=$body_length;
-		for($headers=array(),$host_set=0,Reset($this->request_headers),$header=0;$header<count($this->request_headers);Next($this->request_headers),$header++)
+		for($headers=[],$host_set=0,Reset($this->request_headers),$header=0;$header<count($this->request_headers);Next($this->request_headers),$header++)
 		{
 			$header_name=Key($this->request_headers);
 			$header_value=$this->request_headers[$header_name];
@@ -1220,7 +1220,7 @@ class http_class
 		}
 		if(count($this->cookies))
 		{
-			$cookies=array();
+			$cookies=[];
 			$this->PickCookies($cookies,0);
 			if(strtolower($this->protocol)=="https")
 				$this->PickCookies($cookies,1);
@@ -1377,14 +1377,14 @@ class http_class
 			$value=$this->CookieEncode($value,0);
 		}
 		$secure=intval($secure);
-		$this->cookies[$secure][$domain][$path][$name]=array(
+		$this->cookies[$secure][$domain][$path][$name]=[
 			"name"=>$name,
 			"value"=>$value,
 			"domain"=>$domain,
 			"path"=>$path,
 			"expires"=>$expires,
 			"secure"=>$secure
-		);
+		];
 		return("");
 	}
 
@@ -1426,7 +1426,7 @@ class http_class
 
 	Function ReadReplyHeadersResponse(&$headers)
 	{
-		$headers=array();
+		$headers=[];
 		if(strlen($this->error))
 			return($this->error);
 		switch($this->state)
@@ -1475,7 +1475,7 @@ class http_class
 			if(IsSet($headers[$header_name]))
 			{
 				if(GetType($headers[$header_name])=="string")
-					$headers[$header_name]=array($headers[$header_name]);
+					$headers[$header_name]=[$headers[$header_name]];
 				$headers[$header_name][]=$header_value;
 			}
 			else
@@ -1500,7 +1500,7 @@ class http_class
 							if(GetType($headers[$header_name])=="array")
 								$cookie_headers=$headers[$header_name];
 							else
-								$cookie_headers=array($headers[$header_name]);
+								$cookie_headers=[$headers[$header_name]];
 							for($cookie=0;$cookie<count($cookie_headers);$cookie++)
 							{
 								$cookie_name=trim($this->Tokenize($cookie_headers[$cookie],"="));
@@ -1614,8 +1614,8 @@ class http_class
 			if(GetType($headers[$authenticate_header])=="array")
 				$authenticate=$headers[$authenticate_header];
 			else
-				$authenticate=array($headers[$authenticate_header]);
-			for($response="", $mechanisms=array(),$m=0;$m<count($authenticate);$m++)
+				$authenticate=[$headers[$authenticate_header]];
+			for($response="", $mechanisms=[],$m=0;$m<count($authenticate);$m++)
 			{
 				$mechanism=$this->Tokenize($authenticate[$m]," ");
 				$response=$this->Tokenize("");
@@ -1691,11 +1691,11 @@ class http_class
 						return($this->SetError($error));
 				}
 				if(!IsSet($headers[$authenticate_header]))
-					$authenticate=array();
+					$authenticate=[];
 				elseif(GetType($headers[$authenticate_header])=="array")
 					$authenticate=$headers[$authenticate_header];
 				else
-					$authenticate=array($headers[$authenticate_header]);
+					$authenticate=[$headers[$authenticate_header]];
 				for($mechanism=0;$mechanism<count($authenticate);$mechanism++)
 				{
 					if(!strcmp($this->Tokenize($authenticate[$mechanism]," "),$sasl->mechanism))
@@ -1765,7 +1765,7 @@ class http_class
 								if(GetType($headers[$authenticate_header])=="array")
 									$authenticate=$headers[$authenticate_header];
 								else
-									$authenticate=array($headers[$authenticate_header]);
+									$authenticate=[$headers[$authenticate_header]];
 								for($response="",$mechanism=0;$mechanism<count($authenticate);$mechanism++)
 								{
 									if(!strcmp($this->Tokenize($authenticate[$mechanism]," "),$sasl->mechanism))
@@ -1886,7 +1886,7 @@ class http_class
 	Function SaveCookies(&$cookies, $domain='', $secure_only=0, $persistent_only=0)
 	{
 		$now=gmdate("Y-m-d H-i-s");
-		$cookies=array();
+		$cookies=[];
 		for($secure_cookies=0,Reset($this->cookies);$secure_cookies<count($this->cookies);Next($this->cookies),$secure_cookies++)
 		{
 			$secure=Key($this->cookies);
@@ -1936,7 +1936,7 @@ class http_class
 
 	Function RestoreCookies($cookies, $clear=1)
 	{
-		$new_cookies=($clear ? array() : $this->cookies);
+		$new_cookies=($clear ? [] : $this->cookies);
 		for($secure_cookies=0, Reset($cookies); $secure_cookies<count($cookies); Next($cookies), $secure_cookies++)
 		{
 			$secure=Key($cookies);
@@ -1962,14 +1962,14 @@ class http_class
 						|| (strlen($expires)
 						&& !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\$/", $expires)))
 							return($this->SetError("invalid cookie expiry value type (".serialize($expires).")"));
-						$new_cookies[$secure][$domain_pattern][$path][$cookie_name]=array(
+						$new_cookies[$secure][$domain_pattern][$path][$cookie_name]=[
 							"name"=>$cookie_name,
 							"value"=>$value,
 							"domain"=>$domain_pattern,
 							"path"=>$path,
 							"expires"=>$expires,
 							"secure"=>$secure
-						);
+						];
 					}
 				}
 			}

@@ -74,20 +74,20 @@ class MaxMindBinaryProvider extends AbstractProvider implements ProviderInterfac
             throw new NoResultException(sprintf('No results found for IP address %s', $address));
         }
 
-        return array($this->fixEncoding(array_merge($this->getDefaults(), array(
+        return [$this->fixEncoding(array_merge($this->getDefaults(), [
             'countryCode' => $geoIpRecord->country_code,
             'country'     => $geoIpRecord->country_name,
             'region'      => $geoIpRecord->region,
             'city'        => $geoIpRecord->city,
             'latitude'    => $geoIpRecord->latitude,
             'longitude'   => $geoIpRecord->longitude,
-        ))));
+        ]))];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The MaxMindBinaryProvider is not able to do reverse geocoding.');
     }

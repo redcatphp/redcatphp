@@ -8,7 +8,7 @@ class JSON{
 	private $forceArray;
 	private function __construct($type,$forceArray){
 		$this->forceArray = $forceArray;
-		$this->fields = ($type=='[')||$this->forceArray?array():new \stdClass();
+		$this->fields = ($type=='[')||$this->forceArray?[]:new \stdClass();
 	}
 	private function add_name(&$text){
 		$this->name = $text;
@@ -21,7 +21,7 @@ class JSON{
 		$text = '';
 	}
 	static function decode($json,$forceArray=null){
-		$stack = array ();
+		$stack =  [];
 		$text = "";
 		$state = self::VAL_TEXT;
 		$len = strlen($json);

@@ -51,7 +51,7 @@ function PHPDiff($old,$new)
    foreach($t2 as $i=>$x) if ($x>'') $r2[$x][]=$i;
 
    $a1=0; $a2=0;   # start at beginning of each list
-   $actions=array();
+   $actions=[];
 
    # walk this loop until we reach the end of one of the lists
    while ($a1<count($t1) && $a2<count($t2)) {
@@ -90,7 +90,7 @@ function PHPDiff($old,$new)
   # elements into $out.
   $op = 0;
   $x0=$x1=0; $y0=$y1=0;
-  $out = array();
+  $out = [];
   foreach($actions as $act) {
     if ($act==1) { $op|=$act; $x1++; continue; }
     if ($act==2) { $op|=$act; $y1++; continue; }

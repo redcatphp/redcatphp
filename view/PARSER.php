@@ -22,10 +22,10 @@ abstract class PARSER{
 	
 	private static $PIO_L;
 	private static $PIC_L;
-	private static $PI_STR = array(self::PIO,self::PIC);
+	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
 	static function initialize(){
-		self::$PI_HEX = array(self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1]));
+		self::$PI_HEX = [self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1])];
 		self::$PIO_L = strlen(self::PIO);
 		self::$PIC_L = strlen(self::PIC);
 	}
@@ -55,11 +55,11 @@ abstract class PARSER{
 			$str = substr($str,0,-3);
 		return $str;
 	}
-	//private static $short_open_tag = array(
+	//private static $short_open_tag = [
 		//'<?'=>'<?php ',
 		//'<?php php'=>'<?php ',
 		//'<?php ='=>'<?=',
-	//);
+	//];
 	private function short_open_tag(&$s){ //first is faster but second more strict
 		$str = '';
 		$c = strlen($s)-1;
@@ -270,7 +270,7 @@ abstract class PARSER{
 									//parseTag
 									$charContainer = trim($charContainer);			
 									$firstChar = @$charContainer{0};
-									$myAttributes = array();
+									$myAttributes = [];
 									switch($firstChar){
 										case '/':
 											$tagName = substr($charContainer, 1);				
@@ -407,7 +407,7 @@ abstract class PARSER{
 	}
 	private static function parseAttributes($attrText){
 		$attrText = trim($attrText);
-		$attrArray = array();
+		$attrArray = [];
 		$total = strlen($attrText);
 		$keyDump = '';
 		$valueDump = '';
@@ -503,16 +503,16 @@ abstract class PARSER{
 	}
 
 	private $currentTag;
-	private $__phpSRC = array();
+	private $__phpSRC = [];
 
-	protected $onLoad = array();
-	protected $onLoaded = array();
+	protected $onLoad = [];
+	protected $onLoaded = [];
 	private function addToCurrent($name,$attributes){
 		if(!$this->currentTag)
 			$this->currentTag = $this;
 		if(($pos=strpos($name,'+'))!==false){
 			$x = explode('+',$name);
-			$a = array();
+			$a = [];
 			$node = new Group($this->currentTag,$name,$attributes,$this);
 			$sc = null;
 			foreach($x as $n){

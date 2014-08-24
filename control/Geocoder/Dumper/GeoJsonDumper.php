@@ -34,14 +34,14 @@ class GeoJsonDumper implements DumperInterface
             $properties = null;
         }
 
-        $json = array(
+        $json = [
             'type' => 'Feature',
-            'geometry' => array(
+            'geometry' => [
                 'type' => 'Point',
-                'coordinates' => array($result->getLongitude(), $result->getLatitude())
-            ),
+                'coordinates' => [$result->getLongitude(), $result->getLatitude()]
+            ],
             'properties' => $properties
-        );
+        ];
 
         // Custom bounds property
         $bounds = $result->getBounds();

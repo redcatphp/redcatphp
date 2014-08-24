@@ -43,14 +43,14 @@ abstract class filter{
 		)
 	);
 	*/
-	static $basic_tags_map = array(
+	static $basic_tags_map = [
 		'img'=>'src,width,height',
-	);
-	static $basic_attrs = array(
+	];
+	static $basic_attrs = [
 		
-	);
+	];
 	static function strip_tags_basic($str,$map=null){
-		$globals_attrs = array();
+		$globals_attrs = [];
 		$map = $map?array_merge($map,self::$basic_tags_map):self::$basic_tags_map;
 		return self::strip_tags($str,explode(',',self::BASIC_TAGS),self::$basic_attrs,$map);
 	}
@@ -116,7 +116,7 @@ abstract class filter{
 						$attr = '';
 					if(!in_array($tag,$tags))
 						continue;
-					$allowed = isset($map[$tag])?(is_string($map[$tag])?explode(',',(string)$map[$tag]):$map[$tag]):array();
+					$allowed = isset($map[$tag])?(is_string($map[$tag])?explode(',',(string)$map[$tag]):$map[$tag]):[];
 					$x = explode(' ',$attr);
 					$attr = '';
 					foreach($x as $_x){

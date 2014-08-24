@@ -1,7 +1,7 @@
 <?php namespace surikat\control;
 class Images {
-	public static $extensions = array('jpg','jpeg','png','gif','bmp','tiff','ico');
-	public static $extensions_resizable = array('jpeg','jpg','png','gif','tiff','bmp');
+	public static $extensions = ['jpg','jpeg','png','gif','bmp','tiff','ico'];
+	public static $extensions_resizable = ['jpeg','jpg','png','gif','tiff','bmp'];
 	public static function resized($q){
 		return preg_match_all ('/((.*))(\\.)(\\d+)(x)(\\d+)(\\.)((?:[a-z][a-z]+))/is', $q, $matches)?$matches:false;
 	}
@@ -93,7 +93,7 @@ class Images {
 			$BMP['decal'] = 0;
 		}
 
-		$PALETTE = array();
+		$PALETTE = [];
 		if ($BMP['colors'] < 16777216) {
 			$PALETTE = unpack('V'.$BMP['colors'], fread($f1, $BMP['colors']*4));
 		}
@@ -293,7 +293,7 @@ class Images {
 	 */
 	public static function getAspectRatioSize($maxWidth, $maxHeight, $actualWidth, $actualHeight)
 	{
-		$oSize = array("Width"=>$maxWidth, "Height"=>$maxHeight);
+		$oSize = ["Width"=>$maxWidth, "Height"=>$maxHeight];
 
 		// Calculates the X and Y resize factors
 		$iFactorX = (float)$maxWidth / (float)$actualWidth;
@@ -353,7 +353,7 @@ class Images {
 			$oSize = self::getAspectRatioSize($iFinalWidth, $iFinalHeight, $sourceImageWidth, $sourceImageHeight );
 		}
 		else{
-			$oSize = array('Width' => $iFinalWidth, 'Height' => $iFinalHeight);
+			$oSize = ['Width' => $iFinalWidth, 'Height' => $iFinalHeight];
 		}
 
 		self::setMemoryForImage($sourceImageWidth, $sourceImageHeight, $sourceImageBits, $sourceImageChannels);

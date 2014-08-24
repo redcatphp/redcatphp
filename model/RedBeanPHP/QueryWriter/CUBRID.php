@@ -131,15 +131,15 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
 		$this->prefix = $prefix;
-		$this->typeno_sqltype = array(
+		$this->typeno_sqltype = [
 			CUBRID::C_DATATYPE_INTEGER          => 'INTEGER',
 			CUBRID::C_DATATYPE_DOUBLE           => 'DOUBLE',
 			CUBRID::C_DATATYPE_STRING           => 'STRING',
 			CUBRID::C_DATATYPE_SPECIAL_DATE     => 'DATE',
 			CUBRID::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
-		);
+		];
 
-		$this->sqltype_typeno = array();
+		$this->sqltype_typeno = [];
 
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( ( $v ) )] = $k;
@@ -194,7 +194,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 		$columnsRaw = $this->adapter->get( "SHOW COLUMNS FROM $table" );
 
-		$columns = array();
+		$columns = [];
 		foreach ( $columnsRaw as $r ) {
 			$columns[$r['Field']] = trim($r['Type']);
 		}
@@ -305,11 +305,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		return ( $state == 'HY000' ) ? ( count( array_diff( array(
+		return ( $state == 'HY000' ) ? ( count( array_diff( [
 				QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
 				QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
 				QueryWriter::C_SQLSTATE_NO_SUCH_TABLE
-			), $list ) ) !== 3 ) : FALSE;
+			], $list ) ) !== 3 ) : FALSE;
 	}
 
 	/**
@@ -324,7 +324,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 		$column = $this->esc( $column );
 
-		$index  = $this->adapter->getRow( "SELECT 1 as `exists` FROM db_index WHERE index_name = ? ", array( $name ) );
+		$index  = $this->adapter->getRow( "SELECT 1 as `exists` FROM db_index WHERE index_name = ? ", [ $name ] );
 
 		if ( $index && $index['exists'] ) {
 			return; // positive number will return, 0 will continue.

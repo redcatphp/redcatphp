@@ -52,7 +52,7 @@ trait Mixin_Geopoint{
 	}
 	function setBounds($lat,$lon,$rad){
 		if($lat&&$lon)
-			list($this->west, $this->south, $this->east, $this->north) = Geocoding::getBoundingBox(array($lat,$lon),$rad,$this->getEarthRadius());
+			list($this->west, $this->south, $this->east, $this->north) = Geocoding::getBoundingBox([$lat,$lon],$rad,$this->getEarthRadius());
 	}
 	
 }

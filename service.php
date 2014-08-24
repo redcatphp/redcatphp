@@ -1,9 +1,9 @@
 <?php namespace surikat; 
 abstract class service {
-	static function __callStatic($func,Array $args=array()){
+	static function __callStatic($func, array $args=[]){
 		list($c,$m) = self::__funcToCm($func);
 		if($m&&class_exists($c))
-			return call_user_func_array(array($c,$m),$args);
+			return call_user_func_array([$c,$m],$args);
 	}
 	static function method($func){
 		list($c,$m) = self::__funcToCm($func);
@@ -23,6 +23,6 @@ abstract class service {
 			$c = $c.'_'.ucfirst($func);
 			$m = 'method';
 		}
-		return array($c,$m);
+		return [$c,$m];
 	}
 }

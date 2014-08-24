@@ -99,8 +99,8 @@ class dates {
 		return date('Y-m-d H:i:s',$timestamp);
 	}
 	function to_date_fr($timestamp,$time=false) { //conversion d'un timestamp en date française
-		$jours = array('Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche');
-		$mois = array('Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre');
+		$jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+		$mois = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 		return $jours[date('N',$timestamp)-1].date(' d ',$timestamp).$mois[date('n',$timestamp)-1].date(' Y',$timestamp).($time?' à '.date('H:m:s',$timestamp):'');
 	}
 }

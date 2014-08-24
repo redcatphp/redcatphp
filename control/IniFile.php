@@ -4,7 +4,7 @@ class iniFile{
 		$content = ""; 
 		if($has_sections){
 			$arr_tmp = $assoc_arr;
-			$assoc_arr = array();
+			$assoc_arr = [];
 			foreach(array_keys($arr_tmp) as $key){ 
 				if(!is_array($arr_tmp[$key])){
 					$assoc_arr[$key] = $arr_tmp[$key];
@@ -22,7 +22,7 @@ class iniFile{
 					// $key=addslashes($key);
 				}
 				if(!is_array($elem)){
-					$elem = array($key=>$elem); 
+					$elem = [$key=>$elem]; 
 				}
 				else{
 					$content .= "[".$key."]\n"; 

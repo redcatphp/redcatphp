@@ -182,7 +182,7 @@ interface QueryWriter
 	 *
 	 * @return array
 	 */
-	public function queryRecord( $type, $conditions = array(), $addSql = NULL, $bindings = array() );
+	public function queryRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] );
 
 	/**
 	 * Returns records through an intermediate type. This method is used to obtain records using a link table and
@@ -196,7 +196,7 @@ interface QueryWriter
 	 *
 	 * @return array
 	 */
-	public function queryRecordRelated( $sourceType, $destType, $linkID, $addSql = '', $bindings = array() );
+	public function queryRecordRelated( $sourceType, $destType, $linkID, $addSql = '', $bindings = [] );
 
 	/**
 	 * Returns the row that links $sourceType $sourcID to $destType $destID in an N-M relation.
@@ -221,7 +221,7 @@ interface QueryWriter
 	 *
 	 * @return integer
 	 */
-	public function queryRecordCount( $type, $conditions = array(), $addSql = NULL, $bindings = array() );
+	public function queryRecordCount( $type, $conditions = [], $addSql = NULL, $bindings = [] );
 
 	/**
 	 * Returns the number of records linked through $linkType and satisfying the SQL in $addSQL/$bindings.
@@ -234,7 +234,7 @@ interface QueryWriter
 	 *
 	 * @return integer
 	 */
-	public function queryRecordCountRelated( $sourceType, $targetType, $linkID, $addSQL = '', $bindings = array() );
+	public function queryRecordCountRelated( $sourceType, $targetType, $linkID, $addSQL = '', $bindings = [] );
 
 	/**
 	 * This method should update (or insert a record), it takes
@@ -263,7 +263,7 @@ interface QueryWriter
 	 *
 	 * @return void
 	 */
-	public function deleteRecord( $type, $conditions = array(), $addSql = '', $bindings = array() );
+	public function deleteRecord( $type, $conditions = [], $addSql = '', $bindings = [] );
 
 	/**
 	 * Deletes all links between $sourceType and $destType in an N-M relation.

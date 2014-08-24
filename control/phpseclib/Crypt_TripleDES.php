@@ -196,11 +196,11 @@ class Crypt_TripleDES extends Crypt_DES
                 $this->mode_3cbc = true;
 
                 // This three $des'es will do the 3CBC work (if $key > 64bits)
-                $this->des = array(
+                $this->des = [
                     new Crypt_DES(CRYPT_DES_MODE_CBC),
                     new Crypt_DES(CRYPT_DES_MODE_CBC),
                     new Crypt_DES(CRYPT_DES_MODE_CBC),
-                );
+                ];
 
                 // we're going to be doing the padding, ourselves, so disable it in the Crypt_DES objects
                 $this->des[0]->disablePadding();

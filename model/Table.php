@@ -41,9 +41,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function onDelete(){}
 	function onDeleted(){}
 	#</workflow>
-	private static $__binded = array();
+	private static $__binded = [];
 	protected static $loadUniq = 'name';
-	protected static $loadUniqs = array();
+	protected static $loadUniqs = [];
 	static function getLoadUniq(){
 		return static::$loadUniq;
 	}
@@ -56,17 +56,17 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	static function loadUniqFilter($str){
 		return $str;
 	}
-	static $metaCast = array();
+	static $metaCast = [];
 	static $sync;
 	private static $_checkUniq;
-	private $errors = array();
-	private $_relationsKeysStore = array();
+	private $errors = [];
+	private $_relationsKeysStore = [];
 	protected $table;
 	protected $type;
 	protected $bean;
 	protected $creating;
 	protected $checkUniq = true;
-	protected $_on = array();
+	protected $_on = [];
 	protected $breakValidationOnError;
 	protected $queryWriter;
 	static function _checkUniq($b=null){
@@ -98,7 +98,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return array_keys($this->getProperties());
 	}
 	function getArray(){
-		$a = array();
+		$a = [];
 		foreach($this->bean as $k=>$v)
 			if(is_array($v))
 				foreach($v as $_k=>$_v)
@@ -124,7 +124,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->$k = $v;
 	}
 	function _relationsKeysStore(){
-		$r = array();
+		$r = [];
 		foreach($this->getKeys() as $k)
 			if(strpos($k,'own')===0&&ctype_upper(substr($k,3,1)))
 				$r[] = $k;
@@ -168,7 +168,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function on($f,$c){
 		if(!isset($this->_on[$f]))
-			$this->_on[$f] = array();
+			$this->_on[$f] = [];
 		$this->_on[$f][] = $c;
 	}
 	function trigger(){
@@ -176,7 +176,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$f = array_shift($args);
 		$c = 'on'.ucfirst($f);
 		if(method_exists($this,$c))
-			call_user_func_array(array($this,$c),$args);
+			call_user_func_array([$this,$c],$args);
 		if(isset($this->_on[$f]))
 			foreach($this->_on[$f] as $c)
 				call_user_func($c,$this,$args);
@@ -240,12 +240,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			foreach((array)$call as $f=>$a){
 				if(is_integer($f)){
 					$f = $a;
-					$a = array();
+					$a = [];
 				}
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				$this->$col = call_user_func_array(array('control\\filter',$f),$a);
+				$this->$col = call_user_func_array(['control\\filter',$f],$a);
 			}
 		}
 	}
@@ -254,18 +254,18 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			foreach((array)$call as $f=>$a){
 				if(is_integer($f)){
 					$f = $a;
-					$a = array();
+					$a = [];
 				}
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				if(!call_user_func_array(array('control\\ruler',$f),$a))
+				if(!call_user_func_array(['control\\ruler',$f],$a))
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}
 	}
 	function _uniqConvention(){
-		$uniqs = array();
+		$uniqs = [];
 		foreach($this->getKeys() as $key){
 			if(	$key==static::$loadUniq
 				||strpos($key,'uniq_')===0
@@ -310,7 +310,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 					$w->buildColumnFulltext($t, $col, $cols, $lang);
 					$w->addIndexFullText($t, $col, null , $lang);
 				}
-				$w->adapter->exec($w->buildColumnFulltextSQL($t,$col,$cols,$lang).' WHERE id=?',array($entry->id));
+				$w->adapter->exec($w->buildColumnFulltextSQL($t,$col,$cols,$lang).' WHERE id=?',[$entry->id]);
 			});
 		}
 	}
@@ -323,9 +323,9 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function loadBean(OODBBean $bean){
 		$this->bean = $bean;
 	}
-	function __call($func,array $args=array()){
-		if(is_callable(array($this->bean,$func)))
-			return call_user_func_array(array($this->bean,$func),$args);
+	function __call($func, array $args=[]){
+		if(is_callable([$this->bean,$func]))
+			return call_user_func_array([$this->bean,$func],$args);
 		else
 			throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
 	}
@@ -352,7 +352,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		}
 		else
 			$val = R::newOne($this->type.ucfirst($k),$v);
-		return array($k,$val);
+		return [$k,$val];
 	}
 	function arraysSetter($k, $v){
 		$uk = ucfirst($k);
@@ -369,7 +369,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$v = R::newOne($this->type.$uk,$v);
 			$k = 'xown'.ucfirst($this->type).$uk;
 		}
-		return array($k,$v);
+		return [$k,$v];
 	}
 	function _keyMapperConvention($k){
 		$uk = ucfirst($k);
@@ -451,7 +451,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	static function getDefColumns($key=null){
 		$key = ucfirst($key);
-		$a = array();
+		$a = [];
 		$lk = strlen($key);
 		foreach(get_class_vars(get_called_class()) as $k=>$v)
 			if(strpos($k,'column')===0&&ctype_upper(substr($k,6,1))&&($p=strrpos($k,$key)===strlen($k)-$lk)&&($k=lcfirst(substr($k,6,-1*$lk))))

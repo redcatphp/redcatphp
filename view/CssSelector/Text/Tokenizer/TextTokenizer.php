@@ -152,7 +152,7 @@ class TextTokenizer
         
         if (list($str) = $this->match(preg_quote($str, "/"), $matches, $flags)
         ) {
-            $ret = array($str);
+            $ret = [$str];
         }
         
         return $ret;
@@ -183,7 +183,7 @@ class TextTokenizer
         
         foreach ($items as $item) {
             if ($this->eq($item, $flags)) {
-                $ret = array($item);
+                $ret = [$item];
                 break;
             }
         }
@@ -230,7 +230,7 @@ class TextTokenizer
             $delimiter = $matches[2];
             $str = $matches[3];
             $str = str_replace("\\$delimiter", "$delimiter", $str);
-            $ret = array($str);
+            $ret = [$str];
         }
         
         return $ret;
@@ -256,7 +256,7 @@ class TextTokenizer
         $ret = false;
         
         if (list($token) = $this->match(TextTokenizer::TOKEN)) {
-            $ret = array($token);
+            $ret = [$token];
         }
         
         return $ret;
@@ -275,7 +275,7 @@ class TextTokenizer
         $ret = false;
         
         if (list($id) = $this->match(TextTokenizer::IDENTIFIER)) {
-            $ret = array($id);
+            $ret = [$id];
         }
         
         return $ret;
@@ -340,7 +340,7 @@ class TextTokenizer
      * 
      * @return false|array of a single string
      */
-    public function match($regexp, &$matches = array(), $flags = 0)
+    public function match($regexp, &$matches = [], $flags = 0)
     {
         // we do not like empty strings
         if (strlen($regexp) == 0) {
@@ -385,7 +385,7 @@ class TextTokenizer
                 || !ctype_alnum($substr[$offset])
             ) {
                 $this->offset += $offset;
-                $ret = array(ltrim($str));
+                $ret = [ltrim($str)];
             }
         }
         

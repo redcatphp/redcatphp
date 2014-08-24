@@ -118,7 +118,7 @@ class Debug extends RDefault implements Logger
 	protected function normalizeBindings( $bindings )
 	{
 		$i = 0;
-		$newBindings = array();
+		$newBindings = [];
 		foreach( $bindings as $key => $value ) {
 			if ( is_numeric($key) ) {
 				$newKey = ':slot'.$i;
@@ -146,7 +146,7 @@ class Debug extends RDefault implements Logger
 		$sql = func_get_arg( 0 );
 
 		if ( func_num_args() < 2) {
-			$bindings = array();
+			$bindings = [];
 		} else {
 			$bindings = func_get_arg( 1 );
 		}

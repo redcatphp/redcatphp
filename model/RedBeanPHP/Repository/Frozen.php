@@ -67,11 +67,11 @@ class Frozen extends Repository
 			list( $properties, $table ) = $bean->getPropertiesAndType();
 			$id = $properties['id'];
 			unset($properties['id']);
-			$updateValues = array();
+			$updateValues = [];
 			$k1 = 'property';
 			$k2 = 'value';
 			foreach( $properties as $key => $value ) {
-				$updateValues[] = array( $k1 => $key, $k2 => $value );
+				$updateValues[] = [ $k1 => $key, $k2 => $value ];
 			}
 			$bean->id = $this->writer->updateRecord( $table, $updateValues, $id );
 			$bean->setMeta( 'tainted', FALSE );
@@ -97,7 +97,7 @@ class Frozen extends Repository
 	{
 		$beanType = $bean->getMeta( 'type' );
 
-		$cachedIndex = array();
+		$cachedIndex = [];
 		foreach ( $ownAdditions as $addition ) {
 			if ( $addition instanceof SimpleModel )
 				$addition = $addition->unbox();
@@ -126,13 +126,13 @@ class Frozen extends Repository
 	 */
 	protected function processLists( OODBBean $bean )
 	{
-		$sharedAdditions = $sharedTrashcan = $sharedresidue = $sharedItems = $ownAdditions = $ownTrashcan = $ownresidue = $embeddedBeans = array(); //Define groups
+		$sharedAdditions = $sharedTrashcan = $sharedresidue = $sharedItems = $ownAdditions = $ownTrashcan = $ownresidue = $embeddedBeans = []; //Define groups
 		foreach ( $bean as $property => $value ) {
 			$value = ( $value instanceof SimpleModel ) ? $value->unbox() : $value;
 			if ( $value instanceof OODBBean ) {
 				$this->processEmbeddedBean( $embeddedBeans, $bean, $property, $value );
 			} elseif ( is_array( $value ) ) {
-				$originals = $bean->getMeta( 'sys.shadow.' . $property, array() );
+				$originals = $bean->getMeta( 'sys.shadow.' . $property, [] );
 				$bean->setMeta( 'sys.shadow.' . $property, NULL ); //clear shadow
 				if ( strpos( $property, 'own' ) === 0 ) {
 					list( $ownAdditions, $ownTrashcan, $ownresidue ) = $this->processGroups( $originals, $value, $ownAdditions, $ownTrashcan, $ownresidue );
@@ -173,7 +173,7 @@ class Frozen extends Repository
 	 */
 	public function dispense( $type, $number = 1, $alwaysReturnArray = FALSE )
 	{
-		$beans = array();
+		$beans = [];
 		for ( $i = 0; $i < $number; $i++ ) {
 			$bean = new OODBBean;
 			$bean->initializeForDispense( $type, $this->oodb->getBeanHelper() );
@@ -216,12 +216,12 @@ class Frozen extends Repository
 			$row = $this->stash[$this->nesting][$id];
 		} else {
 			try {
-				$rows = $this->writer->queryRecord( $type, array( 'id' => array( $id ) ) );
+				$rows = $this->writer->queryRecord( $type, [ 'id' => [ $id ] ] );
 			} catch ( SQL $exception ) {
 				if ( $this->writer->sqlStateIn( $exception->getSQLState(),
-					array(
+					[
 						QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
-						QueryWriter::C_SQLSTATE_NO_SUCH_TABLE )
+						QueryWriter::C_SQLSTATE_NO_SUCH_TABLE ]
 				)
 				) {
 					throw $exception; //only throw if frozen

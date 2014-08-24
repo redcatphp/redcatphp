@@ -13,9 +13,9 @@ abstract class Server {
     public function __construct($server, $deploy_script = 'deploy.ini') {
         $this->server = $server;
         $this->clean_directories = $server['clean_directories'];
-        $this->ignore_files = array_merge(array(
+        $this->ignore_files = array_merge([
             '.gitignore', '.gitattributes', '.gitmodules', 'deploy.ini', 'git-deploy', $deploy_script
-                ), $server['ignore_files']);
+                ], $server['ignore_files']);
         $this->upload_untracked = $server['upload_untracked'];
         $this->host = "{$server['scheme']}://{$server['user']}@{$server['host']}:{$server['port']}{$server['path']}";
         $this->connect($server);
@@ -64,7 +64,7 @@ abstract class Server {
             }
         }
         
-        $submodule_meta = array();
+        $submodule_meta = [];
 
         foreach ($changes['submodules'] as $submodule) {
             GitDeploy::logmessage($submodule);
@@ -73,10 +73,10 @@ abstract class Server {
             $target_subcommit = $subgit->interpret_target_commit("HEAD");
             $subchanges = $subgit->get_changes($target_subcommit, $current_subcommit);
             
-            $submodule_meta[$submodule] = array(
+            $submodule_meta[$submodule] = [
                 'target_subcommit' => $target_subcommit,
                 'current_subcommit' => $current_subcommit
-            );
+            ];
 
             foreach ($subchanges['upload'] as $file => $contents) {
                 $changes['upload'][$submodule . "/" . $file] = $contents;

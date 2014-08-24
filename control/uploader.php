@@ -1,7 +1,7 @@
 <?php namespace surikat\control;
 class uploader{
 	static function image($conf){
-		$conf = array_merge(array(
+		$conf = array_merge([
 			'dir'=>'',
 			'key'=>'image',
 			'rename'=>false,
@@ -10,7 +10,7 @@ class uploader{
 			'multi'=>false,
 			'extensions'=>Images::$extensions,
 			'conversion'=>null,
-		),$conf);
+		],$conf);
 		extract($conf);
 		$func = 'file'.($multi?'s':'');
 		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename,$conversion){
@@ -51,11 +51,11 @@ class uploader{
 				throw new Exception_Upload('extension');
 		});
 	}
-	protected static $extensionRewrite = array(
+	protected static $extensionRewrite = [
 		'jpeg'=>'jpg',
-	);
+	];
 	static function formatFilename($name){
-		$name = filter_var(str_replace(array(' ','_',',','?'),'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+		$name = filter_var(str_replace([' ','_',',','?'],'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$e = strtolower(pathinfo($name,PATHINFO_EXTENSION));
 		if(isset(static::$extensionRewrite[$e]))
 			$name = substr($name,0,-1*strlen($e)).static::$extensionRewrite[$e];
@@ -92,7 +92,7 @@ class uploader{
 		if(isset($_FILES[$k])){
 			$files =& $_FILES[$k];
 			for($i=0;count($files['name'])>$i;$i++){
-				$file = array();
+				$file = [];
 				foreach(array_keys($files) as $prop)
 					$file[$prop] =& $files[$prop][$i];
 				if($file['name'])

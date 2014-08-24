@@ -85,7 +85,7 @@ class IGNOpenLSProvider extends AbstractProvider implements ProviderInterface
             throw new NoResultException(sprintf('Could not execute query %s', $query));
         }
 
-        $results = array();
+        $results = [];
 
         $xml->registerXPathNamespace('gml', 'http://www.opengis.net/gml');
 
@@ -104,7 +104,7 @@ class IGNOpenLSProvider extends AbstractProvider implements ProviderInterface
                 list($bounds['west'], $bounds['south'], $bounds['east'], $bounds['north']) = explode(';', $bbox[$i]);
             }
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'     => isset($positions[0]) ? (float) $positions[0] : null,
                 'longitude'    => isset($positions[1]) ? (float) $positions[1] : null,
                 'bounds'       => $bounds,
@@ -116,7 +116,7 @@ class IGNOpenLSProvider extends AbstractProvider implements ProviderInterface
                 'country'      => 'France',
                 'countryCode'  => 'FR',
                 'timezone'     => 'Europe/Paris'
-            ));
+            ]);
         }
 
         return $results;
@@ -125,7 +125,7 @@ class IGNOpenLSProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         throw new UnsupportedException('The IGNOpenLSProvider is not able to do reverse geocoding.');
     }

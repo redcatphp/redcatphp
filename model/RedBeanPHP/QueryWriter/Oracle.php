@@ -148,7 +148,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	{
 		$this->prefix = $prefix;
 		$this->adapter        = $a;
-		$this->typeno_sqltype = array(
+		$this->typeno_sqltype = [
 			RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL              => 'NUMBER(1,0)',
 			RedBean_QueryWriter_Oracle::C_DATATYPE_UINT8             => 'NUMBER(3,0)',
 			RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32            => 'NUMBER(11,0)',
@@ -157,9 +157,9 @@ class Oracle extends AQueryWriter implements QueryWriter
 			RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT16            => 'NVARCHAR2(2000)',
 			RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT32            => 'CLOB',
 			RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_DATE      => 'DATE',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_TIMESTAMP => 'TIMESTAMP(6)' );
+			RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_TIMESTAMP => 'TIMESTAMP(6)' ];
 
-		$this->sqltype_typeno = array();
+		$this->sqltype_typeno = [];
 
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[$v] = $k;
@@ -230,7 +230,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 				SELECT COUNT(*)
 		        FROM ALL_CONS_COLUMNS A JOIN ALL_CONSTRAINTS C  ON A.CONSTRAINT_NAME = C.CONSTRAINT_NAME
 			    WHERE LOWER(C.TABLE_NAME) = ? AND C.CONSTRAINT_TYPE = 'R'
-					  ", array( $table ) );
+					  ", [ $table ] );
 
 			// Already foreign keys added in this association table
 			if ( $fks > 0 ) return FALSE;
@@ -273,7 +273,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return integer $numRowsFound
 	 */
-	public function count( $beanType, $addSQL = '', $params = array() )
+	public function count( $beanType, $addSQL = '', $params = [] )
 	{
 		return parent::count( strtoupper( $beanType ), $addSQL, $params );
 	}
@@ -428,7 +428,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 		$table      = $this->esc( $table, TRUE );
 		$columnsRaw = $this->adapter->get( "SELECT LOWER(COLUMN_NAME) COLUMN_NAME, DATA_TYPE, DATA_LENGTH, DATA_PRECISION FROM ALL_TAB_COLUMNS WHERE TABLE_NAME = UPPER('$table')" );
 
-		$columns = array();
+		$columns = [];
 		foreach ( $columnsRaw as $r ) {
 			$field = $r['column_name'];
 
@@ -517,11 +517,11 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		$stateMap = array(
+		$stateMap = [
 			RedBean_Driver_OCI::OCI_NO_SUCH_TABLE                  => RedBean_QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 			RedBean_Driver_OCI::OCI_NO_SUCH_COLUMN                 => RedBean_QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
 			RedBean_Driver_OCI::OCI_INTEGRITY_CONSTRAINT_VIOLATION => RedBean_QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
-		);
+		];
 
 		return in_array( ( isset( $stateMap[$state] ) ? $stateMap[$state] : '0' ), $list );
 	}
@@ -627,7 +627,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::queryRecord
 	 */
-	public function queryRecord( $type, $conditions = array(), $addSql = NULL, $bindings = array() )
+	public function queryRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
 		return parent::queryRecord( $type, $this->filterConditions( $conditions ), $addSql, $bindings );
 	}
@@ -635,7 +635,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::deleteRecord
 	 */
-	public function deleteRecord( $type, $conditions = array(), $addSql = NULL, $bindings = array() )
+	public function deleteRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
 		parent::deleteRecord( $type, $this->filterConditions( $conditions ), $addSql, $bindings );
 	}
@@ -649,7 +649,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	private function filterConditions( $conditions )
 	{
-		$upperCaseConditions = array();
+		$upperCaseConditions = [];
 		foreach ( $conditions as $column => $value ) {
 			$upperCaseConditions[strtoupper( $column )] = $value;
 		}

@@ -1,7 +1,7 @@
 <?php namespace surikat\view;
 class Iterator implements \ArrayAccess,\IteratorAggregate{
 	private $__dataNodes;
-	function __construct(array $nodes){
+	function __construct( array $nodes){
 		$this->__dataNodes = $nodes;
 	}
 	function getIterator(){
@@ -29,10 +29,10 @@ class Iterator implements \ArrayAccess,\IteratorAggregate{
 		foreach($this->__dataNodes as $node)
 			$callback($node);
 	}
-	function __call($func,array $args=array()){
-		$r = array();
+	function __call($func, array $args=[]){
+		$r = [];
 		foreach($this->__dataNodes as $node)
-			$r[] = call_user_func_array(array($node,$func),$args);
+			$r[] = call_user_func_array([$node,$func],$args);
 		return $r;		
 	}
 }

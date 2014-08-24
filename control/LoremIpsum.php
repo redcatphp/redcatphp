@@ -42,7 +42,7 @@ class LoremIpsum {
 	{
 		$this->wordsPerParagraph = $wordsPer;
 		$this->wordsPerSentence = 24.460;
-		$this->words = array(
+		$this->words = [
 		'lorem',
 		'ipsum',
 		'dolor',
@@ -220,7 +220,7 @@ class LoremIpsum {
 		'elementum',
 		'tempor',
 		'risus',
-		'cras' );
+		'cras' ];
 	}
 		
 	function getContent($count, $format = 'html', $loremipsum = true)
@@ -266,13 +266,13 @@ class LoremIpsum {
 	
 	private function getPlain($count, $loremipsum, $returnStr = true)
 	{
-		$words = array();
+		$words = [];
 		$this->getWords($words, $count, $loremipsum);
 		//print_r($words);
 		
 		$delta = $count;
 		$curr = 0;
-		$sentences = array();
+		$sentences = [];
 		while($delta > 0)
 		{
 			$senSize = $this->gaussianSentence();
@@ -282,7 +282,7 @@ class LoremIpsum {
 
 			$delta -= $senSize;
 			
-			$sentence = array();
+			$sentence = [];
 			for($i = $curr; $i < ($curr + $senSize); $i++)
 				$sentence[] = $words[$i];
 
@@ -309,7 +309,7 @@ class LoremIpsum {
 		$sentences = $this->getPlain($count, $loremipsum, false);
 		$paragraphs = $this->getParagraphArr($sentences);
 		
-		$paragraphStr = array();
+		$paragraphStr = [];
 		foreach($paragraphs as $p)
 		{
 			$paragraphStr[] = $this->paragraphToString($p);
@@ -325,10 +325,10 @@ class LoremIpsum {
 		$sentenceAvg = $this->wordsPerSentence;
 		$total = count($sentences);
 		
-		$paragraphs = array();
+		$paragraphs = [];
 		$pCount = 0;
 		$currCount = 0;
-		$curr = array();
+		$curr = [];
 		
 		for($i = 0; $i < $total; $i++)
 		{
@@ -339,7 +339,7 @@ class LoremIpsum {
 			{
 				$currCount = 0;
 				$paragraphs[] = $curr;
-				$curr = array();
+				$curr = [];
 				//print_r($paragraphs);
 			}
 			//print_r($paragraphs);
@@ -354,7 +354,7 @@ class LoremIpsum {
 		$paragraphs = $this->getParagraphArr($sentences);
 		//print_r($paragraphs);
 		
-		$paragraphStr = array();
+		$paragraphStr = [];
 		foreach($paragraphs as $p)
 		{
 			$paragraphStr[] = "<p>\n" . $this->paragraphToString($p, true) . '</p>';

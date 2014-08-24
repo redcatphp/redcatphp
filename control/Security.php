@@ -19,7 +19,7 @@ abstract class Security{
 			return $val;
 		}
 		while(!(stripos($val,'./')===false&&stripos($val,'..')===false))
-			$val = str_replace(array('./','..'),'',$val);
+			$val = str_replace(['./','..'],'',$val);
 		return $val;
 	}
 }

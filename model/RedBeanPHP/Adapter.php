@@ -34,7 +34,7 @@ interface Adapter
 	 * @param array   $bindings values
 	 * @param boolean $noevent  no event firing
 	 */
-	public function exec( $sql, $bindings = array(), $noevent = FALSE );
+	public function exec( $sql, $bindings = [], $noevent = FALSE );
 
 	/**
 	 * Executes an SQL Query and returns a resultset.
@@ -47,7 +47,7 @@ interface Adapter
 	 *
 	 * @return array
 	 */
-	public function get( $sql, $bindings = array() );
+	public function get( $sql, $bindings = [] );
 
 	/**
 	 * Executes an SQL Query and returns a resultset.
@@ -60,7 +60,7 @@ interface Adapter
 	 *
 	 * @return array
 	 */
-	public function getRow( $sql, $bindings = array() );
+	public function getRow( $sql, $bindings = [] );
 
 	/**
 	 * Executes an SQL Query and returns a resultset.
@@ -73,7 +73,7 @@ interface Adapter
 	 *
 	 * @return array
 	 */
-	public function getCol( $sql, $bindings = array() );
+	public function getCol( $sql, $bindings = [] );
 
 	/**
 	 * Executes an SQL Query and returns a resultset.
@@ -86,7 +86,7 @@ interface Adapter
 	 *
 	 * @return string
 	 */
-	public function getCell( $sql, $bindings = array() );
+	public function getCell( $sql, $bindings = [] );
 
 	/**
 	 * Executes the SQL query specified in $sql and takes
@@ -101,7 +101,7 @@ interface Adapter
 	 *
 	 * @return array
 	 */
-	public function getAssoc( $sql, $bindings = array() );
+	public function getAssoc( $sql, $bindings = [] );
 	
 	/**
 	 * Executes the SQL query specified in $sql and indexes
@@ -112,7 +112,7 @@ interface Adapter
 	 *
 	 * @return array
 	 */
-	public function getAssocRow( $sql, $bindings = array() );
+	public function getAssocRow( $sql, $bindings = [] );
 
 	/**
 	 * Returns the latest insert ID.

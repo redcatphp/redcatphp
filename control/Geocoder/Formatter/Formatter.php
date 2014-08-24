@@ -35,7 +35,7 @@ class Formatter implements FormatterInterface
      */
     public function format($format)
     {
-        return strtr($format, array(
+        return strtr($format, [
             FormatterInterface::STREET_NUMBER   => $this->result->getStreetNumber(),
             FormatterInterface::STREET_NAME     => $this->result->getStreetName(),
             FormatterInterface::CITY            => $this->result->getCity(),
@@ -48,6 +48,6 @@ class Formatter implements FormatterInterface
             FormatterInterface::COUNTRY         => $this->result->getCountry(),
             FormatterInterface::COUNTRY_CODE    => $this->result->getCountryCode(),
             FormatterInterface::TIMEZONE        => $this->result->getTimezone(),
-        ));
+        ]);
     }
 }

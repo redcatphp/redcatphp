@@ -6,7 +6,7 @@ class Config {
         $argv = (array)@$_SERVER['argv'];
 
         $deploy = control::$CWD.'deploy.ini';
-        $commands = array('-l', '-r', '-c', '-d', '--revert', '--log', '--repo');
+        $commands = ['-l', '-r', '-c', '-d', '--revert', '--log', '--repo'];
 
         $deploy_file = isset($argv[1]) ? end($argv) : "deploy.ini";
 
@@ -14,7 +14,7 @@ class Config {
             $deploy = $deploy_file . (substr($deploy_file, -4) === '.ini' ? '' : '.ini');
         }
 
-        $opts = getopt("lr:d:c:", array("revert", "log::", "repo:"));
+        $opts = getopt("lr:d:c:", ["revert", "log::", "repo:"]);
 
         if (isset($opts['log'])) {
             define('WRITE_TO_LOG', $opts['revert'] ? $opts['revert'] : 'git_deploy_php_log.txt');
@@ -34,18 +34,18 @@ class Config {
             $repo_path = control::$CWD;
         }
 
-        return array(
+        return [
             'config_file' => $deploy,
             'target_commit' => isset($opts['r']) ? $opts['r'] : 'HEAD',
             'list_only' => isset($opts['l']),
             'revert' => isset($opts['revert']),
             'repo_path' => $repo_path
-        );
+        ];
     }
 
     public static function getServers($config_file) {
         $servers = @parse_ini_file($config_file, true);
-        $return = array();
+        $return = [];
 
         if (!$servers) {
             GitDeploy::error("File '$config_file' is not a valid .ini file.");
@@ -58,7 +58,7 @@ class Config {
                 }
 
                 # Throw in some default values, in case they're not set.
-                $options = array_merge(array(
+                $options = array_merge([
                     'skip' => false,
                     'scheme' => 'ftp',
                     'host' => '',
@@ -68,10 +68,10 @@ class Config {
                     'port' => 21,
                     'path' => '/',
                     'passive' => true,
-                    'clean_directories' => array(),
-                    'ignore_files' => array(),
-                    'upload_untracked' => array()
-                        ), $options);
+                    'clean_directories' => [],
+                    'ignore_files' => [],
+                    'upload_untracked' => []
+                        ], $options);
 
                 if ($options['skip']) {
                     continue;

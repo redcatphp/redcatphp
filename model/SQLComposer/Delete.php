@@ -14,7 +14,7 @@ class SQLComposerDelete extends SQLComposerWhere {
 	 *
 	 * @var array
 	 */
-	protected $delete_from = array( );
+	protected $delete_from = [ ];
 
 	/**
 	 * IGNORE
@@ -28,7 +28,7 @@ class SQLComposerDelete extends SQLComposerWhere {
 	 *
 	 * @var array
 	 */
-	protected $order_by = array( );
+	protected $order_by = [ ];
 
 	/**
 	 * LIMIT
@@ -70,7 +70,7 @@ class SQLComposerDelete extends SQLComposerWhere {
 	 * @param string $mysqli_types
 	 * @return SQLComposerDelete
 	 */
-	public function using($table, array $params = null, $mysqli_types = "") {
+	public function using($table,  array $params = null, $mysqli_types = "") {
 		return $this->add_table($table, $params, $mysqli_types);
 	}
 

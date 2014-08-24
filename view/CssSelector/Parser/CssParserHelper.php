@@ -153,7 +153,7 @@ class CssParserHelper
      */
     public static function mergeNodes($items1, $items2)
     {
-        $ret = array();
+        $ret = [];
         $items = array_merge($items1, $items2);
         $len = count($items);
         
@@ -192,7 +192,7 @@ class CssParserHelper
      */
     public static function select($node, $query)
     {
-        $nodes = array();
+        $nodes = [];
         $p = new CssParser($node, $query);
         $nodes = $p->parse();
         return $nodes;

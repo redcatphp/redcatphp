@@ -40,7 +40,7 @@ class CssParserFilterAttr extends CssParserFilter
      * @static
      * @var array of strings
      */
-    private static $_operators = array(
+    private static $_operators = [
         CssParserFilterAttr::EQUAL_SELECTOR,
         CssParserFilterAttr::NOT_EQUAL_SELECTOR,
         CssParserFilterAttr::CONTAIN_SELECTOR,
@@ -48,7 +48,7 @@ class CssParserFilterAttr extends CssParserFilter
         CssParserFilterAttr::CONTAIN_PREFIX_SELECTOR,
         CssParserFilterAttr::START_WITH_SELECTOR,
         CssParserFilterAttr::END_WITH_SELECTOR
-    );
+    ];
     
     /**
      * Attribute name.

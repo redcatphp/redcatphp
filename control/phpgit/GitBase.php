@@ -41,7 +41,7 @@ abstract class GitBase
 {
     private $_dir = false;
     private $_cache_obj;
-    private $_index = array();
+    private $_index = [];
     protected $branch;
     protected $refs;
     private $_fp;
@@ -142,9 +142,9 @@ abstract class GitBase
     final protected function getRefInfo($path="heads")
     {
         $files = glob($this->_dir."/refs/".$path."/*");
-        $ref   = array(); 
+        $ref   = []; 
         // temporary variable to store name
-        $oldref = array();
+        $oldref = [];
         foreach ($files as $file) {
             $name = substr($file, strrpos($file, "/")+1);
             $id   = $this->getFileContents($file, false);
@@ -265,7 +265,7 @@ abstract class GitBase
             $this->throwException("Invalid type. Unknown $ttype.");
             return false;
         }
-        $this->_cache_obj[$id] = array($type, $obj); 
+        $this->_cache_obj[$id] = [$type, $obj]; 
         return $obj;
     }
     // }}} 
@@ -309,7 +309,7 @@ abstract class GitBase
     {
         $data_len = strlen($data);
         $i        = 0;
-        $return   = array();
+        $return   = [];
         while ($i < $data_len) {
             $pos = strpos($data, "\0", $i);
             if ($pos === false) {
@@ -440,7 +440,7 @@ abstract class GitBase
             $this->_index[$path] = $tmp;
         } else if ($version == 2) {
             $offset = $_offset;
-            $keys   = $data = array();
+            $keys   = $data = [];
             for ($i=0; $i < $nr;  $i++) {
                 $keys[]  = substr($content, $offset, 20);
                 $offset += 20;
@@ -523,12 +523,12 @@ abstract class GitBase
         case OBJ_BLOB:
         case OBJ_TAG:
             $obj = $this->_unpackCompressed($fp, $size);
-            return array($type, $obj);
+            return [$type, $obj];
             break;
         case OBJ_OFS_DELTA:
         case OBJ_REF_DELTA:
             $obj = $this->_unpackDelta($fp, $start, $type, $size);
-            return array($type, $obj);
+            return [$type, $obj];
             break;
         default:
             $this->throwException("Unkown object type $type");
@@ -629,7 +629,7 @@ abstract class GitBase
             $size |= ($byte & 0x7f) << $shift;
             $shift += 7;
         } while (($byte & 0x80) != 0);
-        return array($size, $pos);
+        return [$size, $pos];
     }
     // }}}
 
@@ -658,14 +658,14 @@ abstract class GitBase
                 $pos--;
                 $cp_off = $cp_size = 0;
                 /* fetch start position */
-                $flags = array(0x01, 0x02, 0x04, 0x08);
+                $flags = [0x01, 0x02, 0x04, 0x08];
                 for ($i=0; $i < 4; $i++) {
                     if ( ($byte & $flags[$i]) != 0) {
                         $cp_off |= ord($delta[++$pos]) << ($i * 8);
                     }
                 }
                 /* fetch length  */
-                $flags = array(0x10, 0x20, 0x40);
+                $flags = [0x10, 0x20, 0x40];
                 for ($i=0; $i < 3; $i++) {
                     if ( ($byte & $flags[$i]) != 0) {
                         $cp_size |= ord($delta[++$pos]) << ($i * 8);
@@ -717,7 +717,7 @@ abstract class GitBase
      */
     final protected function simpleParsing($text, $limit=-1, $sep=' ', $findex=true)
     {
-        $return = array();
+        $return = [];
         $i      = 0;
         foreach (explode("\n", $text) as $line) {
             if ($limit != -1 && $limit < ++$i ) {
@@ -751,12 +751,12 @@ abstract class GitBase
     {
         $tree1 = $this->getObject($tree1);
         if ($tree2Id == null) {
-            $tree2 = array();
+            $tree2 = [];
         } else {
             $tree2 = $this->getObject($tree2Id);
         }
 
-        $new = $changed = $del = array();
+        $new = $changed = $del = [];
         foreach ($tree1 as $key => $desc) {
             $name = $prefix.$key;
             if ( isset($tree2[$key]) ) {
@@ -771,7 +771,7 @@ abstract class GitBase
                         $new     = array_merge($new, $n1);
                         $del     = array_merge($del, $d1);
                     } else {
-                        $changed[] = array($name, $tree2[$key]->id, $desc->id);
+                        $changed[] = [$name, $tree2[$key]->id, $desc->id];
                     }
                 } 
             } else {
@@ -784,18 +784,18 @@ abstract class GitBase
                         $new     = array_merge($new, $n1);
                         $del     = array_merge($del, $d1);
                 } else {
-                    $new[] = array($name, $desc->id);
+                    $new[] = [$name, $desc->id];
                 }
             }
         }
         if ($tree2Id != null) { 
             foreach ($tree2 as $key => $desc) {
                 if (!isset($tree1[$key])) {
-                    $del[] = array($prefix.$key, $desc->id.'/');
+                    $del[] = [$prefix.$key, $desc->id.'/'];
                 }
             }
         }
-        return array($changed, $new ,$del);
+        return [$changed, $new ,$del];
     }
     // }}}
 

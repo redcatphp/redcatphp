@@ -76,7 +76,7 @@ class CssParserModelFactor
      */
     public function filter($node)
     {
-        $ret = array();
+        $ret = [];
         $items = $this->_combinator->filter($node, $this->_element->getTagName());
         
         // filters items by element
@@ -89,7 +89,7 @@ class CssParserModelFactor
         // filter items by element filters
         $filters = $this->_element->getFilters();
         foreach ($filters as $filter) {
-            $items = array();
+            $items = [];
             foreach ($ret as $i => $item) {
                 if ($filter->match($item, $i, $ret)) {
                     array_push($items, $item);

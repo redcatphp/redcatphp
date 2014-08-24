@@ -159,7 +159,7 @@ abstract class GitClone extends GitCheckout
             $this->checkout($dir, $info[key($head)]);
         }
 
-        $config   = array();
+        $config   = [];
         $config[] = "[core]";
         $config[] = "repositoryformatversion = 0";
         $config[] = "filemode = true";

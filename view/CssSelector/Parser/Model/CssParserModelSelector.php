@@ -34,7 +34,7 @@ class CssParserModelSelector
      * List of factors.
      * @var array of CssParserModelFactor objects
      */
-    private $_factors = array();
+    private $_factors = [];
     
     /**
      * Adds a factor.
@@ -61,8 +61,8 @@ class CssParserModelSelector
      */
     public function filter($node)
     {
-        $ret = array();
-        $items = array($node);
+        $ret = [];
+        $items = [$node];
         foreach ($this->_factors as $factor) {
             $ret = $this->_getNodesByFactor($items, $factor);
             $items = $ret;
@@ -80,7 +80,7 @@ class CssParserModelSelector
      */
     private function _getNodesByFactor($nodes, $factor)
     {
-        $ret = array();
+        $ret = [];
         foreach ($nodes as $node) {
             $items = $factor->filter($node);
             $ret = CssParserHelper::mergeNodes($ret, $items);

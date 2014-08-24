@@ -77,7 +77,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 				FROM information_schema.KEY_COLUMN_USAGE
 				WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND
 				CONSTRAINT_NAME <>'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL",
-				array( $db, $table )
+				[ $db, $table ]
 			);
 
 			// already foreign keys added in this association table
@@ -123,7 +123,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
 		$this->prefix = $prefix;
-		$this->typeno_sqltype = array(
+		$this->typeno_sqltype = [
 			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
 			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',
 			MySQL::C_DATATYPE_DOUBLE           => 'DOUBLE',
@@ -135,9 +135,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 			MySQL::C_DATATYPE_SPECIAL_POINT    => 'POINT',
 			MySQL::C_DATATYPE_SPECIAL_LINESTRING => 'LINESTRING',
 			MySQL::C_DATATYPE_SPECIAL_POLYGON => 'POLYGON',
-		);
+		];
 
-		$this->sqltype_typeno = array();
+		$this->sqltype_typeno = [];
 
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
@@ -187,7 +187,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	{
 		$columnsRaw = $this->adapter->get( "DESCRIBE " . $this->esc( $table ) );
 
-		$columns = array();
+		$columns = [];
 		foreach ( $columnsRaw as $r ) {
 			$columns[$r['Field']] = trim($r['Type']);
 		}
@@ -343,7 +343,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 				AND COLUMN_NAME = ? AND
 				CONSTRAINT_NAME != \'PRIMARY\'
 				AND REFERENCED_TABLE_NAME IS NOT NULL
-		', array($db, $type, $field));
+		', [$db, $type, $field]);
 
 		if ($cfks) return;
 
@@ -366,11 +366,11 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		$stateMap = array(
+		$stateMap = [
 			'42S02' => QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 			'42S22' => QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
 			'23000' => QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
-		);
+		];
 
 		return in_array( ( isset( $stateMap[$state] ) ? $stateMap[$state] : '0' ), $list );
 	}

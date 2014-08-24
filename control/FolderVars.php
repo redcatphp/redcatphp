@@ -1,15 +1,15 @@
 <?php namespace surikat\control;
 use control;
 class FolderVars{
-	protected static $factory = array();
+	protected static $factory = [];
 	static function factory($dir){
 		$k = md5(rtrim($dir,'/'));
 		if(!isset(self::$factory[$k]))
 			self::$factory[$k] = new FolderVars($dir);
 		return self::$factory[$k];
 	}
-	static $vars_types = array('txt','svar','json','ini','php');
-	static $merge_exts = array('ini');
+	static $vars_types = ['txt','svar','json','ini','php'];
+	static $merge_exts = ['ini'];
 	var $key = null;
 	var $dir = null;
 	var $exists = null;
@@ -19,7 +19,7 @@ class FolderVars{
 		$this->exists = is_dir($this->dir);
 	}
 	function getvars($types=null){
-		$vars = array();
+		$vars = [];
 		if(!$types){
 			$types = self::$vars_types;
 		}
@@ -74,7 +74,7 @@ class FolderVars{
 		}
 	}
 	function lsdir($dir=null){
-		$r = array();
+		$r = [];
 		foreach($this->globdir($dir) as $file){
 			$r[] = basename($file);
 		}
@@ -104,7 +104,7 @@ class FolderVars{
 		return glob($ls,GLOB_ONLYDIR);
 	}
 	function lsfile($ext=null){
-		$r = array();
+		$r = [];
 		foreach($this->globfile($ext) as $file){
 			if(is_file($file)){
 				$r[] = basename($file);

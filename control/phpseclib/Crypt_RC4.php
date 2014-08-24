@@ -276,12 +276,12 @@ class Crypt_RC4 extends Crypt_Base
             $keyStream[$j] = $temp;
         }
 
-        $this->stream = array();
-        $this->stream[CRYPT_RC4_DECRYPT] = $this->stream[CRYPT_RC4_ENCRYPT] = array(
+        $this->stream = [];
+        $this->stream[CRYPT_RC4_DECRYPT] = $this->stream[CRYPT_RC4_ENCRYPT] = [
             0, // index $i
             0, // index $j
             $keyStream
-        );
+        ];
     }
 
     /**

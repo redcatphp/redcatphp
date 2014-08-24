@@ -48,7 +48,7 @@ class LabelMaker
 	 */
 	public function dispenseLabels( $type, $labels )
 	{
-		$labelBeans = array();
+		$labelBeans = [];
 		foreach ( $labels as $label ) {
 			$labelBean       = $this->toolbox->getRedBean()->dispense( $type );
 			$labelBean->name = $label;
@@ -70,7 +70,7 @@ class LabelMaker
 	 */
 	public function gatherLabels( $beans )
 	{
-		$labels = array();
+		$labels = [];
 
 		foreach ( $beans as $bean ) {
 			$labels[] = $bean->name;
@@ -110,7 +110,7 @@ class LabelMaker
 				if ( $enumItem->name === $value ) return $enumItem;	
 		}
 		
-		$newEnumItems = $this->dispenseLabels( $type, array( $value ) );
+		$newEnumItems = $this->dispenseLabels( $type, [ $value ] );
 		$newEnumItem  = reset( $newEnumItems );
 		
 		$oodb->store( $newEnumItem );

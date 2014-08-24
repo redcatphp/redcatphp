@@ -82,7 +82,7 @@ class Replace extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerReplace
 	 */
-	public function values(array $values, $mysqli_types = "") {
+	public function values( array $values, $mysqli_types = "") {
 		if (isset($this->select)) throw new SQLComposerException("Cannot use 'REPLACE INTO ... VALUES' when a SELECT is already set!");
 
 		return $this->_add_params('values', $values, $mysqli_types);
@@ -96,7 +96,7 @@ class Replace extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerSelect
 	 */
-	public function select($select = null, array $params = null, $mysqli_types = "") {
+	public function select($select = null,  array $params = null, $mysqli_types = "") {
 		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
@@ -148,7 +148,7 @@ class Replace extends Base {
 
 		} else {
 
-			$params = array( );
+			$params = [ ];
 			$columns = $this->_get_columns();
 			$num_cols = $this->_num_columns();
 			foreach ($this->params["values"] as $values) {
@@ -182,7 +182,7 @@ class Replace extends Base {
 			return array_keys($this->params['values'][0]);
 		}
 		else {
-			return array();
+			return [];
 		}
 	}
 

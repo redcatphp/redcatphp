@@ -1,8 +1,8 @@
 <?php namespace surikat\control;
 class Zipper extends \ZipArchive {   
-	public $forbidden_dirs = array();
-	public $forbidden_files = array();
-	public $liste = array();
+	public $forbidden_dirs = [];
+	public $forbidden_files = [];
+	public $liste = [];
 	public $total_files = 0;
 	public $total_size = 0;
 	public $limit_files = 0;

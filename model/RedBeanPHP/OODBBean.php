@@ -29,14 +29,14 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @var array $properties
 	 */
-	private $properties = array();
+	private $properties = [];
 
 	/**
 	 * Here we keep the meta data of a bean.
 	 *
 	 * @var array
 	 */
-	private $__info = array();
+	private $__info = [];
 
 	/**
 	 * The BeanHelper allows the bean to access the toolbox objects to implement
@@ -60,7 +60,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	/**
 	 * @var array
 	 */
-	private $withParams = array();
+	private $withParams = [];
 
 	/**
 	 * @var string
@@ -95,7 +95,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$writer = $toolbox->getWriter();
 
 		if ( $this->via ) {
-			$oldName = $writer->getAssocTable( array( $this->__info['type'], $type ) );
+			$oldName = $writer->getAssocTable( [ $this->__info['type'], $type ] );
 			if ( $oldName !== $this->via ) {
 				//set the new renaming rule
 				$writer->renameAssocTable( $oldName, $this->via );
@@ -110,7 +110,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$beans            = $assocManager->related( $this, $type, $this->withSql, $this->withParams );
 
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 
 		return $beans;
 	}
@@ -140,7 +140,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$writer = $toolbox->getWriter();
 		$myFieldLink = $writer->esc ($myFieldLink);
 
-		$beans = array();
+		$beans = [];
 
 		if ( $this->getID() > 0 ) {
 
@@ -155,15 +155,15 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 				$bindings           = $this->withParams;
 				$bindings[':slot0'] = $this->getID();
 
-				$beans = $redbean->find( $type, array(), " $myFieldLink = :slot0 " . $this->withSql, $bindings );
+				$beans = $redbean->find( $type, [], " $myFieldLink = :slot0 " . $this->withSql, $bindings );
 			} else {
-				$bindings = array_merge( array( $this->getID() ), $this->withParams );
-				$beans = $redbean->find( $type, array(), " $myFieldLink = ? " . $this->withSql, $bindings );
+				$bindings = array_merge( [ $this->getID() ], $this->withParams );
+				$beans = $redbean->find( $type, [], " $myFieldLink = ? " . $this->withSql, $bindings );
 			}
 		}
 
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 
 		foreach ( $beans as $beanFromList ) {
 			$beanFromList->__info['sys.parentcache.' . $parentField] = $this;
@@ -209,7 +209,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$this->beanHelper         = $beanhelper;
 		$this->__info['type']     = $type;
 		$this->__info['sys.id']   = 'id';
-		$this->__info['sys.orig'] = array( 'id' => 0 );
+		$this->__info['sys.orig'] = [ 'id' => 0 ];
 		$this->__info['tainted']  = TRUE;
 		$this->properties['id']   = 0;
 	}
@@ -283,7 +283,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 							$bean->import($value);
 							$this->$key = $bean;
 						} else {
-							$listBeans = array();
+							$listBeans = [];
 							foreach( $value as $listKey => $listItem ) {
 								$bean = $this->beanHelper->getToolbox()->getRedBean()->dispense( $listItem['_type'] );
 								unset( $listItem['_type'] );
@@ -367,9 +367,9 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @return array
 	 */
-	public function export( $meta = FALSE, $parents = FALSE, $onlyMe = FALSE, $filters = array() )
+	public function export( $meta = FALSE, $parents = FALSE, $onlyMe = FALSE, $filters = [] )
 	{
-		$arr = array();
+		$arr = [];
 
 		if ( $parents ) {
 			foreach ( $this as $key => $value ) {
@@ -384,7 +384,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 
 		foreach ( $this as $key => $value ) {
 			if ( !$onlyMe && is_array( $value ) ) {
-				$vn = array();
+				$vn = [];
 
 				foreach ( $value as $i => $b ) {
 					$vn[] = $b->export( $meta, FALSE, FALSE, $filters );
@@ -458,7 +458,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 
 		//also clear modifiers
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 		$this->aliasName  = NULL;
 		$this->fetchType  = NULL;
 		$this->noLoad     = FALSE;
@@ -484,7 +484,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @return OODBBean
 	 */
-	public function with( $sql, $bindings = array() )
+	public function with( $sql, $bindings = [] )
 	{
 		$this->withSql    = $sql;
 		$this->withParams = $bindings;
@@ -506,7 +506,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @return OODBBean
 	 */
-	public function withCondition( $sql, $bindings = array() )
+	public function withCondition( $sql, $bindings = [] )
 	{
 		$this->withSql    = ' AND ' . $sql;
 		$this->withParams = $bindings;
@@ -594,7 +594,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function getPropertiesAndType()
 	{
-		return array( $this->properties, $this->__info['type'] );
+		return [ $this->properties, $this->__info['type'] ];
 	}
 
 	/**
@@ -611,7 +611,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function beau( $property )
 	{
-		static $beautifulColumns = array();
+		static $beautifulColumns = [];
 
 		if ( ctype_lower( $property ) ) return $property;
 
@@ -657,7 +657,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	public function clearModifiers()
 	{
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 		$this->aliasName  = NULL;
 		$this->fetchType  = NULL;
 		$this->noLoad     = FALSE;
@@ -728,7 +728,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		if ( !$exists && !isset($this->$fieldLink) && (!$isOwn && !$isShared )) {
 
 			$this->withSql    = '';
-			$this->withParams = array();
+			$this->withParams = [];
 			$this->aliasName  = NULL;
 			$this->fetchType  = NULL;
 			$this->noLoad     = FALSE;
@@ -749,7 +749,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		if ( $exists && ((!$isOwn && !$isShared ) ||  (!$hasSQL && !$differentAlias && !$hasAll)) ) {
 
 			$this->withSql    = '';
-			$this->withParams = array();
+			$this->withParams = [];
 			$this->aliasName  = NULL;
 			$this->fetchType  = NULL;
 			$this->noLoad     = FALSE;
@@ -779,7 +779,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			$this->properties[$property] = $bean;
 
 			$this->withSql    = '';
-			$this->withParams = array();
+			$this->withParams = [];
 			$this->aliasName  = NULL;
 			$this->fetchType  = NULL;
 			$this->noLoad     = FALSE;
@@ -791,7 +791,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		}
 		//Implicit: elseif ( $isOwn || $isShared ) {
 		if ( $this->noLoad ) {
-			$beans = array();
+			$beans = [];
 		} elseif ( $isOwn ) {
 			$beans = $this->getOwnList( $listName, $redbean, $toolbox );
 		} else {
@@ -803,7 +803,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$this->__info['tainted']              = TRUE;
 
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 		$this->aliasName  = NULL;
 		$this->fetchType  = NULL;
 		$this->noLoad     = FALSE;
@@ -870,7 +870,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		}
 
 		$this->withSql    = '';
-		$this->withParams = array();
+		$this->withParams = [];
 		$this->aliasName  = NULL;
 		$this->fetchType  = NULL;
 		$this->noLoad     = FALSE;
@@ -1004,7 +1004,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			return NULL;
 		}
 
-		return call_user_func_array( array( $this->__info['model'], $method ), $args );
+		return call_user_func_array( [ $this->__info['model'], $method ], $args );
 	}
 
 	/**
@@ -1019,7 +1019,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function __toString()
 	{
-		$string = $this->__call( '__toString', array() );
+		$string = $this->__call( '__toString', [] );
 
 		if ( $string === NULL ) {
 			return json_encode( $this->properties );
@@ -1157,7 +1157,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 
 		if ( $beans === NULL ) return $this;
 
-		if ( !is_array( $beans ) ) $beans = array( $beans );
+		if ( !is_array( $beans ) ) $beans = [ $beans ];
 
 		foreach( $beans as $bean ) {
 
@@ -1252,7 +1252,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function old( $property )
 	{
-		$old = $this->getMeta( 'sys.orig', array() );
+		$old = $this->getMeta( 'sys.orig', [] );
 
 		if ( array_key_exists( $property, $old ) ) {
 			return $old[$property];
@@ -1316,7 +1316,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 *
 	 * @return OODBBean
 	 */
-	public function link( $typeOrBean, $qualification = array() )
+	public function link( $typeOrBean, $qualification = [] )
 	{
 		if ( is_string( $typeOrBean ) ) {
 
@@ -1402,10 +1402,10 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			if ( !is_numeric( $firstKey ) || $firstKey === NULL ) {
 					$bindings           = $this->withParams;
 					$bindings[':slot0'] = $this->getID();
-					$count              = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, array(), " $myFieldLink = :slot0 " . $this->withSql, $bindings );
+					$count              = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, [], " $myFieldLink = :slot0 " . $this->withSql, $bindings );
 			} else {
-					$bindings = array_merge( array( $this->getID() ), $this->withParams );
-					$count    = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, array(), " $myFieldLink = ? " . $this->withSql, $bindings );
+					$bindings = array_merge( [ $this->getID() ], $this->withParams );
+					$count    = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, [], " $myFieldLink = ? " . $this->withSql, $bindings );
 			}
 
 		}
@@ -1429,7 +1429,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		$writer  = $toolbox->getWriter();
 
 		if ( $this->via ) {
-			$oldName = $writer->getAssocTable( array( $this->__info['type'], $type ) );
+			$oldName = $writer->getAssocTable( [ $this->__info['type'], $type ] );
 
 			if ( $oldName !== $this->via ) {
 				//set the new renaming rule
@@ -1476,7 +1476,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	public function &aggr( $list, $property, $type = NULL )
 	{
 		$this->via = NULL;
-		$ids = $beanIndex = $references = array();
+		$ids = $beanIndex = $references = [];
 
 		if ( strlen( $list ) < 4 ) throw new RedException('Invalid own-list.');
 		if ( strpos( $list, 'own') !== 0 ) throw new RedException('Only own-lists can be aggregated.');

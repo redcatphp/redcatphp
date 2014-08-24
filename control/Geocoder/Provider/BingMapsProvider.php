@@ -69,7 +69,7 @@ class BingMapsProvider extends AbstractProvider implements LocaleAwareProviderIn
     /**
      * {@inheritDoc}
      */
-    public function getReversedData(array $coordinates)
+    public function getReversedData( array $coordinates)
     {
         if (null === $this->apiKey) {
             throw new InvalidCredentialsException('No API Key provided');
@@ -113,19 +113,19 @@ class BingMapsProvider extends AbstractProvider implements LocaleAwareProviderIn
 
         $data = (array) $json->resourceSets[0]->resources;
 
-        $results = array();
+        $results = [];
 
         foreach ($data as $item) {
             $coordinates = (array) $item->geocodePoints[0]->coordinates;
 
             $bounds = null;
             if (isset($item->bbox) && is_array($item->bbox) && count($item->bbox) > 0) {
-                $bounds = array(
+                $bounds = [
                     'south' => $item->bbox[0],
                     'west'  => $item->bbox[1],
                     'north' => $item->bbox[2],
                     'east'  => $item->bbox[3]
-                );
+                ];
             }
 
             $streetNumber = null;
@@ -136,7 +136,7 @@ class BingMapsProvider extends AbstractProvider implements LocaleAwareProviderIn
             $region       = property_exists($item->address, 'adminDistrict') ? (string) $item->address->adminDistrict: '';
             $country      = property_exists($item->address, 'countryRegion') ? (string) $item->address->countryRegion: '';
 
-            $results[] = array_merge($this->getDefaults(), array(
+            $results[] = array_merge($this->getDefaults(), [
                 'latitude'     => $coordinates[0],
                 'longitude'    => $coordinates[1],
                 'bounds'       => $bounds,
@@ -147,7 +147,7 @@ class BingMapsProvider extends AbstractProvider implements LocaleAwareProviderIn
                 'county'       => empty($county) ? null : $county,
                 'region'       => empty($region) ? null : $region,
                 'country'      => empty($country) ? null : $country,
-            ));
+            ]);
         }
 
         return $results;

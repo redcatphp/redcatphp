@@ -8,7 +8,7 @@ class Data
     // at some point this should be moved to a .ser file. Another
     // possible optimization is to give UTF-8 bytes, not Unicode
     // codepoints
-    protected static $realCodepointTable = array(
+    protected static $realCodepointTable = [
         0x0D => 0x000A, // LINE FEED (LF)
         0x80 => 0x20AC, // EURO SIGN ('€')
         0x81 => 0xFFFD, // REPLACEMENT CHARACTER
@@ -42,9 +42,9 @@ class Data
         0x9D => 0xFFFD, // REPLACEMENT CHARACTER
         0x9E => 0x017E, // LATIN SMALL LETTER Z WITH CARON ('ž')
         0x9F => 0x0178, // LATIN CAPITAL LETTER Y WITH DIAERESIS ('Ÿ')
-    );
+    ];
 
-    protected static $namedCharacterReferences = array(
+    protected static $namedCharacterReferences = [
 		'Aacute;' => 193,
 		'Aacute' => 193,
 		'aacute;' => 225,
@@ -2276,7 +2276,7 @@ class Data
 		'zscr;' => 120015,
 		'zwj;' => 8205,
 		'zwnj;' => 8204,
-	);
+	];
 
     protected static $namedCharacterReferenceMaxLength;
 
