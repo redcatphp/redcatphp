@@ -40,7 +40,7 @@ abstract class PHP{
 		}
 		return $str;
 	}
-	static function classNamesInToken($tokens,$i,&$used=array(),$rev=null){
+	static function classNamesInToken($tokens,$i,&$used=[],$rev=null){
 		$inc = $rev?-1:1;
 		if(isset($tokens[$y=$i+$inc])){
 			while($tokens[$y][0]===T_WHITESPACE)
@@ -57,7 +57,7 @@ abstract class PHP{
 		}
 	}
 	static function namespacedCodeUsed($str,$surikat=null){
-		$used = array();
+		$used = [];
 		$tokens = token_get_all(self::extractCode($str));
 		for($i=0;$i<count($tokens)-1;$i++)
 			switch($tokens[$i][0]){
@@ -70,7 +70,7 @@ abstract class PHP{
 				break;
 			}
 		if($surikat){
-			$useS = array();
+			$useS = [];
 			foreach($used as $use)
 				if(strpos(ltrim($use,'\\'),'surikat\\')!==0&&class_exists($use)&&!is_file(control::$CWD_X.str_replace('\\','/',$use.'.php')))
 					$useS[] = ltrim($use,'\\');
@@ -80,12 +80,67 @@ abstract class PHP{
 	}
 	static function getOverriden($class,$c='methods'){
 		$rClass = new \ReflectionClass($class);
-		$array = array();
+		$array = [];
 		$c = 'get'.ucfirst($c);
 		foreach ($rClass->$c() as $rMethod)
 			if ($rMethod->getDeclaringClass()->getName()==$rClass->getName())
 				$array[] =  $rMethod->getName();
 		return $array;
+	}
+	static function sourceNewArraySyntax($src){
+		$code = token_get_all($src);
+		$src = '';
+		$i = [];
+		$I = &$i[count($i)];
+		$depth = 0;
+		$state = 0;
+		foreach($code as $c){
+			if(is_array($c)){
+				switch($c[0]){
+					case T_ARRAY:
+						$I = &$i[count($i)];
+						$depth++;
+						$state = 1;
+					break;
+					case T_VARIABLE:
+						if($state){
+							array_pop($i);
+							$I = &$i[count($i)-1];
+							$depth--;
+							$state = 0;
+							$src .= 'array ';
+						}
+					default:
+						$src .= $c[1];
+					break;
+				}
+			}
+			else{
+				if($c=='('){
+					if($state){
+						$state = 0;
+						$src .= '[';
+					}
+					else{
+						$I++;
+						$src .= $c;
+					}
+				}
+				elseif($c==')'){
+					if($I--||!$depth)
+						$src .= $c;
+					else{
+						$depth--;
+						array_pop($i);
+						$I = &$i[count($i)-1];
+						$src .= ']';
+					}
+				}
+				else
+					$src .= $c;
+			}
+		}
+		return $src;
 	}
 }
 /*
