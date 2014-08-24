@@ -276,10 +276,13 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		foreach(array_keys(static::getDefColumns('uniq')) as $col)
 			$uniqs[$col] = $this->bean->$col;
 		if(!empty($uniqs)){
-			if($this->checkUniq&&self::$_checkUniq!==false&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))){
+			if(	$this->checkUniq
+				&&self::$_checkUniq!==false
+				&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
+				&&$r->id!=$this->bean->id
+			){
 				$throwed = false;
 				foreach($uniqs as $k=>$v){
-					$bk = self::_keyImplode($k);
 					if($v==$r->$k){
 						$this->error($k,'not uniq on column "'.$k.'" with value "'.$v.'"');
 						$throwed = true;
@@ -291,12 +294,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			if(isset($uniqs[static::$loadUniq]))
 				unset($uniqs[static::$loadUniq]);
 			if(!empty($uniqs)&&!R::getRedBean()->isFrozen())
-				//$this->bean->setMeta('buildcommand.unique',array(array_keys($uniqs)));
 				$this->queryWriter->addUniqueIndex($this->table,array_keys($uniqs));
 		}
 	}
 	function _indexConvention(){
-		$this->_uniqConvention();
+		if($this->getMeta('tainted'))
+			$this->_uniqConvention();
 		$this->_fulltextConvention();
 	}
 	function _fulltextConvention(){
