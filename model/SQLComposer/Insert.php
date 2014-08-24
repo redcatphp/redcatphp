@@ -149,7 +149,7 @@ class Insert extends Base {
 	 * @param string $mysqli_types
 	 * @return SQLComposerInsert
 	 */
-	public function on_duplicate($update,  array $params = null, $mysqli_types = "") {
+	public function onDuplicate($update,  array $params = null, $mysqli_types = "") {
 		$this->on_duplicate = array_merge($this->on_duplicate, (array)$update);
 		$this->_add_params('on_duplicate', $params, $mysqli_types);
 		return $this;

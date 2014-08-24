@@ -302,7 +302,7 @@ class Query /* implements ArrayAccess */{
 				$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
 				if($autoSelectId)
 					$this->select($q.$table.$q.'.'.$q.'id'.$q.$idAlias);
-				$this->group_by($q.$table.$q.'.'.$q.'id'.$q);
+				$this->groupBy($q.$table.$q.'.'.$q.'id'.$q);
 			break;
 			case '>':
 				$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
@@ -315,7 +315,7 @@ class Query /* implements ArrayAccess */{
 					$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 			break;
 		}
-		$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);
+		$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
@@ -339,7 +339,7 @@ class Query /* implements ArrayAccess */{
 	function count(){
 		$queryCount = clone $this;
 		$queryCount->unSelect();
-		$queryCount->unOrder_by();
+		$queryCount->unOrderBy();
 		$queryCount->select('id');
 		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
 	}
@@ -587,7 +587,7 @@ class Query /* implements ArrayAccess */{
 			foreach($this->listOfColumns($parent,null,$reload) as $col)
 				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
-			$this->group_by($q.$parent.$q.'.'.$q.'id'.$q);
+			$this->groupBy($q.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
@@ -606,7 +606,7 @@ class Query /* implements ArrayAccess */{
 			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
-			$this->group_by($q.$this->table.$q.'.'.$q.'id'.$q);
+			$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
 	function count4D(){
 		$queryCount = clone $this;

@@ -110,7 +110,7 @@ class Update extends Where {
 	 * @param string|array $order_by
 	 * @return SQLComposerUpdate
 	 */
-	public function order_by($order_by) {
+	public function orderBy($order_by) {
 		$this->order_by = array_merge($this->order_by, (array)$order_by);
 		return $this;
 	}

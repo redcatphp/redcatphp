@@ -578,7 +578,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$c = $query->formatColumnName($col);
 			if($lang)
 				$lang .= ',';
-			$query->order_by("ts_rank({$c}, plainto_tsquery({$lang}?))",[$t]);
+			$query->orderBy("ts_rank({$c}, plainto_tsquery({$lang}?))",[$t]);
 		}
 	}
 	function selectFullTextRank($query,$col,$t,$alias=null,$lang=null){

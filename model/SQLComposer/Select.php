@@ -8,14 +8,14 @@ class Select extends Where {
 		$this->distinct = false;
 		return $this;
 	}
-	function unGroup_by($group_by=null,  array $params = null){
+	function unGroupBy($group_by=null,  array $params = null){
 		return $this->remove_property('group_by',$group_by,$params);
 	}
-	function unWith_rollup(){
+	function unWithRollup(){
 		$this->with_rollup = false;
 		return $this;
 	}
-	function unOrder_by($order_by=null,  array $params = null){
+	function unOrderBy($order_by=null,  array $params = null){
 		return $this->remove_property('order_by',$order_by,$params);
 	}
 	function unLimit() {
@@ -29,22 +29,22 @@ class Select extends Where {
 	function unHaving($having=null,  array $params = null){
 		return $this->remove_property('having',$having,$params);
 	}
-	function unHaving_in($having,  array $params){
+	function unHavingIn($having,  array $params){
 		if (!is_string($having)) throw new SQLComposerException("Method having_in must be called with a string as first argument.");
 		list($having, $params) = SQLComposer::in($having, $params);
 		return $this->unHaving($having, $params);
 	}
-	function unHaving_op($column, $op,  array $params=null){
+	function unHavingOp($column, $op,  array $params=null){
 		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params);
 		return $this->unHaving($where, $params);
 	}
-	function unOpen_having_and() {
+	function unOpenHavingAnd() {
 		return $this->remove_property('having',[ '(', 'AND' ]);
 	}
-	function unOpen_having_or() {
+	function unOpenHavingOr() {
 		return $this->remove_property('having',[ '(', 'OR' ]);
 	}
-	function unOpen_having_not_and() {
+	function unOpenHavingNotAnd() {
 		$this->remove_property('having',[ '(', 'NOT' ]);
 		$this->unOpen_having_and();
 		return $this;
@@ -54,7 +54,7 @@ class Select extends Where {
 		$this->unOpen_having_or();
 		return $this;
 	}
-	function unClose_having() {
+	function unCloseHaving() {
 		return $this->remove_property('having',[ ')' ]);
 	}
 	
@@ -82,17 +82,17 @@ class Select extends Where {
 		$this->distinct = (bool)$distinct;
 		return $this;
 	}
-	function group_by($group_by,  array $params = null, $mysqli_types = "") {
+	function groupBy($group_by,  array $params = null, $mysqli_types = "") {
 		if(!empty($params)||!in_array($group_by,$this->group_by))
 			$this->group_by[] = $group_by;
 		$this->_add_params('group_by', $params, $mysqli_types);
 		return $this;
 	}
-	function with_rollup($with_rollup = true) {
+	function withRollup($with_rollup = true) {
 		$this->with_rollup = $with_rollup;
 		return $this;
 	}
-	function order_by($order_by,  array $params = null, $mysqli_types = "") {
+	function orderBy($order_by,  array $params = null, $mysqli_types = "") {
 		if(!empty($params)||!in_array($order_by,$this->order_by))
 			$this->order_by[] = $order_by;
 		$this->_add_params('order_by', $params, $mysqli_types);
@@ -113,34 +113,34 @@ class Select extends Where {
 		$this->_add_params('having', $params, $mysqli_types);
 		return $this;
 	}
-	function having_in($having,  array $params, $mysqli_types = "") {
+	function havingIn($having,  array $params, $mysqli_types = "") {
 		if (!is_string($having)) throw new SQLComposerException("Method having_in must be called with a string as first argument.");
 		list($having, $params, $mysqli_types) = SQLComposer::in($having, $params, $mysqli_types);
 		return $this->having($having, $params, $mysqli_types);
 	}
-	function having_op($column, $op,  array $params=null, $mysqli_types="") {
+	function havingOp($column, $op,  array $params=null, $mysqli_types="") {
 		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params, $mysqli_types);
 		return $this->having($where, $params, $mysqli_types);
 	}
-	function open_having_and() {
+	function openHavingAnd() {
 		$this->having[] = [ '(', 'AND' ];
 		return $this;
 	}
-	function open_having_or() {
+	function openHavingOr() {
 		$this->having[] = [ '(', 'OR' ];
 		return $this;
 	}
-	function open_having_not_and() {
+	function openHavingNotAnd() {
 		$this->having[] = [ '(', 'NOT' ];
-		$this->open_having_and();
+		$this->openHavingAnd();
 		return $this;
 	}
-	function open_having_not_or() {
+	function openHavingNotOr() {
 		$this->having[] = [ '(', 'NOT' ];
-		$this->open_having_or();
+		$this->openHavingOr();
 		return $this;
 	}
-	function close_having() {
+	function closeHaving() {
 		if(is_array($e=end($this->having))&&count($e)>1)
 			array_pop($this->having);
 		else
