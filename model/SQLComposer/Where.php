@@ -4,6 +4,9 @@ abstract class Where extends Base {
 	function unWhere($where=null,$params=null){
 		return $this->remove_property('where',$where,$params);
 	}
+	function unWith($with=null,$params=null){
+		return $this->remove_property('with',$with,$params);
+	}
 	function unWhereIn($where,$params=null){
 		list($where, $params) = SQLComposer::in($where, $params);
 		return $this->remove_property('where',$where,$params);
@@ -31,6 +34,7 @@ abstract class Where extends Base {
 	}
 	
 	protected $where = [ ];
+	protected $with = [ ];
 	function where($where,  array $params = null, $mysqli_types = "") {
 		$this->where[] = $where;
 		$this->_add_params('where', $params, $mysqli_types);
@@ -64,6 +68,11 @@ abstract class Where extends Base {
 	}
 	function closeWhere() {
 		$this->where[] = [ ')' ];
+		return $this;
+	}
+	function with($with,  array $params = null, $mysqli_types = "") {
+		$this->with[] = $with;
+		$this->_add_params('with', $params, $mysqli_types);
 		return $this;
 	}
 	protected function _render_where() {

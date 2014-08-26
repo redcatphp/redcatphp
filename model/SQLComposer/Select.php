@@ -151,7 +151,8 @@ class Select extends Where {
 		return Base::_render_bool_expr($this->having);
 	}
 	function render() {
-		$columns = empty($this->columns) ? "*" : implode(", ", $this->columns);
+		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific
+		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
 		$from = "\nFROM " . implode("\n\t", $this->tables);
 		$where = empty($this->where) ? "" : "\nWHERE " . $this->_render_where();
@@ -166,10 +167,10 @@ class Select extends Where {
 				$limit .= "\nOFFSET {$this->offset}";
 			}
 		}
-		return "SELECT {$distinct} {$columns} {$from} {$where} {$group_by} {$with_rollup} {$having} {$order_by} {$limit}";
+		return "{$with} SELECT {$distinct} {$columns} {$from} {$where} {$group_by} {$with_rollup} {$having} {$order_by} {$limit}";
 	}
 	function getParams() {
-		return $this->_get_params('select', 'tables', 'where', 'group_by', 'having', 'order_by');
+		return $this->_get_params('with','select', 'tables', 'where', 'group_by', 'having', 'order_by');
 	}
 
 }
