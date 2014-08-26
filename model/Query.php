@@ -11,8 +11,12 @@ class Query /* implements ArrayAccess */{
 	protected $writer;
 	protected $composer;
 	protected $_ignore = [];
+	static function getNew($table=null,$composer='select',$writer=null){
+		$c = get_called_class();
+		return new $c($table,$composer,$writer);
+	}
 	function __construct($table=null,$composer='select',$writer=null){
-		$this->table = $table;
+		$this->setTable($table);
 		if(!$writer)
 			$writer = R::getWriter();
 		$this->writer = $writer;
@@ -21,6 +25,12 @@ class Query /* implements ArrayAccess */{
 		$this->composer = $composer;
 		if(isset($table))
 			$this->from($table);
+	}
+	function setTable($table=null){
+		$this->table = $table;
+	}
+	function getTable(){
+		return $this->table;
 	}
 	function __destruct(){
 		unset($this->composer);
@@ -36,7 +46,7 @@ class Query /* implements ArrayAccess */{
 		
 	}
 	function fork(){
-		$c = clone $this;
+		$c = $this->getClone();
 		foreach(func_get_args() as $arg)
 			foreach((array)$arg as $m=>$a)
 				call_user_func_array([$c,$m],$a);
@@ -155,11 +165,8 @@ class Query /* implements ArrayAccess */{
 	}
 	protected function composerFrom(){
 		$args = func_get_args();
-		if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false){
-			if(!isset($this->table))
-				$this->table = $this->unQuote($args[0]);
+		if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false)
 			$args[0] = $this->quote($args[0]);
-		}
 		return $args;
 	}
 	protected function composerWhere(){
@@ -320,8 +327,9 @@ class Query /* implements ArrayAccess */{
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
 			$this->select('*');
-		if(!$this->inSelect($n)&&!$this->inSelect($n))
+		if(!$this->inSelect($n))
 			$this->select($n);
+		return $this;
 	}
 	function rowMD(){
 		return Query::explodeAgg($this->table());
@@ -330,18 +338,34 @@ class Query /* implements ArrayAccess */{
 		return Query::explodeAggTable($this->table());
 	}
 	function table(){
-		$this->selectNeed();
 		$data = $this->getAll();
 		if(control::devHas(control::dev_model_data))
 			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
 		return $data;
 	}
+	function getClone(){
+		return clone $this;
+	}
+	function countAll(){
+		return $this
+			->getClone()
+			->unLimit()
+			->unOffset()
+			->count()
+		;
+	}
 	function count(){
-		$queryCount = clone $this;
-		$queryCount->unSelect();
-		$queryCount->unOrderBy();
-		$queryCount->select('id');
-		return (int)model::newSelect('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
+		$queryCount = $this
+			->getClone()
+			->unOrderBy()
+			->unSelect()
+			->select('id')
+		;
+		return (int)static::getNew()
+			->select('COUNT(*)')
+			->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+			->getCell()
+		;
 	}
 	
 	//public helpers api
