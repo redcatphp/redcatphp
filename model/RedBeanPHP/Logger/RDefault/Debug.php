@@ -57,14 +57,14 @@ class Debug extends RDefault implements Logger
 	{
 		if ( is_null( $value ) ) $value = 'NULL';
 
-		$value = strval( $value );
-		if ( strlen( $value ) > 20 ) {
-			$value = substr( $value, 0, 20 ).'... ';
-		}
+		//$value = strval( $value );
+		//if ( strlen( $value ) > 20 )
+			//$value = substr( $value, 0, 20 ).'... ';
 
-		if ( !is_numeric( $value ) && $value !== 'NULL') {
+		if(is_numeric( $value ))
+			$value = str_replace(',','.',$value);
+		elseif ( $value !== 'NULL')
 			$value = '\''.$value.'\'';
-		}
 
 		return $value;
 	}
