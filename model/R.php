@@ -234,6 +234,9 @@ class R extends RedBeanPHP\Facade{
 		return parent::findAndExport( self::toSnake($type), $sql, $bindings );
 	}
 	static function findOne( $type, $sql = NULL, $bindings = [] ){
+		$sql = (string)$sql;
+		if(stripos($sql,'LIMIT')===false)
+			$sql .= 'LIMIT 1';
 		return parent::findOne( self::toSnake($type), $sql, $bindings );
 	}
 	static function findLast( $type, $sql = NULL, $bindings = [] ){
