@@ -11,7 +11,7 @@ class Geocoding{
 	static function getBoundingBox( array $center,$rad,$R='km'){
 		list($lat,$lon) = $center;
 		if(is_string($R))
-			$R = $this->getEarthRadius($R);	
+			$R = self::getEarthRadius($R);	
 		// coordinate limits
 		$MIN_LAT = deg2rad(-90);
 		$MAX_LAT = deg2rad(90);
