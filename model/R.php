@@ -239,6 +239,12 @@ class R extends RedBeanPHP\Facade{
 			$sql .= 'LIMIT 1';
 		return parent::findOne( self::toSnake($type), $sql, $bindings );
 	}
+	static function getCell($sql = NULL, $bindings = [] ){
+		$sql = (string)$sql;
+		if(stripos($sql,'LIMIT')===false)
+			$sql .= 'LIMIT 1';
+		return parent::getCell( $sql, $bindings );
+	}
 	static function findLast( $type, $sql = NULL, $bindings = [] ){
 		return parent::findLast( self::toSnake($type), $sql, $bindings );
 	}
