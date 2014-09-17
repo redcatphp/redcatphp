@@ -227,4 +227,10 @@ class uri implements ArrayAccess{
 	function offsetUnset($k){
 		return $this->__unset($k);
 	}
+	static function __set_state($a){
+		$uri = new uri();
+		foreach($a as $k=>$v)
+			$uri->$k = $v;
+		return $uri;
+	}
 }
