@@ -44,7 +44,8 @@ abstract class filter{
 	);
 	*/
 	static $basic_tags_map = [
-		'img'=>'src,width,height',
+		'img'=>'src,width,height,alt',
+		'a'=>'href,title',
 	];
 	static $basic_attrs = [
 		
