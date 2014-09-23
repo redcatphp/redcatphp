@@ -31,7 +31,7 @@ class scssc_server{
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
 		$v = scssc::$VERSION;
-		$t = date('r');
+		$t = @date('r');
 		$css = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
 		file_put_contents($out, $css);
 		file_put_contents($this->importsCacheName($out),
