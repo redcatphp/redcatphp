@@ -57,7 +57,7 @@ class FolderVars{
 			
 			break;
 			case 'txt':
-				return file_get_contents($file);
+				return nl2br(file_get_contents($file));
 			break;
 			case 'ini':
 				return @parse_ini_file($file,true);
