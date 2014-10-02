@@ -391,4 +391,3 @@ static function mobile_redirect($settings){
     }
 }
 }
-?>
