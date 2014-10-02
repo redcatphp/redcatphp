@@ -19,13 +19,11 @@ abstract class FS {
 		return $ret;
 	}
 	static function mkdir($file,$isFile=null){
-		$x = explode('/',$file);
+		$dir = $file;
 		if($isFile)
-			array_pop($x);
-		$dir = '';
-		foreach($x as $d)
-			if(!is_dir($dir=$dir.$d.'/')&&!@mkdir($dir))
-				throw new \Exception('Please run that command in terminal or do it manually: sudo mkdir "'.$dir.'" -m 0777');
+			$dir = dirname($file);
+		if(!is_dir($dir)&&!@mkdir($dir,0755,true))
+			throw new \Exception('Please run that command in terminal or do it manually: sudo mkdir "'.$dir.'" -m 0777');
 					
 	}
 	static function humanSize($bytes,$decimals=2){

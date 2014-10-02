@@ -105,9 +105,12 @@ class FolderVars{
 	}
 	function lsfile($ext=null){
 		$r = [];
-		foreach($this->globfile($ext) as $file){
-			if(is_file($file)){
-				$r[] = basename($file);
+		$files = $this->globfile($ext);
+		if($files){
+			foreach($files as $file){
+				if(is_file($file)){
+					$r[] = basename($file);
+				}
 			}
 		}
 		return $r;
