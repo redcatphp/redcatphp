@@ -143,6 +143,11 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 	php_value session.cookie_httponly true
 </IfModule>
 
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh)$">
+	Order Allow,Deny
+	Deny from all
+</FilesMatch>
+
 Options +FollowSymlinks
 RewriteEngine On
 
