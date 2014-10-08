@@ -17,7 +17,7 @@ class Service_Deploy{
 		self::exec('git config --local user.email "'.$ini['user.email'].'"');
 		self::exec('git config --local user.name "'.$ini['user.name'].'"');
 		self::exec('git add .');
-		$message = "auto commit by service deploy - ".strftime('%A %e %B %G - %k:%M:%S',time());
+		$message = "auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time());
 		self::exec('git commit -m "'.$message.'"');
 		GitDeploy::main();
 		echo '</pre>';
