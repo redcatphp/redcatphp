@@ -49,6 +49,12 @@ class FTP extends Server {
     }
 
     public function set_file($file, $contents, $die_if_fail = false) {
+        if(substr($file,0,1)=='"'&&substr($file,-1)=='"'){
+			$file = preg_replace_callback('/\\\\[0-7]{3}/', function($v){
+				return chr(octdec($v[0]));
+			},substr($file,1,-1));
+		}
+        
         # Make sure the folder exists in the FTP server.
 
         $dir = explode("/", dirname($file));

@@ -1,6 +1,5 @@
 <?php namespace surikat\control\GitDeploy;
 abstract class Server {
-
     public $connection;
     public $current_commit;
     public $host;
@@ -158,5 +157,4 @@ abstract class Server {
         
         GitDeploy::logmessage("Finished working on: {$this->host}");
     }
-
 }
