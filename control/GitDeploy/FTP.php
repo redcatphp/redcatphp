@@ -1,17 +1,18 @@
 <?php namespace surikat\control\GitDeploy;
 class FTP extends Server {
     public function connect($server) {
-        
         if (!extension_loaded('ftp')) {
             GitDeploy::error("You need the FTP extension to be enabled if you want to deploy via FTP.");
         }
-
-        $this->connection = @ftp_connect($server['host'], $server['port'], 30);
+		if(isset($server['ftps'])&&$server['ftps'])
+			$this->connection = @ftp_ssl_connect($server['host'], $server['port'], 30);
+		else
+			$this->connection = @ftp_connect($server['host'], $server['port'], 30);
 
         if (!$this->connection) {
             GitDeploy::error("Could not connect to {$this->host}");
         } else {
-            if (!@ftp_login($this->connection, $server['user'], $server['pass'])) {
+            if (!ftp_login($this->connection, $server['user'], $server['pass'])) {
                 GitDeploy::error("Could not login to {$this->host}");
             }
 
