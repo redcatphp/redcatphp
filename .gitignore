@@ -1,0 +1,12 @@
+/deploy.ini
+/content
+/.tmp
+/model/config.php
+/surikat
+*.min.css
+*.min.js
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
