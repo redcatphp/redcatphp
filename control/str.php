@@ -1,19 +1,5 @@
 <?php namespace surikat\control;
 class str{
-	static $utf8CharsMin = [
-		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
-		"v", "w", "x", "y", "z", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï",
-		"ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "а", "б", "в", "г", "д", "е", "ё", "ж",
-		"з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы",
-		"ь", "э", "ю", "я"
-	];
-	static $utf8CharsMaj = [
-		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
-		"V", "W", "X", "Y", "Z", "À", "Á", "Â", "Ã", "Ä", "Å", "Æ", "Ç", "È", "É", "Ê", "Ë", "Ì", "Í", "Î", "Ï",
-		"Ð", "Ñ", "Ò", "Ó", "Ô", "Õ", "Ö", "Ø", "Ù", "Ú", "Û", "Ü", "Ý", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж",
-		"З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ъ",
-		"Ь", "Э", "Ю", "Я"
-	];
 	static function ucfirst($str){
 		return self::toupper(substr($str,0,1)).substr($str,1);
 	}
@@ -21,10 +7,10 @@ class str{
 		return self::tolower(substr($str,0,1)).substr($str,1);
 	}
 	static function toupper($str){
-		return str_replace(self::$utf8CharsMin, self::$utf8CharsMaj, strtoupper($str));
+		return mb_strtoupper($str,mb_detect_encoding($str));
 	}
 	static function tolower($str){
-		return str_replace(self::$utf8CharsMaj, self::$utf8CharsMin, strtolower($str));
+		return mb_strtolower($str,mb_detect_encoding($str));
 	}
 	// An example string like ÀØėÿᾜὨζὅБю will be translated to AOeyIOzoBY More complete than : strtr((string)$str,"ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ","aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn"); @author http://www.evaisse.net/2008/php-translit-remove-accent-unaccent-21001
     static function unaccent($str, $utf8 = true){
