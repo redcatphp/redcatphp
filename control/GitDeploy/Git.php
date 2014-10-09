@@ -57,6 +57,7 @@ class Git {
             foreach ($result as $line) {
                 if ($line[0] == 'A' or $line[0] == 'C' or $line[0] == 'M') {
                     $path = trim(substr($line, 1, strlen($line)));
+					$path = $this->fixPath($path);
                     $return['upload'][$path] = $this->get_file_contents("$target_commit:\"$path\"");
                 } elseif ($line[0] == 'D') {
                     $return['delete'][] = trim(substr($line, 1, strlen($line)));
@@ -66,6 +67,7 @@ class Git {
             }
         } else {
             foreach ($result as $file) {
+				$file = $this->fixPath($file);
                 if (!in_array($file, $submodule_paths)) {
                     $return['upload'][$file] = $this->get_file_contents("$target_commit:$file");
                 }
@@ -75,6 +77,13 @@ class Git {
         return $return;
     }
     
+    protected function fixPath($file) {
+		if(substr($file,0,1)=='"'&&substr($file,-1)=='"')
+			$file = preg_replace_callback('/\\\\[0-7]{3}/', function($v){
+				return chr(octdec($v[0]));
+			},substr($file,1,-1));
+		return $file;
+	}
     protected function get_file_contents($path) {
     	$temp = tempnam(sys_get_temp_dir(), "git-deploy-");
     	$this->exec("show $path", "> \"$temp\"");
