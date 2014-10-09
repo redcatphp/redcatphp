@@ -13,6 +13,7 @@ foreach([
 	'Min/PHP',
 	'Min/JS',
 	'Min/CSS',
+	'Min/HTML',
 	'FS',
 	'JSON'
 ] as $inc)
