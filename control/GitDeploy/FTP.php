@@ -120,8 +120,8 @@ class FTP extends Server {
     }
 
     public function mkdir($file) {
-        ftp_mkdir($this->connection, $file);
-        GitDeploy::logmessage("Created directory: $file");
+        if(@ftp_mkdir($this->connection, $file))
+			GitDeploy::logmessage("Created directory: $file");
     }
 
     public function unset_file($file) {
