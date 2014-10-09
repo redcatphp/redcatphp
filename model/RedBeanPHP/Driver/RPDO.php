@@ -2,6 +2,7 @@
 
 namespace surikat\model\RedBeanPHP\Driver;
 
+use surikat\control;
 use surikat\model\RedBeanPHP\Driver as Driver;
 use surikat\model\RedBeanPHP\Logger as Logger;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
@@ -276,8 +277,10 @@ class RPDO implements Driver
 			$matches = [];
 
 			$dbname  = ( preg_match( '/dbname=(\w+)/', $this->dsn, $matches ) ) ? $matches[1] : '?';
-
-			throw new\PDOException( 'Could not connect to database (' . $dbname . ').', $exception->getCode() );
+			$msg = 'Could not connect to database (' . $dbname . ').';
+			if(control::devHas(control::dev_model))
+				$msg .= ' '.$exception->getMessage();
+			throw new\PDOException( $msg, $exception->getCode() );
 		}
 	}
 
