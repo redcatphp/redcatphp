@@ -612,6 +612,7 @@ class Query /* implements ArrayAccess */{
 				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->groupBy($q.$parent.$q.'.'.$q.'id'.$q);
+			$this->groupBy($q.$parent.$q.'.'.$q.$col.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
@@ -629,8 +630,11 @@ class Query /* implements ArrayAccess */{
 			}
 			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}
-		if(!(empty($parents)&&empty($shareds)&&empty($owns)))
+		if(!(empty($parents)&&empty($shareds)&&empty($owns))){
 			$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
+			foreach($fields as $field)
+				$this->groupBy($q.$this->table.$q.'.'.$q.$field.$q);
+		}
 	}
 	function count4D(){
 		$queryCount = clone $this;

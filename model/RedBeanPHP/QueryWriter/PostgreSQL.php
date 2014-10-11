@@ -576,19 +576,19 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		self::$FulltextHeadlineDefaultConfig = array_merge(self::$FulltextHeadlineDefaultConfig,$config);
 	}
 
-	function orderByFullTextRank($query,$col,$t,$alias=null,$lang=null){
+	function orderByFullTextRank($query,$col,$t,$lang=null,$alias=null){
 		if($t){
 			$c = $query->formatColumnName($col);
 			if($lang)
-				$lang .= ',';
+				$lang = "'$lang',";
 			$query->orderBy("ts_rank({$c}, plainto_tsquery({$lang}?))",[$t]);
 		}
 	}
-	function selectFullTextRank($query,$col,$t,$alias=null,$lang=null){
+	function selectFullTextRank($query,$col,$t,$lang=null,$alias=null){
 		if($t){
 			$c = $this->formatColumnName($col);
 			if($lang)
-				$lang .= ',';
+				$lang = "'$lang',";
 			if(!$alias)
 				$alias = $col.'_rank';
 			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",[$t]);
@@ -597,7 +597,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=[],$getl=true){
 		if(!$t)
 			return $query->selectTruncation($col,$truncation,$getl);
-		$lang = $lang?"'$lang',":'';
+		if($lang)
+			$lang = "'$lang',";
 		$config = array_merge($this->getFulltextHeadlineDefaultConfig(),$config);
 		$conf = '';
 		foreach($config as $k=>$v){
@@ -630,7 +631,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$conf = rtrim($conf,',');
 		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",[$t,$conf]);
 	}
-	function whereFullText($query,$cols,$t,$toVector=null){
+	function whereFullText($query,$cols,$t,$lang=null,$toVector=null){
 		if(!is_array($cols))
 			$cols = (array)$cols;
 		foreach(array_keys($cols) as $k){
@@ -638,6 +639,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			if($toVector)
 				$cols[$k] = 'to_tsvector('.$cols[$k].')';
 		}
-		$query->where(implode('||',$cols).' @@ plainto_tsquery(?)',[$t]);
+		if($lang)
+			$lang = "'$lang',";
+		$query->where(implode('||',$cols).' @@ plainto_tsquery('.$lang.'?)',[$t]);
 	}
 }
