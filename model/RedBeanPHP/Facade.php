@@ -301,8 +301,10 @@ class Facade
 			$db  = new RPDO( $dsn );
 			$dbType = $db->getDatabaseType();
 		} else {
-			$db = new RPDO( $dsn, $user, $pass, TRUE );
 			$dbType = substr( $dsn, 0, strpos( $dsn, ':' ) );
+			if(is_numeric(substr($dbType,-1)))
+				$dsn = substr($dsn,0,($l=strlen($dbType))-1).substr($dsn,$l);
+			$db = new RPDO( $dsn, $user, $pass, TRUE );
 		}
 
 		$adapter = new DBAdapter( $db );
