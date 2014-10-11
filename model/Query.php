@@ -608,11 +608,12 @@ class Query /* implements ArrayAccess */{
 		$cc = $this->writerConcatenator;
 		extract($this->heuristic($reload));
 		foreach($parents as $parent){
-			foreach($this->listOfColumns($parent,null,$reload) as $col)
+			foreach($this->listOfColumns($parent,null,$reload) as $col){
 				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
+				$this->groupBy($q.$parent.$q.'.'.$q.$col.$q);
+			}
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->groupBy($q.$parent.$q.'.'.$q.'id'.$q);
-			$this->groupBy($q.$parent.$q.'.'.$q.$col.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
