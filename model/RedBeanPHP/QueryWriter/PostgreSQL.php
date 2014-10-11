@@ -510,6 +510,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 					default:
 					case '<':
 						$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
+						$gb = $q.$localTable.$q.'.'.$q.$localCol.$q;
+						if(!in_array($gb,$groupBy))
+							$groupBy[] = $gb;
 						$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
 						if(!in_array($gb,$groupBy))
 							$groupBy[] = $gb;
