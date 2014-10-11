@@ -19,6 +19,7 @@ class Service_Deploy{
 		self::exec('git add .');
 		$message = "auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time());
 		self::exec('git commit -m "'.$message.'"');
+		shell_exec('chmod -R 777 '.control::$CWD.'.git 2>&1');
 		GitDeploy::main();
 		echo '</pre>';
 	}
