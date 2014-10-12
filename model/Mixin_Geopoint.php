@@ -27,19 +27,19 @@ trait Mixin_Geopoint{
 			$this->earthRadius = Geocoding::getEarthRadius($this->earthRadius);
 		return $this->earthRadius;
 	}
-	function checkLat(&$lat,$nul=true){
+	function checkLat($lat,$nul=true){
 		if($lat!='')
 			$lat = (float)$lat;
 		if(($nul&&(!isset($lat)||$lat===false))||($lat<=90.0&&$lat>=-90.0))
-			return true;
-		$lat = null;
+			return $lat;
+		return false;
 	}
-	function checkLon(&$lon,$nul=true){
+	function checkLon($lon,$nul=true){
 		if($lon!='')
 			$lon = (float)$lon;
 		if(($nul&&(!isset($lon)||$lon===false))||($lon<=180.0&&$lon>=-180.0))
-			return true;
-		$lon = null;
+			return $lon;
+		return false;
 	}
 	function LatLon2Point($lat,$lon){
 		$lat = str_replace(',','.',$lat);
