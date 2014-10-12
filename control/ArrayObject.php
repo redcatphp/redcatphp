@@ -40,7 +40,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return $c;
 	}
 	static function __recurseKey($v,$key,$depth=null){
-		$c = new ArrayObject();
+		$c = new static();
 		foreach($v as $k=>$v){
 			if($key===$k){
 				$c[] = $v;
@@ -53,7 +53,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return $c;
 	}
 	static function __groupKey($o,$group,$key,$depth=null){
-		$c = new ArrayObject();
+		$c = new static();
 		foreach($group as $g){
 			$v = $o->offsetGet($g);
 			if(!$v instanceof ArrayObject)
@@ -67,14 +67,14 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return self::__groupKey($this,$group,$key,$depth);
 	}
 	function group(){
-		$c = new ArrayObject();
+		$c = new static();
 		foreach(func_get_args() as $k)
 			if($this->$k instanceof ArrayObject||is_array($this->$k))
 				$c->push($this->$k);
 		return $c;
 	}
 	function submerge(){
-		$c = new ArrayObject();
+		$c = new static();
 		foreach(func_get_args() as $k)
 			if($this->$k instanceof ArrayObject||is_array($this->$k))
 				$c->merge($this->$k);
@@ -127,10 +127,10 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
         return array_search($v,(array)$this);
 	}
 	function unique(){
-		return new ArrayObject(array_unique((array)$this));
+		return new static(array_unique((array)$this));
 	}
 	function filter($cb){
-		return new ArrayObject(array_filter((array)$this,$cb));
+		return new static(array_filter((array)$this,$cb));
 	}
 	function __toString(){
 		if(control::devHas(control::dev_control))
@@ -155,7 +155,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
         foreach($a as $k=>$v)
             if(is_array($v))
                 $a[$k] = self::array2object($v);
-        return new ArrayObject($a);
+        return new static($a);
     }
     function __call($f,$args){
 		if(strpos($f,'array_')===0)
