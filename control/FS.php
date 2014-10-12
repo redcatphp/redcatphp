@@ -22,9 +22,7 @@ abstract class FS {
 		$dir = $file;
 		if($isFile)
 			$dir = dirname($file);
-		if(!is_dir($dir)&&!@mkdir($dir,0755,true))
-			throw new \Exception('Please run that command in terminal or do it manually: sudo mkdir "'.$dir.'" -m 0777');
-					
+		return @mkdir($dir,0777,true);					
 	}
 	static function humanSize($bytes,$decimals=2){
 		$sz = 'BKMGTP';  
