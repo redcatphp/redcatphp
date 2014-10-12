@@ -1,9 +1,15 @@
 <?php namespace surikat\control;
-class post{
+class post extends ArrayObject{
 	private static $postObject;
+	function offsetGet($k){
+		return ($v=parent::offsetGet($k))==''?null:$v;
+	}
+	function __get($k){
+		return ($v=parent::__get($k))==''?null:$v;
+	}
 	static function getObject(){
 		if(!isset(self::$postObject))
-			self::$postObject = new ArrayObject($_POST);
+			self::$postObject = new static($_POST);
 		return self::$postObject;
 	}
 	static $key = 'persistant';
