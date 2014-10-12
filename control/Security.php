@@ -23,4 +23,3 @@ abstract class Security{
 		return $val;
 	}
 }
-?>

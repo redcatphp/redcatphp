@@ -44,4 +44,3 @@ abstract class FS {
         return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 }
-?>

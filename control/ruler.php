@@ -91,4 +91,3 @@ class ruler {
 		return dates::validate_time($v);
 	}
 }
-?>
