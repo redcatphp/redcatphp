@@ -16,5 +16,21 @@ $js('jquery',function(){
 		}
 		return false;
 	};
-	$('main form[action][id]').on('submit',onSubmit);
+	var form = $('main form[action][id]');
+	form.on('submit',onSubmit);
+	$('input[type=url]',form).on('keyup',function(){
+		var self = $(this);
+		var val = self.val();
+		var oval = val;
+		try{
+			val = decodeURIComponent(val);
+		}
+		catch(e){}
+		if(val.indexOf('://')<0){
+			val = 'http://'+val;
+		}
+		if(oval!=val){
+			self.val(val);
+		}
+	});
 });
