@@ -31,7 +31,11 @@ abstract class Service_Kompiler{
 	}
 	static function Set_DEV_Mode(){
 		echo "<pre>surikat mapped to sources by '".getcwd().'/'.self::$surikat."':\r\n";
-		file_put_contents(self::$surikat,"<?php include('".self::$PATH."/control.php');control::dev();view::index();");
+		file_put_contents(self::$surikat,"<?php
+if(!@include(__DIR__.'/".self::$PATH."/control.php'))
+	symlink('../".self::$PATH."','surikat')&&include('".self::$PATH."/control.php');
+control::dev();
+view::index();");
 	}
 	static function Set_PROD_Mode($target=null){
 		set_time_limit(0);
@@ -47,7 +51,7 @@ abstract class Service_Kompiler{
 			unlink($target.'.phar');
 		$p = new \Phar($target.'.phar',0,'surikat');
 		$directory = getcwd().'/'.self::$PATH;
-		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false); Phar::mapPhar(\'surikat\'); include \'phar://\'.__FILE__.\'/control.php\'; control::$SURIKAT=control::$CWD.\'surikat/\'; view::index(); __HALT_COMPILER(); ?>');
+		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/control.php\'; control::$SURIKAT=control::$CWD.\'surikat/\'; view::index(); __HALT_COMPILER(); ?>');
 		echo "<h1>surikat Compilation to '".$target."':</h1><pre>\r\n";
 		$tt = 0;
 		$stt = 0;
