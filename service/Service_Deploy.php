@@ -3,13 +3,17 @@ use surikat\control;
 use surikat\control\GitDeploy\GitDeploy;
 use surikat\control\GitDeploy\Config;
 class Service_Deploy{
-	static function method(){
+	static function directOutput(){
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
+	}
+	static function method(){
+		self::directOutput();
 		echo '<pre>';
 		GitDeploy::main();
 		echo '</pre>';
 	}
 	static function surikatIn(){
+		self::directOutput();
 		echo '<pre>';
 		GitDeploy::main([
 			'repo_path'=>control::$SURIKAT,
@@ -18,6 +22,7 @@ class Service_Deploy{
 		
 	}
 	static function surikatShared(){
+		self::directOutput();
 		echo '<pre>';
 		GitDeploy::main([
 			'repo_path'=>control::$SURIKAT,
@@ -25,7 +30,7 @@ class Service_Deploy{
 		echo '</pre>';
 	}
 	static function autocommit(){ //need the .git have recursively full permission (www-data have to be able to write)
-		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
+		self::directOutput();
 		$ini = @parse_ini_file(control::$CWD.'deploy.ini',true);
 		if(!@$ini['user.email']||!@$ini['user.name'])
 			trigger_error('You have to define user.email and user.name in deploy.ini',256);

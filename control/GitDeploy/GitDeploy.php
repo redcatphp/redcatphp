@@ -5,12 +5,10 @@ abstract class GitDeploy{
 		$args = Config::getArgs();
 		if(isset($config))
 			$args = array_merge($args,$config);
-		$servers = Config::getServers($args['config_file']);
+		$servers = Config::getServers($args['config_file'],$parent?pathinfo($args['repo_path'],PATHINFO_FILENAME):null);
 		$git = new Git($args['repo_path']);
 
 		foreach ($servers as $server) {
-			if($parent)
-				$server->server['path'] = dirname(rtrim($server->server['path'],'/')).'/'.pathinfo($args['repo_path'],PATHINFO_FILENAME);
 			if ($args['revert']) {
 				$server->revert($git, $args['list_only']);
 			} else {

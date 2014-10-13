@@ -17,7 +17,7 @@ class SFTP extends Server {
             GitDeploy::error("Could not login to {$this->host}");
         }
 
-        if (!$this->connection->chdir($server['path'])) {
+        if (!$this->connection->chdir($server['path'])&&!$this->connection->mkdir($server['path'])) {
             GitDeploy::error("Could not change the directory to {$server['path']} on {$this->host}");
         }
 

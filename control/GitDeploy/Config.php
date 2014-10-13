@@ -43,7 +43,7 @@ class Config {
         ];
     }
 
-    public static function getServers($config_file) {
+    public static function getServers($config_file,$parent=null) {
         $servers = @parse_ini_file($config_file, true);
         $return = [];
 
@@ -72,7 +72,8 @@ class Config {
                     'ignore_files' => [],
                     'upload_untracked' => []
                         ], $options);
-
+				if($parent)
+					$options['path'] = dirname(rtrim($options['path'],'/')).'/'.$parent;
                 if ($options['skip']) {
                     continue;
                 } else {
