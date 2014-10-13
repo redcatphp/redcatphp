@@ -5,7 +5,9 @@ use surikat\control\GitDeploy\Config;
 class Service_Deploy{
 	static function method(){
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
+		echo '<pre>';
 		GitDeploy::main();
+		echo '</pre>';
 	}
 	static function autocommit(){ //need the .git have recursively full permission (www-data have to be able to write)
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
