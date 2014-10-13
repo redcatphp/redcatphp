@@ -89,3 +89,7 @@ stripAccents = function(str){
     str = str.replace(defaultDiacriticsRemovalMap[i].letters, defaultDiacriticsRemovalMap[i].base);
   return str;
 };
+floatFromStr = function(v){
+	if(typeof(v)!='undefined')
+		return parseFloat(v.replace(',','.'));
+};

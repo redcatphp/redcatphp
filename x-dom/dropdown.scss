@@ -170,8 +170,8 @@
 .dropdown-backdrop { // Backdrop to catch body clicks on mobile, etc.
 	position: fixed;
 	left: 0;
-	right: 0;
-	bottom: 0;
+	//right: 0;//bug on dbl clic
+	//bottom: 0;//bug on dbl clic
 	top: 0;
 	z-index: 900;
 }

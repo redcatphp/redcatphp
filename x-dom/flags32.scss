@@ -1,6 +1,6 @@
 .f32 {
 
-    .flag{background:url(../images/flags32.png) no-repeat;}
+    .flag{background:url(#{$img}flags32.png) no-repeat;}
 
     ._African_Union{background-position:0 -32px;}
     ._Arab_League{background-position:0 -64px;}

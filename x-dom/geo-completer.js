@@ -1,48 +1,151 @@
-//https://developers.google.com/maps/documentation/javascript/reference
 $css('/x-dom/geo-completer');
-$js([
+
+$css('jquery-ui/core');
+$css('jquery-ui/menu');
+$css('jquery-ui/autocomplete');
+
+$js(true,[
 	'jquery',
+
+	'jquery-ui/core',
+	'jquery-ui/widget',
+	'jquery-ui/menu',
+	'jquery-ui/position',
+	'jquery-ui/autocomplete',
+	
+	'string',
+	'geocoding',
+	
 	'simulate'
 ],function(){
-	geocallback = function(){
-		$('geo-completer').each(function(){
-			var geocompleter = $(this);
+	var geocallbacks = [];
+	$('geo-completer').each(function(){
+		var THIS = $(this);
+		var geolocal = $('.remodal',THIS);
+		var inputLat = $('input.in-latitude',THIS);
+		var inputLng = $('input.in-longitude',THIS);
+		var inputRadius = $('input.in-radius',THIS);
+		var inputGG = $('input.gg-maps',THIS);
+			inputGG.after('<div class="map-wrapper"><div class="map-canvas"></div></div>');
+		var confirmGG = $('.remodal-confirm',THIS);
+		var theMAP = $('.map-canvas',THIS);
+		var inputGeoname = $('input.geoname',THIS);
+
+		var modal = $('[data-remodal-id=map]',THIS);
+		var inputRadiusH = $('<input type="hidden">');
+		var inputLatH = $('<input type="hidden">');
+		var inputLngH = $('<input type="hidden">');
+		inputLatH.appendTo(modal);
+		inputLngH.appendTo(modal);
+		inputRadiusH.appendTo(modal);
+		
+		inputGeoname.wrap('<div>');
+		inputGeoname.autocomplete({
+			selectFirst:true,
+			autoFill:true,
+			minLength: 0,
+			source:function(request,response){
+				$.ajax({
+					type:'GET',
+					dataType:'json',
+					url:inputGeoname.attr('data-url'),
+					data:{'term':request.term},
+					success:function(j){
+						var suggesting = [];
+						for(var k in j){
+							suggesting.push({
+								label:j[k].name,
+								value:j[k].name,
+								lat:j[k].latitude,
+								lon:j[k].longitude,
+								radius:j[k].radius
+							});
+						}
+						response(suggesting);
+					},
+					error:function(){
+						response([]);
+					}
+				});
+			},
+			select:function(e,ui){
+				inputLat.val(ui.item.lat);
+				inputLng.val(ui.item.lon);
+				inputRadius.val(ui.item.radius);
+			},
+			appendTo: inputGeoname.parent(),
+			position: {
+				my: 'left top-3',
+				at: 'left bottom',
+				collision: 'none'
+			}
+		});
+		inputGeoname.on('focus',function(){
+			inputGeoname.autocomplete('search',inputGeoname.val());
+		});
+		geocallbacks.push(function(){
+
+			$(document).on("confirm","[data-remodal-id=map]",function(){
+				inputGeoname.val(inputGG.val());
+				inputLat.val(inputLatH.val());
+				inputLng.val(inputLngH.val());
+				inputRadius.val(inputRadiusH.val());
+			});
+			
+			var geocoder = new google.maps.Geocoder();
+			var autocompleteService = new google.maps.places.AutocompleteService();
+			
+			var params = <!--#include virtual="/service/autocomplete/geoinit" -->; //Pyrénées-Orientales Square
 			//$.getJSON('service/autocomplete/geoinit',function(params){
-			var params = <!--#include virtual="/service/autocomplete/geoinit" -->;
-			var defaultMapZoom = 17;
-			var bounds = new google.maps.LatLngBounds( //Pyrénées-Orientales Square
+			var bounds = new google.maps.LatLngBounds(
 				new google.maps.LatLng(params.southWestLatMainBound,params.southWestLngMainBound),
 				new google.maps.LatLng(params.northEastLatMainBound,params.northEastLngMainBound)
 			);
-			var geocoder = new google.maps.Geocoder();
-			var input_lat = geocompleter.find('input[type=number][step=any]:eq(0)');
-			var input_lng = geocompleter.find('input[type=number][step=any]:eq(1)');
-			var input_rayon = geocompleter.find('input[type=number][step][step!=any]:eq(0)');
-			var input_validate = geocompleter.find('input[type=hidden]:eq(0)');
-			var input = geocompleter.find('input[type=text]:eq(0)');
-			var div_map = $('<div class="map-canvas"></div>');
-			div_map.insertAfter(input);
-			var distance = function(lat1, lon1, lat2, lon2){
-				var R = 6371; // Radius of the earth in km
-				var dLat = (lat2 - lat1) * Math.PI / 180;  // deg2rad below
-				var dLon = (lon2 - lon1) * Math.PI / 180;
-				var a = 0.5 - Math.cos(dLat)/2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * (1 - Math.cos(dLon))/2;
-				return R * 2 * Math.asin(Math.sqrt(a));
+			var map = new google.maps.Map(theMAP.get(0),{
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.HYBRID,
+				center:new google.maps.LatLng(params.centerLatMainBound,params.centerLngMainBound)
+			});
+			//map.fitBounds(bounds);
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(inputGG.get(0));
+			var autocomplete = new google.maps.places.Autocomplete(inputGG.get(0),{
+				bounds:bounds,
+				region:params.region,
+				componentRestrictions:{
+					country:params.country
+				},
+				types: ['geocode']
+			});
+			var updatingGeocode = function(val){
+				if(val){
+					autocompleteService.getQueryPredictions({input:val,types:['geocode']},function(predictions, status){
+						if(status==google.maps.places.PlacesServiceStatus.OK&&predictions.length){
+							geocoder.geocode({address:predictions[0].description,bounds:bounds},function(results,status){
+								if(status===google.maps.places.PlacesServiceStatus.OK){
+									inputGG.val(results[0].formatted_address);
+									theMAP.updatePlace(results[0],true);
+								}
+							});
+						}
+					});
+				}
+				else{
+					map.fitBounds(bounds);
+					inputLatH.val('');
+					inputLngH.val('');
+				}
 			};
+			var defaultMapZoom = 17;
 			var updateAdresse = function(latLng,updateMark){
 				geocoder.geocode({'latLng':latLng},function(results,status){
-					if(status=='OK'){
-						input.val(results[0].formatted_address);
-						updatePlace(results[0],updateMark);
+					if(status==google.maps.places.PlacesServiceStatus.OK){
+						inputGG.val(results[0].formatted_address);
+						theMAP.updatePlace(results[0],updateMark);
 					}				
 				});
-			};
-			var floatFromStr = function(v){
-				if(typeof(v)!='undefined')
-					return parseFloat(v.replace(',','.'));
-			};
+			};				
 			var updatePosition = function(){
-				updateAdresse(new google.maps.LatLng(floatFromStr(input_lat.val()), floatFromStr(input_lng.val())),true);
+				updateAdresse(new google.maps.LatLng(floatFromStr(inputLat.val()), floatFromStr(inputLng.val())),true);
 			};
 			var updateMarker = function(place){
 				marker.setVisible(false);
@@ -56,58 +159,19 @@ $js([
 				marker.setPosition(place.geometry.location);
 				marker.setVisible(true);
 			};
-			input.keypress(function(e){
+			inputGG.keypress(function(e){
 				if(e.which==13){
 					e.preventDefault();
-					input.trigger('focus');
-					input.simulate('keydown',{keyCode:$.ui.keyCode.DOWN}).simulate('keydown',{keyCode:$.ui.keyCode.ENTER});
+					inputGG.trigger('focus');
+					inputGG.simulate('keydown',{keyCode:$.ui.keyCode.DOWN}).simulate('keydown',{keyCode:$.ui.keyCode.ENTER});
 					return false;
 				}
 			});
-			input.on('input',function(){
-				input_lat.val('');
-				input_lng.val('');
-				input_rayon.val('');
-				input_validate.val('false');
-			});
-			input_lat.on('input',updatePosition);
-			input_lng.on('input',updatePosition);
-			input_rayon.on('input',function(){
-				var val = $(this).val();
-				if(val){
-					circle.setRadius(floatFromStr(val)*1000.0);
-					circle.bindTo('center', marker, 'position');
-					circle.setVisible(true);
-				}
-				else{
-					circle.setVisible(false);
-				}
-			});
-			var map = new google.maps.Map(div_map.get(0),{ //https://developers.google.com/maps/documentation/javascript/reference?csw=1#MapOptions
-				zoom: 8,
-				mapTypeId: google.maps.MapTypeId.HYBRID
-				/*			
-					MapTypeId.ROADMAP displays the default road map view. This is the default map type.
-					MapTypeId.SATELLITE displays Google Earth satellite images
-					MapTypeId.HYBRID displays a mixture of normal and satellite views
-					MapTypeId.TERRAIN displays a physical map based on terrain information. 
-				*/,
-				center:new google.maps.LatLng(params.centerLatMainBound,params.centerLngMainBound)
-			});
-			//map.fitBounds(bounds);
-			map.controls[google.maps.ControlPosition.TOP_LEFT].push(input.get(0));
-			var autocomplete = new google.maps.places.Autocomplete(input.get(0),{
-				bounds:bounds,
-				region:params.region,
-				componentRestrictions:{
-					country:params.country
-				}
-				/* type: //https://developers.google.com/places/documentation/supported_types */
-			});
+			
 			//autocomplete.bindTo('bounds', map);
-			var infowindow = new google.maps.InfoWindow();
+			//var infowindow = new google.maps.InfoWindow();
 			var marker = new google.maps.Marker({map: map,draggable:true});
-			var circle = new google.maps.Circle({ //https://developers.google.com/maps/documentation/javascript/reference?csw=1#CircleOptions
+			var circle = new google.maps.Circle({
 			  //visible: false,
 			  map: map,
 			  fillColor: '#AA0000',
@@ -117,26 +181,27 @@ $js([
 			  strokeColor:'#000',
 			  editable:true
 			});
-			var setRayon = function(place){
+			var setRadius = function(place){
 				if(place&&place.geometry&&place.geometry.viewport&&(place.types[0]=="locality"||place.types[0]=="administrative_area_level_2")){
 					var center = place.geometry.viewport.getCenter();
 					var northEast = place.geometry.viewport.getNorthEast();
 					var southWest = place.geometry.viewport.getSouthWest();
-					var lat = center.lat();
-					var lng = center.lng();
-					var r = (distance(lat,lng,northEast.lat(),northEast.lng())+distance(lat,lng,southWest.lat(),southWest.lng()))/2.0;
-					input_rayon.val(r);
+					//var lat = center.lat();
+					//var lng = center.lng();
+					//var r = (window.geocoding.getDistance(lat,lng,northEast.lat(),northEast.lng())+distance(lat,lng,southWest.lat(),southWest.lng()))/2.0;
+					var r = (window.geocoding.getDistance(northEast.lat(),northEast.lng(),southWest.lat(),southWest.lng()))/2.0;
+					inputRadiusH.val(r);
 					circle.setRadius(r*1000.0);
 					circle.bindTo('center', marker, 'position');
 					circle.setVisible(true);
 				}
 				else{
 					circle.setVisible(false);
-					input_rayon.val('');
+					inputRadiusH.val('');
 				}
 			};
-			var updatePlace = function(place,updateMark){
-				setRayon(place);
+			theMAP.updatePlace = function(place,updateMark){
+				setRadius(place);
 				if(typeof(place)!='object'||!place.geometry)
 					return;
 				if(place.geometry.viewport){
@@ -148,38 +213,37 @@ $js([
 				}
 				if(updateMark)
 					updateMarker(place);
-				console.log(place);
-				input_validate.val('true');
-				input.trigger('change');
+				
+				if(inputLatH.val()!=place.geometry.location.lat())
+					inputLatH.val(place.geometry.location.lat());
+				if(inputLngH.val()!=place.geometry.location.lng())
+					inputLngH.val(place.geometry.location.lng());
 			};
-			//var autocompleteService = new google.maps.places.AutocompleteService();
+			
 			google.maps.event.addListener(circle, 'radius_changed', function(){
 				var val = circle.getRadius()/1000.0;
-				if(val!=floatFromStr(input_rayon.val()))
-					input_rayon.val(val);
+				if(val!=floatFromStr(inputRadiusH.val()))
+					inputRadiusH.val(val);
 			});
 			google.maps.event.addListener(marker, 'dragstart', function(e){
 				circle.setVisible(false);
-				infowindow.close();
 			});
 			google.maps.event.addListener(marker, 'dragend', function(e){
 				var latLng = e.latLng;
-				input_lat.val(latLng.lat());
-				input_lng.val(latLng.lng());
+				inputLatH.val(latLng.lat());
+				inputLngH.val(latLng.lng());
 				updateAdresse(latLng);
 			});
 			google.maps.event.addListener(map, 'dragend', function(){
 				var center = map.getCenter();
 				marker.setPosition(center);
-				input_rayon.val('');
+				inputRadiusH.val('');
 				circle.setVisible(false);
-				input_lat.val(center.lat());
-				input_lng.val(center.lng());
-				map.setZoom(defaultMapZoom);
+				inputLatH.val(center.lat());
+				inputLngH.val(center.lng());
 				geocoder.geocode({'latLng':center},function(results,status){
-					if(status=='OK'){
-						input.val(results[0].formatted_address);
-						input_validate.val('true');
+					if(status==google.maps.places.PlacesServiceStatus.OK){
+						inputGG.val(results[0].formatted_address);
 					}
 				});
 			});
@@ -188,47 +252,30 @@ $js([
 				if(typeof(place)=='object'&&place.geometry){
 					if(place.geometry.viewport){
 						var center = place.geometry.viewport.getCenter();
-						input_lat.val(center.lat());
-						input_lng.val(center.lng());
+						inputLatH.val(center.lat());
+						inputLngH.val(center.lng());
 					}
 					else{
-						input_lat.val(place.geometry.location.lat());
-						input_lng.val(place.geometry.location.lng());
+						inputLatH.val(place.geometry.location.lat());
+						inputLngH.val(place.geometry.location.lng());
 					}
 				}
-				updatePlace(place,true);
+				theMAP.updatePlace(place,true);
 				
 			});
-			var val = input.val();
-			console.log(val);
-			if(val){
-				geocoder.geocode({'address':val.trim()},function(results,status){
-					if(status==='OK'){
-						input.val(results[0].formatted_address);
-						updatePlace(results[0],true);
-					}
-					else
-						console.log(status);
-				});
-			}
-		});
-	};
-	$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocallback');
-	/*
-	$(window).on('unload',function(){
-		//trying to resolve google map bug on unloading page that slow hard navigation
-		//$(this).off('unload');
-		if (window.google !== undefined && google.maps !== undefined){
-			delete google.maps;
-			$('script').each(function () {
-				if (this.src.indexOf('googleapis.com/maps') >= 0
-						|| this.src.indexOf('maps.gstatic.com') >= 0
-						|| this.src.indexOf('earthbuilder.googleapis.com') >= 0) {
-					// console.log('removed', this.src);
-					$(this).remove();
-				}
+			updatingGeocode(inputGeoname.val());
+			$(document).on("open","[data-remodal-id=map]",function(){
+				updatingGeocode(inputGeoname.val());
 			});
-		}
+			
+		});
 	});
-	*/
+	window.geocompleter = function(){
+		for(var i in geocallbacks)
+			geocallbacks[i]();
+	};
+	$(document).one("open","[data-remodal-id=map]",function(){
+		$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocompleter');
+	});
+	$js('remodal');
 });

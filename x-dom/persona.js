@@ -33,6 +33,7 @@ $js([
 			$(document).trigger('persona.login');
 			loginBTN.data('origin',loginBTN.html());
 			loginBTN.html(currentUser);
+			loginBTN.show();
 			loginBTN.off('click',loginCALL);
 			loginBTN.next('ul').removeClass('disabled');
 			$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true,function(){
@@ -66,7 +67,8 @@ $js([
 				},
 				onready: function(){
 				}
-			});				
+			});
+			loginBTN.show();		
 		};
 		loginBTN.on('click',loginCALL);
 		logoutBTN.on('click',logoutCALL);
@@ -74,6 +76,8 @@ $js([
 			logonCALL(currentUser);
 		else if(!localStorage.getItem('personaInitilized'))
 			initCALL();
+		else
+			loginBTN.show();		
 	});
 	$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true);
 });

@@ -10,9 +10,12 @@
 		text-indent: 0.5em;
 		padding-bottom:0.2em;
 		text-decoration:none;
-		width:100%;
+		width:auto;
 		display:block;
 		border-radius:0;
+		&.ui-state-focus{
+			margin:0;
+		}
 	}
 	ul.ui-autocomplete{
 		background:$color-light;
