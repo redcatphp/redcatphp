@@ -10,7 +10,7 @@ abstract class GitDeploy{
 
 		foreach ($servers as $server) {
 			if($parent)
-				$server->server['path'] = dirname(rtrim($server->server['path'],'/'));
+				$server->server['path'] = dirname(rtrim($server->server['path'],'/')).'/'.pathinfo($args['repo_path'],PATHINFO_FILENAME);
 			if ($args['revert']) {
 				$server->revert($git, $args['list_only']);
 			} else {
