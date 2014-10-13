@@ -1,12 +1,16 @@
 <?php namespace surikat\control\GitDeploy;
 abstract class GitDeploy{
-	static function main(){
+	static function main($config=null,$parent=null){
 		ini_set('memory_limit', '256M');
 		$args = Config::getArgs();
+		if(isset($config))
+			$args = array_merge($args,$config);
 		$servers = Config::getServers($args['config_file']);
 		$git = new Git($args['repo_path']);
 
 		foreach ($servers as $server) {
+			if($parent)
+				$server->server['path'] = dirname(rtrim($server->server['path'],'/'));
 			if ($args['revert']) {
 				$server->revert($git, $args['list_only']);
 			} else {

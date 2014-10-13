@@ -9,6 +9,21 @@ class Service_Deploy{
 		GitDeploy::main();
 		echo '</pre>';
 	}
+	static function surikatIn(){
+		echo '<pre>';
+		GitDeploy::main([
+			'repo_path'=>control::$SURIKAT,
+		]);
+		echo '</pre>';
+		
+	}
+	static function surikatShared(){
+		echo '<pre>';
+		GitDeploy::main([
+			'repo_path'=>control::$SURIKAT,
+		],true);
+		echo '</pre>';
+	}
 	static function autocommit(){ //need the .git have recursively full permission (www-data have to be able to write)
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
 		$ini = @parse_ini_file(control::$CWD.'deploy.ini',true);
