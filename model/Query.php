@@ -45,13 +45,6 @@ class Query /* implements ArrayAccess */{
 	function __set($k,$v){
 		
 	}
-	function fork(){
-		$c = $this->getClone();
-		foreach(func_get_args() as $arg)
-			foreach((array)$arg as $m=>$a)
-				call_user_func_array([$c,$m],$a);
-		return $c;
-	}
 	function __clone(){
         $this->composer = clone $this->composer;
     }
