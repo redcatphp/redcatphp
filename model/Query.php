@@ -15,6 +15,9 @@ class Query /* implements ArrayAccess */{
 		$c = get_called_class();
 		return new $c($table,$composer,$writer);
 	}
+	static function tableExists($table){
+		return R::getWriter()->tableExists($table);
+	}
 	function __construct($table=null,$composer='select',$writer=null){
 		$this->setTable($table);
 		if(!$writer)
@@ -50,7 +53,7 @@ class Query /* implements ArrayAccess */{
     }
 	function __call($f,$args){
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
-			if(!$this->table||R::getWriter()->tableExists($this->table)){
+			if(!$this->table||self::tableExists($this->table)){
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
