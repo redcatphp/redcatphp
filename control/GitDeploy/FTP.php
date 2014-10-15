@@ -18,7 +18,7 @@ class FTP extends Server {
 
             ftp_pasv($this->connection, $server['passive']);
 
-            if (!ftp_chdir($this->connection, $server['path'])&&!@ftp_mkdir($this->connection, $server['path'])) {
+            if (!@ftp_chdir($this->connection, $server['path'])&&!@ftp_mkdir($this->connection, $server['path'])) {
                 GitDeploy::error("Could not change the directory to {$server['path']} on {$this->host}");
             }
         }
