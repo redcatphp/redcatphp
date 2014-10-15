@@ -72,8 +72,10 @@ class Config {
                     'ignore_files' => [],
                     'upload_untracked' => []
                         ], $options);
-				if($parent)
+				if($parent){
 					$options['path'] = dirname(rtrim($options['path'],'/')).'/'.$parent;
+					$options['clean_directories'] = [];
+				}
                 if ($options['skip']) {
                     continue;
                 } else {
