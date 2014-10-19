@@ -52,4 +52,7 @@ trait XQueryWriter{
 			unset(self::$_allColumns[$t]);
 		parent::drop($t);
 	}
+	function columnExists($table,$column){
+		return in_array($column,array_keys(R::inspect($table)));
+	}
 }
