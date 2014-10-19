@@ -492,7 +492,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 								$alias = $superalias.'__'.$alias;
 							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-							if($exist=($this->tableExists($type)&&$this->columnExists($typeParent,$type.'_id')))
+							if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_id')))
 								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
 							$typeParent = $type;
 							$relation = '<';

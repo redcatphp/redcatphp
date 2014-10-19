@@ -282,7 +282,7 @@ class Query /* implements ArrayAccess */{
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						if($exist=(self::tableExists($type)&&self::columnExists($typeParent,$type.'_id')))
+						if($exist=(self::tableExists($typeParent)&&self::columnExists($typeParent,$type.'_id')))
 							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
 						$relation = '<';
