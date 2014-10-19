@@ -18,6 +18,9 @@ class Query /* implements ArrayAccess */{
 	static function tableExists($table){
 		return R::getWriter()->tableExists($table);
 	}
+	static function columnExists($table){
+		return R::getWriter()->columnExists($table);
+	}
 	function __construct($table=null,$composer='select',$writer=null){
 		$this->setTable($table);
 		if(!$writer)
@@ -247,7 +250,7 @@ class Query /* implements ArrayAccess */{
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-					if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
+					if($exist=(self::tableExists($type)&&self::columnExists($type,$typeParent.'_id')))
 						$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
 					$aliasParent = $alias;
@@ -266,7 +269,7 @@ class Query /* implements ArrayAccess */{
 						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
 						if($superalias)
 							$imp = $superalias.'__'.$imp;
-						if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
+						if($exist=(self::tableExists($type)&&self::tableExists($imp))){
 							$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
@@ -279,7 +282,7 @@ class Query /* implements ArrayAccess */{
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						if($exist=($this->tableExists($type)&&$this->columnExists($typeParent,$type.'_id')))
+						if($exist=(self::tableExists($type)&&self::columnExists($typeParent,$type.'_id')))
 							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
 						$relation = '<';
