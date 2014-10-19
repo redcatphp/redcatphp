@@ -1,4 +1,5 @@
 <?php namespace surikat\model\RedBeanPHP\QueryWriter;
+use surikat\model\R;
 trait XQueryWriter{
 	private static $_allTables = null;
 	private static $_allColumns = [];
