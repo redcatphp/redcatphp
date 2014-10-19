@@ -247,7 +247,8 @@ class Query /* implements ArrayAccess */{
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-					$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
+					if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
+						$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
 					$aliasParent = $alias;
 					$type = '';
@@ -265,10 +266,12 @@ class Query /* implements ArrayAccess */{
 						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
 						if($superalias)
 							$imp = $superalias.'__'.$imp;
-						$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
-						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
-						$shareds[] = $type;
+						if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
+							$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
+							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
+							$shareds[] = $type;
+						}
 						$typeParent = $type;
 						$relation = '<>';
 					}
@@ -276,7 +279,8 @@ class Query /* implements ArrayAccess */{
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
+						if($exist=($this->tableExists($type)&&$this->columnExists($typeParent,$type.'_id')))
+							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
 						$relation = '<';
 					}
@@ -300,25 +304,27 @@ class Query /* implements ArrayAccess */{
 			$colAlias = ' as '.$q.$colAlias.$q;
 		if($autoSelectId)
 			$idAlias = ' as '.$q.$table.$relation.'id'.$q;
-		switch($relation){
-			case '<':
-				$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
-				if($autoSelectId)
-					$this->select($q.$table.$q.'.'.$q.'id'.$q.$idAlias);
-				$this->groupBy($q.$table.$q.'.'.$q.'id'.$q);
-			break;
-			case '>':
-				$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
-				if($autoSelectId)
-					$this->select("{$agg}(COALESCE({$q}{$table}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
-			break;
-			case '<>':
-				$this->select("{$agg}(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
-				if($autoSelectId)
-					$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
-			break;
+		if($exist){
+			switch($relation){
+				case '<':
+					$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
+					if($autoSelectId)
+						$this->select($q.$table.$q.'.'.$q.'id'.$q.$idAlias);
+					$this->groupBy($q.$table.$q.'.'.$q.'id'.$q);
+				break;
+				case '>':
+					$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
+					if($autoSelectId)
+						$this->select("{$agg}(COALESCE({$q}{$table}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
+				break;
+				case '<>':
+					$this->select("{$agg}(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
+					if($autoSelectId)
+						$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
+				break;
+			}
+			$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
 		}
-		$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
 	}
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
