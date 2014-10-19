@@ -18,8 +18,8 @@ class Query /* implements ArrayAccess */{
 	static function tableExists($table){
 		return R::getWriter()->tableExists($table);
 	}
-	static function columnExists($table){
-		return R::getWriter()->columnExists($table);
+	static function columnExists($table,$column){
+		return R::getWriter()->columnExists($table,$column);
 	}
 	function __construct($table=null,$composer='select',$writer=null){
 		$this->setTable($table);
