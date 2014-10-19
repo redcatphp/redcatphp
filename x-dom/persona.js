@@ -36,9 +36,9 @@ $js([
 			loginBTN.show();
 			loginBTN.off('click',loginCALL);
 			loginBTN.next('ul').removeClass('disabled');
-			$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true,function(){
-				loginBTN.effect('shake','slow');
-			});
+			//$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true,function(){
+				//loginBTN.effect('shake','slow');
+			//});
 		};
 		var logoffCALL = function(){
 			currentUser = false;
@@ -79,5 +79,5 @@ $js([
 		else
 			loginBTN.show();		
 	});
-	$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true);
+	//$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true);
 });
