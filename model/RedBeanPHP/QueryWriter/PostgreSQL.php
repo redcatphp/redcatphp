@@ -460,7 +460,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
+						if($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id'))
 							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
 						$typeParent = $type;
 						$aliasParent = $alias;
@@ -477,7 +477,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							sort($rels);
 							$imp = implode('_',$rels);
 							$join[$imp][] = $alias;
-							if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
+							if($this->tableExists($type)&&$this->tableExists($imp)){
 								$tablesJoin[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
 								$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
@@ -491,7 +491,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 								$alias = $superalias.'__'.$alias;
 							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-							if($exist=($this->tableExists($type)&&$this->columnExists($typeParent,$type.'_id')))
+							if($this->tableExists($type)&&$this->columnExists($typeParent,$type.'_id'))
 								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
 							$typeParent = $type;
 							$relation = '<';
@@ -499,7 +499,6 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						$type = '';
 					break;
 					default:
-						$exist = true;
 						$type .= $select[$i];
 					break;
 				}
@@ -507,9 +506,11 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			if($this->tableExists($typeParent)){
 				$localTable = $typeParent;
 				$localCol = trim($type);
+				$exist = true;
 				switch($relation){
-					default:
 					case '<':
+						$exist = $this->columnExists($typeParent,$type.'_id');
+					default:
 						$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
 						$gb = $q.$localTable.$q.'.'.$q.$localCol.$q;
 						if(!in_array($gb,$groupBy))
@@ -519,6 +520,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$groupBy[] = $gb;
 					break;
 					case '>':
+						$exist = $this->columnExists($type,$typeParent.'_id');
 						$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 					break;
 					case '<>':
