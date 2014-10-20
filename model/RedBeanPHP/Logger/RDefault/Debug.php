@@ -81,7 +81,7 @@ class Debug extends RDefault implements Logger
 	protected function output( $str )
 	{
 		$this->logs[] = $str;
-		if ( !$this->mode ) echo $str .'<br />';
+		if ( !$this->mode ) echo '<pre>'.htmlentities($str).'</pre>';
 	}
 
 	/**
