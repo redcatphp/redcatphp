@@ -249,15 +249,16 @@ class Fluid extends Repository
 	 */
 	protected function storeBean( OODBBean $bean )
 	{
-		if ( $bean->getMeta( 'tainted' ) ) {
+		if ( $bean->getMeta( 'changed' ) ) {
 			$this->check( $bean );
 			$table = $bean->getMeta( 'type' );
 			$this->createTableIfNotExists( $bean, $table );
 			$updateValues = $this->getUpdateValues( $bean );
 			$this->addUniqueConstraints( $bean );
 			$bean->id = $this->writer->updateRecord( $table, $updateValues, $bean->id );
-			$bean->setMeta( 'tainted', FALSE );
+			$bean->setMeta( 'changed', FALSE );
 		}
+		$bean->setMeta( 'tainted', FALSE );
 	}
 
 	/**
@@ -366,7 +367,8 @@ class Fluid extends Repository
 	{
 		$beans = [];
 		for ( $i = 0; $i < $number; $i++ ) {
-			$bean = new OODBBean;
+			$OODBBEAN = defined( 'REDBEAN_OODBBEAN_CLASS' ) ? REDBEAN_OODBBEAN_CLASS : 'surikat\model\RedBeanPHP\OODBBean';
+			$bean = new $OODBBEAN;
 			$bean->initializeForDispense( $type, $this->oodb->getBeanHelper() );
 			$this->check( $bean );
 			$this->oodb->signal( 'dispense', $bean );

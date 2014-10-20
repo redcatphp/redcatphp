@@ -102,7 +102,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				LEFT OUTER JOIN pg_class c2 ON cons.confrelid = c2.oid
 				LEFT OUTER JOIN pg_namespace n2 ON n2.oid = c2.relnamespace
 				WHERE c.relkind = 'r'
-					AND n.nspname IN ('public')
+					AND n.nspname = ANY( current_schemas( FALSE ) )
 					AND (cons.contype = 'f' OR cons.contype IS NULL)
 					AND (  cons.conname = '{$fkCode}a'	OR  cons.conname = '{$fkCode}b' )
 			";
@@ -179,7 +179,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function getTables()
 	{
-		return $this->adapter->getCol( "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'" );
+		return $this->adapter->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
 	}
 
 	/**
@@ -214,6 +214,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function scanType( $value, $flagSpecial = FALSE ){
 		$this->svalue = $value;
+		
+		if ( $value === INF ) return self::C_DATATYPE_TEXT;
+		
 		if( $flagSpecial && $value ) {
 			//if(is_bool($value)||$value==='f'||||$value==='t')
 				//return self::C_DATATYPE_SPECIAL_BOOL;
@@ -236,7 +239,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		if($this->startsWithZeros($value))
 			return self::C_DATATYPE_TEXT;
 
-		if ( $value === NULL || ( $value instanceof NULL ))
+		if ( $value === NULL || ( $value instanceof NULL ) || $value === TRUE || $value === FALSE)
 			return self::C_DATATYPE_INTEGER;
 		
 		if ( is_numeric( $value )){
@@ -369,7 +372,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				FROM information_schema.KEY_COLUMN_USAGE
 			WHERE
 				table_catalog = ?
-				AND table_schema = \'public\'
+				AND table_schema = ANY( current_schemas( FALSE ) )
 				AND table_name = ?
 				AND column_name = ?
 		', [$db, $type, $field]);

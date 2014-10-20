@@ -137,6 +137,8 @@ class DuplicationManager
 
 		$copy = $this->redbean->dispense( $type );
 
+		$copy->setMeta( 'sys.dup-from-id', $bean->id );
+		$copy->setMeta( 'sys.old-id', $bean->id );
 		$copy->importFrom( $bean );
 		$copy->id = 0;
 
@@ -378,7 +380,7 @@ class DuplicationManager
 			$this->columns = [];
 		}
 
-		return $this->duplicate( $rs, $trail, $preserveIDs );
+		return $rs;
 	}
 
 	/**

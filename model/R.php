@@ -234,9 +234,9 @@ class R extends RedBeanPHP\Facade{
 		return parent::findAndExport( self::toSnake($type), $sql, $bindings );
 	}
 	static function findOne( $type, $sql = NULL, $bindings = [] ){
-		$sql = (string)$sql;
-		if(stripos($sql,'LIMIT')===false)
-			$sql .= 'LIMIT 1';
+		//$sql = (string)$sql;
+		//if(stripos($sql,'LIMIT')===false)
+			//$sql .= 'LIMIT 1';
 		return parent::findOne( self::toSnake($type), $sql, $bindings );
 	}
 	static function getCell($sql = NULL, $bindings = [] ){
@@ -257,8 +257,8 @@ class R extends RedBeanPHP\Facade{
 	static function convertToBeans( $type, $rows ){
 		return parent::convertToBeans( self::toSnake($type), $rows );
 	}
-	static function taggedAll( $beanType, $tagList ){
-		return parent::taggedAll( self::toSnake($beanType), $tagList );
+	static function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] ){
+		return parent::taggedAll( self::toSnake($beanType), $tagList, $sql, $bindings );
 	}
 	static function wipe( $beanType ){
 		return parent::wipe( self::toSnake($beanType) );

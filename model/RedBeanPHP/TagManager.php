@@ -229,15 +229,19 @@ class TagManager
 	 * Tag list can be either an array with tag names or a comma separated list
 	 * of tag names.
 	 *
-	 * @param string       $beanType type of bean you are looking for
-	 * @param array|string $tagList  list of tags to match
+	 *
+	 * @param string $beanType type of bean you are looking for
+	 * @param array|string $tagList list of tags to match
+	 * @param string $sql additional SQL  (use only for pagination)
+	 * @param array $bindings bindings
 	 *
 	 * @return array
 	 */
-	public function tagged( $beanType, $tagList )
+	public function tagged( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
 		$tags       = $this->extractTagsIfNeeded( $tagList );
-
+		$records = $this->toolbox->getWriter()->queryTagged( $beanType, $tags, FALSE, $sql, $bindings );
+		
 		$collection = [];
 
 		$tags       = $this->redbean->find( 'tag', [ 'title' => $tags ] );
@@ -246,11 +250,11 @@ class TagManager
 		
 		if ( is_array( $tags ) && count( $tags ) > 0 ) {
 			foreach($tags as $tag) {
-				$collection += $tag->$list;
+				$collection += $tag->with( $sql, $bindings )->$list;
 			}
 		}
 
-		return $collection;
+		return $this->redbean->convertToBeans( $beanType, $records );
 	}
 
 	/**
@@ -264,10 +268,11 @@ class TagManager
 	 *
 	 * @return array
 	 */
-	public function taggedAll( $beanType, $tagList )
+	public function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
 		$tags  = $this->extractTagsIfNeeded( $tagList );
-
+		$records = $this->toolbox->getWriter()->queryTagged( $beanType, $tags, TRUE, $sql, $bindings );
+		
 		$beans = [];
 		foreach ( $tags as $tag ) {
 			$beans = $this->tagged( $beanType, $tag );
@@ -279,6 +284,6 @@ class TagManager
 			$oldBeans = $beans;
 		}
 
-		return $beans;
+		return $this->redbean->convertToBeans( $beanType, $records );
 	}
 }

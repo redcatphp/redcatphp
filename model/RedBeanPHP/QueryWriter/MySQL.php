@@ -87,12 +87,13 @@ class MySQL extends AQueryWriter implements QueryWriter
 
 			$columns = $this->getColumns( $table );
 
-			if ( $this->code( $columns[$property1] ) !== MySQL::C_DATATYPE_UINT32 ) {
-				$this->widenColumn( $table, $property1, MySQL::C_DATATYPE_UINT32 );
+			$idType = $this->getTypeForID();
+			if ( $this->code( $columns[$property1] ) !== $idType ) {
+				$this->widenColumn( $table, $property1, $idType );
 			}
 
-			if ( $this->code( $columns[$property2] ) !== MySQL::C_DATATYPE_UINT32 ) {
-				$this->widenColumn( $table, $property2, MySQL::C_DATATYPE_UINT32 );
+			if ( $this->code( $columns[$property2] ) !== $idType ) {
+				$this->widenColumn( $table, $property2, $idType );
 			}
 
 			$sql = "
@@ -203,6 +204,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 		$this->svalue = $value;
 
 		if ( is_null( $value ) ) return MySQL::C_DATATYPE_BOOL;
+		if ( $value === INF ) return MySQL::C_DATATYPE_TEXT8;
 
 		if ( $flagSpecial ) {
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) ) {
@@ -222,13 +224,12 @@ class MySQL extends AQueryWriter implements QueryWriter
 			}
 		}
 
-		$value = strval( $value );
+		//setter turns TRUE FALSE into 0 and 1 because database has no real bools (TRUE and FALSE only for test?).
+		if ( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' ) {
+			return MySQL::C_DATATYPE_BOOL;
+		}
 
 		if ( !$this->startsWithZeros( $value ) ) {
-
-			if ( $value === TRUE || $value === FALSE || $value === '1' || $value === '' || $value === '0') {
-				return MySQL::C_DATATYPE_BOOL;
-			}
 
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 ) {
 				return MySQL::C_DATATYPE_UINT32;

@@ -26,6 +26,11 @@ use surikat\model\RedBeanPHP\PDOCompatible as PDOCompatible;
 class RPDO implements Driver
 {
 	/**
+	* @var integer
+	*/
+	protected $max;
+	
+	/**
 	 * @var string
 	 */
 	protected $dsn;
@@ -91,7 +96,7 @@ class RPDO implements Driver
 			if ( is_integer( $key ) ) {
 				if ( is_null( $value ) ) {
 					$statement->bindValue( $key + 1, NULL,\PDO::PARAM_NULL );
-				} elseif ( !$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && $value < 2147483648 ) {
+				} elseif ( !$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && $value <= $this->max  ) {
 					$statement->bindParam( $key + 1, $value,\PDO::PARAM_INT );
 				} else {
 					$statement->bindParam( $key + 1, $value,\PDO::PARAM_STR );
@@ -99,7 +104,7 @@ class RPDO implements Driver
 			} else {
 				if ( is_null( $value ) ) {
 					$statement->bindValue( $key, NULL,\PDO::PARAM_NULL );
-				} elseif ( !$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && $value < 2147483648 ) {
+				} elseif ( !$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && $value <= $this->max  ) {
 					$statement->bindParam( $key, $value,\PDO::PARAM_INT );
 				} else {
 					$statement->bindParam( $key, $value,\PDO::PARAM_STR );
@@ -227,6 +232,13 @@ class RPDO implements Driver
 			$this->dsn = $dsn;
 
 			$this->connectInfo = [ 'pass' => $pass, 'user' => $user ];
+		}
+		
+		//PHP 5.3 PDO SQLite has a bug with large numbers:
+		if ( strpos( $this->dsn, 'sqlite' ) === 0 && PHP_MAJOR_VERSION === 5 && PHP_MINOR_VERSION === 3) {
+			$this->max = 2147483647; //otherwise you get -2147483648 ?! demonstrated in build #603 on Travis.
+		} else {
+			$this->max = PHP_INT_MAX; //the normal value of course (makes it possible to use large numbers in LIMIT clause)
 		}
 	}
 

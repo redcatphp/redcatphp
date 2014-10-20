@@ -61,6 +61,16 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 * @var array
 	 */
 	public static $sqlFilters = [];
+	
+	/**
+	* @var boolean
+	*/
+	private static $flagSQLFilterSafeMode = false;
+	
+	/**
+	* @var boolean
+	*/
+	private static $flagNarrowFieldMode = true;
 
 	/**
 	 * @var array
@@ -76,7 +86,32 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		self::$renames = [];
 	}
-
+	
+	/**
+	* Toggles 'Narrow Field Mode'.
+	* In Narrow Field mode the queryRecord method will
+	* narrow its selection field to
+	*
+	* SELECT {table}.*
+	*
+	* instead of
+	*
+	* SELECT *
+	*
+	* This is a better way of querying because it allows
+	* more flexibility (for instance joins). However if you need
+	* the wide selector for backward compatibility; use this method
+	* to turn OFF Narrow Field Mode by passing FALSE.
+	*
+	* @param boolean $narrowField TRUE = Narrow Field FALSE = Wide Field
+	*
+	* @return void
+	*/
+	public static function setNarrowFieldMode( $narrowField )
+	{
+		self::$flagNarrowFieldMode = (boolean) $narrowField;
+	}
+	
 	/**
 	 * Sets SQL filters.
 	 * This is a lowlevel method to set the SQL filter array.
@@ -106,8 +141,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 *
 	 * @param array
 	 */
-	public static function setSQLFilters( $sqlFilters )
+	public static function setSQLFilters( $sqlFilters, $safeMode = false )
 	{
+		self::$flagSQLFilterSafeMode = (boolean) $safeMode;
 		self::$sqlFilters = $sqlFilters;
 	}
 
@@ -133,10 +169,17 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	protected function getSQLFilterSnippet( $type )
 	{
+		$existingCols = array();
+		if (self::$flagSQLFilterSafeMode) {
+			$existingCols = $this->getColumns( $type );
+		}
+		
 		$sqlFilters = [];
 		if ( isset( self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$type] ) ) {
 			foreach( self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$type] as $property => $sqlFilter ) {
-				$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
+				if ( !self::$flagSQLFilterSafeMode || isset( $existingCols[$property] ) ) {
+					$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
+				}
 			}
 		}
 		$sqlFilterStr = ( count($sqlFilters) ) ? ( ','.implode( ',', $sqlFilters ) ) : '';
@@ -368,7 +411,24 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 
 		return [ $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ];
 	}
-
+	
+	/**
+	* Adds a data type to the list of data types.
+	* Use this method to add a new column type definition to the writer.
+	* Used for UUID support.
+	*
+	* @param integer $dataTypeID magic number constant assigned to this data type
+	* @param string $SQLDefinition SQL column definition (i.e. INT(11))
+	*
+	* @return self
+	*/
+	protected function addDataType( $dataTypeID, $SQLDefinition )
+	{
+		$this->typeno_sqltype[ $dataTypeID ] = $SQLDefinition;
+		$this->sqltype_typeno[ $SQLDefinition ] = $dataTypeID;
+		return $this;
+	}
+	
 	/**
 	 * Returns the sql that should follow an insert statement.
 	 *
@@ -553,7 +613,15 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 
 		return $snippetCache[$key];
 	}
-
+	
+	/**
+	* @see QueryWriter::glueLimitOne
+	*/
+	public function glueLimitOne( $sql = '')
+	{
+		return ( strpos( $sql, 'LIMIT' ) === FALSE ) ? ( $sql . ' LIMIT 1 ' ) : $sql;
+	}
+	
 	/**
 	 * @see QueryWriter::esc
 	 */
@@ -626,7 +694,20 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 
 		return $id;
 	}
-
+	
+	/**
+	* @see QueryWriter::writeJoin
+	*/
+	public function writeJoin( $type, $targetType, $leftRight = 'LEFT' )
+	{
+		if ( $leftRight !== 'LEFT' && $leftRight !== 'RIGHT' && $leftRight !== 'INNER' )
+			throw new RedException( 'Invalid JOIN.' );
+		$table = $this->esc( $type );
+		$targetTable = $this->esc( $targetType );
+		$field = $this->esc( $targetType, TRUE );
+		return " {$leftRight} JOIN {$targetTable} ON {$targetTable}.id = {$table}.{$field}_id ";
+	}
+	
 	/**
 	 * @see QueryWriter::queryRecord
 	 */
@@ -651,7 +732,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		}
 
 		$sql   = $this->makeSQLFromConditions( $conditions, $bindings, $addSql );
-		$sql   = "SELECT * {$sqlFilterStr} FROM {$table} {$sql} -- keep-cache";
+		
+		$fieldSelection = ( self::$flagNarrowFieldMode ) ? "{$table}.*" : '*';
+		$sql = "SELECT {$fieldSelection} {$sqlFilterStr} FROM {$table} {$sql} -- keep-cache";
 
 		$rows  = $this->adapter->get( $sql, $bindings );
 
@@ -754,6 +837,31 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$this->putResultInCache( $linkTable, $key, $row );
 
 		return $row;
+	}
+
+	/**
+	* @see QueryWriter::queryTagged
+	*/
+	public function queryTagged( $type, $tagList, $all = FALSE, $addSql = '', $bindings = array() )
+	{
+		$assocType = $this->getAssocTable( array( $type, 'tag' ) );
+		$assocTable = $this->esc( $assocType );
+		$assocField = $type . '_id';
+		$table = $this->esc( $type );
+		$slots = implode( ',', array_fill( 0, count( $tagList ), '?' ) );
+		$score = ( $all ) ? count( $tagList ) : 1;
+		$sql = "
+			SELECT {$table}.*, count({$table}.id) FROM {$table}
+			INNER JOIN {$assocTable} ON {$assocField} = {$table}.id
+			INNER JOIN tag ON {$assocTable}.tag_id = tag.id
+			WHERE tag.title IN ({$slots})
+			GROUP BY {$table}.id
+			HAVING count({$table}.id) >= ?
+			{$addSql}
+		";
+		$bindings = array_merge( $tagList, array( $score ), $bindings );
+		$rows = $this->adapter->get( $sql, $bindings );
+		return $rows;
 	}
 
 	/**

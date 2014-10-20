@@ -62,7 +62,7 @@ class Frozen extends Repository
 	 */
 	protected function storeBean( OODBBean $bean )
 	{
-		if ( $bean->getMeta( 'tainted' ) ) {
+		if ( $bean->getMeta( 'changed' ) ) {
 
 			list( $properties, $table ) = $bean->getPropertiesAndType();
 			$id = $properties['id'];
@@ -74,9 +74,10 @@ class Frozen extends Repository
 				$updateValues[] = [ $k1 => $key, $k2 => $value ];
 			}
 			$bean->id = $this->writer->updateRecord( $table, $updateValues, $id );
-			$bean->setMeta( 'tainted', FALSE );
+			$bean->setMeta( 'changed', FALSE );
 
 		}
+		$bean->setMeta( 'tainted', FALSE );
 	}
 
 	/**
@@ -175,7 +176,8 @@ class Frozen extends Repository
 	{
 		$beans = [];
 		for ( $i = 0; $i < $number; $i++ ) {
-			$bean = new OODBBean;
+			$OODBBEAN = defined( 'REDBEAN_OODBBEAN_CLASS' ) ? REDBEAN_OODBBEAN_CLASS : 'surikat\model\RedBeanPHP\OODBBean';
+			$bean = new $OODBBEAN;
 			$bean->initializeForDispense( $type, $this->oodb->getBeanHelper() );
 			$this->oodb->signal( 'dispense', $bean );
 			$beans[] = $bean;

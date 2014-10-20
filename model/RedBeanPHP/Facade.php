@@ -117,11 +117,6 @@ class Facade
 	private static $exportCaseStyle = 'default';
 
 	/**
-	 * @var array
-	 */
-	private static $sqlFilters = [];
-
-	/**
 	 * Internal Query function, executes the desired query. Used by
 	 * all facade query functions. This keeps things DRY.
 	 *
@@ -211,7 +206,20 @@ class Facade
 
 		return self::$toolbox;
 	}
-
+	
+	/**
+	* Toggles Narrow Field Mode.
+	* See documentation in QueryWriter.
+	*
+	* @param boolean $mode TRUE = Narrow Field Mode
+	*
+	* @return void
+	*/
+	public static function setNarrowFieldMode( $mode )
+	{
+		AQueryWriter::setNarrowFieldMode( $mode );
+	}
+	
 	/**
 	 * Starts a transaction within a closure (or other valid callback).
 	 * If an\Exception is thrown inside, the operation is automatically rolled back.
@@ -852,6 +860,11 @@ class Facade
 	 * Note:
 	 * This function does a reflectional database query so it may be slow.
 	 *
+	 * @deprecated
+	 * This function is deprecated in favour of R::duplicate().
+	 * This function has a confusing method signature, the R::duplicate() function
+	 * only accepts two arguments: bean and filters.
+	 *
 	 * @param OODBBean $bean  bean to be copied
 	 * @param array    $trail for internal usage, pass array()
 	 * @param boolean  $pid   for internal usage
@@ -864,7 +877,35 @@ class Facade
 		self::$duplicationManager->setFilters( $filters );
 		return self::$duplicationManager->dup( $bean, $trail, $pid );
 	}
-
+	
+	/**
+	 * Makes a deep copy of a bean. This method makes a deep copy
+	 * of the bean.The copy will have the following:
+	 *
+	 * - All beans in own-lists will be duplicated as well
+	 * - All references to shared beans will be copied but not the shared beans themselves
+	 * - All references to parent objects (_id fields) will be copied but not the parents themselves
+	 *
+	 * In most cases this is the desired scenario for copying beans.
+	 * This function uses a trail-array to prevent infinite recursion, if a recursive bean is found
+	 * (i.e. one that already has been processed) the ID of the bean will be returned.
+	 * This should not happen though.
+	 *
+	 * Note:
+	 * This function does a reflectional database query so it may be slow.
+	 *
+	 * Note:
+	 * This is a simplified version of the deprecated R::dup() function.
+	 *
+	 * @param OODBBean $bean  bean to be copied
+	 * @param array	   $white white list filter with bean types to duplicate
+	 *
+	 * @return array
+	 */
+	public static function duplicate( $bean, $filters = array() ){
+		return self::dup( $bean, array(), FALSE, $filters );
+	}
+	
 	/**
 	 * Exports a collection of beans. Handy for XML/JSON exports with a
 	 * Javascript framework like Dojo or ExtJS.
@@ -1003,12 +1044,14 @@ class Facade
 	 *
 	 * @param string $beanType type of bean you are looking for
 	 * @param array  $tagList  list of tags to match
+	 * @param string $sql additional SQL
+	 * @param array $bindings bindings
 	 *
 	 * @return array
 	 */
-	public static function tagged( $beanType, $tagList )
+	public static function tagged( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
-		return self::$tagManager->tagged( $beanType, $tagList );
+		return self::$tagManager->tagged( $beanType, $tagList, $sql, $bindings );
 	}
 
 	/**
@@ -1020,9 +1063,9 @@ class Facade
 	 *
 	 * @return array
 	 */
-	public static function taggedAll( $beanType, $tagList )
+	public static function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
-		return self::$tagManager->taggedAll( $beanType, $tagList );
+		return self::$tagManager->taggedAll( $beanType, $tagList, $sql, $bindings );
 	}
 
 	/**
@@ -1086,8 +1129,6 @@ class Facade
 		$helper->attachEventListeners( self::$redbean );
 
 		self::$redbean->setBeanHelper( new SimpleFacadeBeanHelper );
-
-		self::$associationManager->addEventListener( 'delete', $helper );
 
 		self::$duplicationManager = new DuplicationManager( self::$toolbox );
 		self::$tagManager         = new TagManager( self::$toolbox );
@@ -1526,8 +1567,8 @@ class Facade
 			foreach( $data as $key => $item ) {
 				$array[$key] = self::dump( $item );
 			}
-			return $array;
 		}
+		return $array;
 	}
 
 	/**
@@ -1551,24 +1592,7 @@ class Facade
 	 *
 	 */
 	public static function bindFunc( $mode, $field, $function ) {
-
-		list( $type, $property ) = explode( '.', $field );
-		$mode = ($mode === 'write') ? QueryWriter::C_SQLFILTER_WRITE : QueryWriter::C_SQLFILTER_READ;
-
-		if ( !isset( self::$sqlFilters[$mode] ) ) self::$sqlFilters[$mode] = [];
-		if ( !isset( self::$sqlFilters[$mode][$type] ) ) self::$sqlFilters[$mode][$type] = [];
-
-		if ( is_null( $function ) ) {
-			unset( self::$sqlFilters[$mode][$type][$property] );
-		} else {
-			if ($mode === QueryWriter::C_SQLFILTER_WRITE) {
-				self::$sqlFilters[$mode][$type][$property] = $function.'(?)';
-			} else {
-				self::$sqlFilters[$mode][$type][$property] = $function."($field)";
-			}
-		}
-
-		AQueryWriter::setSQLFilters(self::$sqlFilters);
+		self::$redbean->bindFunc( $mode, $field, $function );
 	}
 
 	/**
@@ -1615,4 +1639,5 @@ class Facade
 		}
 		return call_user_func_array( self::$plugins[$pluginName], $params );
 	}
+	
 }

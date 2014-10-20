@@ -59,6 +59,18 @@ interface QueryWriter
 	 */
 	const C_GLUE_WHERE = 1;
 	const C_GLUE_AND   = 2;
+	
+	/**
+	* Writes an SQL Snippet for a JOIN, returns the
+	* SQL snippet string.
+	*
+	* @param string $type source type
+	* @param string $targetType target type (type to join)
+	* @param string $leftRight type of join (possible: 'LEFT', 'RIGHT' or 'INNER').
+	*
+	* @return string $joinSQLSnippet
+	*/
+	public function writeJoin( $type, $targetType, $joinType );
 
 	/**
 	 * Glues an SQL snippet to the beginning of a WHERE clause.
@@ -235,7 +247,24 @@ interface QueryWriter
 	 * @return integer
 	 */
 	public function queryRecordCountRelated( $sourceType, $targetType, $linkID, $addSQL = '', $bindings = [] );
-
+	
+	/**
+	* Returns all rows of specified type that have been tagged with one of the
+	* strings in the specified tag list array.
+	*
+	* Note that the additional SQL snippet can only be used for pagination,
+	* the SQL snippet will be appended to the end of the query.
+	*
+	* @param string $type the bean type you want to query
+	* @param array $tagList an array of strings, each string containing a tag title
+	* @param boolean $all if TRUE only return records that have been associated with ALL the tags in the list
+	* @param string $addSql addition SQL snippet, for pagination
+	* @param array $bindings parameter bindings for additional SQL snippet
+	*
+	* @return array
+	*/
+	public function queryTagged( $type, $tagList, $all = FALSE, $addSql = '', $bindings = array() );
+	
 	/**
 	 * This method should update (or insert a record), it takes
 	 * a table name, a list of update values ( $field => $value ) and an
@@ -353,6 +382,16 @@ interface QueryWriter
 	 * @return void
 	 */
 	public function addIndex( $type, $name, $column );
+	
+	/**
+	* Determines if there is a LIMIT 1 clause in the SQL.
+	* If not, it will add a LIMIT 1. (used for findOne).
+	*
+	* @param string $sql query to scan and adjust
+	*
+	* @return string
+	*/
+	public function glueLimitOne( $sql );
 
 	/**
 	 * Checks and filters a database structure element like a table of column
