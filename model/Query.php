@@ -267,9 +267,9 @@ class Query /* implements ArrayAccess */{
 						sort($rels);
 						$imp = implode('_',$rels);
 						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
-						if($superalias)
-							$imp = $superalias.'__'.$imp;
 						if($exist=(self::tableExists($type)&&self::tableExists($imp))){
+							if($superalias)
+								$imp = $superalias.'__'.$imp;
 							$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
 							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
