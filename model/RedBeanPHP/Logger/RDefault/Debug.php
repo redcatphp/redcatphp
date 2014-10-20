@@ -96,9 +96,9 @@ class Debug extends RDefault implements Logger
 	{
 		$i = 0;
 		$newSql = $sql;
-		while($i < 20 && strpos($newSql, '?') !== FALSE ){
+		while(strpos($newSql, '?') !== FALSE ){
 			$pos   = strpos( $newSql, '?' );
-			$slot  = ':slot'.$i;
+			$slot  = ':slot'.$i.'x';
 			$begin = substr( $newSql, 0, $pos );
 			$end   = substr( $newSql, $pos+1 );
 			$newSql = $begin . $slot . $end;
@@ -121,7 +121,7 @@ class Debug extends RDefault implements Logger
 		$newBindings = [];
 		foreach( $bindings as $key => $value ) {
 			if ( is_numeric($key) ) {
-				$newKey = ':slot'.$i;
+				$newKey = ':slot'.$i.'x';
 				$newBindings[$newKey] = $value;
 				$i++;
 			} else {
