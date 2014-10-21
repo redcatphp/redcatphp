@@ -215,7 +215,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 				$counter = $offset;
 
 				foreach( $valueList as $value ) {
-					$slot           = ':slot' . ( $counter++ );
+					$slot           = ':slot' . ( $counter++ ).'x';
 					$filler[]       = $slot;
 					$newList[$slot] = $value;
 				}
@@ -362,7 +362,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 					$slots = [];
 
 					foreach( $values as $k => $v ) {
-						$slot            = ':slot'.$counter++;
+						$slot            = ':slot'.$counter++.'x';
 						$slots[]         = $slot;
 						$bindings[$slot] = strval( $v );
 					}

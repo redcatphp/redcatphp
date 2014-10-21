@@ -198,9 +198,9 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 
 			if ( !is_numeric( $firstKey ) || $firstKey === NULL ) {
 				$bindings           = $this->withParams;
-				$bindings[':slot0'] = $this->getID();
+				$bindings[':slot0x'] = $this->getID();
 
-				$beans = $redbean->find( $type, array(), " {$joinSql} $myFieldLink = :slot0 " . $this->withSql, $bindings );
+				$beans = $redbean->find( $type, array(), " {$joinSql} $myFieldLink = :slot0x " . $this->withSql, $bindings );
 			} else {
 				$bindings = array_merge( [ $this->getID() ], $this->withParams );
 				$beans = $redbean->find( $type, array(), " {$joinSql} $myFieldLink = ? " . $this->withSql, $bindings );
@@ -1434,8 +1434,8 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 
 			if ( !is_numeric( $firstKey ) || $firstKey === NULL ) {
 					$bindings           = $this->withParams;
-					$bindings[':slot0'] = $this->getID();
-					$count              = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, [], " $myFieldLink = :slot0 " . $this->withSql, $bindings );
+					$bindings[':slot0x'] = $this->getID();
+					$count              = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, [], " $myFieldLink = :slot0x " . $this->withSql, $bindings );
 			} else {
 					$bindings = array_merge( [ $this->getID() ], $this->withParams );
 					$count    = $this->beanHelper->getToolbox()->getWriter()->queryRecordCount( $type, [], " $myFieldLink = ? " . $this->withSql, $bindings );
