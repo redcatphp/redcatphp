@@ -1,12 +1,11 @@
 $js([
 	'jquery',
-	'cssHooks',
 	'local-storage',
 	'https://login.persona.org/include.js',
 ],function(){
 	var loginBTN = $('a[is=persona]'),
 		logoutBTN = $('a.persona.logout');
-	var bgColor = loginBTN.css('color'); //$.cssHooks.color.get(loginBTN.get(0),'color');
+	var bgColor = '#93a72d';
 	$.getJSON('service/persona/email',function(email){
 		localStorage.setItem('personaInitilized',1);
 		var currentUser = email;
