@@ -5,6 +5,7 @@ class TML_Extend extends TML {
 	var $_extender;
 	var $_extended;
 	function load(){
+		$this->remapAttr('file');
 		if(!$this->_extended){
 			$this->_extender = clone $this;
 			$this->_extender->_extended = $this;
