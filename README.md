@@ -6,5 +6,9 @@
 	 \____ \| | | |/ ___) | |_/ |____ (_   _)
 	 _____) ) |_| | |   | |  _ (/ ___ | | |_ 
 	(______/|____/|_|   |_|_| \_)_____|  \__)
+	
+	
 
 [The essential framework for web developers](http://wildsurikat.com)
+
+![Logo of Surikat](http://wildsurikat.com/img/surikat.png)
