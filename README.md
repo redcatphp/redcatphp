@@ -7,5 +7,4 @@
 	 _____) ) |_| | |   | |  _ (/ ___ | | |_ 
 	(______/|____/|_|   |_|_| \_)_____|  \__)
 
-
-The essential framework for web developers
+[The essential framework for web developers](http://wildsurikat.com)
