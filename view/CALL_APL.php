@@ -3,6 +3,13 @@ abstract class CALL_APL extends CORE{
 	protected $hiddenWrap = true;
 	protected $callback;
 	function callback(){
+		$this->remapAttr('selector');
+		if($this->__isset('compile')){
+			ob_start();
+			eval('?>'.$this->__get('compile'));
+			$this->__unset('compile');
+			$this->__set('selector',ob_get_clean());
+		}
 		if(!isset($this->callback))
 			$this->callback = lcfirst(substr($c=get_class($this),(strrpos($c,'_')+1)));
 		if($this->selector===null){
@@ -20,7 +27,6 @@ abstract class CALL_APL extends CORE{
 		return $this->callback;
 	}
 	function load(){
-		$this->remapAttr('selector');
 		$this->callback();
 	}
 	function selectorCodeTHIS($__this){
