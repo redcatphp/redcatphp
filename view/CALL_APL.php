@@ -20,6 +20,7 @@ abstract class CALL_APL extends CORE{
 		return $this->callback;
 	}
 	function load(){
+		$this->remapAttr('selector');
 		$this->callback();
 	}
 	function selectorCodeTHIS($__this){
