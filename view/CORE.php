@@ -614,9 +614,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			}
 			else
 				$ato = $afrom = $from;
-			if(isset($this->attributes[$afrom]))
-				unset($this->attributes[$afrom]);
-			$this->attributes[$ato] = &$this->metaAttribution[$to];
+			if(isset($this->attributes["$afrom"]))
+				unset($this->attributes["$afrom"]);
+			$this->attributes["$ato"] = &$this->metaAttribution["$to"];
 		}
 	}
 
