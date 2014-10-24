@@ -6,6 +6,7 @@ class TML_Js extends CALL_APL{
 	protected $callback = 'addJsScript';
 	var $selector = false;
 	function load(){
+		$this->remapAttr('src');
 		if($this->closest('extend')){
 			$o = $this;
 			$this->closest()->onLoaded(function()use($o){
