@@ -35,6 +35,10 @@ $js([
 			loginBTN.show();
 			loginBTN.off('click',loginCALL);
 			loginBTN.next('ul').removeClass('disabled');
+			$js('md5',function(){
+				var s = 24;
+				loginBTN.append('<img src="http://www.gravatar.com/avatar/'+md5(currentUser)+'?d=404&s='+s+'" width="'+s+'" height="'+s+'" />');
+			});
 			//$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true,function(){
 				//loginBTN.effect('shake','slow');
 			//});
@@ -78,5 +82,6 @@ $js([
 		else
 			loginBTN.show();		
 	});
+	$js('md5');
 	//$js(['jquery-ui/core','jquery-ui/effect','jquery-ui/effect-shake'],true);
 });
