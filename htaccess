@@ -171,11 +171,11 @@ RewriteBase /
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
-RewriteRule ^robots\.txt$ robots_off.txt [L]
+RewriteRule ^robots\.txt$ /surikat/robots_off.txt [L]
 
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
-RewriteRule ^robots\.txt$ robots_off.txt [L]
+RewriteRule ^robots\.txt$ /surikat/robots_off.txt [L]
 
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
