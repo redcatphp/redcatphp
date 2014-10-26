@@ -109,7 +109,7 @@ AddType text/x-vcard                   vcf
 	ExpiresByType application/json          "access plus 0 seconds"
 	ExpiresByType application/rss+xml       "access plus 1 hour"
 	ExpiresByType application/atom+xml      "access plus 1 hour"
-	ExpiresByType image/x-icon              "access plus 1 week" 
+	ExpiresByType image/x-icon              "access plus 1 month" 
 	ExpiresByType image/gif                 "access plus 1 month"
 	ExpiresByType image/png                 "access plus 1 month"
 	ExpiresByType image/jpg                 "access plus 1 month"
