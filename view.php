@@ -87,6 +87,13 @@ class view {
 		if(substr($url,-1)!='/')
 			$url .= '/';
 		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
+			if(
+				($el->nodeName=='link'&&$el->type=='text/css'&&control::devHas(control::dev_css))
+				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&control::devHas(control::dev_img))
+				|| ($el->nodeName=='img'&&control::devHas(control::dev_img))
+				|| ($el->nodeName=='script'&&control::devHas(control::dev_js))
+			)
+				return;
 			$k = $el->src?'src':'href';
 			if($el->$k&&strpos('://',$el->$k)===false)
 				$el->$k = $url.ltrim($el->$k,'/');
