@@ -81,6 +81,17 @@ class view {
 			if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 				$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 	}
+	static function setCDN($TML,$url=true){
+		if($url===true)
+			$url = 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://cdn.'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/';
+		if(substr($url,-1)!='/')
+			$url .= '/';
+		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
+			$k = $el->src?'src':'href';
+			if($el->$k&&strpos('://',$el->$k)===false)
+				$el->$k = $url.ltrim($el->$k,'/');
+		});
+	}
 	static function registerPresent($TML){
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='present')
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
