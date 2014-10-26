@@ -38,7 +38,7 @@ class Service_Deploy{
 		self::exec('cd '.control::$CWD);
 		self::exec('git config --local user.email "'.$ini['user.email'].'"');
 		self::exec('git config --local user.name "'.$ini['user.name'].'"');
-		self::exec('git add .');
+		self::exec('git add --all .');
 		$message = "auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time());
 		self::exec('git commit -m "'.$message.'"');
 		shell_exec('chmod -R 777 '.control::$CWD.'.git 2>&1');
