@@ -143,33 +143,50 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 	php_value session.cookie_httponly true
 </IfModule>
 
-<FilesMatch "\.(htaccess|htpasswd|ini|log|sh)$">
-	Order Allow,Deny
-	Deny from all
-</FilesMatch>
-
 Options +FollowSymlinks
 RewriteEngine On
 
+#Force remove www
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+RewriteCond %{HTTPS} =on
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+#Force add www
 #RewriteCond %{HTTPS} !=on
 #RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
 #RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+#RewriteCond %{HTTPS} =on
+#RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
+#RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
+#Directory Traversal Protection
 RewriteRule "(^|/)\." - [F]
+
+#Dynamic vhost reset
 DirectoryIndex index.php
 RewriteBase /
 
+#CDN - Avoid Duplicate-Content from Content-Delivery-Network
+RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
+RewriteRule ^robots\.txt$ robots_off.txt [L]
+
+#SSL - Avoid Duplicate-Content from SSL
+RewriteCond %{SERVER_PORT} ^443$
+RewriteRule ^robots\.txt$ robots_off.txt [L]
+
+#Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/surikat/
 RewriteCond %{DOCUMENT_ROOT}/surikat/$1.$2 -f
 RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff)$ /surikat/$1.$2 [L,QSA]
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
 
+
+#Surikat bootstrap
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
