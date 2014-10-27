@@ -235,7 +235,11 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	
 	function __invoke($selector){
-		return call_user_func_array([$this,'find'],[$selector,true]);
+		$r = [];
+		$this->recursive(function($el)use(&$r,$selector){
+			$r = array_merge($r,$el->find($selector));
+		});
+		return new Iterator($r);
 	}
 	function offsetUnset($k){
 		unset($this->childNodes[$k]);

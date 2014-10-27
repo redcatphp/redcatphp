@@ -2,7 +2,7 @@
 use surikat\view\TML;
 use surikat\control\str;
 class TEXT extends CORE{
-	var $nodeName = '#text';
+	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;

@@ -5,7 +5,7 @@ class DOCTYPE extends CORE{
 	protected $hiddenWrap = true;
 	private $contentText = '';
 	private $__compat;
-	var $nodeName = '#doctype';
+	var $nodeName = 'DOCTYPE';
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
 		$this->vFile = $parent->vFile;
