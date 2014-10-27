@@ -342,10 +342,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function find($selector=null,$index=null){
 		if(is_array($selector)){
-			$inv = $this;
 			foreach($selector as $select){
 				$r = [];
-				foreach($inv($select) as $o)
+				foreach($this->find($select) as $o)
 					$r[] = $o;
 			}
 		}
