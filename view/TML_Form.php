@@ -10,7 +10,7 @@ class TML_Form extends TML {
 		$model = trim($model);
 		$c = R::getModelClass($model);
 		//var_dump($c);exit;
-		//$this->find('indput[name="titre"]')->attr('minlenght',$c::getColumnDef('titre','rule','minlenght'))
+		//$this->children('indput[name="titre"]')->attr('minlenght',$c::getColumnDef('titre','rule','minlenght'))
 	}
 	/* too much experimental for moment
 	function loadAutoCRUD(){

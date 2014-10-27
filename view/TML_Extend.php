@@ -21,7 +21,7 @@ class TML_Extend extends TML {
 					$selector = $extender->nodeName;
 					foreach($extender->attributes as $k=>$v)
 						$selector .= '['.$k.'="'.$v.'"]';
-					$this->find($selector,true)->write($extender->getInner());
+					$this->children($selector,true)->write($extender->getInner());
 				}
 			}					
 		}

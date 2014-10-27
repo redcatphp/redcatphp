@@ -26,7 +26,7 @@ class Group extends TML{
 						$selector = $extender->nodeName;
 						foreach($extender->attributes as $k=>$v)
 							$selector .= '['.$k.'="'.$v.'"]';
-						$extend->find($selector,true)->write($extender->getInner());
+						$extend->children($selector,true)->write($extender->getInner());
 					}
 				}
 			}

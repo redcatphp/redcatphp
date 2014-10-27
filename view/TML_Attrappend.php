@@ -9,7 +9,7 @@ class TML_Attrappend extends CALL_APL {
 		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
 			foreach($this->attributes as $k=>$v)
 				if($k!='selector')
-					$apply->find($this->selector,true)->each(function($o)use($v){
+					$apply->children($this->selector,true)->each(function($o)use($v){
 						$v = $this->selectorCodeTHAT($o,$v);
 						array_push($o->metaAttribution,$v);
 					});

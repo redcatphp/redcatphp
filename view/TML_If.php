@@ -13,7 +13,7 @@ class TML_If extends TML {
 	}
 	function extendLoad($extend = null){ #untested
 		if(($extend || ($extend = $this->closest('extend')))
-		&&$this->selector?count($apply->find($this->selector))
+		&&$this->selector?count($apply->children($this->selector))
 			:eval('return '.$this->evalSource().';'))
 			foreach($this->childNodes as $node)
 				if(method_exists($node,'extendLoad'))
@@ -21,7 +21,7 @@ class TML_If extends TML {
 	}
 	function applyLoad($apply = null){
 		if(($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
-		&& ($this->selector?count($apply->find($this->selector))
+		&& ($this->selector?count($apply->children($this->selector))
 			:eval('return '.$this->evalSource().';')))
 			foreach($this->childNodes as $node)
 				if(method_exists($node,'applyLoad'))

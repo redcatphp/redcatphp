@@ -48,7 +48,7 @@ class view {
 			static::autoMIN($TML);
 	}
 	static function xDom($TML){
-		$head = $TML->find('head',0);
+		$head = $TML->children('head',0);
 		if(!$head){
 			$head = $TML;
 			$head->append('<script type="text/javascript" src="/js/js.js"></script>');
@@ -60,7 +60,7 @@ class view {
 			if(
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 				&&!in_array($is,$s)
-				&&!$head->find('link[href="'.$href.strtolower($is).'.css"]',0)
+				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
 				&&(
 					is_file(control::$CWD.($h=$href.strtolower($is).'.css'))
 					||is_file(control::$SURIKAT.$h)

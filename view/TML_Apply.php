@@ -32,7 +32,7 @@ class TML_Apply extends TML {
 				$selector = $extender->nodeName;
 				foreach($extender->attributes as $k=>$v)
 					$selector .= '['.$k.'="'.$v.'"]';
-				$obj->find($selector,true)->write($extender);
+				$obj->children($selector,true)->write($extender);
 			}
 	}
 }

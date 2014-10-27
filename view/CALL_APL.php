@@ -74,7 +74,7 @@ abstract class CALL_APL extends CORE{
 		$c = $this->callback();
 		if($extend = $this->closest('extend'))
 			if($this->selector)
-				$extend->find($this->selector,true)->$c($this);
+				$extend->children($this->selector,true)->$c($this);
 			else
 				$extend->closest()->$c($this);
 	}
@@ -82,7 +82,7 @@ abstract class CALL_APL extends CORE{
 		$c = $this->callback();
 		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
 			if($this->selector)
-				foreach($apply->find($this->selector) as $select)
+				foreach($apply->children($this->selector) as $select)
 					$select->$c($this->selectorCodeTHIS($select));
 			else
 				$apply->closest()->$c($this);

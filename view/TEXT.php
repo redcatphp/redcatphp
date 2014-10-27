@@ -20,13 +20,15 @@ class TEXT extends CORE{
 				switch($token[0]){
 					case T_OPEN_TAG:
 						$open = 1;
-						$a[] = $xml;
+						if($xml)
+							$a[] = $xml;
 						$xml = '';
 						$php = '<?php ';
 					break;
 					case T_OPEN_TAG_WITH_ECHO:
 						$open = 2;
-						$a[] = $xml;
+						if($xml)
+							$a[] = $xml;
 						$xml = '';
 						$php = '<?php echo ';
 					break;
@@ -55,20 +57,21 @@ class TEXT extends CORE{
 		else
 			$a[] = $xml;
 		$b = false;
+		$head = '';
 		foreach($a as $v){
 			if(!$b&&is_string($v)){
-				$this->innerHead($v);
-				$b = true;
+				$head .= $v;
 			}
 			else{
 				if(is_string($v))
 					$v = new TEXT($this,$nodeName,$v,$this);
+				else
+					$b = true;
 				$this->childNodes[] = $v;
 			}
 		}
-		//var_dump($a);exit;
-		
-		//$this->innerHead($text);
+		if($head)
+			$this->innerHead($head);
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)

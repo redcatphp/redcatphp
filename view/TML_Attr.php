@@ -11,26 +11,26 @@ class TML_Attr extends CALL_APL {
 				if($k=='selector')
 					continue;
 				elseif($k=="removeAttr"){
-					$apply->find($this->selector,true)->each(function($o)use($v){
+					$apply->children($this->selector,true)->each(function($o)use($v){
 						$o->__unset($v);
 					});
 				}
 				elseif(strpos($k,'add')===0&&ctype_upper(substr($k,3,1))){
 					$key = lcfirst(substr($k,3));
-					$apply->find($this->selector,true)->each(function($o)use($key,$v){
+					$apply->children($this->selector,true)->each(function($o)use($key,$v){
 						if(!isset($o->attributes[$key])||strpos($o->attributes[$key],$v)===false)
 							$o->attr($key,trim($o->$key.' '.$v));
 					});
 				}
 				elseif(strpos($k,'remove')===0&&ctype_upper(substr($k,6,1))){
 					$key = lcfirst(substr($k,6));
-					$apply->find($this->selector,true)->each(function($o)use($key,$v){
+					$apply->children($this->selector,true)->each(function($o)use($key,$v){
 						if(isset($o->attributes[$key])&&strpos($o->attributes[$key],$v)!==false)
 							$o->attr($key,str_replace($v,'',$o->$key));
 					});
 				}
 				else{
-					$apply->find($this->selector,true)->each(function($o)use($k,$v){
+					$apply->children($this->selector,true)->each(function($o)use($k,$v){
 						$v = $this->selectorCodeTHAT($o,$v);
 						$o->attr($k,$v);
 					});

@@ -235,11 +235,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	
 	function __invoke($selector){
-		$r = [];
-		$this->recursive(function($el)use(&$r,$selector){
-			$r = array_merge($r,$el->find($selector));
-		});
-		return new Iterator($r);
+		return call_user_func_array([$this,'find'],[$selector,true]);
 	}
 	function offsetUnset($k){
 		unset($this->childNodes[$k]);
@@ -344,11 +340,23 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		unset($ABS);
 		return $c;
 	}
+		
 	function find($selector=null,$index=null){
+		$r = [];
+		$this->recursive(function($el)use(&$r,$selector){
+			$r = array_merge($r,$el->children($selector));
+		});
+		if($index===true)
+			return new Iterator($r);
+		elseif($index!==null)
+			return isset($r[$index])?$r[$index]:null;
+		return $r;
+	}
+	function children($selector=null,$index=null){
 		if(is_array($selector)){
 			foreach($selector as $select){
 				$r = [];
-				foreach($this->find($select) as $o)
+				foreach($this->children($select) as $o)
 					$r[] = $o;
 			}
 		}
@@ -713,14 +721,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function addJsScript($js=null){
 		if(!$js)
 			$js = $this;
-		$dom = $this->closest()->find('body',0);
+		$dom = $this->closest()->children('body',0);
 		if(!$dom)
 			return;
 		$src = trim($js->src?$js->src:($js->href?$js->href:key($js->attributes)));
 		if($src){
-			if(!($script=$dom->find('script:not([src]):last',0))){
+			if(!($script=$dom->children('script:not([src]):last',0))){
 				$dom[] = '<script type="text/javascript"></script>';
-				$script = $dom->find('script:not([src]):last',0);
+				$script = $dom->children('script:not([src]):last',0);
 			}
 			$sync = isset($js->sync)&&$js->sync!='false'||$js->async=='false'?',true':'';
 			$app = "\$js('$src'$sync);";
@@ -732,7 +740,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		static $path = 'css/';
 		if(!$css)
 			$css = $this;
-		$dom = $this->closest()->find('head',0);
+		$dom = $this->closest()->children('head',0);
 		if(!$dom)
 			return;
 		$href = trim($css->href?$css->href:($css->src?$css->src:key($css->attributes)));
@@ -744,7 +752,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		$media_s = $css->media?'[media="'.$css->media.'"]':'';
 		$media = $css->media?' media="'.$css->media.'"':'';
-		if($href&&!($script=$dom->find('link[href="'.$href.'"]'.$media_s,0)))
+		if($href&&!($script=$dom->children('link[href="'.$href.'"]'.$media_s,0)))
 			$dom[] = '<link href="'.$href.'" rel="stylesheet" type="text/css"'.$media.'>';
 	}
 

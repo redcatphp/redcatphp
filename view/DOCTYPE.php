@@ -19,7 +19,7 @@ class DOCTYPE extends CORE{
 		return $this->contentText;
 	}
 	function loaded(){
-		if($html=$this->closest()->find('html',0)){
+		if($html=$this->closest()->children('html',0)){
 			if($this->__compat=='xhtml'){
 				$html->metaAttribution[] = '<?php if(stristr(@$_SERVER["HTTP_ACCEPT"],"application/xhtml+xml")) echo \'xmlns="http://www.w3.org/1999/xhtml"\';?>';
 			}
