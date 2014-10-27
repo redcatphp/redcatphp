@@ -81,6 +81,7 @@ class session{
 			session_start();
 		}
 		elseif($now>=$_SESSION['expire']){
+			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
 			session_regenerate_id(true);
 			$sid = session_id();
 			session_write_close();
