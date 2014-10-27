@@ -14,6 +14,7 @@ class uri implements ArrayAccess{
 	];
 	protected $resolved;
 	protected $baseHref;
+	protected $lang;
 	protected static $baseHrefSuffix = '';
 	private static $__factory = [];
 	static function getSubdomain($domain=null){
@@ -30,8 +31,11 @@ class uri implements ArrayAccess{
 			self::$__factory[$k] = new URI($path);
 		return self::$__factory[$k];
 	}
-	static function baseHref($k=null){
-		return func_num_args()?self::factory()->setBaseHref(func_get_arg(0)):self::factory()->getBaseHref();
+	static function baseHref($href=null,$k=0){
+		return func_num_args()?self::factory($k)->setBaseHref($href):self::factory($k)->getBaseHref();
+	}
+	static function lang($l=null,$k=0){
+		return func_num_args()?self::factory($k)->setLang($l):self::factory($k)->getLang();
 	}
 	static function param($k=null){
 		return self::factory()->getParam($k);
@@ -86,6 +90,12 @@ class uri implements ArrayAccess{
 		if(!isset($this->baseHref))
 			$this->baseHref = static::autoBaseHref();
 		return $this->baseHref;
+	}
+	function setLang($lang){
+		$this->lang = $lang;
+	}
+	function getLang(){
+		return $this->lang;
 	}
 	function getPath(){
 		return $this->PATH;
