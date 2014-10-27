@@ -43,7 +43,7 @@ class Config {
         ];
     }
 
-    public static function getServers($config_file,$parent=null) {
+    public static function getServers($config_file,$parent=null,$child=null) {
         $servers = @parse_ini_file($config_file, true);
         $return = [];
 
@@ -75,6 +75,9 @@ class Config {
 				if($parent){
 					$options['path'] = dirname(rtrim($options['path'],'/')).'/'.$parent;
 					$options['clean_directories'] = [];
+				}
+				if($child){
+					$options['path'] = rtrim($options['path'],'/').'/'.$child;
 				}
                 if ($options['skip']) {
                     continue;

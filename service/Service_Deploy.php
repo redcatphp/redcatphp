@@ -17,7 +17,7 @@ class Service_Deploy{
 		echo '<pre>';
 		GitDeploy::main([
 			'repo_path'=>control::$SURIKAT,
-		]);
+		],false,true);
 		echo '</pre>';
 		
 	}

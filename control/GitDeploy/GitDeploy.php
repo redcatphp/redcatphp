@@ -1,11 +1,11 @@
 <?php namespace surikat\control\GitDeploy;
 abstract class GitDeploy{
-	static function main($config=null,$parent=null){
+	static function main($config=null,$parent=null,$child=null){
 		ini_set('memory_limit', '256M');
 		$args = Config::getArgs();
 		if(isset($config))
 			$args = array_merge($args,$config);
-		$servers = Config::getServers($args['config_file'],$parent?pathinfo($args['repo_path'],PATHINFO_FILENAME):null);
+		$servers = Config::getServers($args['config_file'],$parent?pathinfo($args['repo_path'],PATHINFO_FILENAME):null,$child?pathinfo($args['repo_path'],PATHINFO_FILENAME):null);
 		$git = new Git($args['repo_path']);
 
 		foreach ($servers as $server) {
