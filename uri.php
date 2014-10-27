@@ -16,6 +16,15 @@ class uri implements ArrayAccess{
 	protected $baseHref;
 	protected static $baseHrefSuffix = '';
 	private static $__factory = [];
+	static function getSubdomain($domain=null){
+		if(!isset($domain))
+			$domain = $_SERVER['HTTP_HOST'];
+		$urlParts = explode('.', $domain);
+		if(count($urlParts)>2)
+			return $urlParts[0];
+		else
+			return null;
+	}
 	static function factory($k=0,$path=null){
 		if(!isset(self::$__factory[$k]))
 			self::$__factory[$k] = new URI($path);
