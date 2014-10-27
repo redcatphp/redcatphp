@@ -78,6 +78,7 @@ class Config {
 				}
 				if($child){
 					$options['path'] = rtrim($options['path'],'/').'/'.$child;
+					$options['clean_directories'] = [];
 				}
                 if ($options['skip']) {
                     continue;
