@@ -14,6 +14,7 @@ class uri implements ArrayAccess{
 	];
 	protected $resolved;
 	protected $baseHref;
+	protected static $baseHrefSuffix = '';
 	private static $__factory = [];
 	static function factory($k=0,$path=null){
 		if(!isset(self::$__factory[$k]))
@@ -65,7 +66,7 @@ class uri implements ArrayAccess{
 	static function autoBaseHref(){
 		$ssl = @$_SERVER["HTTPS"]=="on";
 		$port = @$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
-		return 'http'.($ssl?'s':'').'://'.$_SERVER['SERVER_NAME'].$port.'/';
+		return 'http'.($ssl?'s':'').'://'.$_SERVER['SERVER_NAME'].$port.'/'.static::$baseHrefSuffix;
 	}
 	function setBaseHref($href=null){
 		if(!isset($href))
