@@ -192,6 +192,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 
-#Duplicate-Content/Domain Avoid
-#RewriteCond %{HTTP_HOST} !mydomain.com$ [NC]
-#RewriteRule ^(.*)$ http://mydomain.com/$1 [L,R=301] 
+#Domain - Avoid Duplicate-Content
+#RewriteCond %{HTTP_HOST} !^mydomain.com$ [NC]
+#RewriteCond %{HTTP_HOST} !^cdn.mydomain.com$ [NC]
+#RewriteRule ^(.*)$ http://mydomain.com/$1 [L,R=301]
