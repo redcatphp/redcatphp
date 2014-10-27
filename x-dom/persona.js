@@ -4,7 +4,6 @@ $js([
 ],function(){
 	var loginBTN = $('a[is=persona]'),
 		logoutBTN = $('a.persona.logout');
-	var bgColor = '#93a72d';
 	$.getJSON('service/persona/email',function(email){
 		localStorage.setItem('personaInitilized',1);
 		var currentUser = email;
@@ -14,7 +13,7 @@ $js([
 			$js('https://login.persona.org/include.js',function(){
 				navigator.id.request({
 					siteName: loginBTN.attr('data-sitename'), //Plain text name of your site to show in the login dialog. Unicode and whitespace are allowed, but markup is not.
-					backgroundColor:bgColor,
+					backgroundColor:loginBTN.attr('data-bgcolor'),
 					//oncancel:function(){}, //invoked if the user refuses to share an identity with the site.
 					//privacyPolicy:'/Politique-Confidentialité', //Must be served over SSL. The termsOfService parameter must also be provided. Absolute path or URL to the web site's privacy policy. If provided, then termsOfService must also be provided. When both termsOfService and privacyPolicy are given, the login dialog informs the user that, by continuing, "you confirm that you accept this site's Terms of Use and Privacy Policy." The dialog provides links to the the respective policies.
 					//returnTo: document.location, //Absolute path to send new users to after they've completed email verification for the first time. The path must begin with '/'. This parameter only affects users who are certified by Mozilla's fallback Identity Provider. This value passed in should be a valid path which could be used to set window.location too.
