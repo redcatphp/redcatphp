@@ -29,8 +29,8 @@ AddType application/octet-stream       safariextz
 AddType text/x-vcard                   vcf
 <IfModule mod_include.c>
 	SSILastModified on
-	Options +Includes
 	<FilesMatch "(?<!\.min)\.js$">
+		AddHandler server-parsed js
 		Options +Includes
 		AddOutputFilterByType INCLUDES application/javascript application/json
 		SetOutputFilter INCLUDES
