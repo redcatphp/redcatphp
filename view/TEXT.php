@@ -10,68 +10,59 @@ class TEXT extends CORE{
 			$text = str::cleanXhtml($text);
 		$text = self::phpImplode($text,$constructor);
 		
-		$a = [];
-		$open = 0;
-		$php = '';
-		$xml = '';
-		$tokens = token_get_all($text);
-		foreach($tokens as $token){
-			if(is_array($token)){
-				switch($token[0]){
-					case T_OPEN_TAG:
-						$open = 1;
-						if($xml)
-							$a[] = $xml;
-						$xml = '';
-						$php = '<?php ';
-					break;
-					case T_OPEN_TAG_WITH_ECHO:
-						$open = 2;
-						if($xml)
-							$a[] = $xml;
-						$xml = '';
-						$php = '<?php echo ';
-					break;
-					case T_CLOSE_TAG:
-						$open = 0;
-						$a[] = new PHP($this,'PHP',$php.($open===2&&substr(trim($php),-1)!=';'?';':'').'?>');
-						$php = '';
-					break;
-					default:
-						if($open)
-							$php .= $token[1];
-						else
-							$xml .= $token[1];
-					break;
+		if(strpos('<?php ',$text)===false)
+			$this->innerHead($text);
+		else{
+			$open = 0;
+			$php = '';
+			$xml = '';
+			$tokens = token_get_all($text);
+			$b = false;
+			foreach($tokens as $token){
+				if(is_array($token)){
+					switch($token[0]){
+						case T_OPEN_TAG:
+							$open = 1;
+							if($xml)
+								$this->childNodes[] = new TEXT($this,$nodeName,$xml,$this);
+							$xml = '';
+							$php = '<?php ';
+						break;
+						case T_OPEN_TAG_WITH_ECHO:
+							$open = 2;
+							if($xml)
+								$this->childNodes[] = new TEXT($this,$nodeName,$xml,$this);
+							$xml = '';
+							$php = '<?php echo ';
+						break;
+						case T_CLOSE_TAG:
+							$open = 0;
+							$this->childNodes[] = new PHP($this,'PHP',$php.($open===2&&substr(trim($php),-1)!=';'?';':'').'?>');
+							$b = true;
+							$php = '';
+						break;
+						default:
+							if($open)
+								$php .= $token[1];
+							else
+								$xml .= $token[1];
+						break;
+					}
+				}
+				else{
+					if($open)
+						$php .= $token;
+					else
+						$xml .= $token;
 				}
 			}
-			else{
-				if($open)
-					$php .= $token;
-				else
-					$xml .= $token;
+			if(trim($php)){
+				$this->childNodes[] = new PHP($this,'PHP',$php.($open===2?';'&&substr(trim($php),-1)!=';':'').'?>');
+				$b = true;
 			}
+			if(trim($xml))
+				$this->childNodes[] = new TEXT($this,$nodeName,$xml,$this);
 		}
-		if($open)
-			$a[] = new PHP($this,'PHP',$php.($open===2?';'&&substr(trim($php),-1)!=';':'').'?>');
-		else
-			$a[] = $xml;
-		$b = false;
-		$head = '';
-		foreach($a as $v){
-			if(!$b&&is_string($v)){
-				$head .= $v;
-			}
-			else{
-				if(is_string($v))
-					$v = new TEXT($this,$nodeName,$v,$this);
-				else
-					$b = true;
-				$this->childNodes[] = $v;
-			}
-		}
-		if($head)
-			$this->innerHead($head);
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)
