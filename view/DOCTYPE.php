@@ -9,7 +9,7 @@ class DOCTYPE extends CORE{
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
 		$this->vFile = $parent->vFile;
-		$text = $this->phpImplode($text,$constructor);
+		$text = self::phpImplode($text,$constructor);
 		$this->contentText = $text;
 		$this->__compat = substr($this->contentText,10,-1);
 		if($this->__compat!='html'&&$this->vFile)

@@ -5,7 +5,7 @@ class CDATA extends CORE{
 	private $contentText = '';
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
-		$text = $this->phpImplode($text,$constructor);
+		$text = self::phpImplode($text,$constructor);
 		$this->contentText = '<![CDATA['.$text.']]>';
 	}
 	function getInner(){

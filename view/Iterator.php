@@ -35,4 +35,7 @@ class Iterator implements \ArrayAccess,\IteratorAggregate{
 			$r[] = call_user_func_array([$node,$func],$args);
 		return $r;		
 	}
+	function count(){
+		return count($this->__dataNodes);
+	}
 }
