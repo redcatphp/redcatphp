@@ -82,8 +82,10 @@ class view {
 				$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 	}
 	static function setCDN($TML,$url=true){
-		if($url===true)
-			$url = 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://cdn.'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/';
+		if($url===true){
+			$prefix = 'cdn';
+			$url = 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://'.(strpos($_SERVER['SERVER_NAME'],$prefix.'.')===0?'':$prefix.'.').$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/';
+		}
 		if(substr($url,-1)!='/')
 			$url .= '/';
 		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
