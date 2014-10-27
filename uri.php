@@ -13,11 +13,15 @@ class uri implements ArrayAccess{
 		'Or'=>'&',
 	];
 	protected $resolved;
+	protected $baseHref;
 	private static $__factory = [];
 	static function factory($k=0,$path=null){
 		if(!isset(self::$__factory[$k]))
 			self::$__factory[$k] = new URI($path);
 		return self::$__factory[$k];
+	}
+	static function baseHref($k=null){
+		return func_num_args()?self::factory()->setBaseHref(func_get_arg(0)):self::factory()->getBaseHref();
 	}
 	static function param($k=null){
 		return self::factory()->getParam($k);
@@ -57,6 +61,21 @@ class uri implements ArrayAccess{
 		$this->uriParams = $this->parseUriParams(ltrim($this->PATH,'/'));
 		foreach(array_keys($this->uriParams) as $k)
 			$this->resolvedParams[$k] = null;
+	}
+	static function autoBaseHref(){
+		$ssl = @$_SERVER["HTTPS"]=="on";
+		$port = @$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
+		return 'http'.($ssl?'s':'').'://'.$_SERVER['SERVER_NAME'].$port.'/';
+	}
+	function setBaseHref($href=null){
+		if(!isset($href))
+			$href = static::autoBaseHref();
+		$this->baseHref = $href;
+	}
+	function getBaseHref(){
+		if(!isset($this->baseHref))
+			$this->baseHref = static::autoBaseHref();
+		return $this->baseHref;
 	}
 	function getPath(){
 		return $this->PATH;
