@@ -171,7 +171,7 @@ class CssParser extends TextParser
             "has", "CssParserFilterPseudoHas", "selectorList"
         );
         $this->registerPseudoFilter( //by surikat
-            "hasnot", "CssParserFilterPseudoHasnot", "selectorList"
+            "hasnt", "CssParserFilterPseudoHasnt", "selectorList"
         );
         $this->registerPseudoFilter(
             "first-child", "CssParserFilterPseudoFirstChild"

@@ -1,7 +1,7 @@
 <?php namespace surikat\view\CssSelector\Parser\Filter;
 use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Filter\CssParserFilterPseudo;
-class CssParserFilterPseudoHasnot extends CssParserFilterPseudo{
+class CssParserFilterPseudoHasnt extends CssParserFilterPseudo{
 	private $_items;
 	public function __construct($input){
 		$this->_items = $input;
@@ -9,7 +9,7 @@ class CssParserFilterPseudoHasnot extends CssParserFilterPseudo{
 	public function match($node, $position, $items){
 		$r = true;
 		$_items =& $this->_items;
-		$node->recursive(function($el,&$break)use(&$r,&$_items,&$items){
+		$node->recursive(function($el,&$break)use(&$r,&$_items){
 			foreach($_items as $_el)
 				if($el===$_el){
 					$r = false;
