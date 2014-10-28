@@ -48,12 +48,15 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				break;
 		}
 	}
-	function arecursive($callback,$node=null){
+	function arecursive($callback,$node=null,&$break=false){
 		if(func_num_args()<2)
 			$node = &$this;
-		foreach($node->childNodes as $el)
-			$this->arecursive($callback,$el);
-		call_user_func_array($callback,[&$node]);
+		foreach($node->childNodes as $el){
+			$this->arecursive($callback,$el,$break);
+			if($break)
+				return;
+		}
+		call_user_func_array($callback,[&$node,&$break]);
 	}
 	function vFileOf($file){
 		return FILE::factoy(dirname($this->vFile->path).'/'.$file);
@@ -190,14 +193,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		foreach(array_keys($this->metaAttribution) as $k){
 			if(self::checkPIOC($this->metaAttribution[$k])){
-				$this->metaAttribution[$k] = new PHP($this,null,$this->metaAttribution[$k],$this);
+				$this->metaAttribution[$k] = new PHP($this,'PHP',$this->metaAttribution[$k],$this);
 				if(!is_integer($k))
 					$this->attributes[$k] = &$this->metaAttribution[$k];
 			}
 			elseif(self::checkPIOC($k)){
 				$v = $this->metaAttribution[$k];
 				unset($this->metaAttribution[$k]);
-				$this->metaAttribution[] = new PHP($this,null,$k.'="'.$v.'"',$this);
+				$this->metaAttribution[] = new PHP($this,'PHP',$k.'="'.$v.'"',$this);
 			}
 			elseif(!is_integer($k))
 				$this->attributes[$k] = &$this->metaAttribution[$k];		

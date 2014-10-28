@@ -4,6 +4,7 @@ class PHP extends CORE{
 	var $nodeName = 'PHP';
 	function __construct($parent,$nodeName,$text){
 		$text = self::phpImplode($text,$parent->constructor);
+		$this->nodeName = $nodeName;
 		$this->innerHead($text);
 	}
 }

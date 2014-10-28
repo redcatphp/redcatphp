@@ -155,7 +155,7 @@ abstract class PARSER{
 				if($currentChar=='>'&&substr($charContainer,$lnn)==$nnn){
 					$charContainer = substr($charContainer,0,$lnn);
 					if(trim($charContainer))
-						$on[] = new TEXT($on,'TEXT',$charContainer,$this);
+						$on[] = new TEXT($on,'TEXT_UNPARSED',$charContainer,$this);
 					$this->fireEndElement($nn);
 					$charContainer = '';
 					$state = self::STATE_PARSING;

@@ -6,18 +6,18 @@ class TEXT extends CORE{
 	protected $hiddenWrap = true;
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
+		$this->nodeName = $nodeName;
 		if($this->parent&&$this->parent->vFile&&$this->parent->vFile->isXhtml)
 			$text = str::cleanXhtml($text);
-		$text = self::phpImplode($text,$constructor);
 		
-		if(strpos('<?php ',$text)===false)
+		$text = self::phpImplode($text,$constructor);
+		if(strpos($text,'<?php ')===false)
 			$this->innerHead($text);
 		else{
 			$open = 0;
 			$php = '';
 			$xml = '';
 			$tokens = token_get_all($text);
-			$b = false;
 			foreach($tokens as $token){
 				if(is_array($token)){
 					switch($token[0]){
@@ -38,7 +38,6 @@ class TEXT extends CORE{
 						case T_CLOSE_TAG:
 							$open = 0;
 							$this->childNodes[] = new PHP($this,'PHP',$php.($open===2&&substr(trim($php),-1)!=';'?';':'').'?>');
-							$b = true;
 							$php = '';
 						break;
 						default:
@@ -56,16 +55,14 @@ class TEXT extends CORE{
 						$xml .= $token;
 				}
 			}
-			if(trim($php)){
+			if(trim($php))
 				$this->childNodes[] = new PHP($this,'PHP',$php.($open===2?';'&&substr(trim($php),-1)!=';':'').'?>');
-				$b = true;
-			}
 			if(trim($xml))
 				$this->childNodes[] = new TEXT($this,$nodeName,$xml,$this);
 		}
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)
-			$this->contentText = new TML('<loremipsum mini>');
+			$this->replaceWith(new TML('<loremipsum mini>'));
 	}
 }
