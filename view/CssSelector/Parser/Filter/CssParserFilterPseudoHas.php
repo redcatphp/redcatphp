@@ -1,5 +1,4 @@
 <?php namespace surikat\view\CssSelector\Parser\Filter;
-use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Filter\CssParserFilterPseudo;
 class CssParserFilterPseudoHas extends CssParserFilterPseudo{
 	private $_items;
@@ -21,4 +20,3 @@ class CssParserFilterPseudoHas extends CssParserFilterPseudo{
 		return $r;
 	}
 }
-//by surikat

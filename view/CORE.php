@@ -364,7 +364,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 					$r[] = $o;
 			}
 		}
-		elseif($selector=='*'||$selector===null){
+		elseif($selector==='*'||$selector===null){
 			$r = $this->childNodes;
 		}
 		else{
