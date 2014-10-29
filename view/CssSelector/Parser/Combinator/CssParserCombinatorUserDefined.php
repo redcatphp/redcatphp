@@ -66,15 +66,6 @@ class CssParserCombinatorUserDefined extends CssParserCombinator
                 "The user defined combinator is not an array"
             );
         }
-        
-        // excludes the items that are not elements
-        //$items = array();
-        //foreach ($nodes as $node) {
-            //if ($node instanceof \surikat\view\CORE) {
-                //array_push($items, $node);
-            //}
-        //}
-        
-        return $items;
+        return $nodes;
     }
 }
