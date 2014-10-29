@@ -12,8 +12,6 @@
  */
 namespace surikat\view\CssSelector\Parser\Model;
 
-
-use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Model\CssParserModelFactor;
 
 /**
@@ -81,10 +79,8 @@ class CssParserModelSelector
     private function _getNodesByFactor($nodes, $factor)
     {
         $ret = [];
-        foreach ($nodes as $node) {
-            $items = $factor->filter($node);
-            $ret = CssParserHelper::mergeNodes($ret, $items);
-        }
-        return $ret;
+        foreach ($nodes as $node)
+            $ret = array_merge($ret, $factor->filter($node));
+        return array_unique($ret);
     }
 }

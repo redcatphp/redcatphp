@@ -14,7 +14,6 @@ namespace surikat\view\CssSelector\Parser\Combinator;
 use Closure;
 
 use surikat\view\CssSelector\Parser\Exception\CssParserException;
-use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Combinator\CssParserCombinator;
 
 /**

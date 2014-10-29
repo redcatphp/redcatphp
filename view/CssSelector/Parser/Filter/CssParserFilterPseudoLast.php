@@ -12,7 +12,6 @@
  */
 namespace surikat\view\CssSelector\Parser\Filter;
 
-use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Filter\CssParserFilterPseudo;
 
 /**

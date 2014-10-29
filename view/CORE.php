@@ -5,7 +5,6 @@ use surikat\view\FILE;
 use surikat\view\TML;
 use surikat\view\TML_Apply;
 use surikat\view\CssSelector\CssSelector;
-use surikat\view\CssSelector\Parser\CssParserHelper;
 # Nodal Representation for Templating-Markup-Language
 # 	Pure Object Recursive Nodal Dom for XML/XHTML/HTML5/PHP5
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
@@ -337,6 +336,17 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 					return $ref;
 			}
 	}
+	
+	function searchNode($node, $offset = 0){
+        $len = count($this->childNodes);
+        for ($i = $offset; $i < $len; $i++) {
+            $item = $this->childNodes[$i];
+            if ($item===$node)
+                return $i;
+        }
+        return false;
+    }
+    
 	function match($selector){
 		$ABS = new ABSTRACTION($this->nodeName,$this->attributes);
 		$c = count($ABS->selector($selector));

@@ -12,8 +12,6 @@
  */
 namespace surikat\view\CssSelector\Parser\Filter;
 use ArrayObject;
-
-use surikat\view\CssSelector\Parser\CssParserHelper;
 use surikat\view\CssSelector\Parser\Filter\CssParserFilterPseudo;
 
 /**
@@ -57,6 +55,6 @@ class CssParserFilterPseudoNot extends CssParserFilterPseudo
      */
     public function match($node, $position, $items)
     {
-        return CssParserHelper::searchNode($node, $this->_items) === false;
+        return in_array($node,$items);
     }
 }

@@ -320,12 +320,12 @@ class CssParser extends TextParser{
         do {
             if (!$selector = $this->is("selector"))
                 break;
-            $nodes = CssParserHelper::mergeNodes(
+            $nodes = array_merge(
                 $nodes,
                 $selector->filter($this->_node)
             );
         } while ($this->eq(","));
-        return new ArrayObject($nodes);
+        return new ArrayObject(array_unique($nodes));
     }
     protected function _parse(){
         return $this->is("selectorList");
