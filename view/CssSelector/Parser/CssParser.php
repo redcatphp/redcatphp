@@ -18,11 +18,6 @@ use surikat\view\CssSelector\Text\Parser\Exception\TextParserException;
 use surikat\view\CssSelector\Text\Parser\TextParser;
  
 /**
- * Class CssParser.
- * 
- * <p>This class parses and evaluates a CSS expression.</p>
- * 
- * <pre>
  * selectorList              = selector {"," selector}
  * selector                  = factor {factor}
  * factor                    = combinator element | element
@@ -39,27 +34,16 @@ use surikat\view\CssSelector\Text\Parser\TextParser;
  * attr-operator             = "=" | "~="
  * combinator                = ">" | "+" | "~"
  * value                     = quoted-string | alphanum {alphanum}
- * </pre>
- * 
- * @category XML_CSS
- * @package  XML_CSS_CssSelector
- * @author   Gonzalo Chumillas <gonzalo@soloproyectos.com>
- * @license  https://raw2.github.com/soloproyectos/php.common-libs/master/LICENSE BSD 2-Clause License
- * @link     https://github.com/soloproyectos/php.common-libs
  */
 class CssParser extends TextParser{
     const IDENTIFIER = "[_a-z0-9][_\-a-z0-9]*";
     private $_node;
     private $_pseudoFilters;
     private $_combinators;
-    public function __construct($target, $charset = "", $mimetype = "")
-    {
+    public function __construct($target, $charset = "", $mimetype = ""){
         $this->_pseudoFilters = [];
-        $this->_combinators = [];
-        
+        $this->_combinators = [];        
         $this->_node = $target;
-        
-        // registers pseudo filters
         $this->registerPseudoFilter("first", "CssParserFilterPseudoFirst");
         $this->registerPseudoFilter("last", "CssParserFilterPseudoLast");
         $this->registerPseudoFilter("eq", "CssParserFilterPseudoEq");
@@ -69,25 +53,14 @@ class CssParser extends TextParser{
         $this->registerPseudoFilter("lt", "CssParserFilterPseudoLt");
         $this->registerPseudoFilter("gt", "CssParserFilterPseudoGt");
         $this->registerPseudoFilter("nth-child", "CssParserFilterPseudoNthChild");
-        $this->registerPseudoFilter(
-            "not", "CssParserFilterPseudoNot", "selectorList"
-        );
-        $this->registerPseudoFilter( //by surikat
-            "has", "CssParserFilterPseudoHas", "selectorList"
-        );
-        $this->registerPseudoFilter( //by surikat
-            "hasnt", "CssParserFilterPseudoHasnt", "selectorList"
-        );
-        $this->registerPseudoFilter(
-            "first-child", "CssParserFilterPseudoFirstChild"
-        );
-        
-        // registers combinators
+        $this->registerPseudoFilter("not", "CssParserFilterPseudoNot", "selectorList");
+        $this->registerPseudoFilter("has", "CssParserFilterPseudoHas", "selectorList");
+        $this->registerPseudoFilter("hasnt", "CssParserFilterPseudoHasnt", "selectorList");
+        $this->registerPseudoFilter("first-child", "CssParserFilterPseudoFirstChild");
         $this->registerCombinator("", "CssParserCombinatorDescendant");
         $this->registerCombinator(">", "CssParserCombinatorChild");
         $this->registerCombinator("+", "CssParserCombinatorAdjacent");
         $this->registerCombinator("~", "CssParserCombinatorGeneral");
-        
         parent::__construct("");
     }
     

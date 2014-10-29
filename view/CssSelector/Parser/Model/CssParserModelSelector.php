@@ -11,7 +11,6 @@
  * @link     https://github.com/soloproyectos/php.common-libs
  */
 namespace surikat\view\CssSelector\Parser\Model;
-
 use surikat\view\CssSelector\Parser\Model\CssParserModelFactor;
 
 /**
