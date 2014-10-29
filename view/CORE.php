@@ -347,9 +347,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function find($selector=null,$index=null){
 		$r = [];
 		$this->arecursive(function($el)use(&$r,$selector){
-			$r = array_merge($r,$el->children($selector));
+			if($el->match($selector))
+				$r[] = $el;
 		});
-		$r = array_unique($r);
 		if($index===true)
 			return new Iterator($r);
 		elseif($index!==null)

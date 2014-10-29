@@ -60,9 +60,7 @@ class CssParserHelper{
      * @return array of DOMElement objects
      */
     public static function select($node, $query){
-        $nodes = [];
         $p = new CssParser($node, $query);
-        $nodes = $p->parse();
-        return $nodes;
+        return $p->parse();
     }
 }
