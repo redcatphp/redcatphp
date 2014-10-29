@@ -46,7 +46,7 @@ class TEXT extends CORE{
 						break;
 						case T_CLOSE_TAG:
 							$open = 0;
-							$this->childNodes[] = new PHP($this,'PHP',$php.($open===2&&substr(trim($php),-1)!=';'?';':'').'?>');
+							$this->childNodes[] = new PHP($this,'PHP',$php.($open===2&&substr(trim($php),-1)!=';'?';':'').'?>',$this->constructor);
 							$php = '';
 						break;
 						default:
@@ -64,9 +64,9 @@ class TEXT extends CORE{
 						$xml .= $token;
 				}
 			}
-			if(trim($php))
-				$this->childNodes[] = new PHP($this,'PHP',$php.($open===2?';'&&substr(trim($php),-1)!=';':'').'?>');
-			if(trim($xml))
+			if($php)
+				$this->childNodes[] = new PHP($this,'PHP',$php.($open===2?';'&&substr(trim($php),-1)!=';':'').'?>',$this->constructor);
+			if($xml)
 				$this->childNodes[] = new TEXT($this,$nodeName,$xml,$this);
 		}
 	}

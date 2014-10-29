@@ -193,14 +193,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		foreach(array_keys($this->metaAttribution) as $k){
 			if(self::checkPIOC($this->metaAttribution[$k])){
-				$this->metaAttribution[$k] = new PHP($this,'PHP',$this->metaAttribution[$k],$this);
+				$this->metaAttribution[$k] = new PHP($this,'PHP',$this->metaAttribution[$k],$this->constructor);
 				if(!is_integer($k))
 					$this->attributes[$k] = &$this->metaAttribution[$k];
 			}
 			elseif(self::checkPIOC($k)){
 				$v = $this->metaAttribution[$k];
 				unset($this->metaAttribution[$k]);
-				$this->metaAttribution[] = new PHP($this,'PHP',$k.'="'.$v.'"',$this);
+				$this->metaAttribution[] = new PHP($this,'PHP',$k.'="'.$v.'"',$this->constructor);
 			}
 			elseif(!is_integer($k))
 				$this->attributes[$k] = &$this->metaAttribution[$k];		

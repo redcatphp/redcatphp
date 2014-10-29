@@ -12,14 +12,12 @@ class CssParserHelper{
      * 
      * @return false|integer
      */
-    public static function searchNode($node, $items, $offset = 0)
-    {
+    public static function searchNode($node, $items, $offset = 0){
         $len = count($items);
         for ($i = $offset; $i < $len; $i++) {
             $item = $items[$i];
-            if ($item->isSameNode($node)) {
+            if ($item->isSameNode($node))
                 return $i;
-            }
         }
         return false;
     }
