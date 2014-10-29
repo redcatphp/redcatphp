@@ -1,59 +1,15 @@
 <?php
-/**
- * This file contains the TextParserException class.
- * 
- * PHP Version 5.3
- * 
- * @category Text
- * @package  TextParser
- * @author   Gonzalo Chumillas <gonzalo@soloproyectos.com>
- * @license  https://raw.github.com/soloproyectos/core/master/LICENSE BSD 2-Clause License
- * @link     https://github.com/soloproyectos/core
- */
 namespace surikat\view\CssSelector\Text\Parser\Exception;
 use surikat\view\CssSelector\Text\Parser\TextParser;
-use surikat\view\CssSelector\Text\Exception\TextException;
-
-/**
- * class TextParserException
- * 
- * @category Text
- * @package  TextParser
- * @author   Gonzalo Chumillas <gonzalo@soloproyectos.com>
- * @license  https://raw.github.com/soloproyectos/core/master/LICENSE BSD 2-Clause License
- * @link     https://github.com/soloproyectos/core
- */
-class TextParserException extends TextException
-{
-    /**
-     * The parser instance that threw the exception.
-     * @var TextParser
-     */
+use Exception;
+class TextParserException extends Exception{
     private $_parser;
-    
-    /**
-     * Constructor.
-     * 
-     * @param string     $message The exception message
-     * @param TextParser $parser  The parser object (default is null)
-     */
-    public function __construct($message, $parser = null)
-    {
+    function __construct($message, $parser = null){
         $this->_parser = $parser;
         parent::__construct($message);
     }
-    
-    /**
-     * Gets a printable message.
-     * 
-     * This function provides a method to get printable messages.
-     * 
-     * @return string
-     */
-    public function getPrintableMessage()
-    {
+    function getPrintableMessage(){
         $ret = $this->message;
-        
         if ($this->_parser != null) {
             $string = rtrim($this->_parser->getString());
             $offset = $this->_parser->getOffset();
@@ -85,14 +41,7 @@ class TextParserException extends TextException
         
         return $ret;
     }
-    
-    /**
-     * Gets a string representation of the instance.
-     * 
-     * @return string
-     */
-    public function __toString()
-    {
+    function __toString(){
         return __CLASS__ . ":\n\n" . $this->getPrintableMessage() . "\n";
     }
 }

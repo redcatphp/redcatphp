@@ -1,8 +1,6 @@
 <?php
 namespace surikat\view\CssSelector\Parser;
 use ArrayObject;
-use Closure;
-use surikat\view\CssSelector\Arr\Arr;
 use surikat\view\CssSelector\Parser\Combinator\CssParserCombinator;
 use surikat\view\CssSelector\Parser\Combinator\CssParserCombinatorFactory;
 use surikat\view\CssSelector\Parser\Filter\CssParserFilter;
@@ -189,7 +187,7 @@ class CssParser extends TextParser{
             return false;
         if (!list($name) = $this->is("identifier"))
             throw new TextParserException("Invalid identifier", $this);
-        $filter = Arr::get($this->_pseudoFilters, $name, null);
+        $filter = array_key_exists($name, $this->_pseudoFilters)? $this->_pseudoFilters[$name] : null;
         if ($filter === null)
             throw new TextParserException("Unknown pseudo-filter", $this);
         $input = "";

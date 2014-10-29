@@ -4,7 +4,7 @@ use surikat\view;
 use surikat\view\FILE;
 use surikat\view\TML;
 use surikat\view\TML_Apply;
-use surikat\view\CssSelector\CssSelector;
+use surikat\view\CssSelector;
 # Nodal Representation for Templating-Markup-Language
 # 	Pure Object Recursive Nodal Dom for XML/XHTML/HTML5/PHP5
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
