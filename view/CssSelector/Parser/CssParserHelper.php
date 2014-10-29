@@ -1,122 +1,6 @@
 <?php
-/**
- * This file contains the CssParserHelper class.
- * 
- * PHP Version 5.3
- * 
- * @category XML_CSS
- * @package  XML_CSS_CssSelector
- * @author   Gonzalo Chumillas <gonzalo@soloproyectos.com>
- * @license  https://raw2.github.com/soloproyectos/php.common-libs/master/LICENSE BSD 2-Clause License
- * @link     https://github.com/soloproyectos/php.common-libs
- */
 namespace surikat\view\CssSelector\Parser;
-
-
-
-
-/**
- * Class CssParserHelper.
- * 
- * This is a helper class.
- * 
- * @category XML_CSS
- * @package  XML_CSS_CssSelector
- * @author   Gonzalo Chumillas <gonzalo@soloproyectos.com>
- * @license  https://raw2.github.com/soloproyectos/php.common-libs/master/LICENSE BSD 2-Clause License
- * @link     https://github.com/soloproyectos/php.common-libs
- */
-class CssParserHelper
-{
-    
-    /**
-     * This is a library of static functions, not a class. It couldn't be
-     * instantiated.
-     * 
-     * @return void
-     */
-    //private function __construct()
-    //{
-    //}
-    
-    /**
-     * Gets the previous sibling DOMElement object.
-     * 
-     * @param DOMNode $node DOMNode object
-     * 
-     * @return null|DOMElement
-     */
-    public static function getPreviousSiblingElement($node)
-    {
-        return $node->previousSibling;
-        //do {
-            //$node = $node->previousSibling;
-        //} while ($node && !($node instanceof \surikat\view\CORE));
-        //return $node;
-    }
-    
-    /**
-     * Gets the next sibling DOMElement object.
-     * 
-     * @param DOMNode $node DOMNode object
-     * 
-     * @return null|DOMElement
-     */
-    public static function getNextSiblingElement($node)
-    {
-		return $node->nextSibling;
-        //do {
-            //$node = $node->nextSibling;
-        //} while ($node && !($node instanceof \surikat\view\CORE));
-        //return $node;
-    }
-    
-    /**
-     * Gets child elements of a given node.
-     * 
-     * This function returns all subnodes that are instance of DOMElement. It
-     * ignores the rest of the subnodes.
-     * 
-     * @param DOMNode $node DOMNode object
-     * 
-     * @return array of DOMNode objects
-     */
-    public static function getChildElements($node)
-    {
-        return $node->childNodes;
-        //$ret = array();
-        //$nodes = $node->childNodes;
-        //foreach ($nodes as $node) {
-            //if ($node instanceof \surikat\view\CORE) {
-                //array_push($ret, $node);
-            //}
-        //}
-        //return $ret;
-    }
-    
-    /**
-     * Gets elements by tagname.
-     * 
-     * This function returns all subnodes that have a given tagname.
-     * 
-     * @param DOMElement $node    DOMElement object
-     * @param string     $tagName Tag name
-     * 
-     * @return array of DOMElement objects
-     */
-    public static function getElementsByTagName($node, $tagName)
-    {
-		return $node->getElementsByTagName($tagName);
-        //$ret = array();
-        //$nodes = $node->getElementsByTagName($tagName);
-        //foreach ($nodes as $node) {
-            //if ($node instanceof \surikat\view\CORE) {
-                //array_push($ret, $node);
-            //}
-        //}
-        //return $ret;
-    }
-    
+class CssParserHelper{    
     /**
      * Searches a node in a list.
      * 
@@ -168,19 +52,6 @@ class CssParserHelper
     }
     
     /**
-     * Gets the string representation of a node.
-     * 
-     * @param DOMNode $node DOMNode object
-     * 
-     * @return string
-     */
-    public static function dom2str($node)
-    {
-        $doc = $node instanceof DOMDocument? $node : $node->ownerDocument;
-        return $doc->saveXML($node);
-    }
-    
-    /**
      * Gets nodes from a CSS expression.
      * 
      * This function filters all nodes that satisfy a CSS expression.
@@ -190,8 +61,7 @@ class CssParserHelper
      * 
      * @return array of DOMElement objects
      */
-    public static function select($node, $query)
-    {
+    public static function select($node, $query){
         $nodes = [];
         $p = new CssParser($node, $query);
         $nodes = $p->parse();

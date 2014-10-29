@@ -346,7 +346,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		
 	function find($selector=null,$index=null){
 		$r = [];
-		$this->recursive(function($el)use(&$r,$selector){
+		$this->arecursive(function($el)use(&$r,$selector){
 			$r = array_merge($r,$el->children($selector));
 		});
 		$r = array_unique($r);
@@ -404,7 +404,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function getElementsByTagName($nodeName){
 		$a = [];
-		$this->recursive(function($el)use(&$a,$nodeName){
+		$this->arecursive(function($el)use(&$a,$nodeName){
 			if($el->nodeName&&($nodeName=='*'||$el->nodeName==$nodeName))
 				$a[] = $el;
 		});

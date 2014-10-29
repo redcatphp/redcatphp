@@ -12,10 +12,12 @@ class TEXT extends CORE{
 		
 		$text = self::phpImplode($text,$constructor);
 		$this->textInject($text,$nodeName);
+		
+		//$this->biohazard();
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)
-			$this->replaceWith(new TML('<loremipsum mini>'));
+			$this->write(new TML('<loremipsum mini>'));
 	}
 	function textInject($text,$nodeName='TEXT'){
 		if(strpos($text,'<?php ')===false)

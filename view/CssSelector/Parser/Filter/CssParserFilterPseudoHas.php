@@ -8,7 +8,7 @@ class CssParserFilterPseudoHas extends CssParserFilterPseudo{
 	public function match($node, $position, $items){
 		$r = false;
 		$_items =& $this->_items;
-		$node->recursive(function($el,&$break)use(&$r,&$_items){
+		$node->arecursive(function($el,&$break)use(&$r,&$_items){
 			foreach($_items as $_el)
 				if($el===$_el){
 					$r = true;

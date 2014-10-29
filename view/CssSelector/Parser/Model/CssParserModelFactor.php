@@ -27,8 +27,7 @@ use surikat\view\CssSelector\Parser\Model\CssParserModelElement;
  * @license  https://raw2.github.com/soloproyectos/php.common-libs/master/LICENSE BSD 2-Clause License
  * @link     https://github.com/soloproyectos/php.common-libs
  */
-class CssParserModelFactor
-{
+class CssParserModelFactor{
     const DESCENDANT_OPERATOR = "";
     const CHILD_OPERATOR = ">";
     const ADJACENT_OPERATOR = "+";
