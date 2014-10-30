@@ -125,7 +125,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$toImplode = [];
 			foreach($var as $key=>$value)
 				$toImplode[] = self::varExport($key,$singlequote).'=>'.self::varExport($value,$singlequote);
-			$code = 'array('.implode(',', $toImplode).')';
+			$code = '['.implode(',', $toImplode).']';
 			return $code;
 		}
 		$var = var_export($var,true);
