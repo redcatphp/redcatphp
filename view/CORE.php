@@ -57,8 +57,13 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		call_user_func_array($callback,[&$node,&$break]);
 	}
+	function vFile(){
+		if(!$this->vFile)
+			$this->vFile = FILE::factory('');
+		return $this->vFile;
+	}
 	function vFileOf($file){
-		return FILE::factoy(dirname($this->vFile->path).'/'.$file);
+		return FILE::factory(dirname($this->vFile()->path).'/'.$file);
 	}
 	function pathFile($file){
 		return $this->vFileOf($file)->path($file);

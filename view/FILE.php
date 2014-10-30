@@ -49,7 +49,7 @@ class FILE {
 		}
 	}
 	private static $__factory = [];
-	static function factoy($path,$options=[],$instance=0){
+	static function factory($path,$options=[],$instance=0){
 		if(!isset(self::$__factory[$path])||!isset(self::$__factory[$path][$instance]))
 			self::$__factory[$path][$instance] = new FILE($path,$options);		
 		foreach($options as $k=>$v)
@@ -58,13 +58,13 @@ class FILE {
 		return self::$__factory[$path][$instance];
 	}
 	static function display($path,$vars=[],$options=[]){
-		return self::factoy($path,$options)->__display($vars);
+		return self::factory($path,$options)->__display($vars);
 	}
 	static function evalue($path,$options=[]){
-		return self::factoy($path,$options)->__evalue();
+		return self::factory($path,$options)->__evalue();
 	}
 	static function evalFree($path,$options=[]){
-		return self::factoy($path,$options)->__eval();
+		return self::factory($path,$options)->__eval();
 	}
 	function path($path=null){
 		if(!func_num_args())

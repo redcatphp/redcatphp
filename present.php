@@ -10,7 +10,7 @@ class present extends ArrayObject{
 		$c = get_called_class();
 		$o = new $c();
 		$o->merge([
-			'templatePath'		=> $tml->vFile->path,
+			'templatePath'		=> $tml->vFile()->path,
 			'presentAttributes'	=> $tml->getAttributes(),
 			'presentNamespaces'	=> $tml->_namespaces,
 		]);
