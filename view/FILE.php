@@ -57,8 +57,8 @@ class FILE {
 				self::$__factory[$path][$instance]->$k = $v;
 		return self::$__factory[$path][$instance];
 	}
-	static function display($path,$options=[]){
-		return self::factoy($path,$options)->__display();
+	static function display($path,$vars=[],$options=[]){
+		return self::factoy($path,$options)->__display($vars);
 	}
 	static function evalue($path,$options=[]){
 		return self::factoy($path,$options)->__evalue();
@@ -104,9 +104,11 @@ class FILE {
 		eval('?>'.$ev);
 		return $this;
 	}
-	function __display(){
+	function __display($vars=[]){
 		if($this->forceCompile||!is_file($this->dirCompile.$this->path))
 			$this->compilePHP($this->dirCompile.$this->path,(string)$this->__prepare());
+		if(!empty($vars))
+			extract($vars);
 		include($this->dirCompile.$this->path);
 		return $this;
 	}

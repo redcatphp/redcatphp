@@ -22,9 +22,9 @@ class view {
 		if(strpos($path,'/service/')===0&&service::method(str_replace('/','_',substr($path,9))))
 			exit;
 	}
-	static function exec($file){
+	static function exec($file,$vars=[]){
 		try{
-			FILE::display($file);
+			FILE::display($file,$vars);
 		}
 		catch(\surikat\view\Exception $e){
 			static::postHooks();
