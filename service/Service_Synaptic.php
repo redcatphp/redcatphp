@@ -33,7 +33,6 @@ class Service_Synaptic {
 		return ob_get_clean();
 	}
 	protected static function load($k,$from=null,$exclude=[]){
-		//var_dump($k);
 		$remote = strpos($k,'://')!==false;
 		$dir = '';
 		if(!$remote){
@@ -124,6 +123,10 @@ class Service_Synaptic {
 				if(substr($k,-7,-3)=='.min'){
 					$k = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
 					self::minifyJS($k);
+				}
+				else{
+					HTTP::code(404);
+					throw new Exception('404');
 				}
 			}
 			elseif(substr($k,-4)=='.css'){
