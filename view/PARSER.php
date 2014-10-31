@@ -89,6 +89,7 @@ abstract class PARSER{
 	}
 	private function parseML($xmlText){
 		//$xmlText = str_replace(array_keys(self::$short_open_tag),array_values(self::$short_open_tag),$xmlText);
+		$xmlText = str_replace(['\\<','\\>'],['&lt;','&gt;'],$xmlText);
 		self::short_open_tag($xmlText);
 		$tokens = token_get_all(str_replace(self::$PI_STR,self::$PI_HEX,$xmlText));
 		$xmlText = '';
