@@ -1,5 +1,5 @@
 <?php namespace surikat\view; 
-class TML_Pre extends TML{
+class TML_Code extends TML{
 	protected $noParseContent = true;
 	function load(){
 		$text = $this->getInnerTml();
