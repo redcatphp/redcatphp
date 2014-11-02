@@ -13,7 +13,6 @@
 <!--#include file="droppable.js" -->
 
 <!--#include file="effect.js" -->
-<!--#include file="effect-color.js" -->
 <!--#include file="effect-blind.js" -->
 <!--#include file="effect-bounce.js" -->
 <!--#include file="effect-clip.js" -->
@@ -22,9 +21,7 @@
 <!--#include file="effect-fade.js" -->
 <!--#include file="effect-fold.js" -->
 <!--#include file="effect-highlight.js" -->
-<!--#include file="effect-size.js" -->
 <!--#include file="effect-scale.js" -->
-<!--#include file="effect-puff.js" -->
 <!--#include file="effect-pulsate.js" -->
 <!--#include file="effect-shake.js" -->
 <!--#include file="effect-slide.js" -->
@@ -32,7 +29,6 @@
 
 <!--#include file="progressbar.js" -->
 <!--#include file="selectable.js" -->
-<!--#include file="selectmenu.js" -->
 <!--#include file="slider.js" -->
 <!--#include file="sortable.js" -->
 <!--#include file="spinner.js" -->
