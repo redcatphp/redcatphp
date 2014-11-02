@@ -17,14 +17,26 @@ class view {
 		static::preHooks(func_num_args()?func_get_arg(0):static::$URI->getPath());
 		static::exec(static::$URI->param(0).'.tml');
 	}
+	static function hookTml($s){
+		$path = func_num_args()>1?func_get_arg(1):ltrim(static::$URI->getPath(),'/');
+		if(strpos($path,$s)===0){
+			$path = substr($path,strlen($s)).'.tml';
+			static::exec($path,[],[
+				'dirCwd'=>control::$CWD.$s,
+				'dirCompile'=>control::$TMP.'view_compile/.'.$s,
+				'dirCache'=>control::$TMP.'view_cache/.'.$s,
+			]);
+			exit;
+		}
+	}
 	static function serviceHook(){
 		$path = func_num_args()?func_get_arg(0):static::$URI->getPath();
 		if(strpos($path,'/service/')===0&&service::method(str_replace('/','_',substr($path,9))))
 			exit;
 	}
-	static function exec($file,$vars=[]){
+	static function exec($file,$vars=[],$options=[]){
 		try{
-			FILE::display($file,$vars);
+			FILE::display($file,$vars,$options);
 		}
 		catch(\surikat\view\Exception $e){
 			static::postHooks();
