@@ -488,6 +488,16 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		return $obj;
 	}
+	function remove(){
+		if(!$this->parent)
+			$this->clean();
+		else
+			foreach($this->parent->childNodes as $i=>$child)
+				if($child===$this){
+					unset($this->parent->childNodes[$i]);
+					break;
+				}
+	}
 	function applyFile($tpl,$params=[]){
 		if(($pos=strpos($tpl,':'))!==false)
 			$tpl = '../'.substr($tpl,0,$pos).'/'.($base=substr($tpl,$pos+1)).(strpos($base,'/')===false?'/'.$base:'').'.tpl';
