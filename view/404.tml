@@ -1,7 +1,7 @@
 <present: />
 <?php
 header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-if(in_array(strtolower(pathinfo(view::param(0),PATHINFO_EXTENSION)),array(
+if(in_array(strtolower(pathinfo(uri::param(0),PATHINFO_EXTENSION)),array(
 	'js','css','png','jpg','jpeg','gif','svg','ttf','otf','woff','eot',
 )))
 	exit;
