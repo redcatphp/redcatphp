@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8">
-    <title><?=$u=view::param(0)?$u.' - ':''?>Surikat Framework - &copy; wildSurikat.com</title>
+    <title><?=$u=uri::param(0)?$u.' - ':''?>Surikat Framework - &copy; wildSurikat.com</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
 	<base href="http://<?=$_SERVER['SERVER_NAME']?>/">
