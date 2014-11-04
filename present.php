@@ -15,15 +15,12 @@ class present extends ArrayObject{
 			'presentNamespaces'	=> $tml->_namespaces,
 		]);
 		$o->assign();
-		$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID,'i'";
-		//$fl = ",EXTR_OVERWRITE|EXTR_PREFIX_INVALID|EXTR_REFS,'i'";
 		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
 		$head .= '$THIS->execute();';
-		$head .= 'extract((array)$THIS'.$fl.');?>';
-		//print('<pre>'.htmlentities($head.$foot).'</pre>');exit;
+		$head .= 'extract((array)$THIS,EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\');?>';
 		$tml->head($head);
 		if(!empty($tml->childNodes))
-			$tml->foot('<?php if(isset($_THIS));extract((array)($THIS=$_THIS)'.$fl.'); ?>');
+			$tml->foot('<?php if(isset($_THIS));extract((array)($THIS=$_THIS),EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\'); ?>');
 		$tml->vFile->present = $o;
 	}
 	function assign(){}
