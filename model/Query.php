@@ -210,7 +210,7 @@ class Query /* implements ArrayAccess */{
 		return $sql;
 	}
 	static function typeAliasExtract($type,&$superalias=null){
-		$type = R::toSnake(trim($type));
+		$type = AQueryWriter::toSnake(trim($type));
 		$alias = null;
 		if(($p=strpos($type,':'))!==false){
 			if(isset($type[$p+1])&&$type[$p+1]==':'){

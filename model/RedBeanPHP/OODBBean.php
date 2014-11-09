@@ -7,7 +7,6 @@ use surikat\model\RedBeanPHP\BeanHelper as BeanHelper;
 use surikat\model\RedBeanPHP\RedException\Security as Security;
 use surikat\model\RedBeanPHP\RedException as RedException;
 use surikat\model\RedBeanPHP\OODBBean as OODBBean;
-use surikat\model\R;
 
 /**
  * OODBBean (Object Oriented DataBase Bean)
@@ -673,7 +672,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		}
 
 		if ( !isset( $beautifulColumns[$property] ) ) {
-			$beautifulColumns[$property] = R::toSnake( $property );
+			$beautifulColumns[$property] = AQueryWriter::toSnake( $property );
 		}
 
 		return $beautifulColumns[$property];
@@ -1353,7 +1352,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	{
 		if ( is_string( $typeOrBean ) ) {
 
-			$typeOrBean = R::toSnake($typeOrBean);
+			$typeOrBean = AQueryWriter::toSnake($typeOrBean);
 
 			$bean = $this->beanHelper->getToolBox()->getRedBean()->dispense( $typeOrBean );
 
@@ -1396,7 +1395,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function via( $via )
 	{
-		$this->via = R::toSnake( $via );
+		$this->via = AQueryWriter::toSnake( $via );
 
 		return $this;
 	}

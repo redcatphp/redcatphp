@@ -14,7 +14,6 @@ use surikat\model\RedBeanPHP\RedException\SQL as SQL;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\OODB as OODB;
 
-use surikat\model\R;
 use surikat\control;
 
 /**
@@ -470,7 +469,7 @@ abstract class Repository
 	 */
 	public function count( $type, $addSQL = '', $bindings = [] )
 	{
-		$type = R::toSnake( $type );
+		$type = AQueryWriter::toSnake( $type );
 		if ( count( explode( '_', $type ) ) > 2 ) {
 			throw new RedException( 'Invalid type for count.' );
 		}

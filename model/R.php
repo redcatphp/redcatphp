@@ -7,27 +7,6 @@ use surikat\model\RedBeanPHP\RedException;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 use surikat\model\Query4D;
 class R extends RedBeanPHP\Facade{
-	private static $camelsSnakeCase = false;
-	static function toSnake($camel){
-		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
-			return $camel;
-		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
-	}
-	static function toCamel($snake){
-		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
-			return $snake;
-		$snake = explode('-',$snake);
-		foreach($snake as &$v)
-			$v = ucfirst($v);
-		$snake = lcfirst(implode('',$snake));
-		return $snake;
-	}
-	static function camelsSnakeCase(){
-		if(func_num_args())
-			self::$camelsSnakeCase = func_get_arg(0);
-		else
-			return self::$camelsSnakeCase;
-	}
 	static function initialize(){
 		$conf = Config::model();
 		if(!$conf)
@@ -42,7 +21,7 @@ class R extends RedBeanPHP\Facade{
 			self::debug(true,2);
 	}
 	static function getModelClass($type){
-		$type = self::toCamel($type);
+		$type = AQueryWriter::toCamel($type);
 		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
 	}
 	static function getClassModel($c){
@@ -155,7 +134,7 @@ class R extends RedBeanPHP\Facade{
 					return $r;
 		}
 		else{
-			$table = self::toSnake($table);
+			$table = AQueryWriter::toSnake($table);
 			$c = R::getModelClass($table);
 			if(!$column)
 				$column = $c::getLoaderUniq($column);
@@ -178,7 +157,7 @@ class R extends RedBeanPHP\Facade{
 		else{
 			if(is_string($id)||$column)
 				return self::loadUniq($type,$id,$column);
-			return parent::load(self::toSnake($type),$id);
+			return parent::load(AQueryWriter::toSnake($type),$id);
 		}
 	}
 	static function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
@@ -192,14 +171,14 @@ class R extends RedBeanPHP\Facade{
 			$type = $typeOrBeanArray;
 		if(!ctype_alnum($type))
 			throw new RedException('Invalid type: '.$type);
-		$type = self::toSnake($type);
+		$type = AQueryWriter::toSnake($type);
 		$beanOrBeans = self::getRedBean()->dispense( $type, $num, $alwaysReturnArray );
 		if (isset($import))
 			$beanOrBeans->import( $import );
 		return $beanOrBeans;
 	}
 	static function inspect($type=null){
-		return parent::inspect($type?self::toSnake($type):null);
+		return parent::inspect($type?AQueryWriter::toSnake($type):null);
 	}
 	static function loadMulti($types,$id){
 		if ( is_string( $types ) )
@@ -225,22 +204,22 @@ class R extends RedBeanPHP\Facade{
 		return $list;
 	}
 	static function findOrDispense($type,$sql=NULL,$bindings=[]){
-		return parent::findOrDispense( self::toSnake($type), $sql, $bindings );
+		return parent::findOrDispense( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function find( $type, $sql = NULL, $bindings = [] ){
-		return parent::find( self::toSnake($type), $sql, $bindings );
+		return parent::find( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function findAll( $type, $sql = NULL, $bindings = [] ){
-		return parent::findAll( self::toSnake($type), $sql, $bindings );
+		return parent::findAll( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function findAndExport( $type, $sql = NULL, $bindings = [] ){
-		return parent::findAndExport( self::toSnake($type), $sql, $bindings );
+		return parent::findAndExport( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function findOne( $type, $sql = NULL, $bindings = [] ){
 		//$sql = (string)$sql;
 		//if(stripos($sql,'LIMIT')===false)
 			//$sql .= 'LIMIT 1';
-		return parent::findOne( self::toSnake($type), $sql, $bindings );
+		return parent::findOne( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function getCell($sql = NULL, $bindings = [] ){
 		$sql = (string)$sql;
@@ -249,29 +228,29 @@ class R extends RedBeanPHP\Facade{
 		return parent::getCell( $sql, $bindings );
 	}
 	static function findLast( $type, $sql = NULL, $bindings = [] ){
-		return parent::findLast( self::toSnake($type), $sql, $bindings );
+		return parent::findLast( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 	static function batch( $type, $ids ){
-		return parent::batch( self::toSnake($type), $ids );
+		return parent::batch( AQueryWriter::toSnake($type), $ids );
 	}
 	static function loadAll( $type, $ids ){
-		return parent::loadAll( self::toSnake($type), $ids );
+		return parent::loadAll( AQueryWriter::toSnake($type), $ids );
 	}
 	static function convertToBeans( $type, $rows ){
-		return parent::convertToBeans( self::toSnake($type), $rows );
+		return parent::convertToBeans( AQueryWriter::toSnake($type), $rows );
 	}
 	static function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] ){
-		return parent::taggedAll( self::toSnake($beanType), $tagList, $sql, $bindings );
+		return parent::taggedAll( AQueryWriter::toSnake($beanType), $tagList, $sql, $bindings );
 	}
 	static function wipe( $beanType ){
-		return parent::wipe( self::toSnake($beanType) );
+		return parent::wipe( AQueryWriter::toSnake($beanType) );
 	}
 	static function countSQL( $type, $addSQL = '', $bindings = [] ){
-		return parent::count( self::toSnake($type), $addSQL, $bindings );
+		return parent::count( AQueryWriter::toSnake($type), $addSQL, $bindings );
 	}
 
 	static function queryObject( $type, $compo = [], $composer='select', $writer=null ){
-		$type = self::toSnake($type);
+		$type = AQueryWriter::toSnake($type);
 		$q = new Query4D($type,$method,$writer);
 		foreach($compo as $method=>$args)
 			call_user_func_array([$q,$method],$args);
@@ -330,7 +309,7 @@ class R extends RedBeanPHP\Facade{
 		return self::trash(self::read($mix));
 	}
 	static function drop($type){
-		$type = self::toSnake($type);
+		$type = AQueryWriter::toSnake($type);
 		return self::getWriter()->drop($type);
 	}
 	static function execMulti($sql,$bindings=[]){

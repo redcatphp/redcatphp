@@ -22,6 +22,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 */
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
+use surikat\model\RedBeanPHP\AQueryWriter;
 use surikat\control;
 use surikat\control\JSON;
 use surikat\control\sync;
@@ -91,7 +92,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function __construct($table){
 		$this->queryWriter = R::getWriter();
 		$this->table = $table;
-		$this->type = R::toCamel($table);
+		$this->type = AQueryWriter::toCamel($table);
 		$this->_binder($table);
 	}
 	function getKeys(){
@@ -160,7 +161,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function dispense(){
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
-		$this->type = R::toCamel($this->table);
+		$this->type = AQueryWriter::toCamel($this->table);
 		$c = get_class($this);
 		foreach($c::getDefColumns('cast') as $k=>$cast)
 			$this->bean->setMeta('cast.'.$k,$cast);
@@ -184,7 +185,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function open(){
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
-		$this->type = R::toCamel($this->table);
+		$this->type = AQueryWriter::toCamel($this->table);
 		$this->trigger('read');
 	}
 	private static $_transactDepth = 0;
