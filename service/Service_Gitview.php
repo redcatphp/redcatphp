@@ -2,8 +2,14 @@
 use surikat\control;
 use surikat\control\phpgit\Git;
 class Service_Gitview{
+	static function surikat(){
+		self::main(control::$SURIKAT);
+	}
 	static function method(){
-		$git = new Git(control::$CWD.'.git');
+		self::main(control::$CWD);
+	}
+	protected static function main($dir){
+		$git = new Git($dir.'.git');
 		/* commit file list */
 		if (isset($_GET['commit'])){
 			$commit = $_GET['commit'];
