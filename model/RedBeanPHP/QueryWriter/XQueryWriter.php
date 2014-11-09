@@ -54,6 +54,6 @@ trait XQueryWriter{
 		parent::drop($t);
 	}
 	function columnExists($table,$column){
-		return in_array($column,array_keys(R::inspect($table)));
+		return in_array($column,array_keys($this->getColumns( $table )));
 	}
 }
