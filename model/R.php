@@ -29,7 +29,10 @@ class R extends RedBeanPHP\Facade{
 			return self::$camelsSnakeCase;
 	}
 	static function initialize(){
-		extract(Config::model());
+		$conf = Config::model();
+		if(!$conf)
+			return;
+		extract($conf);
 		if(!isset($frozen))
 			$frozen = !control::devHas(control::dev_model);
 		$port = isset($port)&&$port?';port='.$port:'';
