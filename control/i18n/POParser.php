@@ -3,6 +3,7 @@ class POParser{
 	
   public $fileHandle;
   protected $context = [];
+  protected $line_count = 0;
   public $entryStore;
 	
 	protected $match_expressions = [

@@ -1,9 +1,9 @@
 <?php namespace surikat\control\i18n;
-use surikat\control;
+use control;
+use control\FS;
+use model\R;
 class parser{
-	static $directories = [];
 	private static $tpl_extensions = ['tml','atml','btml','tpl','php'];
-	static $potfile = 'langs/messages.pot';
 	private static $lang_compil_path;
 	static function add_dates(){
 		$outc = '';
@@ -17,45 +17,6 @@ class parser{
 			fwrite($handle,$outc);
 			fclose($handle);
 		}
-	}
-	static function compile_all(){
-		self::compile_pot_from_sources();
-		self::add_dates();
-		self::compile_set_obsolete();
-		foreach(glob(control::$CWD.'langs/*',GLOB_ONLYDIR) as $dir){
-			self::compile(basename($dir));
-		}
-	}
-	static function compile($lg){
-		$dir = 'langs/'.$lg;
-		self::compile_catalogue_update($dir);
-		self::compile_catalogue_export($dir);
-		self::compile_mo_from_po($dir);
-	}
-	
-	static function compile_pot_from_sources(){
-		self::$directories[] = [control::$CWD,true];
-		call_user_func_array(['self','sources_compiler'],self::$directories);
-	}
-	static function compile_set_obsolete(){
-		R::exec("UPDATE i18n_messages SET is_obsolete=1");
-		$parser = new POParser(new SimplePO_TempPoMsgStore());
-		$parser->parseEntriesFromStream(fopen(control::$CWD.self::$potfile,'r'));
-		$msgs = $parser->entryStore->read();
-		array_shift($msgs);
-		foreach($msgs as $msg){
-			$r = R::find('i18n_messages',"reference = ? AND msgid = ?",[$msg['reference'],$msg['msgid']]);
-			if(is_object($r)){
-				$r->is_obsolete = 0;
-				R::store($r);
-			}
-		}
-	}
-	static function compile_catalogue_update($dir){
-		SimplePO::update_db(basename($dir),control::$CWD.self::$potfile);
-	}
-	static function compile_catalogue_export($dir){
-		SimplePO::export(basename($dir),control::$CWD.$dir.'/LC_MESSAGES/messages.po');
 	}
 	static function compile_mo_from_po($dir){
 		$mofile = control::$CWD.$dir.'/LC_MESSAGES/messages.mo';
@@ -84,7 +45,7 @@ class parser{
 		$args = func_get_args();
 		if(empty($args)) return;
 		self::$lang_compil_path = control::$TMP.'langs/';
-		_mkdir(self::$lang_compil_path);
+		FS::mkdir(self::$lang_compil_path);
 		foreach($args as $arg) {
 			if(is_array($arg)){
 				if(is_dir($arg[0])){
