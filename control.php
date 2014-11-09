@@ -18,7 +18,7 @@ class control{
 	const dev_img = 1024;
 	const dev_uri = 2048;
 	const dev_default = 30; //control+view+present+model
-	const dev_all = 2046;
+	const dev_all = 4094;
 	static function CWD_X(){
 		return func_num_args()?(self::$CWD_X=func_get_arg(0)):self::$CWD_X;
 	}
@@ -83,6 +83,11 @@ class control{
 				eval('namespace '.$ns.'{ '.$ev.'}');
 			}
 		}
+	}
+	static function autoload($dir){
+		spl_autoload_register(function($className)use($dir){
+			is_file($f=$dir.DIRECTORY_SEPARATOR.str_replace('\\',DIRECTORY_SEPARATOR,$className).'.php')&&include($f);
+		});
 	}
 }
 control::initialize();
