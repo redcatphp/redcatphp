@@ -68,8 +68,9 @@ class Database{
 			'mysql'  => 'MySQL',
 			'pgsql'  => 'PostgreSQL',
 			'sqlite' => 'SQLiteT',
-			'pgsql9'  => 'PostgreSQL',
-			'pgsql8'  => 'PostgreSQL8BC',
+			'pgsql9' => 'PostgreSQL',
+			'pgsql8' => 'PostgreSQL8BC',
+			'sqlsrv' => 'SQLServer',
 			'cubrid' => 'CUBRID',
 		];
 		$wkey = trim( strtolower( $dbType ) );
