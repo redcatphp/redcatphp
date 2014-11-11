@@ -55,12 +55,7 @@ abstract class PARSER{
 			$str = substr($str,0,-3);
 		return $str;
 	}
-	//private static $short_open_tag = [
-		//'<?'=>'<?php ',
-		//'<?php php'=>'<?php ',
-		//'<?php ='=>'<?=',
-	//];
-	private function short_open_tag(&$s){ //first is faster but second more strict
+	private function short_open_tag(&$s){
 		$str = '';
 		$c = strlen($s)-1;
 		for($i=0;$i<=$c;$i++){
@@ -88,8 +83,6 @@ abstract class PARSER{
 		return $s;
 	}
 	private function parseML($xmlText){
-		//$xmlText = str_replace(array_keys(self::$short_open_tag),array_values(self::$short_open_tag),$xmlText);
-		$xmlText = str_replace(['\\<','\\>'],['&lt;','&gt;'],$xmlText);
 		self::short_open_tag($xmlText);
 		$tokens = token_get_all(str_replace(self::$PI_STR,self::$PI_HEX,$xmlText));
 		$xmlText = '';
