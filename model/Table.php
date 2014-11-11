@@ -22,7 +22,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 */
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
-use surikat\model\RedBeanPHP\AQueryWriter;
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
 use surikat\control;
 use surikat\control\JSON;
 use surikat\control\sync;
