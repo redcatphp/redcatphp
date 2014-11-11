@@ -16,7 +16,9 @@ class R extends RedBeanPHP\Facade{
 			$frozen = !control::devHas(control::dev_model);
 		$port = isset($port)&&$port?';port='.$port:'';
 		$prefix = isset($prefix)?$prefix:'';
-		self::setup("$type:host=$host$port;dbname=$name",$user,$password,$frozen,$prefix);
+		$host = $host?'host='.$host:(isset($file)?$file:'');
+		$dbname = $name?';dbname='.$name:'';
+		self::setup($type.':'.$host.$port.$dbname,$user,$password,$frozen,$prefix);
 		if(control::devHas(control::dev_model_redbean))
 			self::debug(true,2);
 	}
@@ -37,7 +39,7 @@ class R extends RedBeanPHP\Facade{
 		return call_user_func_array(['parent',$f],$args);
 	}
 	static function loadRow($type,$sql,$binds=[]){
-		$b = R::convertToBeans($type,[self::getRow($type,$sql,$binds)]);
+		$b = self::convertToBeans($type,[self::getRow($type,$sql,$binds)]);
 		return $b[0];
 	}
 	static function getRowX(){
@@ -56,13 +58,13 @@ class R extends RedBeanPHP\Facade{
 		$query = implode(' AND ',$query);
 		$type = (array)$type;
 		foreach($type as $t){
-			if($bean = R::findOne($t,$query,$bind))
+			if($bean = self::findOne($t,$query,$bind))
 				break;
 		}
 		if(!$bean){
 			if(is_array($insert))
 				$params = array_merge($params,$insert);
-			$bean = R::newOne(array_pop($type),$params);
+			$bean = self::newOne(array_pop($type),$params);
 		}
 		return $bean->box();
 	}
@@ -135,7 +137,7 @@ class R extends RedBeanPHP\Facade{
 		}
 		else{
 			$table = AQueryWriter::toSnake($table);
-			$c = R::getModelClass($table);
+			$c = self::getModelClass($table);
 			if(!$column)
 				$column = $c::getLoaderUniq($column);
 			if(is_array($column)){
@@ -144,7 +146,7 @@ class R extends RedBeanPHP\Facade{
 						return $r;
 			}
 			else{
-				return R::findOne($table,'WHERE '.$column.'=?',[$c::loadUniqFilter($id)]);
+				return self::findOne($table,'WHERE '.$column.'=?',[$c::loadUniqFilter($id)]);
 			}
 		}
 	}
