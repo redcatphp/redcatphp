@@ -15,11 +15,11 @@ class Query /* implements ArrayAccess */{
 		$c = get_called_class();
 		return new $c($table,$composer,$writer);
 	}
-	static function tableExists($table){
-		return R::getWriter()->tableExists($table);
+	function tableExists($table){
+		return $this->writer->tableExists($table);
 	}
-	static function columnExists($table,$column){
-		return R::getWriter()->columnExists($table,$column);
+	function columnExists($table,$column){
+		return $this->writer->columnExists($table,$column);
 	}
 	function __construct($table=null,$composer='select',$writer=null){
 		$this->setTable($table);
@@ -56,7 +56,7 @@ class Query /* implements ArrayAccess */{
     }
 	function __call($f,$args){
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
-			if(!$this->table||self::tableExists($this->table)){
+			if(!$this->table||$this->tableExists($this->table)){
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
@@ -250,7 +250,7 @@ class Query /* implements ArrayAccess */{
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-					if($exist=(self::tableExists($type)&&self::columnExists($type,$typeParent.'_id')))
+					if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
 						$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
 					$aliasParent = $alias;
@@ -267,7 +267,7 @@ class Query /* implements ArrayAccess */{
 						sort($rels);
 						$imp = implode('_',$rels);
 						$impt = $q.$imp.$q.($superalias?' as '.$q.$superalias.'__'.$imp.$q:'');
-						if($exist=(self::tableExists($type)&&self::tableExists($imp))){
+						if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
 							if($superalias)
 								$imp = $superalias.'__'.$imp;
 							$this->join("LEFT OUTER JOIN $impt ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}");
@@ -282,7 +282,7 @@ class Query /* implements ArrayAccess */{
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
-						if($exist=(self::tableExists($typeParent)&&self::columnExists($typeParent,$type.'_id')))
+						if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_id')))
 							$this->join("LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
 						$relation = '<';
