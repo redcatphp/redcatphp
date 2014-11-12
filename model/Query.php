@@ -6,7 +6,7 @@ use surikat\control\str;
 use surikat\model;
 use surikat\model\RedBeanPHP\QueryWriter;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
-class Query /* implements ArrayAccess */{
+class Query {
 	protected $table;
 	protected $writer;
 	protected $composer;
