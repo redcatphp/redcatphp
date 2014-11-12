@@ -11,6 +11,7 @@ class Query /* implements ArrayAccess */{
 	protected $writer;
 	protected $composer;
 	protected $_ignore = [];
+	protected $_DataBase;
 	static function getNew($table=null,$composer='select',$writer=null){
 		$c = get_called_class();
 		return new $c($table,$composer,$writer);
@@ -21,10 +22,12 @@ class Query /* implements ArrayAccess */{
 	function columnExists($table,$column){
 		return $this->writer->columnExists($table,$column);
 	}
-	function __construct($table=null,$composer='select',$writer=null){
+	function __construct($table=null,$composer='select',$db=null,$writer=null){
 		$this->setTable($table);
+		if(!$db)
+			$this->_DataBase = R::getInstance();
 		if(!$writer)
-			$writer = R::getWriter();
+			$writer = $this->_DataBase->getWriter();
 		$this->writer = $writer;
 		if(is_string($composer))
 			$composer = SQLComposer::$composer();
@@ -64,7 +67,7 @@ class Query /* implements ArrayAccess */{
 					print(str_replace(',',",\n",$this->composer->getQuery()).'<br>');
 					print_r($params);
 				}
-				return R::$f($this->composer->getQuery(),$params);
+				return $this->_DataBase->$f($this->composer->getQuery(),$params);
 			}
 			return;
 		}
@@ -190,7 +193,7 @@ class Query /* implements ArrayAccess */{
 	protected $listOfColumns = [];
 	function listOfColumns($t,$details=null,$reload=null){
 		if(!isset($this->listOfColumns[$t])||$reload)
-			$this->listOfColumns[$t] = R::inspect($t);
+			$this->listOfColumns[$t] = $this->_DataBase->inspect($t);
 		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
 	}
 	function joinOnSQL($share){
@@ -310,18 +313,18 @@ class Query /* implements ArrayAccess */{
 		if($exist){
 			switch($relation){
 				case '<':
-					$this->select(self::autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
+					$this->select($this->writer->autoWrapCol($q.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
 					if($autoSelectId)
 						$this->select($q.$table.$q.'.'.$q.'id'.$q.$idAlias);
 					$this->groupBy($q.$table.$q.'.'.$q.'id'.$q);
 				break;
 				case '>':
-					$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
+					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
 					if($autoSelectId)
 						$this->select("{$agg}(COALESCE({$q}{$table}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
 				break;
 				case '<>':
-					$this->select("{$agg}(".self::autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
+					$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
 					if($autoSelectId)
 						$this->select("{$agg}({$q}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 				break;
@@ -510,16 +513,7 @@ class Query /* implements ArrayAccess */{
 			}
 		}
 		return [$sql,$nBinds];
-	}
-	static function autoWrapCol($s,$table,$col){
-		if($func=R::getTableColumnDef($table,$col,'readCol'))
-			$s = $func.'('.$s.')';
-		if(isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table])&&isset(AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col]))
-			$s = AQueryWriter::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col];
-		return $s;
-	}
-
-	
+	}	
 	function ignoring($k,$ignore){
 		return isset($this->_ignore[$k])&&in_array($ignore,$this->_ignore[$k]);
 	}
@@ -557,7 +551,7 @@ class Query /* implements ArrayAccess */{
 			return;
 		if(!isset(self::$heuristic[$this->table])||$reload){
 			if(!isset(self::$listOfTables))
-				self::$listOfTables = R::inspect();
+				self::$listOfTables = $this->_DataBase->inspect();
 			$tableL = strlen($this->table);
 			$h = [];
 			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):[];
@@ -614,7 +608,7 @@ class Query /* implements ArrayAccess */{
 		extract($this->heuristic($reload));
 		foreach($parents as $parent){
 			foreach($this->listOfColumns($parent,null,$reload) as $col){
-				$this->select(self::autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
+				$this->select($this->writer->autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 				$this->groupBy($q.$parent.$q.'.'.$q.$col.$q);
 			}
 			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
@@ -622,7 +616,7 @@ class Query /* implements ArrayAccess */{
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
-				$this->select("{$agg}(".self::autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
+				$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
 			$rel = [$this->table,$share];
 			sort($rel);
 			$rel = implode('_',$rel);
@@ -632,7 +626,7 @@ class Query /* implements ArrayAccess */{
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col){
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$this->select("{$agg}(COALESCE(".self::autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
+					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			}
 			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}

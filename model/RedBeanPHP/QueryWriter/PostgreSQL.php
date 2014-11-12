@@ -7,6 +7,7 @@ use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 
+use surikat\model\RedBeanPHP\Database;
 use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 use surikat\model\R;
 use surikat\model\Table;
@@ -53,7 +54,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 * @var DBAdapter
 	 */
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -134,7 +136,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
@@ -159,7 +161,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
 
-		$this->adapter = $adapter;
+		$this->adapter = $a;
+		$this->database       = $db;
 	}
 
 	/**
@@ -507,13 +510,14 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 					break;
 				}
 			}
+			$writer = $this->database->getWriter();
 			if($this->tableExists($typeParent)){
 				$localTable = $typeParent;
 				$localCol = trim($type);
 				switch($relation){
 					default:
 					case '<':
-						$c = 'COALESCE('.Query::autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
+						$c = 'COALESCE('.$writer->autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
 						$gb = $q.$localTable.$q.'.'.$q.$localCol.$q;
 						if(!in_array($gb,$groupBy))
 							$groupBy[] = $gb;
@@ -522,10 +526,10 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$groupBy[] = $gb;
 					break;
 					case '>':
-						$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 					break;
 					case '<>':
-						$c = "{$agg}(COALESCE(".Query::autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 					break;
 				}
 				$c = "to_tsvector($lang$c)";

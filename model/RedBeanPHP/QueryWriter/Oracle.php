@@ -4,6 +4,9 @@ use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\Database;
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
+
 /**
  * RedBean Oracle Driver
  *
@@ -20,6 +23,8 @@ use surikat\model\RedBeanPHP\Adapter as Adapter;
  */
 class Oracle extends AQueryWriter implements QueryWriter
 {
+	use XQueryWriter;
+	
 	protected $caseSupport = false;
 	/**
 	 * Adapter
@@ -27,6 +32,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 * @var RedBean_Adapter
 	 */
 	protected $adapter;
+	protected $database;
 
 	/**
 	 * character to escape keyword table/column names
@@ -144,10 +150,11 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return string table name
 	 */
-	public function __construct( Adapter $a, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->adapter        = $a;
+		$this->database       = $db;
 		$this->typeno_sqltype = [
 			RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL              => 'NUMBER(1,0)',
 			RedBean_QueryWriter_Oracle::C_DATATYPE_UINT8             => 'NUMBER(3,0)',

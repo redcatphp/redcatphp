@@ -29,7 +29,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 * @var DBAdapter
 	 */
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -1083,5 +1084,13 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	}
 	function setPrefix($prefix){
 		$this->prefix = $prefix;
+	}
+	
+	function autoWrapCol($s,$table,$col){
+		if($func=$this->database->getTableColumnDef($table,$col,'readCol'))
+			$s = $func.'('.$s.')';
+		if(isset(self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table])&&isset(self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col]))
+			$s = self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col];
+		return $s;
 	}
 }

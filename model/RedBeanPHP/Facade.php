@@ -82,5 +82,13 @@ class Facade{
 		}
 		return call_user_func_array( [ self::$databases[self::$currentDB], $func ], $params );
 	}
+	public static function getInstance( $key = null ){
+		if(!isset($key))
+			$key = self::$currentDB;
+		if( !isset( self::$databases[$key] ) ){
+			throw new RedException('Undefined database');
+		}
+		return self::$databases[$key];
+	}
 	
 }

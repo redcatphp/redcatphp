@@ -7,6 +7,7 @@ use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
 use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
+use surikat\model\RedBeanPHP\Database;
 
 /**
  * RedBean MySQLWriter
@@ -50,7 +51,8 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 * @var DBAdapter
 	 */
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -121,7 +123,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
@@ -144,8 +146,8 @@ class MySQL extends AQueryWriter implements QueryWriter
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
 
-		$this->adapter = $adapter;
-
+		$this->adapter = $a;
+		$this->database = $db;
 		$this->encoding = $this->adapter->getDatabase()->getMysqlEncoding();
 	}
 

@@ -81,16 +81,18 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	}
 	function _binder($table){
 		if(!in_array($table,self::$__binded)){
-			$c = R::getModelClass($table);
+			$c = $this->_DataBase->getModelClass($table);
 			foreach($c::getDefColumns('readCol') as $col=>$func)
-				R::bindFunc('read', $table.'.'.$col, $func);
+				$this->_DataBase->bindFunc('read', $table.'.'.$col, $func);
 			foreach($c::getDefColumns('writeCol') as $col=>$func)
-				R::bindFunc('write', $table.'.'.$col, $func);
+				$this->_DataBase->bindFunc('write', $table.'.'.$col, $func);
 			self::$__binded[] = $table;
 		}
 	}
-	function __construct($table){
-		$this->queryWriter = R::getWriter();
+	private $_DataBase;
+	function __construct($table,$db){
+		$this->_DataBase = $db;
+		$this->queryWriter = $this->_DataBase->getWriter();
 		$this->table = $table;
 		$this->type = AQueryWriter::toCamel($table);
 		$this->_binder($table);
@@ -191,7 +193,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	private static $_transactDepth = 0;
 	function update(){
 		if(self::$_transactDepth==0)
-			R::begin();
+			$this->_DataBase->begin();
 		self::$_transactDepth++;
 			
 		$this->_relationsKeysStore();
@@ -209,12 +211,12 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$e = $this->getErrors();
 		self::$_transactDepth--;
 		if($e){
-			R::rollback();
+			$this->_DataBase->rollback();
 			$this->throwValidationError($e);
 		}
 		else{		
 			if(self::$_transactDepth==0)
-				R::commit();
+				$this->_DataBase->commit();
 			$this->trigger('change');
 			if($this->creating)
 				$this->trigger('create');
@@ -279,7 +281,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(!empty($uniqs)){
 			if(	$this->checkUniq
 				&&self::$_checkUniq!==false
-				&&($r=R::findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
+				&&($r=$this->_DataBase->findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
 				&&$r->id!=$this->bean->id
 			){
 				$throwed = false;
@@ -294,7 +296,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			}
 			if(isset($uniqs[static::$loadUniq]))
 				unset($uniqs[static::$loadUniq]);
-			if(!empty($uniqs)&&!R::getRedBean()->isFrozen())
+			if(!empty($uniqs)&&!$this->_DataBase->getRedBean()->isFrozen())
 				$this->queryWriter->addUniqueIndex($this->table,array_keys($uniqs));
 		}
 	}
@@ -309,7 +311,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
 			$this->on('created',function($entry)use($t,&$w,$col,$cols,$lang){
-				if(!in_array($col,array_keys(R::inspect($t)))){
+				if(!in_array($col,array_keys($this->_DataBase->inspect($t)))){
 					$w->addColumnFulltext($t, $col);
 					$w->buildColumnFulltext($t, $col, $cols, $lang);
 					$w->addIndexFullText($t, $col, null , $lang);
@@ -342,35 +344,35 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 
 	function arraySetter($k, $v){
 		if(isset($v['id'])&&$id=$v['id']){
-			$val = R::load($k,$id);
+			$val = $this->_DataBase->load($k,$id);
 			foreach($v as $_k=>$_v)
 				if($k!='id')
 					$v->$_k = $_v;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
-			if(!($val = R::load($k,$id)))
-				$val = R::newOne($k,$v);
+			if(!($val = $this->_DataBase->load($k,$id)))
+				$val = $this->_DataBase->newOne($k,$v);
 			foreach($v as $_k=>$_v)
 				if($k!=static::$loadUniq)
 					$v->$_k = $_v;
 		}
 		else
-			$val = R::newOne($this->type.ucfirst($k),$v);
+			$val = $this->_DataBase->newOne($this->type.ucfirst($k),$v);
 		return [$k,$val];
 	}
 	function arraysSetter($k, $v){
 		$uk = ucfirst($k);
 		if(isset($v['id'])&&$id=$v['id']){
-			$v = R::load($k,$id);
+			$v = $this->_DataBase->load($k,$id);
 			$k = 'shared'.$uk;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
-			if(!($v = R::load($k,$id)))
-				$v = R::newOne($k,$v);
+			if(!($v = $this->_DataBase->load($k,$id)))
+				$v = $this->_DataBase->newOne($k,$v);
 			$k = 'shared'.$uk;
 		}
 		else{
-			$v = R::newOne($this->type.$uk,$v);
+			$v = $this->_DataBase->newOne($this->type.$uk,$v);
 			$k = 'xown'.ucfirst($this->type).$uk;
 		}
 		return [$k,$v];

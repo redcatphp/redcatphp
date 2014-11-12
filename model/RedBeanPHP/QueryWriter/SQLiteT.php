@@ -6,6 +6,7 @@ use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
+use surikat\model\RedBeanPHP\Database;
 
 use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 
@@ -35,7 +36,8 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -241,7 +243,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
@@ -256,7 +258,8 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			$this->sqltype_typeno[$v] = $k;
 		}
 
-		$this->adapter = $adapter;
+		$this->adapter = $a;
+		$this->database       = $db;
 	}
 
 	/**

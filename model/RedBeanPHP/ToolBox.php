@@ -56,11 +56,12 @@ class ToolBox
 	 *
 	 * @return ToolBox
 	 */
-	public function __construct( OODB $oodb, Adapter $adapter, QueryWriter $writer )
+	public function __construct( OODB $oodb, Adapter $adapter, QueryWriter $writer, Database $database )
 	{
 		$this->oodb    = $oodb;
 		$this->adapter = $adapter;
 		$this->writer  = $writer;
+		$this->database= $database;
 
 		return $this;
 	}
@@ -100,5 +101,9 @@ class ToolBox
 	public function getDatabaseAdapter()
 	{
 		return $this->adapter;
+	}
+	
+	function getDatabase(){
+		return $this->database;
 	}
 }

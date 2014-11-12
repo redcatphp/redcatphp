@@ -25,6 +25,8 @@ use surikat\model\RedBeanPHP\RedException as RedException;
 use surikat\model\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\Driver\RPDO as RPDO;
 
+use surikat\model\Query;
+
 class Database{
 	private $toolbox;
 	private $redbean;
@@ -48,7 +50,7 @@ class Database{
 		$this->labelMaker         = new LabelMaker( $this->toolbox );
 		$helper                   = new SimpleModelHelper();
 		$helper->attachEventListeners( $this->redbean );
-		$this->redbean->setBeanHelper( new SimpleFacadeBeanHelper );
+		$this->redbean->setBeanHelper( new SimpleFacadeBeanHelper($this) );
 		$this->duplicationManager = new DuplicationManager( $this->toolbox );
 		$this->tagManager         = new TagManager( $this->toolbox );
 		
@@ -76,10 +78,10 @@ class Database{
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
 		$writerClass = '\\surikat\\model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
-		$this->writer      = new $writerClass( $this->adapter, $prefix );
+		$this->writer      = new $writerClass( $this->adapter, $this, $prefix );
 		$this->redbean     = new OODB( $this->writer );
 		$this->redbean->freeze( ( $frozen === TRUE ) );
-		$this->toolbox = new ToolBox( $this->redbean, $this->adapter, $this->writer );
+		$this->toolbox = new ToolBox( $this->redbean, $this->adapter, $this->writer, $this );
 		return $this->toolbox;
 	}
 	
@@ -165,7 +167,7 @@ class Database{
 	}
 
 	function inspect( $type = NULL ){
-		return ($type === NULL) ? $this->writer->getTables() : $this->writer->getColumns( $type );
+		return ($type === NULL) ? $this->writer->getTables() : $this->writer->getColumns( AQueryWriter::toSnake($type) );
 	}
 
 	function store( $bean ){
@@ -186,40 +188,31 @@ class Database{
 		}
 
 		foreach ( $types as $k => $typeItem ) {
-			$types[$k] = $this->redbean->load( $typeItem, $id );
+			$types[$k] = $this->load( $typeItem, $id );
 		}
 
 		return $types;
-	}
-	
-	function load( $type, $id ){
-		return $this->redbean->load( $type, $id );
 	}
 
 	function trash( $bean ){
 		$this->redbean->trash( $bean );
 	}
 
-	function dispense( $typeOrBeanArray, $num = 1, $alwaysReturnArray = FALSE ){
-		if ( is_array($typeOrBeanArray) ) {
-			if ( !isset( $typeOrBeanArray['_type'] ) ) throw new RedException('Missing _type field.');
+	function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
+		if(is_array($typeOrBeanArray)){
+			if (!isset( $typeOrBeanArray['_type'] ) )
+				throw new RedException('Missing _type field.');
 			$import = $typeOrBeanArray;
 			$type = $import['_type'];
 			unset( $import['_type'] );
-		} else {
+		}else
 			$type = $typeOrBeanArray;
-		}
-
-		if ( !preg_match( '/^[a-z0-9]+$/', $type ) ) {
-			throw new RedException( 'Invalid type: ' . $type );
-		}
-
+		if(!ctype_alnum($type))
+			throw new RedException('Invalid type: '.$type);
+		$type = AQueryWriter::toSnake($type);
 		$beanOrBeans = $this->redbean->dispense( $type, $num, $alwaysReturnArray );
-
-		if ( isset( $import ) ) {
+		if (isset($import))
 			$beanOrBeans->import( $import );
-		}
-
 		return $beanOrBeans;
 	}
 
@@ -244,42 +237,17 @@ class Database{
 
 	function findOrDispense( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->findOrDispense( $type, $sql, $bindings );
-	}
-
-	function find( $type, $sql = NULL, $bindings = [] )
-	{
-		return $this->finder->find( $type, $sql, $bindings );
-	}
-
-	function findAll( $type, $sql = NULL, $bindings = [] )
-	{
-		return $this->finder->find( $type, $sql, $bindings );
-	}
-
-	function findAndExport( $type, $sql = NULL, $bindings = [] )
-	{
-		return $this->finder->findAndExport( $type, $sql, $bindings );
-	}
-
-	function findOne( $type, $sql = NULL, $bindings = [] )
-	{
-		return $this->finder->findOne( $type, $sql, $bindings );
-	}
-
-	function findLast( $type, $sql = NULL, $bindings = [] )
-	{
-		return $this->finder->findLast( $type, $sql, $bindings );
+		return $this->finder->findOrDispense( AQueryWriter::toSnake($type), $sql, $bindings );
 	}
 
 	function batch( $type, $ids )
 	{
-		return $this->redbean->batch( $type, $ids );
+		return $this->redbean->batch( AQueryWriter::toSnake($type), $ids );
 	}
 
 	function loadAll( $type, $ids )
 	{
-		return $this->redbean->batch( $type, $ids );
+		return $this->redbean->batch( AQueryWriter::toSnake($type), $ids );
 	}
 
 	function exec( $sql, $bindings = [] )
@@ -294,6 +262,9 @@ class Database{
 
 	function getCell( $sql, $bindings = [] )
 	{
+		$sql = (string)$sql;
+		if(stripos($sql,'LIMIT')===false)
+			$sql .= 'LIMIT 1';
 		return $this->query( 'getCell', $sql, $bindings );
 	}
 
@@ -334,7 +305,7 @@ class Database{
 
 	function convertToBeans( $type, $rows )
 	{
-		return $this->redbean->convertToBeans( $type, $rows );
+		return $this->redbean->convertToBeans( AQueryWriter::toSnake($type), $rows );
 	}
 
 	function hasTag( $bean, $tags, $all = FALSE )
@@ -364,17 +335,17 @@ class Database{
 
 	function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
-		return $this->tagManager->taggedAll( $beanType, $tagList, $sql, $bindings );
+		return $this->tagManager->taggedAll( AQueryWriter::toSnake($beanType), $tagList, $sql, $bindings );
 	}
 
 	function wipe( $beanType )
 	{
-		return $this->redbean->wipe( $beanType );
+		return $this->redbean->wipe( AQueryWriter::toSnake($beanType) );
 	}
 
 	function count( $type, $addSQL = '', $bindings = [] )
 	{
-		return $this->redbean->count( $type, $addSQL, $bindings );
+		return $this->redbean->count( AQueryWriter::toSnake($type), $addSQL, $bindings );
 	}
 	
 	function begin(){
@@ -574,5 +545,196 @@ class Database{
 			throw new RedException( 'Plugin \''.$pluginName.'\' does not exist, add this plugin using: R::ext(\''.$pluginName.'\')' );
 		}
 		return call_user_func_array( $this->plugins[$pluginName], $params );
-	}	
+	}
+	
+	
+	/* Added APIs */
+	function create($type,$values=[]){
+		return $this->newOne($type,$this->_uniqSetter($type,$values))->box();
+	}
+	function read($mix){
+		if(func_num_args()>1){
+			$type = $mix;
+			$id = func_get_arg(1);
+		}
+		else
+			list($type,$id) = explode(':',$mix);
+		return $this->load($type,$id)->box();
+	}
+	function update($mix,$values){
+		$model = $this->read($mix);
+		foreach($values as $k=>$v)
+			$model->$k = $v;
+		return $model;
+	}
+	function delete($mix){
+		return $this->trash($this->read($mix));
+	}
+	function drop($type){
+		return $this->getWriter()->drop(AQueryWriter::toSnake($type));
+	}
+	function execMulti($sql,$bindings=[]){
+		$pdo = $this->getDatabaseAdapter()->getDatabase()->getPDO();
+		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+		$r = $this->exec($sql, $bindings);
+		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+		return $r;
+	}
+	function execFile($file,$bindings=[]){
+		return $this->execMulti(file_get_contents($file),$bindings);
+	}
+	
+	function getModelClass($type){
+		$type = AQueryWriter::toCamel($type);
+		return class_exists($c='\\model\\Table_'.ucfirst($type))?$c:'\\model\\Table';
+	}
+	function getClassModel($c){
+		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
+	}
+	function getTableColumnDef($t,$col,$key=null){
+		$c = $this->getModelClass($t);
+		return $c::getColumnDef($col,$key);
+	}
+	function loadRow($type,$sql,$binds=[]){
+		$b = $this->convertToBeans($type,[$this->getRow($type,$sql,$binds)]);
+		return $b[0];
+	}
+	function findOrNewOne($type,$params=[],$insert=null){
+		$query = [];
+		$bind = [];
+		$params = $this->_uniqSetter($type,$params);
+		foreach($params as $k=>$v){
+			$query[] = $k.'=?';
+			$bind[] = $v;
+		}
+		$query = implode(' AND ',$query);
+		$type = (array)$type;
+		foreach($type as $t){
+			if($bean = $this->findOne($t,$query,$bind))
+				break;
+		}
+		if(!$bean){
+			if(is_array($insert))
+				$params = array_merge($params,$insert);
+			$bean = $this->newOne(array_pop($type),$params);
+		}
+		return $bean->box();
+	}
+	function newOne($type,$params=[]){
+		$bean = $this->dispense($type);
+		if(is_string($params))
+			$params = ['label'=>$params];
+		foreach((array)$params as $k=>$v)
+			$bean->$k = $v;
+		return $bean;
+	}
+	function storeMultiArray( array $a){
+		foreach($a as $v)
+			$this->storeArray($v);
+	}
+	function storeArray( array $a){
+		$dataO = $this->dispense($a['type']);
+		foreach($a as $k=>$v){
+			if($k=='type')
+				continue;
+			if(stripos($k,'own')===0){
+				foreach((array)$v as $v2){
+					$type = lcfirst(substr($k,3));
+					$own = $this->dispense($type);
+					foreach((array)$v2 as $k3=>$v3)
+						if($k3!='type')
+							$own->$k3 = $v3;
+					$dataO->{$k}[] = $own;
+				}
+			}
+			elseif(stripos($k,'shared')===0){
+				foreach((array)$v as $v2){
+					$type = lcfirst(substr($k,6));
+					if(!is_integer(filter_var($v2, FILTER_VALIDATE_INT)))
+						$v2 = $this->getCell($type,'SELECT id where label=?',[$v2]);
+					if($v2)
+						$dataO->{$k}[] = $this->load($type,$v2);
+				}
+			}
+			else
+				$dataO->$k = $v;
+		}
+		return $this->store($dataO);
+	}
+	function getAll4D(){
+		return Query::explodeAggTable(call_user_func_array(['self','getAll'],func_get_args()));
+	}
+	function getRow4D(){
+		return Query::explodeAgg(call_user_func_array(['self','getRow'],func_get_args()));
+	}
+	function loadUniq($table,$id,$column=null){
+		if(is_array($table)){
+			foreach($table as $tb)
+				if($r = $this->loadUniq($tb,$id,$column))
+					return $r;
+		}
+		else{
+			$table = AQueryWriter::toSnake($table);
+			$c = $this->getModelClass($table);
+			if(!$column)
+				$column = $c::getLoaderUniq($column);
+			if(is_array($column)){
+				foreach($column as $col)
+					if($r = $this->loadUniq($table,$id,$col))
+						return $r;
+			}
+			else{
+				return $this->findOne($table,'WHERE '.$column.'=?',[$c::loadUniqFilter($id)]);
+			}
+		}
+	}
+	function load($type,$id,$column=null){
+		if(is_array($type)){
+			foreach($type as $tb)
+				if($r = $this->load($tb,$id,$column))
+					return $r;
+		}
+		else{
+			if(is_string($id)||$column)
+				return $this->loadUniq($type,$id,$column);
+			return $this->redbean->load(AQueryWriter::toSnake($type),$id);
+		}
+	}
+
+	function find( $type, $sql = NULL, $bindings = [] )
+	{
+		return $this->finder->find( AQueryWriter::toSnake($type), $sql, $bindings );
+	}
+
+	function findAll( $type, $sql = NULL, $bindings = [] )
+	{
+		return $this->finder->find( AQueryWriter::toSnake($type), $sql, $bindings );
+	}
+
+	function findAndExport( $type, $sql = NULL, $bindings = [] )
+	{
+		return $this->finder->findAndExport( AQueryWriter::toSnake($type), $sql, $bindings );
+	}
+
+	function findOne( $type, $sql = NULL, $bindings = [] )
+	{
+		return $this->finder->findOne( AQueryWriter::toSnake($type), $sql, $bindings );
+	}
+
+	function findLast( $type, $sql = NULL, $bindings = [] )
+	{
+		return $this->finder->findLast( AQueryWriter::toSnake($type), $sql, $bindings );
+	}
+
+	function _uniqSetter($type,$values){
+		if(is_string($values)){
+			$c = $this->getModelClass($type);
+			$values = [$c::getLoadUniq()=>$values];
+		}
+		return $values;
+	}
+
+	function setUniqCheck($b=null){
+		Table::_checkUniq($b);
+	}
 }

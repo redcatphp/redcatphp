@@ -1,9 +1,11 @@
 <?php 
-namespace RedBeanPHP\QueryWriter; 
-use \RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use \RedBeanPHP\QueryWriter as QueryWriter;
-use \RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use \RedBeanPHP\Adapter as Adapter; 
+namespace surikat\model\RedBeanPHP\QueryWriter; 
+use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
+use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use surikat\model\RedBeanPHP\Adapter as Adapter; 
+use surikat\model\RedBeanPHP\Database;
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 /**
  * RedBean CUBRID Writer
  *
@@ -18,6 +20,7 @@ use \RedBeanPHP\Adapter as Adapter;
  */
 class CUBRID extends AQueryWriter implements QueryWriter
 {
+	use XQueryWriter;
 	protected $caseSupport = false;
 	/**
 	 * Data types
@@ -33,7 +36,8 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 * @var DBAdapter
 	 */
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -128,7 +132,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
@@ -147,7 +151,8 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
 
-		$this->adapter = $adapter;
+		$this->adapter = $a;
+		$this->database       = $db;
 	}
 
 	/**

@@ -6,7 +6,8 @@ use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\QueryWriter as QueryWriter;
 use surikat\model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use surikat\model\RedBeanPHP\Adapter as Adapter;
-
+use surikat\model\RedBeanPHP\Database;
+use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 /**
  * RedBean SQLServerWriter
  *
@@ -43,7 +44,8 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 * @var RedBean_Adapter_DBAdapter
 	 */
 	protected $adapter;
-
+	protected $database;
+	
 	/**
 	 * @var string
 	 */
@@ -135,7 +137,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 *
 	 * @param RedBean_Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix=false )
 	{
 		$this->setPrefix($prefix);
 		$this->typeno_sqltype = array(
@@ -157,8 +159,9 @@ class SQLServer extends AQueryWriter implements QueryWriter
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
 
-		$this->adapter = $adapter;
-
+		$this->adapter = $a;
+		$this->database       = $db;
+		
 		//$this->encoding = $this->adapter->getDatabase()->getSQLServerEncoding();
 	}
 
