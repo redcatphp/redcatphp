@@ -29,38 +29,23 @@ class Facade{
 	
 	const C_REDBEANPHP_VERSION = '4.1-surikat-fork';
 	private static $toolbox;
-	private static $databases = [];
 	private static $currentDB = '';
+	protected static $databases = [];
 	static function getVersion(){
 		return self::C_REDBEANPHP_VERSION;
 	}
-
-	public static function setup( $dsn = NULL, $username = NULL, $password = NULL, $frozen = FALSE, $prefix = '' )
-	{
-		if ( is_null( $dsn ) ) {
-			$dsn = 'sqlite:/' . sys_get_temp_dir() . '/red.db';
-		}
-
-		self::addDatabase( 'default', $dsn, $username, $password, $frozen, $prefix );
-		self::selectDatabase( 'default' );
-
-		return self::$toolbox;
-	}
 	
-	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '' )
-	{
-		
-		if ( isset( self::$databases[$key] ) ) {
+	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '' ){
+		if ( isset( self::$databases[$key] ) )
 			throw new RedException( 'A database has already be specified for this key.' );
-		}
 		self::$databases[$key] = new Database($dsn, $user, $pass, $frozen, $prefix);
 	}
 	
-	public static function selectDatabase( $key )
-	{
-		if ( self::$currentDB === $key ) {
+	public static function selectDatabase( $key ){
+		if ( self::$currentDB === $key )
 			return FALSE;
-		}
+		if ( !isset( self::$databases[$key] ) )
+			throw new RedException( 'No database has been specified for this key : '.$key.'.' );
 
 		self::configureFacadeWithToolbox( self::$databases[$key]->getToolBox() );
 		self::$currentDB = $key;
@@ -69,8 +54,7 @@ class Facade{
 	}
 
 	
-	public static function configureFacadeWithToolbox( ToolBox $tb )
-	{
+	public static function configureFacadeWithToolbox( ToolBox $tb ){
 		$oldTools                 = self::$toolbox;
 		self::$toolbox            = $tb;
 		return $oldTools;
