@@ -1543,7 +1543,8 @@ class i18n {
 			putenv("LC_ALL=$lang");
 			if(in_array($lang.'.utf8',$all_locales))
 				$lang .= '.utf8';
-		}		
+		}
+		
 		T_setlocale(LC_ALL,$lang);
 		//setlocale(LC_TIME, $lang);
 		T_bind_textdomain_codeset(self::$domain, "UTF-8");

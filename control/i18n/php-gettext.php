@@ -1,4 +1,7 @@
-<?php namespace surikat\control\i18n;
+<?php
+use surikat\control\i18n\FileReader;
+use surikat\control\i18n\domain;
+use surikat\control\i18n\gettext_reader;
 /*
    Copyright (c) 2005 Steven Armstrong <sa at c-area dot ch>
    Copyright (c) 2009 Danilo Segan <danilo@kvota.net>
@@ -51,12 +54,6 @@ $LC_CATEGORIES = ['LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETAR
 $EMULATEGETTEXT = 0;
 $CURRENTLOCALE = '';
 
-/* Class to hold a single domain included in $text_domains. */
-class domain {
-  var $l10n;
-  var $path;
-  var $codeset;
-}
 
 // Utility functions
 

@@ -34,14 +34,14 @@ class parser{
 		file_put_contents($potfile,$add);
 		foreach(func_get_args() as $arg){
 			if(is_array($arg)){
-				self::tsmarty2c([$arg[0],@$arg[1]]);
+				self::ttml2c([$arg[0],@$arg[1]]);
 			}
 			else{
-				self::tsmarty2c([$arg,true]);
+				self::ttml2c([$arg,true]);
 			}
 		}
 	}
-	static function tsmarty2c(){
+	static function ttml2c(){
 		$args = func_get_args();
 		if(empty($args)) return;
 		self::$lang_compil_path = control::$TMP.'langs/';
@@ -93,22 +93,8 @@ class parser{
 		$content = @file($file);
 		$filename = str_replace(control::$CWD,'',$file);
 		if(empty($content)) return;
-		$ldq = preg_quote('{'); $rdq = preg_quote('}'); $cmd = preg_quote('t');
-		$ldq2 = preg_quote('_('); $rdq2 = preg_quote(')');
-		
 		$outc = '';
 		foreach($content as $l=>$line){
-			preg_match_all("/{$ldq}\s*({$cmd})\s*([^{$rdq}]*){$rdq}([^{$ldq}]*){$ldq}\/\\1{$rdq}/",$line,$matches);
-			for($i=0;$i<count($matches[0]);$i++){
-				$outc .= "#: $filename:$l \n";
-				if(preg_match('/plural\s*=\s*["\']?\s*(.[^\"\']*)\s*["\']?/', $matches[2][$i], $match)) {
-					$outc .= 'msgid "'.self::fs($matches[3][$i]).'","'.self::fs($match[1])."\"\n";
-				}
-				else{
-					$outc .= 'msgid "'.self::fs($matches[3][$i])."\"\n";
-				}
-				$outc .= "msgstr \"\" \n\n";
-			}
 			preg_match_all("/_[_|e]\([\"](.*)[\"]\)/i",$line,$matches);
 			for($i=0;$i<count($matches[0]);$i++){
 				$outc .= "#: $filename:$l \n";
@@ -127,23 +113,6 @@ class parser{
 			fwrite($handle,$outc);
 			fclose($handle);
 		}
-	}
-	private static function do_file_c($file){
-		$content = @file_get_contents($file);
-		if (empty($content)) return;
-		$ldq = preg_quote('{'); $rdq = preg_quote('}'); $cmd = preg_quote('t');
-		preg_match_all("/{$ldq}\s*({$cmd})\s*([^{$rdq}]*){$rdq}([^{$ldq}]*){$ldq}\/\\1{$rdq}/",$content,$matches);
-		$outc = '';
-		for($i=0;$i<count($matches[0]);$i++){
-			if(preg_match('/plural\s*=\s*["\']?\s*(.[^\"\']*)\s*["\']?/', $matches[2][$i], $match)) {
-				$outc .= 'ngettext("'.self::fs($matches[3][$i]).'","'.self::fs($match[1]).'",x);'."\n";
-			}
-			else{
-				$outc .= 'gettext("'.self::fs($matches[3][$i]).'");'."\n";
-			}
-			$outc .= "\n";
-		}
-		file_put_contents(self::$lang_compil_path.str_replace(['/','\\'],'_',$file).'.c',$outc);
 	}
 	
 	/**
