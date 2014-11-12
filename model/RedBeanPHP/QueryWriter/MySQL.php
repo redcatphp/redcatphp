@@ -123,7 +123,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
-		$this->prefix = $prefix;
+		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
 			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
 			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',

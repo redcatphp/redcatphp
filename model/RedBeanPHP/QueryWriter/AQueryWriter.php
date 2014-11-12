@@ -648,7 +648,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	public function esc( $dbStructure, $dontQuote = FALSE )
 	{
 		$this->check( $dbStructure );
-
+		
+		$dbStructure = $this->prefix.$dbStructure;
+		
 		return ( $dontQuote ) ? $dbStructure : $this->quoteCharacter . $dbStructure . $this->quoteCharacter;
 	}
 
@@ -1078,5 +1080,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	protected $prefix = '';
 	function getPrefix(){
 		return $this->prefix;
+	}
+	function setPrefix($prefix){
+		$this->prefix = $prefix;
 	}
 }

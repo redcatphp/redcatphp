@@ -243,7 +243,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function __construct( Adapter $adapter, $prefix=false )
 	{
-		$this->prefix = $prefix;
+		$this->setPrefix($prefix);
 		$this->typeno_sqltype = [
 			SQLiteT::C_DATATYPE_INTEGER => 'INTEGER',
 			SQLiteT::C_DATATYPE_NUMERIC => 'NUMERIC',

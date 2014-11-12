@@ -135,8 +135,9 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 *
 	 * @param RedBean_Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $adapter )
+	public function __construct( Adapter $adapter, $prefix=false )
 	{
+		$this->setPrefix($prefix);
 		$this->typeno_sqltype = array(
 			self::C_DATATYPE_BOOL             => ' TINYINT ',
 			self::C_DATATYPE_UINT8            => ' TINYINT ',
