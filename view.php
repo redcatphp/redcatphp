@@ -1,4 +1,5 @@
 <?php namespace surikat;
+use surikat\control\i18n\i18n;
 use surikat\control\HTTP;
 use surikat\view\FILE;
 use surikat\view\TML;
@@ -13,6 +14,26 @@ class view {
 		static::serviceHook($path);
 	}
 	static function postHooks(){}
+	static function i18nBySubdomain(&$templatePath=null){
+		if(!$templatePath)
+			$templatePath = static::$URI[0];
+		if(($lang=static::$URI->getSubdomain())&&strlen($lang)==2){
+			static::$URI->setLang($lang);	
+			if(file_exists($langFile='langs/'.$lang.'.ini')){
+				$langMap = parse_ini_file($langFile);
+				if(isset($langMap[$templatePath]))
+					$templatePath = $langMap[$templatePath];
+				elseif(($k=array_search($templatePath,$langMap))!==false){
+					header('Location: /'.$k,301);
+					exit;
+				}
+			}			
+		}
+		else
+			$lang = 'en';
+		i18n::setLocale($lang);
+		return $lang;
+	}
 	static function index(){
 		static::preHooks(func_num_args()?func_get_arg(0):static::$URI->getPath());
 		static::exec(static::$URI->param(0).'.tml');
