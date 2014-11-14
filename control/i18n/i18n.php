@@ -7,13 +7,16 @@ class i18n {
 	private $domain;
 	private $locale;
 	private $language;
-	private function set($lg='en'){
+	private function __construct($lg){
+		$this->setLang($lg);
+	}
+	private function setLang($lg='en'){
 		$this->language = $lg;
 		$this->locales_root = control::$CWD.'langs';
 		$this->domain = 'messages';
 		$this->locale = strtolower($this->language).'_'.strtoupper($this->language);
 	}
-	private function update_cache(){
+	private function updateCache(){
 		$filename = $this->locales_root.'/'.$this->locale.'/LC_MESSAGES/'.$this->domain.'.mo';
 		if(!is_file($filename)) return;
 		$mtime = filemtime($filename);
@@ -28,7 +31,7 @@ class i18n {
 		}
 		$this->domain = $this->domain.'_'.$mtime;
 	}
-	private function handle(){
+	private function setLocale(){
 		$lang = $this->locale;
 		putenv("LANGUAGE=$lang");
 		putenv("LC_ALL=$lang");
@@ -39,11 +42,11 @@ class i18n {
 		if($tz=Config::langs('timezone'))
 			date_default_timezone_set($tz);
 	}
-	private static $singleton;
-	static function singleton(){
-		if(!isset(self::$singleton))
-			self::$singleton = new i18n();
-		return self::$singleton;
+	private static $o = [];
+	static function o($lg='en'){
+		if(!isset(self::$o[$lg]))
+			self::$o[$lg] = new i18n($lg);
+		return self::$o[$lg];
 	}
 	function __call($func,$args){
 		if(strpos($func,'_')!==0)
@@ -51,6 +54,6 @@ class i18n {
 	}
 	static function __callStatic($func,$args){
 		if(strpos($func,'_')!==0)
-			return call_user_func_array([self::singleton(),$func],$args);
+			return call_user_func_array([self::o(array_shift($args)),$func],$args);
 	}
 }
