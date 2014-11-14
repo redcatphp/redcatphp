@@ -35,18 +35,11 @@ LC_MESSAGES     5
 LC_ALL          6
 */
 
-// LC_MESSAGES is not available if php-gettext is not loaded
-// while the other constants are already available from session extension.
-if (!defined('LC_MESSAGES')) {
+if (!defined('LC_MESSAGES')) // LC_MESSAGES is not available if php-gettext is not loaded while the other constants are already available from session extension.
   define('LC_MESSAGES',	5);
-}
-
-//require('streams.php');
-//require('gettext.php');
 
 
 // Variables
-
 global $text_domains, $default_domain, $LC_CATEGORIES, $EMULATEGETTEXT, $CURRENTLOCALE;
 $text_domains = [];
 $default_domain = 'messages';
@@ -123,19 +116,16 @@ function _get_reader($domain=null, $category=5, $enable_cache=true) {
         $locale_names = get_list_of_locales($locale);
         $input = null;
         foreach ($locale_names as $locale) {
-          $full_path = $bound_path . $locale . "/" . $subpath;
+          $full_path = $bound_path . $locale . '/' . $subpath;
           if (file_exists($full_path)) {
             $input = new FileReader($full_path);
             break;
           }
         }
 
-        if (!array_key_exists($domain, $text_domains)) {
-          // Initialize an empty domain object.
-          $text_domains[$domain] = new domain();
-        }
-        $text_domains[$domain]->l10n = new gettext_reader($input,
-                                                          $enable_cache);
+        if (!isset($text_domains[$domain]))
+          $text_domains[$domain] = new domain(); // Initialize an empty domain object.
+        $text_domains[$domain]->l10n = new gettext_reader($input,$enable_cache);
     }
     return $text_domains[$domain]->l10n;
 }

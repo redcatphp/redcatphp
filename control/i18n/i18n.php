@@ -6,8 +6,6 @@ class i18n {
 	private static $domain;
 	private static $locale;
 	private static $language;
-	static $availables = ['fr','en'];
-	static $default_lang = 'fr';
 	static $i18n_iso =  [
 	  'AF' =>   [
 			'name' => 'AFGHANISTAN',
@@ -1511,7 +1509,7 @@ class i18n {
 		  ],
 		];
 	
-	static function set($lg){
+	static function set($lg='en'){
 		self::$language = $lg;
 		self::$locales_root = control::$CWD.'langs';
 		self::$domain = 'messages';
@@ -1533,26 +1531,17 @@ class i18n {
 		self::$domain = self::$domain.'_'.$mtime;
 	}
 	static function handle(){
-		date_default_timezone_set('Europe/Paris');
 		
 		$lang = self::$locale;
-		$all_locales = explode("\n",shell_exec('locale -a'));
-		if(!in_array($lang,$all_locales)){
-			/* allow gettext to access local translate dir even if that local type is not available on system */
-			putenv("LANGUAGE=$lang");
-			putenv("LC_ALL=$lang");
-			if(in_array($lang.'.utf8',$all_locales))
-				$lang .= '.utf8';
-		}
+		putenv("LANGUAGE=$lang");
+		putenv("LC_ALL=$lang");
 		
 		T_setlocale(LC_ALL,$lang);
-		//setlocale(LC_TIME, $lang);
-		T_bind_textdomain_codeset(self::$domain, "UTF-8");
 		T_bindtextdomain(self::$domain,self::$locales_root);
 		T_textdomain(self::$domain);
+		T_bind_textdomain_codeset(self::$domain, "UTF-8");
 		
-		 //bind_textdomain_codeset(self::$domain, "UTF-8");
-		 //bindtextdomain(self::$domain,self::$locales_root);
-		 //textdomain(self::$domain);
+		date_default_timezone_set('Europe/Paris');
+		//setlocale(LC_TIME, $lang);
 	}
 }

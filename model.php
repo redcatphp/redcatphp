@@ -2,7 +2,6 @@
 use surikat\model\Query;
 use surikat\model\Query4D;
 class model {
-	const DEFAULT_LG_CODE = 'en';
 	static function __callStatic($f,$args){
 		$cl = 'surikat\model\Query';
 		if(strpos($f,'new')===0&&ctype_upper(substr($f,3,1))){
