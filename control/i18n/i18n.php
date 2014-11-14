@@ -1,5 +1,6 @@
 <?php namespace surikat\control\i18n;
-use surikat\control;
+use control;
+use control\Config;
 require_once __DIR__.'/php-gettext.php';
 class i18n {
 	private $locales_root;
@@ -35,8 +36,8 @@ class i18n {
 		T_bindtextdomain($this->domain,$this->locales_root);
 		T_textdomain($this->domain);
 		T_bind_textdomain_codeset($this->domain, "UTF-8");
-		date_default_timezone_set('Europe/Paris');
-		//setlocale(LC_TIME, $lang);
+		if($tz=Config::langs('timezone'))
+			date_default_timezone_set($tz);
 	}
 	private static $singleton;
 	static function singleton(){
