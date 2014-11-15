@@ -546,7 +546,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				else{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
-			if($this->selfClosed&&$this->vFile->isXhtml)
+			if($this->selfClosed&&$this->vFile&&$this->vFile->isXhtml)
 				$str .= '></'.$this->nodeName;
 			elseif($this->selfClosed>1)
 				$str .= ' /';

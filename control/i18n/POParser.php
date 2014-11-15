@@ -115,7 +115,7 @@ class POParser{
 		}
 		// didn't match anything 
 		if(!$line_object) {
-			throw new Exception( sprintf("unrecognized line fomat at line: %d",$this->line_count) );
+			throw new \Exception( sprintf("unrecognized line fomat at line: %d",$this->line_count) );
 		}
 		
 		return $line_object;
@@ -127,7 +127,7 @@ class POParser{
 			$translations = ["\\\\"=>"\\", "\\n"=>"\n",'\\"'=>'"'];
 			$result = strtr($result, $translations);
 		} else {
-			throw new Exception("Invalid PO string (should be surrounded by quotes)\n$str\n");
+			throw new \Exception("Invalid PO string (should be surrounded by quotes)\n$str\n");
 		}
 		return $result;
 	}

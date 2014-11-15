@@ -2,6 +2,7 @@
 use control;
 use control\FS;
 use model\R;
+use view\TML;
 class parser{
 	private static $tpl_extensions = ['tml','atml','btml','tpl','php'];
 	private static $lang_compil_path;
@@ -28,7 +29,7 @@ class parser{
 	static function sources_compiler(){
 		$potfile = control::$CWD.'langs/messages.pot';
 		$add = @file_get_contents(control::$CWD.'langs/header.pot');
-		$add = str_replace("{ctime}",gmdate('Y-m-d H:iO',filemtime(control::$CWD.'langs/messages.pot')),$add);
+		$add = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$add);
 		$add = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$add);
 		// if(is_file($potfile)) @unlink($potfile);
 		file_put_contents($potfile,$add);
@@ -90,26 +91,34 @@ class parser{
 		$d->close();
 	}
 	private static function do_file($file){
-		$content = @file($file);
-		$filename = str_replace(control::$CWD,'',$file);
-		if(empty($content)) return;
-		$outc = '';
-		foreach($content as $l=>$line){
-			preg_match_all("/_[_|e]\([\"](.*)[\"]\)/i",$line,$matches);
-			for($i=0;$i<count($matches[0]);$i++){
-				$outc .= "#: $filename:$l \n";
-				$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
-				$outc .= "msgstr \"\" \n\n";
-			}
-			preg_match_all("/_[_|e]\([\'](.*)[\']\)/i",$line,$matches);
-			for($i=0;$i<count($matches[0]);$i++){
-				$outc .= "#: $filename:$l \n";
-				$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
-				$outc .= "msgstr \"\" \n\n";
-			}
-		}
+		$filename = substr($file,strlen(control::$CWD));
 		$potfile = control::$CWD.'langs/messages.pot';
+		$outc = '';
 		if($handle=fopen($potfile,'a')){
+			$content = file_get_contents($file);
+			if(empty($content))
+				return;
+				
+			$TML = new TML($content);
+			$TML('TEXT:hasnt(PHP)')->each(function($el){
+				$el->write('__("'.str_replace("\n","\\n",$el).'")');
+			});
+			$content = "$TML";
+			
+			foreach(explode("\n",$content) as $l=>$line){
+				preg_match_all('/__\\("([^"\\)]+)/s',$line,$matches);
+				for($i=0;$i<count($matches[0]);$i++){
+					$outc .= "#: $filename:$l \n";
+					$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
+					$outc .= "msgstr \"\" \n\n";
+				}
+				preg_match_all('/__\\(\'([^\'\\)]+)/s',$line,$matches);
+				for($i=0;$i<count($matches[0]);$i++){
+					$outc .= "#: $filename:$l \n";
+					$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
+					$outc .= "msgstr \"\" \n\n";
+				}
+			}
 			fwrite($handle,$outc);
 			fclose($handle);
 		}
