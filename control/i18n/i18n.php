@@ -39,8 +39,10 @@ class i18n {
 		T_bindtextdomain($this->domain,$this->locales_root);
 		T_textdomain($this->domain);
 		T_bind_textdomain_codeset($this->domain, "UTF-8");
-		if($tz=Config::langs('timezone'))
-			date_default_timezone_set($tz);
+		$tz = Config::langs('timezone');
+		if(!$tz)
+			$tz = @date_default_timezone_get();
+		date_default_timezone_set($tz);
 	}
 	private static $o = [];
 	static function o($lg='en'){
