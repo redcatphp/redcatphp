@@ -58,12 +58,10 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		call_user_func_array($callback,[&$node,&$break]);
 	}
 	function vFile(){
-		if(!$this->vFile)
-			$this->vFile = FILE::factory('');
 		return $this->vFile;
 	}
 	function vFileOf($file){
-		return FILE::factory(dirname($this->vFile()->path).'/'.$file);
+		return FILE::factory(($this->vFile?dirname($this->vFile->path):'').'/'.$file);
 	}
 	function pathFile($file){
 		return $this->vFileOf($file)->path($file);
@@ -220,8 +218,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			return;
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
-			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
-				$this->$m($this->attributes[$k],$key);
+			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$key)))||(($pos=strpos($key,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($key,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
+				$this->$m($this->metaAttribution[$k],$key);
 		}
 		if(!$this->preventLoad){
 			if($this->_namespaces){
@@ -538,7 +536,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$str .= '<'.$this->nodeName;
 			foreach($this->metaAttribution as $k=>$v)
 				if(is_integer($k)){
-					if($this->vFile->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+					if($this->vFile&&$this->vFile->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
 					else
 						$str .= ' '.$v;
