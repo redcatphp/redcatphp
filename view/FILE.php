@@ -76,8 +76,6 @@ class FILE {
 		$local = $this->dirCwd.dirname($this->path).'/'.$path;
 		if(strpos($path,'./')===0)
 			return $local;
-		if($path=='404.tml'){
-		}
 		if($file=realpath($local))
 			return $file;
 		return $this->dirCwd.$path;
@@ -145,7 +143,6 @@ class FILE {
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
-		//PHP::namespacedConcat($str,true);
 		$file = $this->dirCache.$this->path.'/'.$file.'.php';
 		if(!control::devHas(control::dev_view))
 			$str = minPHP::minify($str);

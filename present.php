@@ -7,10 +7,12 @@ use surikat\view\TML;
 class present extends ArrayObject{
 	static function document(FILE $file){}
 	static function load(TML $tml){
+		if(!$tml->vFile)
+			return;
 		$c = get_called_class();
 		$o = new $c();
 		$o->merge([
-			'templatePath'		=> $tml->vFile()->path,
+			'templatePath'		=> $tml->vFile?$tml->vFile->path:'',
 			'presentAttributes'	=> $tml->getAttributes(),
 			'presentNamespaces'	=> $tml->_namespaces,
 		]);
