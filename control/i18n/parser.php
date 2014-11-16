@@ -12,44 +12,23 @@ class parser{
 		self::phpmo_convert($pofile,$mofile);
 	}
 	
-	static function sources_compiler(){
+	static function sources_compiler($sources){
 		$potfile = control::$CWD.'langs/messages.pot';
 		$add = @file_get_contents(control::$CWD.'langs/header.pot');
 		$add = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$add);
 		$add = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$add);
 		// if(is_file($potfile)) @unlink($potfile);
 		file_put_contents($potfile,$add);
-		foreach(func_get_args() as $arg){
-			if(is_array($arg)){
-				self::ttml2c([$arg[0],@$arg[1]]);
-			}
-			else{
-				self::ttml2c([$arg,true]);
-			}
-		}
+		self::ttml2c($sources);
 	}
-	static function ttml2c(){
-		$args = func_get_args();
-		if(empty($args)) return;
+	static function ttml2c($sources){
 		self::$lang_compil_path = control::$TMP.'langs/';
 		FS::mkdir(self::$lang_compil_path);
-		foreach($args as $arg) {
-			if(is_array($arg)){
-				if(is_dir($arg[0])){
-					self::do_dir($arg[0],$arg[1]);
-				}
-				else{
-					self::do_file($arg[0]);
-				}
-			}
-			else{
-				if(is_dir($arg)){
-					self::do_dir($arg);
-				}
-				else{
-					self::do_file($arg);
-				}
-			}
+		foreach($sources as $source){
+			if(is_dir($source))
+				self::do_dir($source);
+			else
+				self::do_file($source);
 		}
 	}
 	
@@ -59,17 +38,15 @@ class parser{
 		$str = str_replace("\n", '\n', $str);
 		return $str;
 	}
-	private static function do_dir($dir,$recurs=true){
+	private static function do_dir($dir){
 		$d = dir($dir);
 		while (false !== ($entry = $d->read())) {
 			if ($entry=='.'||$entry=='..') continue;
 			$entry = $dir.'/'.$entry;
-			if (is_dir($entry)&&$recurs) { // if a directory, go through it
-				self::do_dir($entry,$recurs);
-			}
-			else{
+			if (is_dir($entry))
+				self::do_dir($entry);
+			else
 				self::do_file($entry);
-			}
 		}
 		$d->close();
 	}
@@ -84,14 +61,15 @@ class parser{
 				
 			$TML = new TML($content);
 			$TML('*[not-i18n]')->remove();
-			$TML('*[i18n]>TEXT:hasnt(PHP)')->each(function($el)use(&$outc,$filename){
-				$el = "$el";
-				if(trim($el))
+			$TML('TEXT:hasnt(PHP)')->each(function($el)use(&$outc,$filename){
+				$el = trim("$el");
+				if($el)
 					$outc .= "#: $filename \nmsgid \"".self::fs($el)."\"\nmsgstr \"\" \n\n";
 			});
 			$TML('*')->each(function($el)use(&$outc,$filename){
 				foreach($el->attributes as $k=>$v){
-					if(strpos($k,'i18n-')===0&&trim($v)){
+					$v = trim($v);
+					if(strpos($k,'i18n-')===0&&$v){
 						$outc .= "#: $filename \nmsgid \"".self::fs($v)."\"\nmsgstr \"\" \n\n";
 					}
 				}
