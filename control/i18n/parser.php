@@ -4,21 +4,7 @@ use control\FS;
 use model\R;
 use view\TML;
 class parser{
-	private static $tpl_extensions = ['tml','atml','btml','tpl','php'];
 	private static $lang_compil_path;
-	static function add_dates(){
-		$outc = '';
-		// foreach(Surikati18n::$datetimeStrings as $k){
-			// $outc .= "#: Surikati18n.php:0 \n";
-			// $outc .= 'msgid "DATE_'.$k."\"\n";
-			// $outc .= "msgstr \"\" \n\n";
-		// }
-		$potfile = control::$CWD.'langs/messages.pot';
-		if($handle=fopen($potfile,'a')){
-			fwrite($handle,$outc);
-			fclose($handle);
-		}
-	}
 	static function compile_mo_from_po($dir){
 		$mofile = control::$CWD.$dir.'/LC_MESSAGES/messages.mo';
 		$pofile = control::$CWD.$dir.'/LC_MESSAGES/messages.po';
@@ -82,10 +68,7 @@ class parser{
 				self::do_dir($entry,$recurs);
 			}
 			else{
-				$pi = pathinfo($entry);
-				if (isset($pi['extension']) && in_array($pi['extension'], self::$tpl_extensions)) {
-					self::do_file($entry);
-				}
+				self::do_file($entry);
 			}
 		}
 		$d->close();
@@ -100,25 +83,20 @@ class parser{
 				return;
 				
 			$TML = new TML($content);
-			$TML('TEXT:hasnt(PHP)')->each(function($el){
-				$el->write('__("'.str_replace("\n","\\n",$el).'")');
+			$TML('*[not-i18n]')->remove();
+			$TML('*[i18n]>TEXT:hasnt(PHP)')->each(function($el)use(&$outc,$filename){
+				$el = "$el";
+				if(trim($el))
+					$outc .= "#: $filename \nmsgid \"".self::fs($el)."\"\nmsgstr \"\" \n\n";
 			});
-			$content = "$TML";
+			$TML('*')->each(function($el)use(&$outc,$filename){
+				foreach($el->attributes as $k=>$v){
+					if(strpos($k,'i18n-')===0&&trim($v)){
+						$outc .= "#: $filename \nmsgid \"".self::fs($v)."\"\nmsgstr \"\" \n\n";
+					}
+				}
+			});
 			
-			foreach(explode("\n",$content) as $l=>$line){
-				preg_match_all('/__\\("([^"\\)]+)/s',$line,$matches);
-				for($i=0;$i<count($matches[0]);$i++){
-					$outc .= "#: $filename:$l \n";
-					$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
-					$outc .= "msgstr \"\" \n\n";
-				}
-				preg_match_all('/__\\(\'([^\'\\)]+)/s',$line,$matches);
-				for($i=0;$i<count($matches[0]);$i++){
-					$outc .= "#: $filename:$l \n";
-					$outc .= 'msgid "'.self::fs($matches[1][$i])."\"\n";
-					$outc .= "msgstr \"\" \n\n";
-				}
-			}
 			fwrite($handle,$outc);
 			fclose($handle);
 		}

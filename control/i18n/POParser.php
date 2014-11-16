@@ -150,11 +150,11 @@ class POParser{
 		$result = str_replace("\\n","\\n\n",$result);
 		
 		// wrap text so po files can be edited nicely.	
-		// $lines = explode("\n",$result);
-		// foreach($lines as &$l) {
-			// $l = $this->wordwrap($l,78);
-		// }
-		// $result = implode("\n",$lines);
+		 $lines = explode("\n",$result);
+		 foreach($lines as &$l) {
+			 $l = $this->wordwrap($l,78);
+		 }
+		 $result = implode("\n",$lines);
 		
 		// if there are mutiple lines, lets prefix everything with a ""	like the gettext tools
 		if(strpos($result,"\n"))

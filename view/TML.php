@@ -21,4 +21,11 @@ class TML extends CORE{
 		unset($this->metaAttribution['cacheStatic']);
 		$this->cacheForge(null,false,true);
 	}
+	
+	function loadI18n(){
+		
+	}
+	function loadI18n_($v,$k){
+		
+	}
 }
