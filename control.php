@@ -15,31 +15,89 @@ class control{
 		self::$CWD_X = self::$CWD;
 		self::$TMP = self::$CWD.'.tmp'.DIRECTORY_SEPARATOR;
 		set_include_path('.');
+		
+		self::addSuperNamespace('surikat',self::$SURIKAT_X);
+		self::addNamespace('',self::$CWD_X);
 		spl_autoload_register(['surikat\\control','classLoad']);
+		
 		set_exception_handler(['surikat\\dev','catchException']);
 	}
-	static function classLoad($c){
-		$f = str_replace('\\',DIRECTORY_SEPARATOR,$c).'.php';
-		if(stripos($c,__NAMESPACE__.'\\')===0)
-			is_file($php=self::$SURIKAT_X.substr($f,8))&&include($php);
-		elseif(!(is_file($php=self::$CWD_X.$f)&&include($php))){
+	
+	private static $namespaces = [];
+	private static $superNamespaces = [];
+	static function addNamespace($prefix, $base_dir, $prepend = false){
+		$prefix = trim($prefix, '\\').'\\';
+		$base_dir = rtrim($base_dir, '/').'/';
+		if(!isset(self::$namespaces[$prefix]))
+			self::$namespaces[$prefix] = [];
+		if ($prepend)
+			array_unshift(self::$namespaces[$prefix], $base_dir);
+		else
+			array_push(self::$namespaces[$prefix], $base_dir);
+	}
+	static function addSuperNamespace($prefix, $base_dir, $prepend = false){
+		$prefix = trim($prefix, '\\').'\\';
+		$base_dir = rtrim($base_dir, '/').'/';
+		if(!isset(self::$superNamespaces[$prefix]))
+			self::$superNamespaces[$prefix] = [];
+		if ($prepend)
+			array_unshift(self::$superNamespaces[$prefix], $base_dir);
+		else
+			array_push(self::$superNamespaces[$prefix], $base_dir);
+	}
+	static function classLoad($class){
+		$prefix = $class;
+		while($prefix!='\\'){
+			$prefix = rtrim($prefix, '\\');
+			$pos = strrpos($prefix, '\\');
+			if($pos!==false){
+				$prefix = substr($class, 0, $pos + 1);
+				$relative_class = substr($class, $pos + 1);
+				if(isset(self::$superNamespaces[$prefix])){
+					foreach(self::$superNamespaces[$prefix] as $base_dir){
+						$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
+						if(self::requireFile($file))
+							return;
+					}
+					return;
+				}
+			}
+			else{
+				$prefix = '\\';
+				$relative_class = $class;
+			}
+			if(isset(self::$namespaces[$prefix])){
+				foreach(self::$namespaces[$prefix] as $base_dir){
+					$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
+					if(self::requireFile($file))
+						return;
+				}
+			}
+		}
+		self::extendSuperClass($class);
+	}
+	private static function requireFile($file){
+		if(file_exists($file)){
+			require $file;
+			return true;
+		}
+		return false;
+	}
+	private static function extendSuperClass($c){		
+		foreach(array_keys(self::$superNamespaces) as $prefix){
 			$ns = (($pos=strrpos($c,'\\'))?substr($c,0,$pos):'');
 			$cn = ($pos?substr($c,$pos+1):$c);
 			$trait = strpos($cn,'Mixin_')===0;
 			$cf = $trait?'trait_exists':'class_exists';
-			if($cf(__NAMESPACE__.'\\'.$c)){
+			if($cf($prefix.$c)){
 				if($trait)
-					$ev = 'trait '.$cn.' { use \\'.__NAMESPACE__.'\\'.$c.'; }';
+					$ev = 'trait '.$cn.' { use \\'.$prefix.$c.'; }';
 				else
-					$ev = ((strpos($cn,'Interface_')===0)?'interface':'class').' '.$cn.' extends \\'.__NAMESPACE__.'\\'.$c.'{}';
+					$ev = ((strpos($cn,'Interface_')===0)?'interface':'class').' '.$cn.' extends \\'.$prefix.$c.'{}';
 				eval('namespace '.$ns.'{ '.$ev.'}');
+				break;
 			}
 		}
-	}
-	static function autoload($dir){
-		spl_autoload_register(function($className)use($dir){
-			is_file($f=$dir.DIRECTORY_SEPARATOR.str_replace('\\',DIRECTORY_SEPARATOR,$className).'.php')&&include($f);
-		});
 	}
 }
 control::initialize();
