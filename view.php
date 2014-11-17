@@ -82,7 +82,7 @@ class view {
 	}
 	static function xDom($TML){
 		$head = $TML->children('head',0);
-		if(!$head){
+		if(!$head&&$TML->children('body',0)){
 			$head = $TML;
 			$head->append('<script type="text/javascript" src="/js/js.js"></script>');
 			$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
