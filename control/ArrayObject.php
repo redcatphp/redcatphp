@@ -1,5 +1,5 @@
 <?php namespace surikat\control;
-use surikat\control;
+use surikat\dev;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
@@ -133,7 +133,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return new static(array_filter((array)$this,$cb));
 	}
 	function __toString(){
-		if(control::devHas(control::dev_control))
+		if(dev::has(dev::CONTROL))
 			return $this->__debug();
 	}
 	function __debug(){

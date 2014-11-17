@@ -23,7 +23,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use surikat\model\RedBeanPHP\OODBBean;
 use surikat\model\RedBeanPHP\SimpleModel;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter;
-use surikat\control;
+use surikat\dev;
 use surikat\control\JSON;
 use surikat\control\sync;
 use BadMethodCallException;
@@ -203,7 +203,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 
 		$this->trigger('validate');
 		if($this->breakValidationOnError&&($e=$this->getErrors())){
-			if(control::devHas(control::dev_model))
+			if(dev::has(dev::MODEL))
 				print_r($e);
 			$this->throwValidationError($e);
 		}

@@ -1,9 +1,9 @@
 <?php namespace surikat\view;
-use surikat\control;
+use surikat\dev;
 class TML_Script extends TML{
 	protected $noParseContent = true;
 	function loaded(){
-		if(control::devHas(control::dev_js)&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
+		if(dev::has(dev::JS)&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
 			if(strpos($this->src,'?')===false)
 				$this->src .= '?';
 			else

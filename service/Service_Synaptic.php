@@ -1,4 +1,5 @@
 <?php namespace surikat\service;
+use surikat\dev;
 use surikat\control;
 use surikat\control\HTTP;
 use surikat\control\JSON;
@@ -181,7 +182,7 @@ class Service_Synaptic {
 		set_time_limit(0);
 		$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.js';
 		$c = JS::minify(file_get_contents($f));
-		if(!control::devHas(control::dev_js))
+		if(!dev::has(dev::JS))
 			file_put_contents($min,$c);
 		@header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
@@ -202,7 +203,7 @@ class Service_Synaptic {
 		else
 			$c = file_get_contents($f);
 		$c = CSS::minify($c);
-		if(!control::devHas(control::dev_css))
+		if(!dev::has(dev::CSS))
 			file_put_contents(dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css',$c);
 		@header('Content-Type:text/css; charset=utf-8');
 		echo $c;

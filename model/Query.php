@@ -1,7 +1,7 @@
 <?php namespace surikat\model;
 use ArrayAccess;
 use BadMethodCallException;
-use surikat\control;
+use surikat\dev;
 use surikat\control\str;
 use surikat\model;
 use surikat\model\RedBeanPHP\QueryWriter;
@@ -63,10 +63,6 @@ class Query {
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
-				if(control::devHas(control::dev_model_sql)){
-					print(str_replace(',',",\n",$this->composer->getQuery()).'<br>');
-					print_r($params);
-				}
 				return $this->_DataBase->$f($this->composer->getQuery(),$params);
 			}
 			return;
@@ -346,10 +342,7 @@ class Query {
 		return Query::explodeAggTable($this->table());
 	}
 	function table(){
-		$data = $this->getAll();
-		if(control::devHas(control::dev_model_data))
-			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
-		return $data;
+		return $this->getAll();
 	}
 	function getClone(){
 		return clone $this;
@@ -646,18 +639,12 @@ class Query {
 	function table4D(){
 		$this->selectNeed();
 		$this->autoSelectJoin();
-		$data = $this->getAll4D();
-		if(control::devHas(control::dev_model_data))
-			print('<pre>'.htmlentities(print_r($data,true)).'</pre>');
-		return $data;
+		return $this->getAll4D();
 	}
 	function row4D($compo=[],$params=[]){
 		$this->selectNeed();
 		$this->autoSelectJoin();
 		$this->limit(1);
-		$row = $this->getRow4D();
-		if(control::devHas(control::dev_model_data))
-			print('<pre>'.htmlentities(print_r($row,true)).'</pre>');
-		return $row;
+		return $this->getRow4D();
 	}
 }

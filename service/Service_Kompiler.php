@@ -34,7 +34,7 @@ abstract class Service_Kompiler{
 		file_put_contents(self::$surikat,"<?php
 if(!@include(__DIR__.'/".self::$PATH."/control.php'))
 	symlink('../".self::$PATH."','surikat')&&include('".self::$PATH."/control.php');
-control::dev();
+dev::level(dev::STD);
 view::index();");
 	}
 	static function Set_PROD_Mode($target=null){
@@ -125,187 +125,6 @@ view::index();");
 			FS::mkdir($dir.'.tmp');
 		}
 	}
-	/*
-	static function Update_RedBean4(){
-		ob_implicit_flush(true);
-		ob_end_flush();
-		print '<pre>';
-
-		$tgDir = control::$SURIKAT.'model/RedBeanPHP';
-		print "Cleaning (with backup if is able to) $tgDir\r\n";
-		$bak = control::$TMP.'kompiler_cache/RedBean'.time();
-		FS::mkdir($bak);
-		FS::recurse($tgDir,function($file)use($bak){
-			if(is_file($file)&&!(rename($file,$tg=$bak.'/'.basename($file))||unlink($file)))
-				throw new \Exception('Unable to rename or remove "'.$file.'"');
-		});
-		$url = 'https://github.com/gabordemooij/redbean/archive/master.zip';
-		print "Downloading $url\r\n";
-		$dir = self::getZIP($url);
-		$dir .= '/redbean-master/RedBeanPHP';
-
-		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		$dir = realpath($dir);
-		if(!$dir)
-			throw new \Exception('Directory not noud: "'.$dir.'"');
-		error_reporting(-1);
-		ini_set('display_errors','stdout');
-		$ons = 'RedBeanPHP';
-		$ns = 'surikat\\model';
-		$namespace = $ns.'\\RedBeanPHP';
-		$_ons = str_replace('\\','\\\\',$ons);
-		$_namespace = str_replace('\\','\\\\',$namespace);
-		$_ns = str_replace('\\','\\\\',$ns);
-		$rep = array(
-			'\\\\'.$_ons=>'\\\\'.$_namespace,
-			'\\'.$ons=>'\\'.$namespace,
-			'\\\\'.$_ns.'\\\\'.$namespace=>'\\\\'.$_namespace,
-			'namespace '.$ons=>'namespace '.$namespace,
-			'use '.$ons=>'use '.$namespace,
-			$_namespace.'\\\\BeanHelper\\\\SimpleFacadeBeanHelper'=>$_ns.'\\\\SimpleFacadeBeanHelper',
-			$namespace.'\\BeanHelper\\SimpleFacadeBeanHelper'=>$ns.'\\SimpleFacadeBeanHelper',
-			'RedBeanPHP\\QueryWriter'=>'QueryWriter',
-		);
-		FS::recurse($dir,function($file)use($ons,$namespace,$dir,$tgDir,$rep){
-				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
-					$code = file_get_contents($file);
-					$code = str_replace(array_keys($rep),array_values($rep),$code);
-					$tgFile=$tgDir.'/'.substr($file,($l=strlen($dir))+1);
-					FS::mkdir($tgFile,true);
-					if(file_put_contents($tgFile,$code))
-						print "$tgFile\r\n";
-					else
-						throw new \Exception('Unable to write: "'.$tgFile.'"');
-				}
-					
-		});
-		
-		print 'OK - experimental';
-		print '</pre>';
-	}
-	*/
-	/*
-	static function Update_Geocoder(){
-		ob_implicit_flush(true);
-		ob_end_flush();
-		print '<pre>';
-
-		$tgDir = control::$SURIKAT.'control/Geocoder';
-		print "Cleaning (with backup if is able to) $tgDir\r\n";
-		$bak = control::$TMP.'kompiler_cache/RedBean'.time();
-		FS::mkdir($bak);
-		FS::recurse($tgDir,function($file)use($bak){
-			if(is_file($file)&&!(rename($file,$tg=$bak.'/'.basename($file))||unlink($file)))
-				throw new \Exception('Unable to rename or remove "'.$file.'"');
-		});
-		$url = 'https://github.com/geocoder-php/Geocoder/archive/master.zip';
-		print "Downloading $url\r\n";
-		$dir = self::getZIP($url);
-		$dir .= '/Geocoder-master/src/Geocoder';
-
-		print "Namespace Rewrite and Store in \"$tgDir\" :\r\n";
-		$dir = realpath($dir);
-		if(!$dir)
-			throw new \Exception('Directory not noud: "'.$dir.'"');
-		error_reporting(-1);
-		ini_set('display_errors','stdout');
-		$ons = 'Geocoder';
-		$ns = 'surikat\\control';
-		$namespace = $ns.'\\Geocoder';
-		$_ons = str_replace('\\','\\\\',$ons);
-		$_namespace = str_replace('\\','\\\\',$namespace);
-		$_ns = str_replace('\\','\\\\',$ns);
-		$rep = array(
-			'namespace '.$ons=>'namespace '.$namespace,
-			'use '.$ons=>'use '.$namespace,
-		);
-		FS::recurse($dir,function($file)use($ons,$namespace,$dir,$tgDir,$rep){
-				if(is_file($file)&&pathinfo($file,PATHINFO_EXTENSION)=='php'&&strpos(pathinfo($file,PATHINFO_FILENAME),'.')===false){
-					$code = file_get_contents($file);
-					$code = str_replace(array_keys($rep),array_values($rep),$code);
-					$tgFile=$tgDir.'/'.substr($file,($l=strlen($dir))+1);
-					FS::mkdir($tgFile,true);
-					if(file_put_contents($tgFile,$code))
-						print "$tgFile\r\n";
-					else
-						throw new \Exception('Unable to write: "'.$tgFile.'"');
-				}
-					
-		});
-		
-		print 'OK - experimental';
-		print '</pre>';
-	}
-	*/
-	/*
-	static function Update_CssSelector(){
-		ob_implicit_flush(true);
-		ob_end_flush();
-		print '<pre>';
-		$url = 'https://github.com/soloproyectos/php.css-selector/archive/master.zip';
-		print "Downloading $url\r\n";
-		$dir = self::getZIP($url);
-		$dir .= '/php.css-selector-master/classes';
-		$replace = array(
-			'\\arr'=>'\\Arr',
-			'\\css'=>'\\Css',
-			'\\text'=>'\\Text',
-			'\\exception'=>'\\Exception',
-			'\\parser'=>'\\Parser',
-			'\\combinator'=>'\\Combinator',
-			'\\filter'=>'\\Filter',
-			'\\model'=>'\\Model',
-			'\\tokenizer'=>'\\Tokenizer',
-			'require_once'=>'#require_once',
-			'com\\soloproyectos\\core'=>'surikat\\view\\CssSelector',
-			'com\\\\soloproyectos\\\\core'=>'surikat\\\\view\\\\CssSelector',
-			'surikat\\view\\CssSelector\\Css'=>'surikat\\view\\CssSelector',
-			'surikat\\\\view\\\\CssSelector\\Css'=>'surikat\\\\view\\\\CssSelector',
-			"surikat\\\\view\\\\CssSelector\\\\Css"=>"surikat\\\\view\\\\CssSelector",
-			"instanceof DOMElement"=>'instanceof \\surikat\\view\\CORE',
-			"instanceof DOMNode"=>'instanceof \\surikat\\view\\CORE',
-			"use DOMDocument;"=>'',
-			"use DOMElement;"=>'',
-			"use DOMNode;"=>'',
-			"iso-8859-1"=>'utf-8',
-			//"instanceof DOMDocument"=>'instanceof \\surikat\\view\\FILE',
-			//"ownerDocument"=>'vFile',
-		);
-		FS::recurse($dir,function($file)use($dir,$replace){
-			$rel = substr($file,strlen($dir));
-			if(!is_file($file)||pathinfo($file,PATHINFO_EXTENSION)!='php'||basename($file)=='autoload.php'||stripos($rel,'/sys/')===0)
-				return;
-			$x = explode('-',$rel);
-			foreach(array_keys($x) as $i)
-				$x[$i] = ucfirst($x[$i]);
-			$rel = implode('',$x);
-			$x = explode('/',$rel);
-			foreach(array_keys($x) as $i)
-				$x[$i] = ucfirst($x[$i]);
-			$rel = implode('/',$x);
-			if(stripos($rel,'/Css/')===0)
-				$rel = '/'.substr($rel,5);
-			$path = control::$SURIKAT.'view/CssSelector'.$rel;
-			print $path."\r\n";
-			FS::mkdir($path,true);
-			if(!file_put_contents($path,str_replace(array_keys($replace),array_values($replace),file_get_contents($file))))
-				throw new \Exception('Unable to write '.$path);
-		});
-		print '</pre>';
-	}
-	static function Synaptic_Format_humanReadable(){
-		print "<pre>";
-		C\FS::recurse($dir=control::$CWD.'apt',function($file)use($dir){
-			if(substr($file,strlen($seek='synaptic.json')*-1)!=$seek)
-				return;
-			$json = json_encode(C\JSON::decode(file_get_contents($file)),JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-			print "$file\r\n";
-			if($json&&file_put_contents($file,$json))
-				print $json."\r\n\r\n";
-		});
-		print "</pre>";
-	}
-	*/
 	protected static function cachedHTTP($file){
 		return is_file($file)&&filesize($file)&&filemtime($file)>time()-self::$httpCache;
 	}
@@ -358,6 +177,5 @@ view::index();");
 			}
 			throw new \Exception( 'ZipArchive Error: ' . $ErrMsg.': '.$url);
 		}
-
 	}
 }

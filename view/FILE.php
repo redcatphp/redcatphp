@@ -1,4 +1,5 @@
 <?php namespace surikat\view;
+use surikat\dev;
 use surikat\view;
 use surikat\control;
 use surikat\control\sync;
@@ -138,13 +139,13 @@ class FILE {
 	}
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file;
-		if(!control::devHas(control::dev_view))
+		if(!dev::has(dev::VIEW))
 			$str = minHTML::minify($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file.'.php';
-		if(!control::devHas(control::dev_view))
+		if(!dev::has(dev::VIEW))
 			$str = minPHP::minify($str);
 		return $this->compileStore($file,$str);
 	}
@@ -179,7 +180,7 @@ class FILE {
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
 		$str = self::phpEmulations($str);
-		if(!control::devHas(control::dev_view))
+		if(!dev::has(dev::VIEW))
 			$str = minPHP::minify($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}

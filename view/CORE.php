@@ -1,5 +1,5 @@
 <?php namespace surikat\view;
-use surikat\control;
+use surikat\dev;
 use surikat\view;
 use surikat\view\FILE;
 use surikat\view\TML;
@@ -523,7 +523,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0;
 	}
 	private function indentationTab(){
-		if(control::devHas(control::dev_view)&&!$this instanceof PHP&&$this->nodeName&&!$this->hiddenWrap)
+		if(dev::has(dev::VIEW)&&!$this instanceof PHP&&$this->nodeName&&!$this->hiddenWrap)
 			return "\n".str_repeat("  ",$this->indentationIndex());
 	}
 	function getInner(){

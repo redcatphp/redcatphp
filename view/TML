@@ -21,8 +21,8 @@
 	</footer>
 	<script type="text/javascript" src="js/js.pack.js"></script>
 	<script type="text/javascript">
-		<?if(control::devHas(control::dev_css)):?>$css().dev=true;<?endif;?>
-		<?if(control::devHas(control::dev_js)):?>$js().dev=true;<?endif;?>
+		<?if(dev::has(dev::CSS)):?>$css().dev=true;<?endif;?>
+		<?if(dev::has(dev::JS)):?>$js().dev=true;<?endif;?>
 		$js('script');
 	</script>
 </body>

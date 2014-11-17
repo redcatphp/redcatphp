@@ -1,5 +1,5 @@
 <?php namespace surikat\view; 
-use surikat\control;
+use surikat\dev;
 class TML_Img extends TML{
 	protected $selfClosed = true;#http://www.w3.org/TR/html5/syntax.html#void-elements
 	function loaded(){
@@ -11,7 +11,7 @@ class TML_Img extends TML{
 					$this->height = $size[1];
 				}
 			}
-			if(control::devHas(control::dev_img)&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
+			if(dev::has(dev::IMG)&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
 				if(strpos($this->src,'?')===false)
 					$this->src .= '?';
 				else

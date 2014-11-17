@@ -14,7 +14,7 @@ use surikat\model\RedBeanPHP\RedException\SQL as SQL;
 use surikat\model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use surikat\model\RedBeanPHP\OODB as OODB;
 
-use surikat\control;
+use surikat\dev;
 
 /**
  * Abstract Repository
@@ -113,7 +113,7 @@ abstract class Repository
 			if ( $addition instanceof OODBBean ) {
 				$this->oodb->getAssociationManager()->associate( $addition, $bean );
 			} else {
-				if(control::devHas(control::dev_model))
+				if(dev::has(dev::MODEL))
 					var_dump($sharedAdditions);
 				throw new RedException( 'Array may only contain OODBBeans' );
 			}

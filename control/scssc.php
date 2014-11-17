@@ -1,6 +1,6 @@
 <?php
 namespace surikat\control;
-use surikat\control;
+use surikat\dev;
 use stdClass;
 use Exception;
 //+surikat addon for php Mixin/Include special support
@@ -297,7 +297,7 @@ class scssc {
 			ob_get_clean();
 			$o->throwError(" error in eval php: %s \r\n in code: %s",$errstr,$__code);
 		});
-		if(control::devHas(control::dev_css)&&strpos($__code,'//:eval_debug'))
+		if(dev::has(dev::CSS)&&strpos($__code,'//:eval_debug'))
 			exit(print($__code));
 		eval('?>'.$__code);
 		$c = ob_get_clean();

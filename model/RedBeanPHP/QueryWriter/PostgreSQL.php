@@ -12,7 +12,7 @@ use surikat\model\RedBeanPHP\QueryWriter\XQueryWriter;
 use surikat\model\R;
 use surikat\model\Table;
 use surikat\model\Query;
-use surikat\control;
+use surikat\dev;
 
 use surikat\control\str;
 
@@ -423,10 +423,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$this->addColumn($table,$col,$this->code('tsvector'));
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){
-		$sqlUpdate = $this->buildColumnFulltextSQL($table, $col, $cols ,$lang);
-		if(control::devHas(control::dev_model_sql))
-			print(str_replace(',',",\n",$sqlUpdate).'<br>');
-		$this->adapter->exec($sqlUpdate);
+		$this->adapter->exec($this->buildColumnFulltextSQL($table, $col, $cols ,$lang));
 	}
 	function buildColumnFulltextSQL($table, $col, $cols ,$lang=''){
 		$agg = $this->agg;

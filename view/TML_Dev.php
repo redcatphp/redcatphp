@@ -1,5 +1,5 @@
 <?php namespace surikat\view;
-use surikat\control;
+use surikat\dev;
 use ReflectionClass;
 class TML_Dev extends TML{
 	protected $hiddenWrap = true;
@@ -8,10 +8,10 @@ class TML_Dev extends TML{
 		$c = $refl->getConstants();
 		if(!empty($this->attributes)){
 			foreach($this->attributes as $dev)
-				if(control::devHas($c["dev_$dev"]))
+				if(dev::has($c[$dev]))
 					return;
 		}
-		elseif(control::$DEV)
+		elseif(dev::level())
 			return;
 		$this->childNodes = [];
 	}

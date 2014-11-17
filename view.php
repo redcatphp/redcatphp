@@ -77,7 +77,7 @@ class view {
 		static::registerPresent($TML);
 		if(static::$xDom)
 			static::xDom($TML);
-		if(!control::devHas(control::dev_view))
+		if(!dev::has(dev::VIEW))
 			static::autoMIN($TML);
 	}
 	static function xDom($TML){
@@ -123,10 +123,10 @@ class view {
 			$url .= '/';
 		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
 			if(
-				($el->nodeName=='link'&&$el->type=='text/css'&&control::devHas(control::dev_css))
-				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&control::devHas(control::dev_img))
-				|| ($el->nodeName=='img'&&control::devHas(control::dev_img))
-				|| ($el->nodeName=='script'&&control::devHas(control::dev_js))
+				($el->nodeName=='link'&&$el->type=='text/css'&&dev::has(dev::CSS))
+				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&dev::has(dev::IMG))
+				|| ($el->nodeName=='img'&&dev::has(dev::IMG))
+				|| ($el->nodeName=='script'&&dev::has(dev::JS))
 			)
 				return;
 			$k = $el->src?'src':'href';
@@ -139,7 +139,7 @@ class view {
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
 	}
 	static function initialize(){
-		if(control::devHas(control::dev_view))
+		if(dev::has(dev::VIEW))
 			FILE::$FORCECOMPILE = 1;
 		FILE::$COMPILE[] = ['view','document'];
 		static::$URI = uri::factory(0,isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'');

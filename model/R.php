@@ -1,6 +1,6 @@
 <?php namespace surikat\model;
+use surikat\dev;
 use surikat\model;
-use surikat\control;
 use surikat\control\Config;
 use surikat\model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use surikat\model\RedBeanPHP\RedException;
@@ -24,7 +24,7 @@ class R extends RedBeanPHP\Facade{
 		
 		$dsn = $type.':'.$host.$port.$dbname;
 		
-		$frozen = isset($frozen)?$frozen:!control::devHas(control::dev_model);		
+		$frozen = isset($frozen)?$frozen:!dev::has(dev::MODEL);		
 		$prefix = isset($prefix)?$prefix:'';
 		
 		self::addDatabase($key,$dsn,@$user,@$password,$frozen,$prefix);
@@ -41,7 +41,7 @@ class R extends RedBeanPHP\Facade{
 	static function initialize(){		
 		if(self::loadDB('default')){
 			self::selectDatabase('default');
-			if(control::devHas(control::dev_model_redbean))
+			if(dev::has(dev::MODEL))
 				self::debug(true,2);
 		}
 	}
