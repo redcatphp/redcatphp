@@ -31,7 +31,7 @@ class tmlGetText{
 		if(empty($content))
 			return;
 		$TML = new TML($content);
-		$TML('*[not-i18n]')->remove();
+		$TML('*[ni18n]')->remove();
 		$TML('TEXT:hasnt(PHP)')->each(function($el)use(&$msg,$filename){
 			$el = trim("$el");
 			if($el)

@@ -22,6 +22,9 @@ class TML extends CORE{
 		$this->cacheForge(null,false,true);
 	}
 	
+	function loadNi18n(){
+		
+	}
 	function loadI18n(){
 		
 	}
