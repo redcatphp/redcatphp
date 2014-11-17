@@ -80,15 +80,19 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	static function toSnake($camel){
 		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
 			return $camel;
-		return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
+        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $camel))); 
+		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
 	}
 	static function toCamel($snake){
 		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
 			return $snake;
-		$snake = explode('-',$snake);
-		foreach($snake as &$v)
-			$v = ucfirst($v);
-		$snake = lcfirst(implode('',$snake));
+		//$snake = explode('-',$snake);
+		//foreach($snake as &$v)
+			//$v = ucfirst($v);
+		//$snake = lcfirst(implode('',$snake));
+		$snake = ucwords(str_replace('_', ' ', $snake));
+        $snake = str_replace(' ', '', $snake);
+        $snake = lcfirst($str);
 		return $snake;
 	}
 	static function camelsSnakeCase(){
