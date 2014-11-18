@@ -60,15 +60,11 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function vFile(){
 		return $this->vFile;
 	}
-	function vFileOf($file){
-		return FILE::factory(($this->vFile?dirname($this->vFile->path):'').'/'.$file);
-	}
 	function pathFile($file){
-		return $this->vFileOf($file)->path($file);
+		return $this->path($file);
 	}
 	function getFile($file,$c=null){
-		$vFile = $this->vFileOf($file);
-		if(!is_file($real=$vFile->path($file)))
+		if(!is_file($real=$this->vFile->path($file)))
 			throw new Exception_TML('Template '.$c.': "'.$file.'" not found called in "'.$this->vFile->dirCwd.'" by "'.$vFile->path.'"');
 		return file_get_contents($real);
 	}
