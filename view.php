@@ -39,13 +39,15 @@ class view {
 		static::exec(static::$URI->param(0).'.tml');
 	}
 	static function hookTml($s){
-		$path = func_num_args()>1?func_get_arg(1):ltrim(static::$URI->getPath(),'/');
+		$path = ltrim(static::$URI->getPath(),'/');
+		$pathFS = func_num_args()>1?func_get_arg(1):$s;
 		if(strpos($path,$s)===0){
 			$path = substr($path,strlen($s)).'.tml';
 			static::exec($path,[],[
-				'dirCwd'=>control::$CWD.$s,
-				'dirCompile'=>control::$TMP.'view_compile/.'.$s,
-				'dirCache'=>control::$TMP.'view_cache/.'.$s,
+				'dirCwd'=>control::$CWD.$pathFS,
+				'dirAdd'=>control::$SURIKAT.$pathFS,
+				'dirCompile'=>control::$TMP.'view_compile/.'.$pathFS,
+				'dirCache'=>control::$TMP.'view_cache/.'.$pathFS,
 			]);
 			exit;
 		}

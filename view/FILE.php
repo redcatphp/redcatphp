@@ -9,18 +9,21 @@ use surikat\control\Min\HTML as minHTML;
 use surikat\control\Min\PHP as minPHP;
 class FILE {
 	static $DIRCWD;
+	static $DIRADD;
 	static $DIRCACHE;
 	static $DIRCOMPILE;
 	static $FORCECOMPILE;
 	static $COMPILE = [];
 	static function initialize(){
 		self::$DIRCWD = control::$CWD.'view/';
+		self::$DIRADD = control::$SURIKAT.'view/';
 		self::$DIRCOMPILE = control::$TMP.'view_compile/';
 		self::$DIRCACHE = control::$TMP.'view_cache/';
 	}
 	var $forceCompile;
 	var $path;
 	var $dirCwd;
+	var $dirAdd = [];
 	var $dirCompile;
 	var $dirCache;
 	var $compile;
@@ -33,6 +36,7 @@ class FILE {
 		$this->dirCompile = self::$DIRCOMPILE;
 		$this->dirCache = self::$DIRCACHE;
 		$this->dirCwd = self::$DIRCWD;
+		$this->dirAdd = self::$DIRADD;
 		if(substr($this->dirCwd,-1)!='/')
 			$this->dirCwd .= '/';
 		$this->compile = self::$COMPILE;
@@ -82,7 +86,7 @@ class FILE {
 		return $this->dirCwd.$path;
 	}
 	function __prepare(){
-		if(!($file=$this->exists()))
+		if(!($file=$this->find()))
 			throw new Exception('404');
 		$node = new TML(file_get_contents($file),$this);
 		foreach($this->compile as $callback)
@@ -111,8 +115,14 @@ class FILE {
 		include($this->dirCompile.$this->path);
 		return $this;
 	}
-	function exists(){
-		return is_file($this->dirCwd.$this->path)?$this->dirCwd.$this->path:null;
+	function find(){
+		if(is_file($this->dirCwd.$this->path))
+			return $this->dirCwd.$this->path;
+		foreach((array)$this->dirAdd as $dir)
+			if(is_file($dir.$this->path)){
+				$this->dirCwd = $dir;
+				return $dir.$this->path;
+			}
 	}
 	function mtime($file,$sync,$forceCache=true){
 		return sync::mtime($this->dirCache.$file,$sync,$forceCache);
