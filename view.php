@@ -12,6 +12,7 @@ class view {
 	static function preHooks(){
 		$path = func_num_args()?func_get_arg(0):static::$URI->getPath();
 		static::serviceHook($path);
+		static::hookTml('plugin/');
 	}
 	static function postHooks(){}
 	static function i18nBySubdomain(&$templatePath=null){
