@@ -24,6 +24,7 @@ abstract class PARSER{
 	private static $PIC_L;
 	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
+	
 	static function initialize(){
 		self::$PI_HEX = [self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1])];
 		self::$PIO_L = strlen(self::PIO);
@@ -136,270 +137,274 @@ abstract class PARSER{
 		$state = self::STATE_PROLOG_NONE;
 		$charContainer = '';
 		$quoteType = '';
-		$xmlText = trim($xmlText);
 		$total = strlen($xmlText);
 		for($i=0;$i<$total;$i++){
 			$currentChar = $xmlText{$i};
-			if($state===self::STATE_NOPARSING){
-				$on = $this->currentTag;
-				$nn = $on->nodeName;
-				$nnn = '</'.$nn.'>';
-				$lnn = strlen($nnn)*-1;
-				$charContainer .= $currentChar;
-				if($currentChar=='>'&&substr($charContainer,$lnn)==$nnn){
-					$charContainer = substr($charContainer,0,$lnn);
-					if(trim($charContainer))
-						$on[] = new TEXT($on,'TEXT_UNPARSED',$charContainer,$this);
-					$this->fireEndElement($nn);
-					$charContainer = '';
-					$state = self::STATE_PARSING;
-				}
-			}
-			else{
-				switch($currentChar){
-					case '<':
-						switch($state){
-							case self::STATE_PARSING_OPENER:
-							case self::STATE_PARSING:
-								if ($xmlText{($i+1)}=='!'){
-									if(substr($charContainer,1,7)!='[CDATA['&&substr($xmlText,$i+2,2)!='--'){
-										$state = self::STATE_PROLOG_EXCLAMATION;
-										if(trim($charContainer))
-											$this->fireCharacterData($charContainer);
-										$charContainer = '';
-									}		
-									$charContainer .= $currentChar;
-								}
-								else{
-									$state = self::STATE_PARSING_OPENER;
-									if(trim($charContainer))
-										$this->fireCharacterData($charContainer);
-									$charContainer = '';
-								}
-							break;
-							case self::STATE_PARSING_COMMENT:
-								$charContainer .= $currentChar;
-							break;
-							default:
-								if(trim($charContainer))
+			$this->characterNumber += 1;
+			switch($currentChar){
+				case "\n":
+					$this->lineNumber += 1;
+					$this->characterNumber = 1;
+					$charContainer .= $currentChar;
+				break;
+				case '<':
+					switch($state){
+						case self::STATE_PARSING_OPENER:
+						case self::STATE_PARSING:
+							if ($xmlText{($i+1)}=='!'){
+								if(substr($charContainer,1,7)!='[CDATA['&&substr($xmlText,$i+2,2)!='--'){
+									$state = self::STATE_PROLOG_EXCLAMATION;
 									$this->fireCharacterData($charContainer);
+									$charContainer = '';
+								}		
+								$charContainer .= $currentChar;
+							}
+							else{
+								$state = self::STATE_PARSING_OPENER;
+								$this->fireCharacterData($charContainer);
 								$charContainer = '';
-								if ($xmlText{($i+1)}=='!'){
-									$state = self::STATE_PROLOG_EXCLAMATION;								
-									$charContainer .= $currentChar;
-								}
-								else {
-									$state = self::STATE_PARSING;
-									$i+=-1;
-								}
-							break;
-						}
-					break;
-					case '=':
-						switch($state){
-							case self::STATE_PARSING_OPENER:
-								$quote = $xmlText{($i+1)};
-								$y = $i+2;
-								$charContainer .= '='.$quote;
-								while(($ch=$xmlText{($y++)})!=$quote)
-									$charContainer .= $ch;
-								$charContainer .= $quote;
-								$i = $y-1;
-							break;
-							case self::STATE_PARSING:
-								if (substr($charContainer, 0, 8) == '![CDATA['){
-									$charContainer .= $currentChar;
+							}
+						break;
+						case self::STATE_NOPARSING:
+						case self::STATE_PARSING_COMMENT:
+							$charContainer .= $currentChar;
+						break;
+						default:
+							$this->fireCharacterData($charContainer);
+							$charContainer = '';
+							if ($xmlText{($i+1)}=='!'){
+								$state = self::STATE_PROLOG_EXCLAMATION;								
+								$charContainer .= $currentChar;
+							}
+							else {
+								$state = self::STATE_PARSING;
+								$i+=-1;
+							}
+						break;
+					}
+				break;
+				case '=':
+					switch($state){
+						case self::STATE_PARSING_OPENER:
+							$quote = $xmlText{($i+1)};
+							$y = $i+2;
+							$charContainer .= '='.$quote;
+							while(($ch=$xmlText{($y++)})!=$quote)
+								$charContainer .= $ch;
+							$charContainer .= $quote;
+							$i = $y-1;
+						break;
+						case self::STATE_PARSING:
+							if (substr($charContainer, 0, 8) == '![CDATA['){
+								$charContainer .= $currentChar;
+								break;
+							}
+						case self::STATE_NOPARSING:
+						default:
+							$charContainer .= $currentChar;
+						break;
+					}
+				break;
+				case '-':
+					switch($state){
+						case self::STATE_PARSING_OPENER:
+						case self::STATE_PARSING:						
+							if (($xmlText{($i - 1)} == '-') && ($xmlText{($i - 2)} == '!')
+								&& ($xmlText{($i - 3)} == '<')) {
+								$state = self::STATE_PARSING_COMMENT;
+								$charContainer = ' ';
+							}
+							else
+								$charContainer .= $currentChar;							
+						break;
+						case self::STATE_PROLOG_EXCLAMATION:
+							$state = self::STATE_PROLOG_COMMENT;	
+							$charContainer = '';
+						break;
+						case self::STATE_PROLOG_COMMENT:
+							if (!((($xmlText{($i + 1)} == '-')  && ($xmlText{($i + 2)} == '>')) || 
+								($xmlText{($i + 1)} == '>') ||
+								(($xmlText{($i - 1)} == '-')  && ($xmlText{($i - 2)}== '!')) ))
+								$charContainer .= $currentChar;
+						break;
+						case self::STATE_NOPARSING:
+						default:
+							$charContainer .= $currentChar;
+						break;
+					}
+				break;
+				case '"':
+				case "'":
+					switch($state){
+						case self::STATE_PARSING_OPENER:
+							$state = self::STATE_ATTR_VALUE;
+							$quoteType = $currentChar;
+						break;
+						case self::STATE_ATTR_VALUE:
+							if($quoteType==$currentChar)
+								$state = self::STATE_PARSING_OPENER;
+						break;
+					}
+					$charContainer .= $currentChar;
+				break;
+				case '>':
+					switch($state){
+						case self::STATE_NOPARSING:
+							$on = $this->currentTag;
+							$nn = $on->nodeName;
+							$nnn = '</'.$nn.'>';
+							$lnn = strlen($nnn)*-1;
+							$charContainer .= $currentChar;
+							if(substr($charContainer,$lnn)==$nnn){
+								$charContainer = substr($charContainer,0,$lnn);
+								if(trim($charContainer))
+									$on[] = new TEXT($on,'TEXT_UNPARSED',$charContainer,$this);
+								$this->fireEndElement($nn);
+								$charContainer = '';
+								$state = self::STATE_PARSING;
+							}
+						break;
+						case self::STATE_PARSING_OPENER:						
+						case self::STATE_PARSING:						
+							if ((substr($charContainer, 0, 8) == '![CDATA[') &&
+								!((self::getCharFromEnd($charContainer, 0) == ']') &&
+								(self::getCharFromEnd($charContainer, 1) == ']'))) {
+								$charContainer .= $currentChar;
+							}
+							else {
+								$state = self::STATE_PARSING;
+								//parseTag
+								$charContainer = trim($charContainer);			
+								$firstChar = @$charContainer{0};
+								$myAttributes = [];
+								switch($firstChar){
+									case '/':
+										$tagName = substr($charContainer, 1);				
+										$this->fireEndElement($tagName);
 									break;
-								}
-							default:
-								$charContainer .= $currentChar;
-							break;
-						}
-					break;
-					case '-':
-						switch($state){
-							case self::STATE_PARSING_OPENER:
-							case self::STATE_PARSING:						
-								if (($xmlText{($i - 1)} == '-') && ($xmlText{($i - 2)} == '!')
-									&& ($xmlText{($i - 3)} == '<')) {
-									$state = self::STATE_PARSING_COMMENT;
-									$charContainer = ' ';
-								}
-								else
-									$charContainer .= $currentChar;							
-							break;
-							case self::STATE_PROLOG_EXCLAMATION:
-								$state = self::STATE_PROLOG_COMMENT;	
-								$charContainer = '';
-							break;
-							case self::STATE_PROLOG_COMMENT:
-								if (!((($xmlText{($i + 1)} == '-')  && ($xmlText{($i + 2)} == '>')) || 
-									($xmlText{($i + 1)} == '>') ||
-									(($xmlText{($i - 1)} == '-')  && ($xmlText{($i - 2)}== '!')) ))
-									$charContainer .= $currentChar;
-							break;
-							default:
-								$charContainer .= $currentChar;
-							break;
-						}
-					break;
-					case '"':
-					case "'":
-						switch($state){
-							case self::STATE_PARSING_OPENER:
-								$state = self::STATE_ATTR_VALUE;
-								$quoteType = $currentChar;
-							break;
-							case self::STATE_ATTR_VALUE:
-								if($quoteType==$currentChar)
-									$state = self::STATE_PARSING_OPENER;
-							break;
-						}
-						$charContainer .= $currentChar;
-					break;
-					case '>':
-						switch($state){
-							case self::STATE_PARSING_OPENER:						
-							case self::STATE_PARSING:						
-								if ((substr($charContainer, 0, 8) == '![CDATA[') &&
-									!((self::getCharFromEnd($charContainer, 0) == ']') &&
-									(self::getCharFromEnd($charContainer, 1) == ']'))) {
-									$charContainer .= $currentChar;
-								}
-								else {
-									$state = self::STATE_PARSING;
-									//parseTag
-									$charContainer = trim($charContainer);			
-									$firstChar = @$charContainer{0};
-									$myAttributes = [];
-									switch($firstChar){
-										case '/':
-											$tagName = substr($charContainer, 1);				
-											$this->fireEndElement($tagName);
-										break;
-										case '!':
-											$upperCaseTagText = strtoupper($charContainer);
-											if (strpos($upperCaseTagText, '![CDATA[') !== false) { //CDATA Section
-												$openBraceCount = 0;
-												$textNodeText = '';
-												for($y=0;$y<strlen($charContainer);$y++) {
-													$currentChar = $charContainer{$y};
-													if (($currentChar == ']') && ($charContainer{($y + 1)} == ']'))
-														break;
-													else if ($openBraceCount > 1)
-														$textNodeText .= $currentChar;
-													else if ($currentChar == '[') //this won't be reached after the first open brace is found
-														$openBraceCount++;
-												}
-												$this->fireCDataSection($textNodeText);
+									case '!':
+										$upperCaseTagText = strtoupper($charContainer);
+										if (strpos($upperCaseTagText, '![CDATA[') !== false) { //CDATA Section
+											$openBraceCount = 0;
+											$textNodeText = '';
+											for($y=0;$y<strlen($charContainer);$y++) {
+												$currentChar = $charContainer{$y};
+												if (($currentChar == ']') && ($charContainer{($y + 1)} == ']'))
+													break;
+												else if ($openBraceCount > 1)
+													$textNodeText .= $currentChar;
+												else if ($currentChar == '[') //this won't be reached after the first open brace is found
+													$openBraceCount++;
 											}
-										break;
-										default:
-											if ((strpos($charContainer, '"') !== false) || (strpos($charContainer, "'") !== false)){
-												$tagName = '';
-												for($y=0;$y<strlen($charContainer);$y++){
-													$currentChar = $charContainer{$y};
-													if (($currentChar == ' ') || ($currentChar == "\t") ||
-														($currentChar == "\n") || ($currentChar == "\r") ||
-														($currentChar == "\x0B")) {
-														$myAttributes = self::parseAttributes(substr($charContainer, $y));
-														break;
-													}
-													else
-														$tagName .= $currentChar;
-												}
-												if (strrpos($charContainer, '/')==(strlen($charContainer)-1)){ //check $charContainer, but send $tagName
-													$this->fireElement($tagName, $myAttributes);
+											$this->fireCDataSection($textNodeText);
+										}
+									break;
+									default:
+										if ((strpos($charContainer, '"') !== false) || (strpos($charContainer, "'") !== false)){
+											$tagName = '';
+											for($y=0;$y<strlen($charContainer);$y++){
+												$currentChar = $charContainer{$y};
+												if (($currentChar == ' ') || ($currentChar == "\t") ||
+													($currentChar == "\n") || ($currentChar == "\r") ||
+													($currentChar == "\x0B")) {
+													$myAttributes = self::parseAttributes(substr($charContainer, $y));
+													break;
 												}
 												else
-													$this->fireStartElement($tagName, $myAttributes, $state);
+													$tagName .= $currentChar;
 											}
-											else{
-												if(strpos($charContainer,' ')!==false){
-													$x = explode(' ',$charContainer);
-													$charContainer = array_shift($x);
-													foreach($x as $k)
-														if($k=='/')
-															$charContainer .= '/';
-														else
-															$myAttributes[] = $k;
-												}
-												if (strpos($charContainer, '/') !== false) {
-													$charContainer = trim(substr($charContainer, 0, (strrchr($charContainer, '/') - 1)));
-													$this->fireElement($charContainer, $myAttributes);
-												}
-												else {
-													$this->fireStartElement($charContainer, $myAttributes, $state);
-												}
+											if (strrpos($charContainer, '/')==(strlen($charContainer)-1)){ //check $charContainer, but send $tagName
+												$this->fireElement($tagName, $myAttributes);
 											}
-										break;					
-									}
-									$charContainer = '';
+											else
+												$this->fireStartElement($tagName, $myAttributes, $state);
+										}
+										else{
+											if(strpos($charContainer,' ')!==false){
+												$x = explode(' ',$charContainer);
+												$charContainer = array_shift($x);
+												foreach($x as $k)
+													if($k=='/')
+														$charContainer .= '/';
+													else
+														$myAttributes[] = $k;
+											}
+											if (strpos($charContainer, '/') !== false) {
+												$charContainer = trim(substr($charContainer, 0, (strrchr($charContainer, '/') - 1)));
+												$this->fireElement($charContainer, $myAttributes);
+											}
+											else {
+												$this->fireStartElement($charContainer, $myAttributes, $state);
+											}
+										}
+									break;					
 								}
-							break;
-							case self::STATE_PROLOG_COMMENT:
-								$state = self::STATE_PROLOG_NONE;
-								$this->fireComment($charContainer);
 								$charContainer = '';
-							break;
-							case self::STATE_PROLOG_DTD:
+							}
+						break;
+						case self::STATE_PROLOG_COMMENT:
+							$state = self::STATE_PROLOG_NONE;
+							$this->fireComment($charContainer);
+							$charContainer = '';
+						break;
+						case self::STATE_PROLOG_DTD:
+							$state = self::STATE_PROLOG_NONE;
+							$this->fireDTD($charContainer.$currentChar);
+							$charContainer = '';
+						break;
+						case self::STATE_PROLOG_INLINEDTD:
+							if($xmlText{($i-1)}==']'){
 								$state = self::STATE_PROLOG_NONE;
-								$this->fireDTD($charContainer.$currentChar);
+								$this->fireDTD($charContainer.$currentChar);						
 								$charContainer = '';
-							break;
-							case self::STATE_PROLOG_INLINEDTD:
-								if($xmlText{($i-1)}==']'){
-									$state = self::STATE_PROLOG_NONE;
-									$this->fireDTD($charContainer.$currentChar);						
-									$charContainer = '';
-								}
-								else
-									$charContainer .= $currentChar;
-							break;
-							case self::STATE_PARSING_COMMENT:
-								if(($xmlText{($i-1)}=='-')&&($xmlText{($i - 2)}=='-')){
-									$this->fireComment(substr($charContainer,0,strlen($charContainer)-2));
-									$charContainer = '';
-									$state = self::STATE_PARSING;
-								}
-								else
-									$charContainer .= $currentChar;
-							break;
-							default:
+							}
+							else
 								$charContainer .= $currentChar;
-							break;
-						}
-					break;
-					case 'D':
-						switch ($state) {
-							case self::STATE_PROLOG_EXCLAMATION:
-								$state = self::STATE_PROLOG_DTD;	
+						break;
+						case self::STATE_PARSING_COMMENT:
+							if(($xmlText{($i-1)}=='-')&&($xmlText{($i - 2)}=='-')){
+								$this->fireComment(substr($charContainer,0,strlen($charContainer)-2));
+								$charContainer = '';
+								$state = self::STATE_PARSING;
+							}
+							else
 								$charContainer .= $currentChar;
-							break;
-							default:
-								$charContainer .= $currentChar;
-							break;
-						}
-					break;
-					case '[':
-						switch ($state) {						
-							case self::STATE_PROLOG_DTD:
-								$charContainer .= $currentChar;
-								$state = self::STATE_PROLOG_INLINEDTD;
-							break;
-							default:
-								$charContainer .= $currentChar;
-							break;
-						}
-					break;
-					default:
-						$charContainer .= $currentChar;
-					break;
-				}
+						break;
+						default:
+							$charContainer .= $currentChar;
+						break;
+					}
+				break;
+				case 'D':
+					switch($state){
+						case self::STATE_PROLOG_EXCLAMATION:
+							$state = self::STATE_PROLOG_DTD;	
+							$charContainer .= $currentChar;
+						break;
+						case self::STATE_NOPARSING:
+						default:
+							$charContainer .= $currentChar;
+						break;
+					}
+				break;
+				case '[':
+					switch($state){
+						case self::STATE_PROLOG_DTD:
+							$charContainer .= $currentChar;
+							$state = self::STATE_PROLOG_INLINEDTD;
+						break;
+						case self::STATE_NOPARSING:
+						default:
+							$charContainer .= $currentChar;
+						break;
+					}
+				break;
+				default:
+					$charContainer .= $currentChar;
+				break;
 			}
 		}
-		if($charContainer)
-			$this->fireCharacterData($charContainer);
+		$this->fireCharacterData($charContainer);
 	}
 	private static function getCharFromEnd($text, $index) {
 		$len = strlen($text);
@@ -407,7 +412,7 @@ abstract class PARSER{
 		return $char;
 	}
 	private static function parseAttributes($attrText){
-		$attrText = trim($attrText);
+		//$attrText = trim($attrText);
 		$attrArray = [];
 		$total = strlen($attrText);
 		$keyDump = '';
@@ -508,6 +513,10 @@ abstract class PARSER{
 
 	protected $onLoad = [];
 	protected $onLoaded = [];
+	
+	protected $lineNumber = 1;
+	protected $characterNumber = 1;
+	
 	private function addToCurrent($name,$attributes){
 		if(!$this->currentTag)
 			$this->currentTag = $this;
@@ -515,6 +524,8 @@ abstract class PARSER{
 			$x = explode('+',$name);
 			$a = [];
 			$node = new Group($this->currentTag,$name,$attributes,$this);
+			$node->lineNumber = $this->lineNumber;
+			$node->characterNumber = $this->characterNumber;
 			$sc = null;
 			foreach($x as $n){
 				$c = self::getClass($n);
@@ -528,6 +539,8 @@ abstract class PARSER{
 		else{
 			$c = self::getClass($name);
 			$node = new $c($this->currentTag,$name,$attributes,$this);
+			$node->lineNumber = $this->lineNumber;
+			$node->characterNumber = $this->characterNumber;
 		}
 		$this->currentTag[] = $node;
 		return $node;
@@ -567,7 +580,7 @@ abstract class PARSER{
 				$this->fireEndElement($n);
 		}
 		if($name!=$this->currentTag->nodeName)
-			throw new \UnexpectedValueException('Unexpected &lt;/'.$name.'&gt;, expected &lt;/'.$this->currentTag->nodeName.'&gt; in "'.$this->vFile->path.'"  ');
+			throw new \UnexpectedValueException('Unexpected &lt;/'.$name.'&gt;, expected &lt;/'.$this->currentTag->nodeName.'&gt; in "'.$this->vFile->path().'" at line '.$this->lineNumber.' on character '.$this->characterNumber);
 		$this->currentTag->closed();
 		if($this->currentTag->parent)
 			$this->currentTag = $this->currentTag->parent;
@@ -579,7 +592,8 @@ abstract class PARSER{
 		$this->addToCurrent('COMMENT',$comment);
 	}
 	private function fireCharacterData($text){
-		$this->addToCurrent('TEXT',$text);
+		if(trim($text))
+			$this->addToCurrent('TEXT',$text);
 	}
 	private function fireCDataSection($text){
 		$this->addToCurrent('CDATA',$text);
