@@ -659,7 +659,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			foreach($k as $_k=>$v)
 				$this->__metaData[$_k] = $v;
 		else
-			return $this->__metaData[$k];
+			return isset($this->__metaData[$k])?$this->__metaData[$k]:null;
 	}
 	function setCss($k,$v){
 		$x = explode(';',$this->__get('style'));
