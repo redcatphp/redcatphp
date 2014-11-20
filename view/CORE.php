@@ -180,7 +180,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$this->loaded();
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
-			if(method_exists($this,$m='loaded'.ucfirst(str_replace('-','_',$k)))||(($pos=strpos($k,'-'))!==false&&method_exists($this,$m='loaded'.ucfirst(substr($k,0,$pos).'_'))&&($key=substr($k,$pos+1))))
+			if(method_exists($this,$m='loaded'.ucfirst(str_replace('-','_',$key)))||(($pos=strpos($key,'-'))!==false&&method_exists($this,$m='loaded'.ucfirst(substr($key,0,$pos).'_'))&&($key=substr($k,$pos+1))))
 				$this->$m($this->metaAttribution[$k],$key);
 		}
 	}
