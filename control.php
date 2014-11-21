@@ -83,18 +83,22 @@ class control{
 		}
 		return false;
 	}
-	private static function extendSuperClass($c){		
+	private static function extendSuperClass($c){
+		$pos = strrpos($c,'\\');
+		$ns = 'namespace '.($pos?substr($c,0,$pos):'').'{';
+		$cn = ($pos?substr($c,$pos+1):$c);
 		foreach(array_keys(self::$superNamespaces) as $prefix){
-			$ns = (($pos=strrpos($c,'\\'))?substr($c,0,$pos):'');
-			$cn = ($pos?substr($c,$pos+1):$c);
-			$trait = strpos($cn,'Mixin_')===0;
-			$cf = $trait?'trait_exists':'class_exists';
-			if($cf($prefix.$c)){
-				if($trait)
-					$ev = 'trait '.$cn.' { use \\'.$prefix.$c.'; }';
-				else
-					$ev = ((strpos($cn,'Interface_')===0)?'interface':'class').' '.$cn.' extends \\'.$prefix.$c.'{}';
-				eval('namespace '.$ns.'{ '.$ev.'}');
+			$cl = $prefix.$c;
+			if(class_exists($cl)){
+				eval($ns.'class '.$cn.' extends \\'.$cl.'{}}');
+				break;
+			}
+			elseif(interface_exists($cl,false)){
+				eval($ns.'interface '.$cn.' extends \\'.$cl.'{}}');
+				break;
+			}
+			elseif(trait_exists($cl,false)){
+				eval($ns.'trait '.$cn.'{use \\'.$cl.';}}');
 				break;
 			}
 		}
