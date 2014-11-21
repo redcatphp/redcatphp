@@ -1,4 +1,5 @@
 <?php namespace surikat\view;
+use surikat\i18n;
 class TML extends CORE{
 	function loaded(){
 		
@@ -22,13 +23,8 @@ class TML extends CORE{
 		$this->cacheForge(null,false,true);
 	}
 	
-	function loadNi18n(){
-		
-	}
-	function loadI18n(){
-		
-	}
 	function loadI18n_($v,$k){
-		
+		$this->removeAttr('i18n-'.$k);
+		$this->attr($k,i18n::gettext($v));
 	}
 }

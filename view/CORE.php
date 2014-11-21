@@ -69,7 +69,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
-		return $this->parse($this->getFile($file,$c),$params);
+		if($this->vFile)
+			return $this->parse($this->getFile($file,$c),$params);
 	}
 	function getInnerTml(){
 		$str = '';
