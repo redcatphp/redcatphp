@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 // Preloads entire file in memory first, then creates a StringReader over it (it assumes knowledge of StringReader internals)
 class CachedFileReader extends StringReader {
   function __construct($filename) {

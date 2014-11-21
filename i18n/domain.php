@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 /* Class to hold a single domain included in $text_domains. */
 class domain {
   var $l10n;

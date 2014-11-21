@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 class StringReader {
   var $_pos;
   var $_str;

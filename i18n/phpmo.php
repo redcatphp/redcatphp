@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 class phpmo{ //from php.mo 0.1 by Joss Crowcroft https://github.com/josscrowcroft/php.mo (http://www.josscrowcroft.com)
 	static function convert($input, $output=null){
 		if(!isset($output))

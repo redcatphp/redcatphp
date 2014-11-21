@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 // Simple class to wrap file streams, string streams, etc. seek is essential, and it should be byte stream
 class FileReader {
   var $_pos;

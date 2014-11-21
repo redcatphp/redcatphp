@@ -1,4 +1,4 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat\i18n;
 use view\TML;
 class tmlGetText{
 	static function parse($sources,$sourceDir=null){

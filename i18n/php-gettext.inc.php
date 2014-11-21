@@ -1,7 +1,7 @@
 <?php
-use surikat\control\i18n\FileReader;
-use surikat\control\i18n\domain;
-use surikat\control\i18n\gettext_reader;
+use surikat\i18n\FileReader;
+use surikat\i18n\domain;
+use surikat\i18n\gettext_reader;
 /*
    Copyright (c) 2005 Steven Armstrong <sa at c-area dot ch>
    Copyright (c) 2009 Danilo Segan <danilo@kvota.net>

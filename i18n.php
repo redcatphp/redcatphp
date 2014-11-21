@@ -1,7 +1,7 @@
-<?php namespace surikat\control\i18n;
+<?php namespace surikat;
 use control;
 use control\Config;
-require_once __DIR__.'/php-gettext.php';
+require_once control::$SURIKAT_X.'/i18n/php-gettext.inc.php';
 class i18n {
 	private $locales_root;
 	private $domain;

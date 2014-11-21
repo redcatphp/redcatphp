@@ -1,5 +1,5 @@
 <?php namespace surikat;
-use surikat\control\i18n\i18n;
+use surikat\i18n;
 use surikat\control\HTTP;
 use surikat\view\FILE;
 use surikat\view\TML;
