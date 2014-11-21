@@ -24,8 +24,10 @@ class i18n {
 	}
 	private function setLocale(){
 		$lang = $this->locale;
+		putenv("LANG=$lang");
 		putenv("LANGUAGE=$lang");
 		putenv("LC_ALL=$lang");
+		T_textdomain('en_EN');
 		T_setlocale(LC_ALL,$lang);
 		T_bindtextdomain($this->domain,$this->locales_root);
 		T_textdomain($this->domain);
