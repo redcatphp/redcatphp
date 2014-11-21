@@ -1,0 +1,28 @@
+<present: />
+<?
+use model\R;
+use SimplePO\SimplePO;
+control::addNamespace('SimplePO',__DIR__);
+$dir = control::$CWD.'langs';
+if(!file_exists($dir.'/langs.db')){
+	R::selectDatabase('langs');
+	foreach(explode(';',file_get_contents(__DIR__.'/install.sql')) as $l)
+		R::execMulti($l);
+}
+foreach(glob($dir.'/*',GLOB_ONLYDIR) as $d)
+	  SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
+?>
+<extend './TML'>
+	<append 'head'>
+		<script src="index.js" type="text/javascript" charset="utf-8"></script>
+	</append>
+	<body>
+		<a id="makepot" class="top_btns" href="#">Reap text from Templates to POT <span id="counter" class="top_btns"></span></a>
+		<div id="cat_box">
+		  <div class="block">
+			<h3><a href="#">Choose from the following Catalogues:</a></h3>
+			<div class="data"></div>
+		  </div>
+		</div>
+	</body>
+</extend>

@@ -1,0 +1,19 @@
+<?
+control::addNamespace('SimplePO',__DIR__);
+header('Content-Type: application/json; charset=UTF-8;');
+$request = $_POST;
+$service = new SimplePO\MessageService();
+$response = ['error'=>null];
+if(@$request['id'])
+	$response['id'] = $request['id'];
+if(method_exists($service,@$request['method'])) {
+	try {
+		$response['result'] = call_user_func_array([$service, @$request['method']], (array)@$request['params']);
+	}
+	catch (Exception $e) {
+		$response['error'] = ['code' => -31000,'message' => $e->getMessage()];
+	}
+}
+else
+	$response['error'] = ['code' => -32601,'message' => 'Procedure not found.'];
+echo json_encode($response);
