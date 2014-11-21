@@ -6,11 +6,12 @@ class dev{
 	const PRESENT = 8;
 	const MODEL = 16;
 	const URI = 32;
-	const JS = 64;
-	const CSS = 128;
-	const IMG = 256;
-	const STD = 14; //CONTROL+VIEW+PRESENT
-	const SERVER = 30; //CONTROL+VIEW+PRESENT+MODEL
+	const I18N = 64;
+	const JS = 128;
+	const CSS = 256;
+	const IMG = 512;
+	const STD = 78; //CONTROL+VIEW+PRESENT+I18N
+	const SERVER = 94; //CONTROL+VIEW+PRESENT+MODEL+I18N
 	const NAV = 480; //URI+JS+CSS+IMG
 	const ALL = 510;
 	private static $level;
