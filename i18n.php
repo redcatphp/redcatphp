@@ -16,23 +16,11 @@ class i18n {
 	private function setLang($lg='en'){
 		$this->language = $lg;
 		$this->locales_root = control::$CWD.'langs';
-		$this->domain = 'messages';
 		$this->locale = strtolower($this->language).'_'.strtoupper($this->language);
-	}
-	private function updateCache(){
-		$filename = $this->locales_root.'/'.$this->locale.'/LC_MESSAGES/'.$this->domain.'.mo';
-		if(!is_file($filename)) return;
-		$mtime = filemtime($filename);
-		$filename_new = $this->locales_root.'/'.$this->locale.'/LC_MESSAGES/'.$this->domain.'_'.$mtime.'.mo';
-		if(!file_exists($filename_new)){
-			$dir = scandir(dirname($filename));
-			foreach($dir as $file){
-				if(in_array($file, ['.','..', $this->domain.'.po', $this->domain.'.mo'])) continue;
-				unlink(dirname($filename).DS.$file);
-			}
-			copy($filename,$filename_new);
-		}
-		$this->domain = $this->domain.'_'.$mtime;
+		if(dev::has(dev::I18N))
+			$this->domain = $this->getLastMoFile();
+		else
+			$this->domain = 'messages';
 	}
 	private function setLocale(){
 		$lang = $this->locale;
@@ -46,6 +34,10 @@ class i18n {
 		if(!$tz)
 			$tz = @date_default_timezone_get();
 		date_default_timezone_set($tz);
+	}
+	private function getLastMoFile(){
+		$mo = glob($this->locales_root.'/'.$this->locale.'/LC_MESSAGES/messages.*.mo');
+		return !empty($mo)?substr(basename(end($mo)),0,-3):'messages';
 	}
 	private static $o = [];
 	static function o($lg='en'){
