@@ -7,6 +7,9 @@ class i18n {
 	private $domain;
 	private $locale;
 	private $language;
+	static function gettext(){
+		return call_user_func_array('__',func_get_args());
+	}
 	private function __construct($lg){
 		$this->setLang($lg);
 	}
