@@ -27,8 +27,8 @@ class present extends ArrayObject{
 	}
 	function assign(){}
 	function execute(){
-		 if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(count(view::getUri()->getParam())>1||!empty($_GET)))
-			view::error(404);
+		 if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(count(view::getInstance()->getUri()->getParam())>1||!empty($_GET)))
+			view::getInstance()->error(404);
 		$this->dynamic();
 	}
 	function dynamic(){}
