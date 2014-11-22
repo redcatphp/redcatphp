@@ -1,10 +1,10 @@
 <?php
 namespace surikat\view\CssSelector;
 class Text{
-	public static function isEmpty($str){
+	static function isEmpty($str){
 		return $str === null || is_string($str) && strlen($str) == 0;
 	}
-	public static function concat($glue){
+	static function concat($glue){
 		$ret = "";
 		$args = [];
 		$len = func_num_args();
@@ -22,7 +22,7 @@ class Text{
 		}
 		return $ret;
 	}
-	public static function trimText($str){
+	static function trimText($str){
 		$ret = "";
 		$str = preg_replace("/\t/", "	", $str);
 		$lines = explode("\n", $str);

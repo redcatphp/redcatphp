@@ -2,10 +2,10 @@
 use surikat\view\CssSelector\Filter\CssParserFilterPseudo;
 class CssParserFilterPseudoHas extends CssParserFilterPseudo{
 	private $_items;
-	public function __construct($input){
+	function __construct($input){
 		$this->_items = $input;
 	}
-	public function match($node, $position, $items){
+	function match($node, $position, $items){
 		$r = false;
 		foreach($node->find('*') as $el){
 			foreach($this->_items as $_el)

@@ -21,12 +21,12 @@ class CssParserFilterAttr extends CssParserFilter{
 	private $_attrName;
 	private $_op;
 	private $_value;
-	public function __construct($attrName, $op, $value){
+	function __construct($attrName, $op, $value){
 		$this->_attrName = $attrName;
 		$this->_op = $op;
 		$this->_value = $value;
 	}
-	public static function getOperators(){
+	static function getOperators(){
 		return self::$_operators;
 	}
 	private function _isEqualSelector($node){
@@ -114,7 +114,7 @@ class CssParserFilterAttr extends CssParserFilter{
 			$ret = $this->_hasAttribute($node);
 		return $ret;
 	}
-	public function match($node, $position, $items){
+	function match($node, $position, $items){
 		return $this->_isAttrSelector($node);
 	}
 }

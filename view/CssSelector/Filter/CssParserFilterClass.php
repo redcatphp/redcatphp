@@ -3,7 +3,7 @@ namespace surikat\view\CssSelector\Filter;
 use surikat\view\CssSelector\Filter\CssParserFilter;
 class CssParserFilterClass extends CssParserFilter{
 	private $_className;
-	public function __construct($className){
+	function __construct($className){
 		$this->_className = $className;
 	}
 	private function _isClassInList($class, $classes){
@@ -17,7 +17,7 @@ class CssParserFilterClass extends CssParserFilter{
 		}
 		return false;
 	}
-	public function match($node, $position, $items){
+	function match($node, $position, $items){
 		return $this->_isClassInList($this->_className,$node->getAttribute("class"));
 	}
 }

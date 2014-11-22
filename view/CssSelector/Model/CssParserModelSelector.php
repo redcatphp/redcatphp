@@ -3,10 +3,10 @@ namespace surikat\view\CssSelector\Model;
 use surikat\view\CssSelector\Model\CssParserModelFactor;
 class CssParserModelSelector{
 	private $_factors = [];
-	public function addFactor($factor){
+	function addFactor($factor){
 		array_push($this->_factors, $factor);
 	}
-	public function filter($node){
+	function filter($node){
 		$ret = [];
 		$items = [$node];
 		foreach ($this->_factors as $factor) {

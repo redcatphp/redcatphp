@@ -38,7 +38,7 @@ class CssParser extends TextParser{
 	private $_node;
 	private $_pseudoFilters;
 	private $_combinators;
-	public function __construct($target, $charset = "", $mimetype = ""){
+	function __construct($target, $charset = "", $mimetype = ""){
 		$this->_pseudoFilters = [];
 		$this->_combinators = [];		
 		$this->_node = $target;
@@ -62,7 +62,7 @@ class CssParser extends TextParser{
 		parent::__construct("");
 	}
 	
-	public function query($selectorList){
+	function query($selectorList){
 		return $this->parse($selectorList);
 	}
 	
@@ -120,7 +120,7 @@ class CssParser extends TextParser{
 	 * 
 	 * @return void
 	 */
-	public function registerPseudoFilter($name, $object, $entity = "value"){
+	function registerPseudoFilter($name, $object, $entity = "value"){
 		if (is_callable($object))
 			// user defined pseudo-filter
 			$this->_pseudoFilters[$name] = [
@@ -135,7 +135,7 @@ class CssParser extends TextParser{
 				"entity" => $entity
 			];
 	}
-	public function registerCombinator($name, $object){
+	function registerCombinator($name, $object){
 		if (is_callable($object))
 			$this->_combinators[$name] = [
 				"classname" => "CssParserCombinatorUserDefined",

@@ -6,7 +6,7 @@ abstract class TextParser extends TextTokenizer{
 	const UNGREEDY = 0x4;
 	private $_target;
 	private $_flags;
-	public function __construct($target, $flags = 0){
+	function __construct($target, $flags = 0){
 		$this->_target = $target;
 		$this->_flags = $flags;
 		if ($this->_target instanceof Parser) {
@@ -17,7 +17,7 @@ abstract class TextParser extends TextTokenizer{
 		}
 	}
 	abstract protected function _parse();
-	public function parse($string = ""){
+	function parse($string = ""){
 		$this->offset = 0;
 		$this->string = func_num_args() > 0 ? $string : $this->string;
 		$ungreedy = TextParser::UNGREEDY & $this->_flags;

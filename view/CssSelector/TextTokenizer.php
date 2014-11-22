@@ -11,18 +11,18 @@ class TextTokenizer{
 	private $_flags;
 	protected $string;
 	protected $offset;
-	public function __construct($string, $flags = 0){
+	function __construct($string, $flags = 0){
 		$this->string = $string;
 		$this->offset = 0;
 		$this->_flags = $flags;
 	}
-	public function eq($str, $flags = 0){
+	function eq($str, $flags = 0){
 		$ret = false;
 		if (list($str) = $this->match(preg_quote($str, "/"), $matches, $flags))
 			$ret = [$str];
 		return $ret;
 	}
-	public function in($items, $flags = 0){
+	function in($items, $flags = 0){
 		$ret = false;
 		
 		// sorts the items in descending order according to their length
@@ -42,13 +42,13 @@ class TextTokenizer{
 		
 		return $ret;
 	}
-	public function number($flags = 0){
+	function number($flags = 0){
 		$ret = false;
 		if ($number = $this->match(TextTokenizer::NUMBER, $matches, $flags))
 			$ret = $number;
 		return $ret;
 	}
-	public function str($flags = 0){
+	function str($flags = 0){
 		$ret = false;
 		if ($this->match(TextTokenizer::STRING, $matches, $flags)) {
 			$delimiter = $matches[2];
@@ -58,19 +58,19 @@ class TextTokenizer{
 		}
 		return $ret;
 	}
-	public function token(){
+	function token(){
 		$ret = false;
 		if (list($token) = $this->match(TextTokenizer::TOKEN))
 			$ret = [$token];
 		return $ret;
 	}
-	public function id(){
+	function id(){
 		$ret = false;
 		if (list($id) = $this->match(TextTokenizer::IDENTIFIER))
 			$ret = [$id];
 		return $ret;
 	}
-	public function match($regexp, &$matches = [], $flags = 0){
+	function match($regexp, &$matches = [], $flags = 0){
 		// we do not like empty strings
 		if (strlen($regexp) == 0) {
 			return false;
@@ -120,19 +120,19 @@ class TextTokenizer{
 		
 		return $ret;
 	}
-	public function getOffset(){
+	function getOffset(){
 		return $this->offset;
 	}
-	public function setOffset($value){
+	function setOffset($value){
 		$this->offset = $value;
 	}
-	public function getString(){
+	function getString(){
 		return $this->string;
 	}
-	public function reset(){
+	function reset(){
 		$this->offset = 0;
 	}
-	public function end(){
+	function end(){
 		return $this->offset >= strlen(rtrim($this->string));
 	}
 }

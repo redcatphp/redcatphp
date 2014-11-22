@@ -4,10 +4,10 @@ use surikat\view\CssSelector\CssParserException;
 use surikat\view\CssSelector\Combinator\CssParserCombinator;
 class CssParserCombinatorUserDefined extends CssParserCombinator{
 	private $_userDefFunction;
-	public function __construct($userDefFunction){
+	function __construct($userDefFunction){
 		$this->_userDefFunction = $userDefFunction;
 	}
-	public function filter($node, $tagname){
+	function filter($node, $tagname){
 		$userDefFunction = $this->_userDefFunction;
 		$nodes = $userDefFunction($node, $tagname);
 		if (!is_array($nodes))
