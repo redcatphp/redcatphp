@@ -355,10 +355,10 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		
 	function find($selector=null,$index=null){
 		$r = [];
-		foreach($this->children($selector) as $el){
+
+		foreach((array)$this->selector($selector) as $el)
 			$r[] = $el;
-			$r = array_merge($r,$el->find($selector));
-		}
+
 		if($index===true)
 			return new Iterator($r);
 		elseif($index!==null)
@@ -366,25 +366,18 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $r;
 	}
 	function children($selector=null,$index=null){
-		if(is_array($selector)){
-			foreach($selector as $select){
-				$r = [];
-				foreach($this->children($select) as $o)
-					$r[] = $o;
-			}
-		}
-		elseif($selector==='*'||$selector===null){
+		if($selector==='*'||$selector===null){
 			$r = $this->childNodes;
 		}
 		else{
 			$r = [];
-			foreach($this->childNodes  as $el)
+			foreach($this->childNodes as $el)
 				$r = array_merge($r,(array)$el->selector($selector));
 		}
 		if($index===true)
-			return new Iterator($r);
+			$r = new Iterator($r);
 		elseif($index!==null)
-			return isset($r[$index])?$r[$index]:null;
+			$r = isset($r[$index])?$r[$index]:null;
 		return $r;
 	}
 	function submerge($node){
@@ -744,14 +737,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function addJsScript($js=null){
 		if(!$js)
 			$js = $this;
-		$dom = $this->closest()->children('body',0);
+		$dom = $this->closest()->find('body',0);
 		if(!$dom)
 			return;
 		$src = trim($js->src?$js->src:($js->href?$js->href:key($js->attributes)));
 		if($src){
 			$script = $dom->find('script:not([src]):last',0);
-			//var_dump(count($script));exit;
-			//$script = end($script);
 			if(!$script){
 				$dom[] = '<script type="text/javascript"></script>';
 				$script = $dom->find('script:not([src]):last',0);
