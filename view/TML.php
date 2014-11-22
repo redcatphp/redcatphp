@@ -6,10 +6,6 @@ class TML extends CORE{
 	}
 	function load(){
 	}
-	function loadApply($v){
-		$this->__unset('apply');
-		$this->parse("<apply file=\"$v\">$this</apply>");
-	}
 	function loadCacheSync($v,$k){
 		$this->load();
 		$this->preventLoad = true;
