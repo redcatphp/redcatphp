@@ -7,6 +7,6 @@ class TML_Include extends CALL_SUB{
 		$this->remapAttr('file');
 		$file = $this->__get('file');
 		$this->__unset('file');
-		$this->parseFile($file,$this->attributes,__CLASS__);
+		$this->parseFile($file,$this->attributes,'include');
 	}
 }

@@ -24,6 +24,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	protected $hiddenWrap;
 	protected $preventLoad;
 	protected $selfClosed;
+	protected $__closed;
 	protected $noParseContent;
 	function evalue(){
 		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
@@ -65,7 +66,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function getFile($file,$c=null){
 		if(!is_file($real=$this->vFile->path($file)))
-			throw new Exception_TML('Template '.$c.': "'.$file.'" not found called in "'.$this->vFile->dirCwd.'" by "'.$this->vFile->path().'" at line '.$this->lineNumber.' on character '.$this->characterNumber);
+			$this->throwException('&lt'.$c.' "'.$file.'"> template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
@@ -211,29 +212,30 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		foreach($this->onLoad as $callback)
 			if(is_callable($callback))
 				call_user_func($callback);
-		if($this->preventLoad)
-			return;
-		foreach(array_keys($this->metaAttribution) as $k){
-			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
-			if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$key)))||(($pos=strpos($key,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($key,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
-				$this->$m($this->metaAttribution[$k],$key);
-		}
 		if(!$this->preventLoad){
-			if($this->_namespaces){
-				$x = $this->_namespaces;
-				while($v=array_pop($x)){
-					if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'load')){
-						$c::load($this);
-						break;
+			foreach(array_keys($this->metaAttribution) as $k){
+				$key = is_integer($k)?$this->metaAttribution[$k]:$k;
+				if((method_exists($this,$m='load'.ucfirst(str_replace('-','_',$key)))||(($pos=strpos($key,'-'))!==false&&method_exists($this,$m='load'.ucfirst(substr($key,0,$pos).'_'))&&($key=substr($k,$pos+1)))))
+					$this->$m($this->metaAttribution[$k],$key);
+			}
+			if(!$this->preventLoad){
+				if($this->_namespaces){
+					$x = $this->_namespaces;
+					while($v=array_pop($x)){
+						if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'load')){
+							$c::load($this);
+							break;
+						}
 					}
 				}
+				$this->load();
 			}
-			$this->load();
+			if(method_exists($this,'onExec')){
+				$this->head('<?php ob_start();?>');
+				$this->foot('<?php echo '.get_class($this).'::triggerExec(ob_get_clean());?>');
+			}
 		}
-		if(method_exists($this,'onExec')){
-			$this->head('<?php ob_start();?>');
-			$this->foot('<?php echo '.get_class($this).'::triggerExec(ob_get_clean());?>');
-		}
+		$this->__closed = true;
 	}
 	
 	function __invoke($selector){
@@ -747,9 +749,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			return;
 		$src = trim($js->src?$js->src:($js->href?$js->href:key($js->attributes)));
 		if($src){
-			if(!($script=$dom->children('script:not([src]):last',0))){
+			$script = $dom->find('script:not([src]):last',0);
+			//var_dump(count($script));exit;
+			//$script = end($script);
+			if(!$script){
 				$dom[] = '<script type="text/javascript"></script>';
-				$script = $dom->children('script:not([src]):last',0);
+				$script = $dom->find('script:not([src]):last',0);
 			}
 			$sync = isset($js->sync)&&$js->sync!='false'||$js->async=='false'?',true':'';
 			$app = "\$js('$src'$sync);";

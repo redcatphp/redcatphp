@@ -10,10 +10,11 @@ class TML_Extend extends TML {
 		$this->remapAttr('file');
 		if(!$this->_extended){
 			$this->_extender = clone $this;
+			$this->__closed = true;
 			$this->_extender->_extended = $this;
 			if(!$this->file)
 				$this->file = 'TML';
-			$this->parseFile($this->file,null,__CLASS__);
+			$this->parseFile($this->file,null,'extend');
 			foreach($this->_extender->childNodes as $extender){
 				if($extender instanceof COMMENT)
 					continue;

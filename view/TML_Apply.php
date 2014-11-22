@@ -10,12 +10,13 @@ class TML_Apply extends TML {
 		$this->remapAttr('file');
 		if(!$this->_extended){
 			$file = $this->__get('file');
+			$this->__closed = true;
 			$this->_extender = clone $this;
 			$this->_extender->_extended = $this;
 			$this->_extender->__unset('file');
 			$apply = null;
 			if($file)
-				$this->_extender->parseFile($file,$this->attributes,__CLASS__);
+				$this->_extender->parseFile($file,$this->attributes,'apply');
 			else
 				$apply = $this->closest();
 			foreach($this->_extender->childNodes as $extender)
@@ -26,7 +27,7 @@ class TML_Apply extends TML {
 	}
 	static function manualLoad($file,&$obj,$params=[]){
 		$apply = new self($obj);
-		$apply->parseFile($file,$params,__CLASS__);
+		$apply->parseFile($file,$params,'apply');
 		foreach($apply->childNodes as $extender)
 			if(method_exists($extender,'applyLoad'))
 				$extender->applyLoad($obj);

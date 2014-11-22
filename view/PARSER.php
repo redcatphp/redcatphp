@@ -12,19 +12,12 @@ abstract class PARSER{
 	const STATE_ATTR_NONE = 9;
 	const STATE_ATTR_KEY = 10;
 	const STATE_ATTR_VALUE = 11;
-	
-	 //const PIO = '#PHP_ID_OPEN#';
-	 //const PIC = '#PHP_ID_CLOSE#';
-	 //const PIO = '#@?!?#';
-	 //const PIC = '#@!?!#';
 	const PIO = '*~#@?!?#+1';
-	const PIC = '0+#@!?!#~*';
-	
+	const PIC = '0+#@!?!#~*';	
 	private static $PIO_L;
 	private static $PIC_L;
 	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
-	
 	static function initialize(){
 		self::$PI_HEX = [self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1])];
 		self::$PIO_L = strlen(self::PIO);
@@ -44,7 +37,7 @@ abstract class PARSER{
 				$open = false;
 				$i+=self::$PIC_L-1;
 				$str .= $a[$id];
-				unset($a[$id]); //freeing memory!
+				unset($a[$id]);
 				$id = '';
 			}
 			elseif($open)
@@ -273,18 +266,17 @@ abstract class PARSER{
 							}
 							else {
 								$state = self::STATE_PARSING;
-								//parseTag
 								$charContainer = trim($charContainer);			
 								$firstChar = @$charContainer{0};
 								$myAttributes = [];
 								switch($firstChar){
 									case '/':
-										$tagName = substr($charContainer, 1);				
+										$tagName = substr($charContainer, 1);
 										$this->fireEndElement($tagName);
 									break;
 									case '!':
 										$upperCaseTagText = strtoupper($charContainer);
-										if (strpos($upperCaseTagText, '![CDATA[') !== false) { //CDATA Section
+										if (strpos($upperCaseTagText, '![CDATA[') !== false) {
 											$openBraceCount = 0;
 											$textNodeText = '';
 											for($y=0;$y<strlen($charContainer);$y++) {
@@ -293,7 +285,7 @@ abstract class PARSER{
 													break;
 												else if ($openBraceCount > 1)
 													$textNodeText .= $currentChar;
-												else if ($currentChar == '[') //this won't be reached after the first open brace is found
+												else if ($currentChar == '[')
 													$openBraceCount++;
 											}
 											$this->fireCDataSection($textNodeText);
@@ -313,7 +305,7 @@ abstract class PARSER{
 												else
 													$tagName .= $currentChar;
 											}
-											if (strrpos($charContainer, '/')==(strlen($charContainer)-1)){ //check $charContainer, but send $tagName
+											if (strrpos($charContainer, '/')==(strlen($charContainer)-1)){
 												$this->fireElement($tagName, $myAttributes);
 											}
 											else
@@ -405,6 +397,19 @@ abstract class PARSER{
 			}
 		}
 		$this->fireCharacterData($charContainer);
+		switch($state){
+			case self::STATE_NOPARSING:
+				$this->throwException('Unexpected end of file, expected end of noParse Tag &lt;/'.$this->currentTag->nodeName.'&gt;');
+			break;
+			case self::STATE_PARSING_COMMENT:
+				$this->throwException('Unexpected end of file, expected end of comment Tag --&gt;');
+			break;
+			case self::STATE_PARSING:
+			default:
+				if($this->currentTag&&$this->currentTag->nodeName&&!$this->currentTag->__closed&&!$this->currentTag->selfClosed)
+					$this->throwException('Unexpected end of file, expected end of Tag &lt;/'.$this->currentTag->nodeName.'&gt;');
+			break;
+		}
 	}
 	private static function getCharFromEnd($text, $index) {
 		$len = strlen($text);
@@ -412,7 +417,6 @@ abstract class PARSER{
 		return $char;
 	}
 	private static function parseAttributes($attrText){
-		//$attrText = trim($attrText);
 		$attrArray = [];
 		$total = strlen($attrText);
 		$keyDump = '';
@@ -580,7 +584,7 @@ abstract class PARSER{
 				$this->fireEndElement($n);
 		}
 		if($name!=$this->currentTag->nodeName)
-			throw new \UnexpectedValueException('Unexpected &lt;/'.$name.'&gt;, expected &lt;/'.$this->currentTag->nodeName.'&gt; in "'.$this->vFile->path().'" at line '.$this->lineNumber.' on character '.$this->characterNumber);
+			$this->throwException('Unexpected &lt;/'.$name.'&gt;, expected &lt;/'.$this->currentTag->nodeName.'&gt;');
 		$this->currentTag->closed();
 		if($this->currentTag->parent)
 			$this->currentTag = $this->currentTag->parent;
@@ -633,6 +637,11 @@ abstract class PARSER{
 		$this->metaAttribution = (array)array_shift($args);
 		$this->constructor = array_shift($args);
 		$this->opened();
+	}
+	protected function throwException($msg){
+		if($this->vFile)
+			$msg .= ' on "'.$this->vFile->path().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+		throw new Exception_TML($msg);
 	}
 }
 PARSER::initialize();
