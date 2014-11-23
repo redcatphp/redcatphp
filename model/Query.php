@@ -364,11 +364,12 @@ class Query {
 			->unSelect()
 			->select('id')
 		;
-		return (int)static::getNew()
-			->select('COUNT(*)')
-			->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
-			->getCell()
-		;
+		if($this->tableExists())
+			return (int)static::getNew()
+				->select('COUNT(*)')
+				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+				->getCell()
+			;
 	}
 	
 	//public helpers api
