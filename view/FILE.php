@@ -8,18 +8,20 @@ use surikat\control\PHP;
 use surikat\control\Min\HTML as minHTML;
 use surikat\control\Min\PHP as minPHP;
 class FILE {
-	static $DIRCWD;
-	static $DIRADD;
-	static $DIRCACHE;
-	static $DIRCOMPILE;
-	static $FORCECOMPILE;
-	static $COMPILE = [];
-	static function initialize(){
-		self::$DIRCWD = control::$CWD.'view/';
-		self::$DIRADD = control::$SURIKAT.'view/';
-		self::$DIRCOMPILE = control::$TMP.'view_compile/';
-		self::$DIRCACHE = control::$TMP.'view_cache/';
+	function setDirCwd($d){
+		$this->dirCwd = rtrim($d,'/').'/';
 	}
+	function getDirCwd(){
+		return $this->dirCwd;
+	}
+	function getAddDirCwd($d){
+		return $this->dirAdd;
+	}
+	function registerDirCwd($d){
+		if(!in_array($d,$this->dirAdd))
+			$this->dirAdd[] = $d;
+	}	
+	static $COMPILE = [];
 	var $forceCompile;
 	var $path;
 	var $dirCwd;
@@ -32,18 +34,21 @@ class FILE {
 	var $childNodes = [];
 	var $isXhtml;
 	var $present;
-	function __construct($path,$options=[]){
-		$this->dirCompile = self::$DIRCOMPILE;
-		$this->dirCache = self::$DIRCACHE;
-		$this->dirCwd = self::$DIRCWD;
-		$this->dirAdd = self::$DIRADD;
-		if(substr($this->dirCwd,-1)!='/')
-			$this->dirCwd .= '/';
-		$this->compile = self::$COMPILE;
-		$this->forceCompile = self::$FORCECOMPILE;
+	function setPath($path){
 		if(strpos($path,$this->dirCwd)===0)
 			$path = substr($path,strlen($this->dirCwd));
 		$this->path = $path;
+	}
+	function __construct($path=null,$options=[]){
+		$this->dirCompile = control::$TMP.'view_compile/';
+		$this->dirCache = control::$TMP.'view_cache/';
+		$this->setDirCwd(control::$CWD.'view/');
+		$this->dirAdd = control::$SURIKAT.'view/';
+		$this->compile = self::$COMPILE;
+		if(dev::has(dev::VIEW))
+			$this->forceCompile = true;
+		if(isset($path))
+			$this->setPath($path);
 		foreach($options as $k=>$v){
 			if(is_integer($k))
 				continue;
@@ -202,4 +207,3 @@ class FILE {
 		return $this->compileStore($file,$str);
 	}
 }
-FILE::initialize();

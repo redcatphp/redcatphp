@@ -151,12 +151,11 @@ class view {
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='present')
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
 	}	
-	protected $instanceKey;
-	function __construct($k=null){
-		$this->instanceKey = $k;
-		if(dev::has(dev::VIEW))
-			FILE::$FORCECOMPILE = 1;
+	protected $_FILE;
+	function __construct(){
+		$this->_FILE = new FILE();
 		FILE::$COMPILE[] = [$this,'document'];
-		$this->URI = uri::factory(0,isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'');
+		$this->URI = uri::getInstance();
+		$this->URI->setPath($_SERVER['PATH_INFO']?$_SERVER['PATH_INFO']:'');
 	}
 }
