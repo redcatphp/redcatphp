@@ -108,12 +108,6 @@ class Service_Synaptic {
 						echo preg_replace('#url\((?!\s*[\'"]?(?:https?:)?//)\s*([\'"])?#',"url($1{$relativity}",file_get_contents($k));
 					}
 				break;
-				case 'tml':
-					view\FILE::display($k);
-				break;
-				case 'php':
-					include $k;
-				break;
 				default:
 					readfile($k);
 				break;
