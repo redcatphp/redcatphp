@@ -236,7 +236,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 
 			if ( preg_match( '/^\((\([\d\.]+,[\d\.]+\),?)+\)$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_POLYGON;
-			if ( preg_match( '/^\-?\$[\d,\.]+$/', $value ) )
+			if ( preg_match( '/^\-?(\$|€|¥|£)[\d,\.]+$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_MONEY;
 		}
 		if($this->startsWithZeros($value))
