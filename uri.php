@@ -1,6 +1,7 @@
 <?php namespace surikat;
 use ArrayAccess;
 class uri implements ArrayAccess{
+	use factory;
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
@@ -16,7 +17,6 @@ class uri implements ArrayAccess{
 	protected $baseHref;
 	protected $lang;
 	protected static $baseHrefSuffix = '';
-	private static $__factory = [];
 	static function getSubdomain($domain=null){
 		if(!isset($domain))
 			$domain = $_SERVER['HTTP_HOST'];
@@ -26,25 +26,20 @@ class uri implements ArrayAccess{
 		else
 			return null;
 	}
-	static function factory($k=0,$path=null){
-		if(!isset(self::$__factory[$k]))
-			self::$__factory[$k] = new URI($path);
-		return self::$__factory[$k];
-	}
 	static function baseHref($href=null,$k=0){
-		return func_num_args()?self::factory($k)->setBaseHref($href):self::factory($k)->getBaseHref();
+		return func_num_args()?self::getInstance($k)->setBaseHref($href):self::getInstance($k)->getBaseHref();
 	}
 	static function lang($l=null,$k=0){
-		return func_num_args()?self::factory($k)->setLang($l):self::factory($k)->getLang();
+		return func_num_args()?self::getInstance($k)->setLang($l):self::getInstance($k)->getLang();
 	}
 	static function param($k=null){
-		return self::factory()->getParam($k);
+		return self::getInstance()->getParam($k);
 	}
 	static function resolved($k=null){
-		return self::factory()->getResolved($k);
+		return self::getInstance()->getResolved($k);
 	}
 	static function filterParam($s){
-		return self::factory()->getFilterParam($s);
+		return self::getInstance()->getFilterParam($s);
 	}
 	static function encode($v){
 		return str_replace('%2F','/',urlencode(urldecode(trim($v))));
@@ -70,7 +65,11 @@ class uri implements ArrayAccess{
 	protected $uriParams = [];
 	protected $resolvedParams = [];
 	protected $orderParams = [];
-	function __construct($path=''){
+	function __construct($path=null){
+		if(isset($path))
+			$this->setPath($path);
+	}
+	function setPath($path){
 		$this->PATH = (string)$path;
 		$this->uriParams = $this->parseUriParams(ltrim($this->PATH,'/'));
 		foreach(array_keys($this->uriParams) as $k)
