@@ -170,10 +170,10 @@ class FILE {
 		return realpath($v);
 	}
 	function T_FILE($v){
-		return self::dirCompileToDirCwd($v);
+		return $this->dirCompileToDirCwd($v);
 	}
 	function T_DIR($v){
-		return self::dirCompileToDirCwd($v);
+		return $this->dirCompileToDirCwd($v);
 	}
 	protected static function phpEmulations($str){
 		$tokens = token_get_all($str);
