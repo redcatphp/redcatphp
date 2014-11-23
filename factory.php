@@ -2,7 +2,7 @@
 trait factory{
 	private static $__instances = [];
 	static function getInstance($key=0,$args=[]){
-		$c = isset(self::$__factory)?self::$__factory:get_class();
+		$c = isset(self::$__factory)?self::$__factory:get_called_class();
 		if(!isset(self::$__instances[$c]))
 			self::$__instances[$c] = [];
 		if(!isset(self::$__instances[$c][$key])){
