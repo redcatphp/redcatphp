@@ -16,7 +16,9 @@ class Query {
 		$c = get_called_class();
 		return new $c($table,$composer,$writer);
 	}
-	function tableExists($table){
+	function tableExists($table=null){
+		if(!isset($table))
+			$table = $this->table;
 		return $this->writer->tableExists($table);
 	}
 	function columnExists($table,$column){
