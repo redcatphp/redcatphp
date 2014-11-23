@@ -70,7 +70,9 @@ class view {
 	}
 	function exec($file,$vars=[],$options=[]){
 		try{
-			FILE::display($file,$vars,$options);
+			$this->_FILE->setPath($file);
+			$this->_FILE->setOptions($options);
+			$this->_FILE->display($vars);
 		}
 		catch(\surikat\view\Exception $e){
 			$this->postHooks();
@@ -79,7 +81,7 @@ class view {
 	}
 	function error($c){
 		try{
-			FILE::display($c.'.tml');
+			$this->_FILE->display($c.'.tml');
 		}
 		catch(\surikat\view\Exception $e){
 			HTTP::code($e->getMessage());
@@ -154,7 +156,7 @@ class view {
 	protected $_FILE;
 	function __construct(){
 		$this->_FILE = new FILE();
-		FILE::$COMPILE[] = [$this,'document'];
+		$this->_FILE->registerCompile([$this,'document']);
 		$this->URI = uri::getInstance();
 		$this->URI->setPath($_SERVER['PATH_INFO']?$_SERVER['PATH_INFO']:'');
 	}

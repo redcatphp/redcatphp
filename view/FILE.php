@@ -8,6 +8,51 @@ use surikat\control\PHP;
 use surikat\control\Min\HTML as minHTML;
 use surikat\control\Min\PHP as minPHP;
 class FILE {
+	var $forceCompile;
+	var $path;
+	var $dirCwd;
+	var $dirAdd = [];
+	var $dirCompile;
+	var $dirCache;
+	var $compile = [];
+	var $toCachePHP = [];
+	var $toCacheV = [];
+	var $childNodes = [];
+	var $isXhtml;
+	var $present;
+	function __construct($path=null,$options=null){
+		$this->setDirCompile(control::$TMP.'view_compile/');
+		$this->setDirCache(control::$TMP.'view_cache/');
+		$this->setDirCwd(control::$CWD.'view/');
+		$this->registerDirCwd(control::$SURIKAT.'view/');
+		if(dev::has(dev::VIEW))
+			$this->forceCompile = true;
+		if(isset($path))
+			$this->setPath($path);
+		if(isset($options))
+			$this->setOptions($options);
+	}
+	function setOptions($options=[]){
+		foreach($options as $k=>$v){
+			if(is_integer($k))
+				continue;
+			if(is_array($v)&&is_array($this->$k))
+				$this->$k = array_merge($this->$k,$v);
+			else
+				$this->$k = $v;
+		}
+	}
+	function setPath($path){
+		if(strpos($path,$this->dirCwd)===0)
+			$path = substr($path,strlen($this->dirCwd));
+		$this->path = $path;
+	}
+	function setDirCompile($d){
+		$this->dirCompile = rtrim($d,'/').'/';
+	}
+	function setDirCache($d){
+		$this->dirCache = rtrim($d,'/').'/';
+	}
 	function setDirCwd($d){
 		$this->dirCwd = rtrim($d,'/').'/';
 	}
@@ -20,61 +65,9 @@ class FILE {
 	function registerDirCwd($d){
 		if(!in_array($d,$this->dirAdd))
 			$this->dirAdd[] = $d;
-	}	
-	static $COMPILE = [];
-	var $forceCompile;
-	var $path;
-	var $dirCwd;
-	var $dirAdd = [];
-	var $dirCompile;
-	var $dirCache;
-	var $compile;
-	var $toCachePHP = [];
-	var $toCacheV = [];
-	var $childNodes = [];
-	var $isXhtml;
-	var $present;
-	function setPath($path){
-		if(strpos($path,$this->dirCwd)===0)
-			$path = substr($path,strlen($this->dirCwd));
-		$this->path = $path;
 	}
-	function __construct($path=null,$options=[]){
-		$this->dirCompile = control::$TMP.'view_compile/';
-		$this->dirCache = control::$TMP.'view_cache/';
-		$this->setDirCwd(control::$CWD.'view/');
-		$this->dirAdd = control::$SURIKAT.'view/';
-		$this->compile = self::$COMPILE;
-		if(dev::has(dev::VIEW))
-			$this->forceCompile = true;
-		if(isset($path))
-			$this->setPath($path);
-		foreach($options as $k=>$v){
-			if(is_integer($k))
-				continue;
-			if(is_array($v)&&is_array($this->$k))
-				$this->$k = array_merge($this->$k,$v);
-			else
-				$this->$k = $v;
-		}
-	}
-	private static $__factory = [];
-	static function factory($path,$options=[],$instance=0){
-		if(!isset(self::$__factory[$path])||!isset(self::$__factory[$path][$instance]))
-			self::$__factory[$path][$instance] = new FILE($path,$options);		
-		foreach($options as $k=>$v)
-			if(!is_integer($k))
-				self::$__factory[$path][$instance]->$k = $v;
-		return self::$__factory[$path][$instance];
-	}
-	static function display($path,$vars=[],$options=[]){
-		return self::factory($path,$options)->__display($vars);
-	}
-	static function evalue($path,$options=[]){
-		return self::factory($path,$options)->__evalue();
-	}
-	static function evalFree($path,$options=[]){
-		return self::factory($path,$options)->__eval();
+	function registerCompile($call){
+		$this->compile[] = $call;
 	}
 	function path($path=null){
 		if(!func_num_args())
@@ -90,7 +83,7 @@ class FILE {
 			return $file;
 		return $this->dirCwd.$path;
 	}
-	function __prepare(){
+	function prepare(){
 		if(!($file=$this->find()))
 			throw new Exception('404');
 		$node = new TML(file_get_contents($file),$this);
@@ -100,21 +93,21 @@ class FILE {
 		return $node;
 	}
 	function __eval(){
-		eval('?>'.$this->__prepare());
+		eval('?>'.$this->prepare());
 		return $this;
 	}
-	function __evalue(){
+	function evalue(){
 		$compileFile = $this->dirCompile.$this->path.'.svar';
 		if($this->forceCompile||!is_file($compileFile))
-			$this->compileStore($compileFile,serialize($ev=$this->__prepare()));
+			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
 			$ev = unserialize(file_get_contents($compileFile,LOCK_EX));
 		eval('?>'.$ev);
 		return $this;
 	}
-	function __display($vars=[]){
+	function display($vars=[]){
 		if($this->forceCompile||!is_file($this->dirCompile.$this->path))
-			$this->compilePHP($this->dirCompile.$this->path,(string)$this->__prepare());
+			$this->compilePHP($this->dirCompile.$this->path,(string)$this->prepare());
 		if(!empty($vars))
 			extract($vars);
 		include($this->dirCompile.$this->path);
