@@ -1,5 +1,6 @@
 <?php namespace Surikat;
-class Surikat{
-	function __construct(){
+abstract class Surikat{
+	static function __callStatic($c,$args){
+		
 	}
 }

@@ -1,7 +1,13 @@
 <?php namespace Surikat;
 use ArrayAccess;
 class Uri implements ArrayAccess{
-	use factory;
+	private static $__instances = [];
+	static function getInstance($k=0){
+		if(!isset(self::$__instances[$k]))
+			self::$__instances[$k] = new \Uri();
+		return self::$__instances[$k];
+	}
+	
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",

@@ -1,46 +1,34 @@
 <?php namespace Surikat;
-class Autoloader{
-	use Factory;
-	private $namespaces = [];
-	private $superNamespaces = [];
-	function __construct($ns=[],$sns=[]){
-		foreach($ns as $k=>$v)
-			$this->addNamespace($k,$v);
-		foreach($sns as $k=>$v)
-			$this->addSuperNamespace($k,$v);
-		$this->register();
+abstract class Autoloader{
+	private static $namespaces = [];
+	private static $superNamespaces = [];
+	static function register(){
+		spl_autoload_register([__CLASS__,'classLoad']);
 	}
-	protected function register(){
-		spl_autoload_register([$this,'classLoad']);
-		return $this;
+	static function unregister(){
+		spl_autoload_unregister([__CLASS__,'classLoad']);
 	}
-	protected function unregister(){
-		spl_autoload_unregister([$this,'classLoad']);
-		return $this;
-	}
-	protected function addNamespace($prefix, $base_dir, $prepend = false){
+	static function addNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';
 		$base_dir = rtrim($base_dir, '/').'/';
-		if(!isset($this->namespaces[$prefix]))
-			$this->namespaces[$prefix] = [];
+		if(!isset(self::$namespaces[$prefix]))
+			self::$namespaces[$prefix] = [];
 		if ($prepend)
-			array_unshift($this->namespaces[$prefix], $base_dir);
+			array_unshift(self::$namespaces[$prefix], $base_dir);
 		else
-			array_push($this->namespaces[$prefix], $base_dir);
-		return $this;
+			array_push(self::$namespaces[$prefix], $base_dir);
 	}
-	protected function addSuperNamespace($prefix, $base_dir, $prepend = false){
+	static function addSuperNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';
 		$base_dir = rtrim($base_dir, '/').'/';
-		if(!isset($this->superNamespaces[$prefix]))
-			$this->superNamespaces[$prefix] = [];
+		if(!isset(self::$superNamespaces[$prefix]))
+			self::$superNamespaces[$prefix] = [];
 		if ($prepend)
-			array_unshift($this->superNamespaces[$prefix], $base_dir);
+			array_unshift(self::$superNamespaces[$prefix], $base_dir);
 		else
-			array_push($this->superNamespaces[$prefix], $base_dir);
-		return $this;
+			array_push(self::$superNamespaces[$prefix], $base_dir);
 	}
-	function classLoad($class){
+	static function classLoad($class){
 		$prefix = $class;
 		while($prefix!='\\'){
 			$prefix = rtrim($prefix, '\\');
@@ -48,10 +36,10 @@ class Autoloader{
 			if($pos!==false){
 				$prefix = substr($class, 0, $pos + 1);
 				$relative_class = substr($class, $pos + 1);
-				if(isset($this->superNamespaces[$prefix])){
-					foreach($this->superNamespaces[$prefix] as $base_dir){
+				if(isset(self::$superNamespaces[$prefix])){
+					foreach(self::$superNamespaces[$prefix] as $base_dir){
 						$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-						if($this->requireFile($file))
+						if(self::requireFile($file))
 							return;
 					}
 					return;
@@ -61,28 +49,28 @@ class Autoloader{
 				$prefix = '\\';
 				$relative_class = $class;
 			}
-			if(isset($this->namespaces[$prefix])){
-				foreach($this->namespaces[$prefix] as $base_dir){
+			if(isset(self::$namespaces[$prefix])){
+				foreach(self::$namespaces[$prefix] as $base_dir){
 					$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-					if($this->requireFile($file))
+					if(self::requireFile($file))
 						return;
 				}
 			}
 		}
-		$this->extendSuperClass($class);
+		self::extendSuperClass($class);
 	}
-	private function requireFile($file){
+	private static function requireFile($file){
 		if(file_exists($file)){
 			require $file;
 			return true;
 		}
 		return false;
 	}
-	private function extendSuperClass($c){
+	private static function extendSuperClass($c){
 		$pos = strrpos($c,'\\');
 		$ns = 'namespace '.($pos?substr($c,0,$pos):'').'{';
 		$cn = ($pos?substr($c,$pos+1):$c);
-		foreach(array_keys($this->superNamespaces) as $prefix){
+		foreach(array_keys(self::$superNamespaces) as $prefix){
 			$cl = $prefix.$c;
 			if(class_exists($cl)){
 				eval($ns.'class '.$cn.' extends \\'.$cl.'{}}');
@@ -99,3 +87,15 @@ class Autoloader{
 		}
 	}
 }
+if(!defined('SURIKAT_PATH'))
+	define('SURIKAT_PATH',getcwd().'/');
+if(!defined('SURIKAT_SPATH'))
+	define('SURIKAT_SPATH',__DIR__.'/');
+if(!defined('SURIKAT_TMP'))
+	define('SURIKAT_TMP',SURIKAT_PATH.'.tmp/');
+if(!defined('SURIKAT_TMP'))
+	define('SURIKAT_TMP',SURIKAT_PATH.'.tmp/');
+set_include_path('.');
+Autoloader::addNamespace('',SURIKAT_PATH);
+Autoloader::addSuperNamespace('Surikat',SURIKAT_SPATH);
+Autoloader::register();

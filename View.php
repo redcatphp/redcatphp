@@ -4,8 +4,13 @@ use Surikat\Control\HTTP;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 class View {
-	use \Factory;
-	protected static $__factory = '\View';
+	private static $__instances = [];
+	static function getInstance($k=0){
+		if(!isset(self::$__instances[$k]))
+			self::$__instances[$k] = new \View();
+		return self::$__instances[$k];
+	}
+	
 	protected $URI;
 	protected $xDom = 'x-dom/';
 	protected $prefixTmlCompile = '';
