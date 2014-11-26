@@ -171,17 +171,17 @@ RewriteBase /
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
-RewriteRule ^robots\.txt$ /surikat/robots_cdn.txt [L]
+RewriteRule ^robots\.txt$ /Surikat/robots_cdn.txt [L]
 
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
-RewriteRule ^robots\.txt$ /surikat/robots_ssl.txt [L]
+RewriteRule ^robots\.txt$ /Surikat/robots_ssl.txt [L]
 
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^/surikat/
-RewriteCond %{DOCUMENT_ROOT}/surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff)$ /surikat/$1.$2 [L,QSA]
+RewriteCond %{REQUEST_URI} !^/Surikat/
+RewriteCond %{DOCUMENT_ROOT}/Surikat/$1.$2 -f
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff)$ /Surikat/$1.$2 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
 
