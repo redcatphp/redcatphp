@@ -76,13 +76,13 @@ class scssc_server{
 	}
 	function __construct($dir, $cacheDir=null){
 		$this->dir = $dir;
-		$this->cacheDir = $cacheDir?$cacheDir:Control::$TMP.'scss/';
+		$this->cacheDir = $cacheDir?$cacheDir:SURIKAT_TMP.'scss/';
 		FS::mkdir($this->cacheDir);
 		$this->scss = new scssc();
 		$this->scss->setImportPaths($this->dir);
 		if(is_dir('css'))
 			$this->scss->addImportPath('css');
-		if(is_dir(basename(Control::$SURIKAT).'/css'))
-			$this->scss->addImportPath(basename(Control::$SURIKAT).'/css');
+		if(is_dir(basename(SURIKAT_SPATH).'/css'))
+			$this->scss->addImportPath(basename(SURIKAT_SPATH).'/css');
 	}
 }

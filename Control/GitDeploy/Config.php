@@ -5,7 +5,7 @@ class Config {
     public static function getArgs() {
         $argv = (array)@$_SERVER['argv'];
 
-        $deploy = Control::$CWD.'deploy.ini';
+        $deploy = SURIKAT_PATH.'deploy.ini';
         $commands = ['-l', '-r', '-c', '-d', '--revert', '--log', '--repo'];
 
         $deploy_file = isset($argv[1]) ? end($argv) : "deploy.ini";
@@ -31,7 +31,7 @@ class Config {
         if (isset($opts['repo'])) {
             $repo_path = $opts['repo'];
         } else {
-            $repo_path = Control::$CWD;
+            $repo_path = SURIKAT_PATH;
         }
 
         return [

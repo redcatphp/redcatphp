@@ -16,7 +16,7 @@ class Service_Deploy{
 		self::directOutput();
 		echo '<pre>';
 		GitDeploy::main([
-			'repo_path'=>Control::$SURIKAT,
+			'repo_path'=>SURIKAT_SPATH,
 		],false,true);
 		echo '</pre>';
 		
@@ -25,23 +25,23 @@ class Service_Deploy{
 		self::directOutput();
 		echo '<pre>';
 		GitDeploy::main([
-			'repo_path'=>Control::$SURIKAT,
+			'repo_path'=>SURIKAT_SPATH,
 		],true);
 		echo '</pre>';
 	}
 	static function autocommit(){ //need the .git have recursively full permission (www-data have to be able to write)
 		self::directOutput();
-		$ini = @parse_ini_file(Control::$CWD.'deploy.ini',true);
+		$ini = @parse_ini_file(SURIKAT_PATH.'deploy.ini',true);
 		if(!@$ini['user.email']||!@$ini['user.name'])
 			trigger_error('You have to define user.email and user.name in deploy.ini',256);
 		echo '<pre>';
-		self::exec('cd '.Control::$CWD);
+		self::exec('cd '.SURIKAT_PATH);
 		self::exec('git config --local user.email "'.$ini['user.email'].'"');
 		self::exec('git config --local user.name "'.$ini['user.name'].'"');
 		self::exec('git add --all .');
 		$message = "auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time());
 		self::exec('git commit -m "'.$message.'"');
-		shell_exec('chmod -R 777 '.Control::$CWD.'.git 2>&1');
+		shell_exec('chmod -R 777 '.SURIKAT_PATH.'.git 2>&1');
 		GitDeploy::main();
 		echo '</pre>';
 	}

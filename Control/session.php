@@ -51,7 +51,7 @@ class session{
 		@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
 		@ini_set('session.gc_divisor',1000);			// Idem
 		@ini_set('session.gc_maxlifetime',3600);
-		ini_set("session.save_path",$d=Control::$TMP.'sessions/');
+		ini_set("session.save_path",$d=SURIKAT_TMP.'sessions/');
 		FS::mkdir($d);
 		$handler = new session_handler();
 		session_set_save_handler(

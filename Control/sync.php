@@ -6,7 +6,7 @@ class sync{
 	const CACHE = 'sync_cache/';
 	const EXT = '.sync';
 	static function mtime($file,$sync,$forceCache=true){
-		$syncF = Control::$TMP.self::TIMESPACE.$sync.self::EXT;
+		$syncF = SURIKAT_TMP.self::TIMESPACE.$sync.self::EXT;
 		if($forceCache&&!is_file($syncF)){
 			FS::mkdir($syncF,true);
 			file_put_contents($syncF,'');
@@ -14,7 +14,7 @@ class sync{
 		return @filemtime($file)<@filemtime($syncF);
 	}
 	static function update($sync){
-		$syncF = Control::$TMP.self::TIMESPACE.$sync.self::EXT;
+		$syncF = SURIKAT_TMP.self::TIMESPACE.$sync.self::EXT;
 		if(!is_file($syncF)){
 			FS::mkdir($syncF,true);
 			file_put_contents($syncF,'');
@@ -27,7 +27,7 @@ class sync{
 	static $className;
 	static function __callStatic($c,$args){
 		$id = sha1(serialize([$c,$args]));
-		$file = Control::$TMP.self::CACHE.static::$spaceName.'/'.$id;
+		$file = SURIKAT_TMP.self::CACHE.static::$spaceName.'/'.$id;
 		if(strpos($c,'static')===0&&ctype_upper(substr($c,6,1)))
 			return self::_statical(lcfirst(substr($c,6)),$args,$id,$file);
 		elseif(strpos($c,'sync')===0&&ctype_upper(substr($c,4,1)))
@@ -47,7 +47,7 @@ class sync{
 		return $data;
 	}
 	private static function _sync($c,$args,$id,$file){
-		$sync = Control::$TMP.self::TIMESPACE.static::$spaceName.'.'.$args[0].self::EXT;
+		$sync = SURIKAT_TMP.self::TIMESPACE.static::$spaceName.'.'.$args[0].self::EXT;
 		if(!($msync=@filemtime($sync))||@filemtime($file)<$msync)
 			return self::_dynTry($c,$args,$id,$file);
 		return unserialize(file_get_contents($file));

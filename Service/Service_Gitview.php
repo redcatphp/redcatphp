@@ -3,10 +3,10 @@ use Surikat\Control;
 use Surikat\Control\phpgit\Git;
 class Service_Gitview{
 	static function surikat(){
-		self::main(Control::$SURIKAT);
+		self::main(SURIKAT_SPATH);
 	}
 	static function method(){
-		self::main(Control::$CWD);
+		self::main(SURIKAT_PATH);
 	}
 	protected static function main($dir){
 		$git = new Git($dir.'.git');

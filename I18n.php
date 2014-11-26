@@ -15,7 +15,7 @@ class I18n {
 	}
 	private function setLang($lg='en'){
 		$this->language = $lg;
-		$this->locales_root = Control::$CWD.'langs';
+		$this->locales_root = SURIKAT_PATH.'langs';
 		$this->locale = strtolower($this->language).'_'.strtoupper($this->language);
 		if(Dev::has(Dev::I18N))
 			$this->domain = $this->getLastMoFile();

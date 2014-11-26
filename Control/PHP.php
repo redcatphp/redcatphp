@@ -72,7 +72,7 @@ abstract class PHP{
 		if($surikat){
 			$useS = [];
 			foreach($used as $use)
-				if(strpos(ltrim($use,'\\'),'Surikat\\')!==0&&class_exists($use)&&!is_file(Control::$CWD_X.str_replace('\\','/',$use.'.php')))
+				if(strpos(ltrim($use,'\\'),'Surikat\\')!==0&&class_exists($use)&&!is_file(SURIKAT_PATH.str_replace('\\','/',$use.'.php')))
 					$useS[] = ltrim($use,'\\');
 			return $useS;
 		}

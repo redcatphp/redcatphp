@@ -45,8 +45,8 @@ class View {
 	}
 	function indexExec($tml){
 		$this->exec($tml,[],[
-			'dirCompile'=>Control::$TMP.'viewCompile/'.$this->prefixTmlCompile,
-			'dirCache'=>Control::$TMP.'viewCache/'.$this->prefixTmlCompile,
+			'dirCompile'=>SURIKAT_TMP.'viewCompile/'.$this->prefixTmlCompile,
+			'dirCache'=>SURIKAT_TMP.'viewCache/'.$this->prefixTmlCompile,
 		]);
 	}
 	function hookTml($s){
@@ -55,10 +55,10 @@ class View {
 		if(strpos($path,$s)===0){
 			$path = substr($path,strlen($s)).'.tml';
 			$this->exec($path,[],[
-				'dirCwd'=>Control::$CWD.$pathFS,
-				'dirAdd'=>Control::$SURIKAT.$pathFS,
-				'dirCompile'=>Control::$TMP.'viewCompile/.'.$pathFS,
-				'dirCache'=>Control::$TMP.'viewCache/.'.$pathFS,
+				'dirCwd'=>SURIKAT_PATH.$pathFS,
+				'dirAdd'=>SURIKAT_SPATH.$pathFS,
+				'dirCompile'=>SURIKAT_TMP.'viewCompile/.'.$pathFS,
+				'dirCache'=>SURIKAT_TMP.'viewCache/.'.$pathFS,
 			]);
 			exit;
 		}
@@ -110,10 +110,10 @@ class View {
 				&&!in_array($is,$s)
 				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
 				&&(
-					is_file(Control::$CWD.($h=$href.strtolower($is).'.css'))
-					||is_file(Control::$SURIKAT.$h)
-					||is_file(Control::$CWD.($h=$href.strtolower($is).'.scss'))
-					||is_file(Control::$SURIKAT.$h)
+					is_file(SURIKAT_PATH.($h=$href.strtolower($is).'.css'))
+					||is_file(SURIKAT_SPATH.$h)
+					||is_file(SURIKAT_PATH.($h=$href.strtolower($is).'.scss'))
+					||is_file(SURIKAT_SPATH.$h)
 				)
 			)
 				$s[] = $is;

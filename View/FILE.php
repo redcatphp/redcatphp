@@ -1,5 +1,4 @@
 <?php namespace Surikat\View;
-use Surikat\Factory;
 use Surikat\Dev;
 use Surikat\View;
 use Surikat\Control;
@@ -9,7 +8,6 @@ use Surikat\Control\PHP;
 use Surikat\Control\Min\HTML as minHTML;
 use Surikat\Control\Min\PHP as minPHP;
 class FILE {
-	use factory;
 	var $forceCompile;
 	var $path;
 	var $dirCwd;
@@ -23,10 +21,10 @@ class FILE {
 	var $isXhtml;
 	var $present;
 	function __construct($path=null,$options=null){
-		$this->setDirCompile(Control::$TMP.'viewCompile/');
-		$this->setDirCache(Control::$TMP.'viewCache/');
-		$this->setDirCwd(Control::$CWD.'View/');
-		$this->registerDirCwd(Control::$SURIKAT.'View/');
+		$this->setDirCompile(SURIKAT_TMP.'viewCompile/');
+		$this->setDirCache(SURIKAT_TMP.'viewCache/');
+		$this->setDirCwd(SURIKAT_PATH.'View/');
+		$this->registerDirCwd(SURIKAT_SPATH.'View/');
 		if(Dev::has(Dev::VIEW))
 			$this->forceCompile = true;
 		if(isset($path))

@@ -51,14 +51,14 @@ View::getInstance()->index();");
 			unlink($target.'.phar');
 		$p = new \Phar($target.'.phar',0,'surikat');
 		$directory = getcwd().'/'.self::$PATH;
-		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/Control.php\'; Control::$SURIKAT=Control::$CWD.\'Surikat/\'; View::getInstance()->index(); __HALT_COMPILER(); ?>');
+		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/Control.php\'; View::getInstance()->index(); __HALT_COMPILER(); ?>');
 		echo "<h1>Surikat Compilation to '".$target."':</h1><pre>\r\n";
 		$tt = 0;
 		$stt = 0;
 		FS::recurse($directory,function($file)use($directory,$p,$minifyPHP,&$tt,&$stt){
 			$bs = basename($file);
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
-			if(is_dir($file)||($ext!='php'&&($bf=basename($file))!='LICENSE'&&$bf!='README.md')||(strpos($file,Control::$TMP)===0)||($file==$directory.'/index.php.phar')||($file==$directory.'/index.php'))
+			if(is_dir($file)||($ext!='php'&&($bf=basename($file))!='LICENSE'&&$bf!='README.md')||(strpos($file,SURIKAT_TMP)===0)||($file==$directory.'/index.php.phar')||($file==$directory.'/index.php'))
 				return;
 			$tg = substr($file,strlen($directory)+1);
 			$content = file_get_contents($file);
@@ -76,7 +76,7 @@ View::getInstance()->index();");
 		if(is_file($target))
 			unlink($target);
 		rename($target.'.phar',$target);
-		FS::recurse(Control::$TMP,function($file){
+		FS::recurse(SURIKAT_TMP,function($file){
 			if(is_file($file))
 				@unlink($file);
 			elseif(is_dir($file))
@@ -85,7 +85,7 @@ View::getInstance()->index();");
 			
 	}
 	static function Make_Ninja(){
-		echo '<form method="POST" action="./Make_Ninja"><input name="dir" type="text" value="'.(isset($_POST['dir'])?$_POST['dir']:realpath(Control::$CWD.'../').'/new-ninja/').'"><input type="submit" value="New Ninja"></form>';
+		echo '<form method="POST" action="./Make_Ninja"><input name="dir" type="text" value="'.(isset($_POST['dir'])?$_POST['dir']:realpath(SURIKAT_PATH.'../').'/new-ninja/').'"><input type="submit" value="New Ninja"></form>';
 		if(isset($_POST['dir'])){
 			$dir = rtrim($_POST['dir'],'/').'/';
 			echo "<h1>Making Ninja '".$dir."':</h1><pre>\r\n";
@@ -93,7 +93,7 @@ View::getInstance()->index();");
 				//throw new \Exception($dir.' allready exit');
 			FS::mkdir($dir);
 			self::Set_PROD_Mode($dir.'index.php');
-			$sl = strlen(Control::$SURIKAT);
+			$sl = strlen(SURIKAT_SPATH);
 			$callback = function($file)use($sl,$dir){
 				if(is_dir($file))
 					return;
@@ -103,22 +103,22 @@ View::getInstance()->index();");
 				echo "$b\r\n";
 			};
 			echo '<pre>';
-			FS::recurse(Control::$SURIKAT.'css',$callback);
-			FS::recurse(Control::$SURIKAT.'js',$callback);
-			FS::recurse(Control::$SURIKAT.'img',$callback);
-			FS::recurse(Control::$SURIKAT.'x-dom',$callback);
+			FS::recurse(SURIKAT_SPATH.'css',$callback);
+			FS::recurse(SURIKAT_SPATH.'js',$callback);
+			FS::recurse(SURIKAT_SPATH.'img',$callback);
+			FS::recurse(SURIKAT_SPATH.'x-dom',$callback);
 			FS::mkdir($dir.'view');
-			copy(Control::$SURIKAT.'view/layout.tml',$dir.'view/TML');
+			copy(SURIKAT_SPATH.'view/layout.tml',$dir.'view/TML');
 			echo "view/TML\r\n";
-			copy(Control::$SURIKAT.'view/index.tml',$dir.'view/.tml');
+			copy(SURIKAT_SPATH.'view/index.tml',$dir.'view/.tml');
 			echo "view/.tml\r\n";
-			copy(Control::$SURIKAT.'view/404.tml',$dir.'view/404.tml');
+			copy(SURIKAT_SPATH.'view/404.tml',$dir.'view/404.tml');
 			echo "view/404.tml\r\n";
 			file_put_contents($dir.'css/style.scss','');
 			echo "css/style.scss\r\n";
 			file_put_contents($dir.'js/script.js','');
 			echo "js/script.js\r\n";
-			copy(Control::$SURIKAT.'htaccess',$dir.'.htaccess');
+			copy(SURIKAT_SPATH.'htaccess',$dir.'.htaccess');
 			echo ".htaccess\r\n";
 			echo '</pre>';
 			echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
@@ -130,7 +130,7 @@ View::getInstance()->index();");
 	}
 	protected static function getZIP($url){
 		$zip = new ZipArchive;
-		$dir = Control::$TMP.'kompiler_cache/'.sha1($url);
+		$dir = SURIKAT_TMP.'kompiler_cache/'.sha1($url);
 		FS::mkdir($dir);
 		if($cached = self::cachedHTTP($dir.'.zip'))
 			print "from cache \r\n";

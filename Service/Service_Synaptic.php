@@ -42,7 +42,7 @@ class Service_Synaptic {
 				$dir = dirname($k);
 		}
 		if(!isset(self::$__synapses[$dir])){
-			if(is_file($file=Control::$CWD.$dir.'/synaptic.json')){
+			if(is_file($file=SURIKAT_PATH.$dir.'/synaptic.json')){
 				$synapse = JSON::decode(file_get_contents($file));
 				self::$__synapses[$dir] = $synapse;
 			}
@@ -129,7 +129,7 @@ class Service_Synaptic {
 					self::minifyCSS(substr($k,0,-8).'.css');
 				elseif(
 					is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss')
-					||(($k=basename(Control::$SURIKAT).'/'.$k)&&is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss'))
+					||(($k=basename(SURIKAT_SPATH).'/'.$k)&&is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss'))
 				){
 					if(self::scss($k)===false){
 						HTTP::code(404);
@@ -158,7 +158,7 @@ class Service_Synaptic {
 			header($header);
 	}
 	protected static function cacheFile($arg,$ext=''){
-		return Control::$TMP.'synaptic_cache/'.trim($arg,'/').($ext?'.'.ltrim($ext,'.'):'');
+		return SURIKAT_TMP.'synaptic_cache/'.trim($arg,'/').($ext?'.'.ltrim($ext,'.'):'');
 	}
 	protected static function cacheStore($file,$str){
 		FS::mkdir($file,true);
@@ -184,8 +184,8 @@ class Service_Synaptic {
 	protected static function minifyCSS($f){
 		if(!is_file($f)
 			&&!is_file($f=dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
-			&&!is_file($f=Control::$SURIKAT.dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
-			&&!is_file($f=Control::$SURIKAT.dirname($f).'/'.basename($f))
+			&&!is_file($f=SURIKAT_SPATH.dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
+			&&!is_file($f=SURIKAT_SPATH.dirname($f).'/'.basename($f))
 		)
 			return false;
 		$e = pathinfo($f,PATHINFO_EXTENSION);
