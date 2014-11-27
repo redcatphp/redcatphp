@@ -1,7 +1,7 @@
 <?php namespace Surikat\Service;
-use Surikat\Control;
-use Surikat\Control\GitDeploy\GitDeploy;
-use Surikat\Control\GitDeploy\Config;
+use Surikat\Tool;
+use Surikat\Tool\GitDeploy\GitDeploy;
+use Surikat\Tool\GitDeploy\Config;
 class Service_Deploy{
 	static function directOutput(){
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();

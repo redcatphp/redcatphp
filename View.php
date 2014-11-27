@@ -1,6 +1,6 @@
 <?php namespace Surikat;
 use Surikat\I18n;
-use Surikat\Control\HTTP;
+use Surikat\Tool\HTTP;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 class View {
@@ -155,7 +155,7 @@ class View {
 		});
 	}
 	function registerPresent($TML){
-		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='present')
+		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Present')
 			$TML->prepend(new TML('<present: uri="static" />',$TML));
 	}	
 	protected $_FILE;

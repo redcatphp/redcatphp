@@ -4,7 +4,7 @@ use ReflectionClass;
 class TML_Dev extends TML{
 	protected $hiddenWrap = true;
 	function load(){
-		$refl = new ReflectionClass('control');
+		$refl = new ReflectionClass('Dev');
 		$c = $refl->getConstants();
 		if(!empty($this->attributes)){
 			foreach($this->attributes as $dev)

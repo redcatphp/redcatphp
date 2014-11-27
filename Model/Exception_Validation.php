@@ -1,2 +1,2 @@
 <?php namespace Surikat\Model;
-class Exception_Validation extends \Surikat\Control\Exception{}
+class Exception_Validation extends \Surikat\Tool\Exception{}

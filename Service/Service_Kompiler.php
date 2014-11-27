@@ -1,10 +1,10 @@
 <?php namespace Surikat\Service; 
-use Surikat\Control;
-use Surikat\Control\FS;
-use Surikat\Control\JSON;
-use Surikat\Control\Min\PHP as minPHP;
-use Surikat\Control\Min\JS as minJS;
-use Surikat\Control\Min\CSS as minCSS;
+use Surikat\Tool;
+use Surikat\Tool\FS;
+use Surikat\Tool\JSON;
+use Surikat\Tool\Min\PHP as minPHP;
+use Surikat\Tool\Min\JS as minJS;
+use Surikat\Tool\Min\CSS as minCSS;
 use ReflectionClass;
 use ReflectionMethod;
 use ZipArchive;

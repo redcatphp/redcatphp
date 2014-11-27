@@ -179,7 +179,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if($this->_namespaces){
 			$x = $this->_namespaces;
 			while($v=array_pop($x)){
-				if(class_exists($c=ucfirst((($s=implode('\\',$x))?$s.'\\':'').$v))&&method_exists($c,'loaded')){
+				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'loaded')){
 					$c::loaded($this);
 					break;
 				}
@@ -228,7 +228,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				if($this->_namespaces){
 					$x = $this->_namespaces;
 					while($v=array_pop($x)){
-						if(class_exists($c=ucfirst((($s=implode('\\',$x))?$s.'\\':'').$v))&&method_exists($c,'load')){
+						if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'load')){
 							$c::load($this);
 							break;
 						}

@@ -1,6 +1,6 @@
 <?php namespace Surikat;
 use control;
-use Control\Config;
+use Tool\Config;
 require_once __DIR__.'/I18n/php-gettext.inc.php';
 class I18n {
 	private $locales_root;

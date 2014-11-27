@@ -14,7 +14,7 @@ use Surikat\Model\Table;
 use Surikat\Model\Query;
 use Surikat\Dev;
 
-use Surikat\Control\str;
+use Surikat\Tools\str;
 
 /**
  * RedBean PostgreSQL Query Writer

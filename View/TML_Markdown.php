@@ -1,5 +1,5 @@
 <?php namespace Surikat\View;
-use Surikat\Control\Parsedown;
+use Surikat\Tool\Parsedown;
 class TML_Markdown extends TML {
 	protected $hiddenWrap = true;
 	protected $noParseContent = true;

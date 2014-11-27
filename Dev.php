@@ -1,5 +1,5 @@
 <?php namespace Surikat;
-class Dev{
+abstract class Dev{
 	const NO = 0;
 	const CONTROL = 2;
 	const VIEW = 4;
@@ -14,9 +14,9 @@ class Dev{
 	const SERVER = 94; //CONTROL+VIEW+PRESENT+MODEL+I18N
 	const NAV = 480; //URI+JS+CSS+IMG
 	const ALL = 510;
-	private static $level;
+	private static $level = 78;
 	static function has($d){
-		return $d&self::$level;
+		return !!($d&self::$level);
 	}
 	static function on($d){
 		return self::$level = $d^self::$level;

@@ -1,14 +1,14 @@
 <?php namespace Surikat\Model;
 use Surikat\Dev;
 use Surikat\Model;
-use Surikat\Control\Config;
+use Surikat\Tool\Config;
 use Surikat\Model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use Surikat\Model\RedBeanPHP\RedException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
 use Surikat\Model\Query4D;
 class R extends RedBeanPHP\Facade{
 	static function loadDB($key){
-		$getter = 'model';
+		$getter = 'Model';
 		if(!$key)
 			$key = 'default';
 		if($key!='default')

@@ -2,7 +2,7 @@
 use ArrayAccess;
 use BadMethodCallException;
 use Surikat\Dev;
-use Surikat\Control\str;
+use Surikat\Tool\str;
 use Surikat\Model;
 use Surikat\Model\RedBeanPHP\QueryWriter;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
@@ -364,7 +364,7 @@ class Query {
 			->unSelect()
 			->select('id')
 		;
-		if($this->tableExists())
+		if(!$this->table||$this->tableExists())
 			return (int)static::getNew()
 				->select('COUNT(*)')
 				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())

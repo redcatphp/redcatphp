@@ -1,5 +1,5 @@
 <?php namespace Surikat\Service;
-use Surikat\Control\session;
+use Surikat\Tool\session;
 class Service_Persona {
     protected $audience; //Scheme, hostname and port
 	static function email(){

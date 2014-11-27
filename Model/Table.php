@@ -24,8 +24,8 @@ use Surikat\Model\RedBeanPHP\OODBBean;
 use Surikat\Model\RedBeanPHP\SimpleModel;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
 use Surikat\Dev;
-use Surikat\Control\JSON;
-use Surikat\Control\sync;
+use Surikat\Tool\JSON;
+use Surikat\Tool\sync;
 use BadMethodCallException;
 use Model\Exception_Validation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
@@ -248,7 +248,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				$this->$col = call_user_func_array(['Control\\filter',$f],$a);
+				$this->$col = call_user_func_array(['Tool\\filter',$f],$a);
 			}
 		}
 	}
@@ -262,7 +262,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				if(!call_user_func_array(['Control\\ruler',$f],$a))
+				if(!call_user_func_array(['Tool\\ruler',$f],$a))
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}

@@ -1,6 +1,6 @@
 <?php namespace Surikat\View;
 use Surikat\View\TML;
-use Surikat\Control\str;
+use Surikat\Tool\str;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;

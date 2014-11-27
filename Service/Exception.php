@@ -1,1 +1,1 @@
-<?php namespace Surikat\Service; class Exception extends \Surikat\Control\Exception{}
+<?php namespace Surikat\Service; class Exception extends \Surikat\Tool\Exception{}

@@ -29,7 +29,7 @@ class Facade{
 	
 	const C_REDBEANPHP_VERSION = '4.1-surikat-fork';
 	public static $toolbox;
-	public static $currentDB = '';
+	public static $currentDB = 'default';
 	public static $databases = [];
 	static function getVersion(){
 		return self::C_REDBEANPHP_VERSION;

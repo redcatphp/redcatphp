@@ -1,13 +1,13 @@
 <?php namespace Surikat\Service;
 use Surikat\Dev;
-use Surikat\Control;
-use Surikat\Control\HTTP;
-use Surikat\Control\JSON;
-use Surikat\Control\FS;
-use Surikat\Control\scssc_server;
-use Surikat\Control\scssc;
-use Surikat\Control\Min\JS;
-use Surikat\Control\Min\CSS;
+use Surikat\Tool;
+use Surikat\Tool\HTTP;
+use Surikat\Tool\JSON;
+use Surikat\Tool\FS;
+use Surikat\Tool\scssc_server;
+use Surikat\Tool\scssc;
+use Surikat\Tool\Min\JS;
+use Surikat\Tool\Min\CSS;
 class Service_Synaptic {
 	static $SEND_HEADERS = true;
 	static function method(){
@@ -116,8 +116,8 @@ class Service_Synaptic {
 		else{
 			if(substr($k,-3)=='.js'){
 				if(substr($k,-7,-3)=='.min'){
-					$k = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					self::minifyJS($k);
+					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
+					self::minifyJS($kv,$k);
 				}
 				else{
 					HTTP::code(404);
@@ -170,11 +170,10 @@ class Service_Synaptic {
 			self::cacheStore($file,file_get_contents($rf));
 		readfile($file);
 	}
-	protected static function minifyJS($f){
+	protected static function minifyJS($f,$min){
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
-		$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.js';
 		$c = JS::minify(file_get_contents($f));
 		if(!Dev::has(Dev::JS))
 			file_put_contents($min,$c);

@@ -633,6 +633,8 @@ abstract class PARSER{
 			$this->namespace = substr($this->nodeName,0,$pos);
 			$this->namespaceClass = substr($this->nodeName,$pos+1);
 			$this->_namespaces = explode(':',trim($this->namespace.':'.$this->namespaceClass,':'));
+			foreach(array_keys($this->_namespaces) as $i)
+				$this->_namespaces[$i] = ucfirst($this->_namespaces[$i]);
 		}
 		$this->metaAttribution = (array)array_shift($args);
 		$this->constructor = array_shift($args);

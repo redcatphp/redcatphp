@@ -1,7 +1,5 @@
 <?php namespace Surikat;
-use Surikat\Control\ArrayObject;
-use Surikat\Control\PHP;
-use Surikat\Control\HTTP;
+use Surikat\Tool\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 class Present extends ArrayObject{

@@ -1,12 +1,12 @@
 <?php namespace Surikat\View;
 use Surikat\Dev;
 use Surikat\View;
-use Surikat\Control;
-use Surikat\Control\sync;
-use Surikat\Control\FS;
-use Surikat\Control\PHP;
-use Surikat\Control\Min\HTML as minHTML;
-use Surikat\Control\Min\PHP as minPHP;
+use Surikat\Tool;
+use Surikat\Tool\sync;
+use Surikat\Tool\FS;
+use Surikat\Tool\PHP;
+use Surikat\Tool\Min\HTML as minHTML;
+use Surikat\Tool\Min\PHP as minPHP;
 class FILE {
 	var $forceCompile;
 	var $path;
