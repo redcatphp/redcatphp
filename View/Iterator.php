@@ -1,11 +1,12 @@
 <?php namespace Surikat\View;
+use ArrayIterator;
 class Iterator implements \ArrayAccess,\IteratorAggregate{
 	private $__dataNodes;
 	function __construct( array $nodes){
 		$this->__dataNodes = $nodes;
 	}
 	function getIterator(){
-		return $this->__dataNodes;
+		return new ArrayIterator($this->__dataNodes);
 	}
 	function offsetExists($k){
 		return isset($this->__dataNodes[$k]);
