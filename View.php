@@ -86,7 +86,8 @@ class View {
 	}
 	function error($c){
 		try{
-			$this->_FILE->display($c.'.tml');
+			$this->_FILE->setPath($c.'.tml');
+			$this->_FILE->display();
 		}
 		catch(\Surikat\View\Exception $e){
 			HTTP::code($e->getMessage());
@@ -156,7 +157,7 @@ class View {
 	}
 	function registerPresent($TML){
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Present')
-			$TML->prepend(new TML('<present: uri="static" />',$TML));
+			$TML->prepend('<Present: uri="static" />');
 	}	
 	protected $_FILE;
 	function __construct(){
