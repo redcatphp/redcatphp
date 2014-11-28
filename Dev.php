@@ -5,15 +5,16 @@ abstract class Dev{
 	const VIEW = 4;
 	const PRESENT = 8;
 	const MODEL = 16;
-	const URI = 32;
-	const I18N = 64;
-	const JS = 128;
-	const CSS = 256;
-	const IMG = 512;
-	const STD = 78; //CONTROL+VIEW+PRESENT+I18N
-	const SERVER = 94; //CONTROL+VIEW+PRESENT+MODEL+I18N
-	const NAV = 480; //URI+JS+CSS+IMG
-	const ALL = 510;
+	const MODEL_SCHEMA = 32;
+	const URI = 64;
+	const I18N = 128;
+	const JS = 256;
+	const CSS = 512;
+	const IMG = 1024;
+	const STD = 174; //CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
+	const SERVER = 190; //CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
+	const NAV = 1856; //URI+JS+CSS+IMG
+	const ALL = 2046;
 	private static $level = 78;
 	static function has($d){
 		return !!($d&self::$level);
