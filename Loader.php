@@ -2,6 +2,7 @@
 abstract class Loader{
 	private static $namespaces = [];
 	private static $superNamespaces = [];
+	private static $checked = [];
 	static function addNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';
 		$base_dir = rtrim($base_dir, '/').'/';
@@ -23,6 +24,8 @@ abstract class Loader{
 			array_push(self::$superNamespaces[$prefix], $base_dir);
 	}
 	static function classLoad($class){
+		if(in_array($class,self::$checked))
+			return;
 		$prefix = $class;
 		while($prefix!='\\'){
 			$prefix = rtrim($prefix, '\\');
@@ -33,8 +36,10 @@ abstract class Loader{
 				if(isset(self::$superNamespaces[$prefix])){
 					foreach(self::$superNamespaces[$prefix] as $base_dir){
 						$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-						if(self::requireFile($file))
+						if(self::requireFile($file)){
+							self::$checked[] = $class;
 							return;
+						}
 					}
 					return;
 				}
@@ -46,8 +51,10 @@ abstract class Loader{
 			if(isset(self::$namespaces[$prefix])){
 				foreach(self::$namespaces[$prefix] as $base_dir){
 					$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-					if(self::requireFile($file))
+					if(self::requireFile($file)){
+						self::$checked[] = $class;
 						return;
+					}
 				}
 			}
 		}
