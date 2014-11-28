@@ -24,7 +24,7 @@ class R extends RedBeanPHP\Facade{
 		
 		$dsn = $type.':'.$host.$port.$dbname;
 		
-		$frozen = isset($frozen)?$frozen:!Dev::has(Dev::MODEL);		
+		$frozen = isset($frozen)?$frozen:!Dev::has(Dev::MODEL_SCHEMA);		
 		$prefix = isset($prefix)?$prefix:'';
 		
 		self::addDatabase($key,$dsn,@$user,@$password,$frozen,$prefix);
