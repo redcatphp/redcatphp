@@ -2,7 +2,7 @@
 use Surikat\Tool\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
-class Present extends ArrayObject{
+class Presenter extends ArrayObject{
 	static function document(FILE $file){}
 	static function load(TML $tml){
 		if(!$tml->vFile)

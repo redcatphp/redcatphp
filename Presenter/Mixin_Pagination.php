@@ -1,4 +1,4 @@
-<?php namespace Surikat\Present;
+<?php namespace Surikat\Presenter;
 use Surikat\Tool\ArrayObject;
 use Surikat\View\Exception as View_Exception;
 trait Mixin_Pagination{

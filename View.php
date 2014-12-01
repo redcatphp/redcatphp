@@ -95,7 +95,7 @@ class View {
 		exit;
 	}
 	function document($TML){
-		$this->registerPresent($TML);
+		$this->registerPresenter($TML);
 		if($this->xDom)
 			$this->xDom($TML);
 		if(!Dev::has(Dev::VIEW))
@@ -155,9 +155,9 @@ class View {
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
 	}
-	function registerPresent($TML){
-		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Present')
-			$TML->prepend('<Present: uri="static" />');
+	function registerPresenter($TML){
+		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
+			$TML->prepend('<Presenter: uri="static" />');
 	}	
 	protected $_FILE;
 	function __construct(){
