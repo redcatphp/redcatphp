@@ -32,10 +32,8 @@ abstract class Service_Kompiler{
 	static function Set_DEV_Mode(){
 		echo "<pre>surikat mapped to sources by '".getcwd().'/'.self::$surikat."':\r\n";
 		file_put_contents(self::$surikat,"<?php
-if(!@include(__DIR__.'/".self::$PATH."/Control.php'))
-	symlink('../".self::$PATH."','Surikat')&&include('".self::$PATH."/Control.php');
-Dev::level(Dev::STD);
-View::getInstance()->index();");
+if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
+	symlink('../".self::$PATH."','Surikat')&&include('".self::$PATH."/Bootstrap.php');");
 	}
 	static function Set_PROD_Mode($target=null){
 		set_time_limit(0);
@@ -51,7 +49,7 @@ View::getInstance()->index();");
 			unlink($target.'.phar');
 		$p = new \Phar($target.'.phar',0,'surikat');
 		$directory = getcwd().'/'.self::$PATH;
-		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/Control.php\'; View::getInstance()->index(); __HALT_COMPILER(); ?>');
+		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/Bootstrap.php\'; __HALT_COMPILER(); ?>');
 		echo "<h1>Surikat Compilation to '".$target."':</h1><pre>\r\n";
 		$tt = 0;
 		$stt = 0;

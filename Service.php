@@ -6,6 +6,7 @@ abstract class Service {
 			return call_user_func_array([$c,$m],$args);
 	}
 	static function method($func){
+		$func = str_replace('/','_',$func);
 		list($c,$m) = self::__funcToCm($func);
 		if($m&&class_exists($c)){
 			$c::$m();
