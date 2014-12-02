@@ -8,7 +8,6 @@ use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 
 use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
 use Surikat\Model\R;
 use Surikat\Model\Table;
 use Surikat\Model\Query;
@@ -30,7 +29,6 @@ use Surikat\Tools\str;
  */
 class PostgreSQL extends AQueryWriter implements QueryWriter
 {
-	use XQueryWriter;
 	
 	/**
 	 * Data types
@@ -180,7 +178,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getTables
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		return $this->adapter->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
 	}
@@ -188,7 +186,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::createTable
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		$table = $this->esc( $table );
 
@@ -198,7 +196,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getColumns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$table      = $this->esc( $table, TRUE );
 
@@ -276,7 +274,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::widenColumn
 	 */
-	public function widenColumn( $type, $column, $datatype )
+	public function _widenColumn( $type, $column, $datatype )
 	{
 		$table   = $type;
 		$type    = $datatype;
@@ -395,7 +393,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::wipeAll
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		$this->adapter->exec( 'SET CONSTRAINTS ALL DEFERRED' );
 		foreach ( $this->getTables() as $t ) {
@@ -405,7 +403,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$this->adapter->exec( 'SET CONSTRAINTS ALL IMMEDIATE' );
 	}
 	
-	public function drop($t){
+	public function _drop($t){
 		$this->adapter->exec('SET CONSTRAINTS ALL DEFERRED');
 		$t = $this->esc($t);
 		$this->adapter->exec("DROP TABLE IF EXISTS $t CASCADE ");
@@ -419,7 +417,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	protected $aggCaster = '::text';
 	protected $sumCaster = '::int';
 	protected $concatenator = 'chr(29)';
-	function addColumnFulltext($table, $col){
+	function _addColumnFulltext($table, $col){
 		$this->addColumn($table,$col,$this->code('tsvector'));
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){

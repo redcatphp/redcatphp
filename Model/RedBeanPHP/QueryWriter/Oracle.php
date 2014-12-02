@@ -5,8 +5,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
-
 /**
  * RedBean Oracle Driver
  *
@@ -23,7 +21,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
  */
 class Oracle extends AQueryWriter implements QueryWriter
 {
-	use XQueryWriter;
 	
 	protected $caseSupport = false;
 	/**
@@ -290,7 +287,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return array $tables tables
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		return $this->adapter->getCol( 'SELECT LOWER(table_name) FROM user_tables' );
 	}
@@ -333,7 +330,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return void
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		if ( strtolower( $table ) != $table ) {
 			throw new Exception( $table . ' is not lowercase. With ORACLE you MUST only use lowercase table in PHP, sorry!' );
@@ -382,7 +379,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return void
 	 */
-	public function addColumn( $type, $column, $field )
+	public function _addColumn( $type, $column, $field )
 	{
 		$columnTested = preg_replace( '/^((own)|(shared))./', '', $column );
 
@@ -430,7 +427,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return array $columns columns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$table      = $this->esc( $table, TRUE );
 		$columnsRaw = $this->adapter->get( "SELECT LOWER(COLUMN_NAME) COLUMN_NAME, DATA_TYPE, DATA_LENGTH, DATA_PRECISION FROM ALL_TAB_COLUMNS WHERE TABLE_NAME = UPPER('$table')" );
@@ -491,7 +488,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return void
 	 */
-	public function widenColumn( $type, $column, $datatype )
+	public function _widenColumn( $type, $column, $datatype )
 	{
 		$table   = $type;
 		$type    = $datatype;
@@ -736,7 +733,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	/**
 	 * Drops all tables in database
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		$this->adapter->exec( "
 			BEGIN
@@ -755,7 +752,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 
 			END;" );
 	}
-	public function drop($t){
+	public function _drop($t){
 		$this->adapter->exec("drop table $t CASCADE CONSTRAINTS ';");
 	}
 }

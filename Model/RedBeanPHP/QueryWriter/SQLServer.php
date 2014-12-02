@@ -7,7 +7,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
 /**
  * RedBean SQLServerWriter
  *
@@ -22,8 +21,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
  */
 class SQLServer extends AQueryWriter implements QueryWriter
 {
-	
-	use XQueryWriter;
 	
 	/**
 	 * Data types
@@ -179,7 +176,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::getTables
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		return $this->adapter->getCol( 'SELECT * FROM sys.Tables' );
 	}
@@ -225,7 +222,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::createTable
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		$table = $this->esc( $table );
 
@@ -237,7 +234,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::getColumns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$columnsRaw = $this->adapter->get( "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" . $this->esc( $table ) . "'" );
 
@@ -388,7 +385,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	/**
 	 * @see RedBean_QueryWriter::wipeAll
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		foreach ( $this->getTables() as $t ) {
 			try {
@@ -452,7 +449,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
     /**
      * @see RedBean_QueryWriter::addColumn
      */
-    public function addColumn( $type, $column, $field )
+    public function _addColumn( $type, $column, $field )
     {
         $table  = $type;
         $type   = $field;

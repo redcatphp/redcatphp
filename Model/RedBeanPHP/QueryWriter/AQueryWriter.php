@@ -76,9 +76,66 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public $typeno_sqltype = [];
 	
+	function __get($k){
+		if(property_exists($this,$k))
+			return $this->$k;
+	}
+	
+	private static $_allTables = null;
+	private static $_allColumns = [];
+	function getTables(){
+		if(!isset(self::$_allTables))
+			self::$_allTables = $this->_getTables();
+		return self::$_allTables;
+	}
+	function createTable($table){
+		if(isset(self::$_allTables)&&!in_array($table,self::$_allTables))
+			self::$_allTables[] = $table;
+		return $this->_createTable($table);
+	}
+	function addColumn( $table, $column, $datatype ){
+		$datatype = trim($datatype);
+		if(isset(self::$_allColumns[$table])){
+			$newtype = isset($this->typeno_sqltype[$datatype])?$this->typeno_sqltype[$datatype]:'';
+			self::$_allColumns[$table][$column] = $newtype;
+		}
+		return $this->_addColumn($table, $column, $datatype);
+	}
+	function widenColumn( $table, $column, $datatype ){
+		$datatype = trim($datatype);
+		if(!isset($this->typeno_sqltype[$datatype]))
+			return;
+		if(isset(self::$_allColumns[$table])){
+			$newtype = isset($this->typeno_sqltype[$datatype])?$this->typeno_sqltype[$datatype]:'';
+			self::$_allColumns[$table][$column] = $newtype;
+		}
+		return $this->_widenColumn($table, $column, $datatype);
+	}
+	function getColumns($table){
+		if(!isset(self::$_allColumns[$table]))
+			self::$_allColumns[$table] = $this->_getColumns($table);
+		return self::$_allColumns[$table];
+	}
+	function wipeAll(){
+		$this->_wipeAll();
+		self::$_allTables = [];
+		self::$_allColumns = [];
+	}
+	function drop($t){
+		if(isset(self::$_allTables)&&($i=array_search($t,self::$_allTables))!==false)
+			unset(self::$_allTables[$i]);
+		if(isset(self::$_allColumns[$t]))
+			unset(self::$_allColumns[$t]);
+		$this->_drop($t);
+	}
+	function columnExists($table,$column){
+		return in_array($column,array_keys($this->getColumns( $table )));
+	}
+	
+	
 	private static $camelsSnakeCase = false;
 	static function toSnake($camel){
-		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
+		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport!==false)
 			return $camel;
         return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $camel))); 
 		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
@@ -662,7 +719,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::addColumn
 	 */
-	public function addColumn( $type, $column, $field )
+	public function _addColumn( $type, $column, $field )
 	{
 		$table  = $type;
 		$type   = $field;
@@ -981,7 +1038,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	 * @see QueryWriter::widenColumn
 	 */
-	public function widenColumn( $type, $column, $datatype )
+	public function _widenColumn( $type, $column, $datatype )
 	{
 		if ( !isset($this->typeno_sqltype[$datatype]) ) return;
 

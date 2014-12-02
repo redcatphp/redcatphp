@@ -8,8 +8,6 @@ use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\Database;
 
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
-
 /**
  * RedBean SQLiteWriter with support for SQLite types
  *
@@ -24,7 +22,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
  */
 class SQLiteT extends AQueryWriter implements QueryWriter
 {
-	use XQueryWriter;
 	protected $separator = ',';
 	protected $agg = 'GROUP_CONCAT';
 	protected $aggCaster = '';
@@ -302,7 +299,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addColumn
 	 */
-	public function addColumn( $table, $column, $type )
+	public function _addColumn( $table, $column, $type )
 	{
 		$column = $this->check( $column );
 		$table  = $this->check( $table );
@@ -324,7 +321,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::widenColumn
 	 */
-	public function widenColumn( $type, $column, $datatype )
+	public function _widenColumn( $type, $column, $datatype )
 	{
 		$t = $this->getTable( $type );
 
@@ -336,7 +333,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getTables();
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		return $this->adapter->getCol( "SELECT name FROM sqlite_master
 			WHERE type='table' AND name!='sqlite_sequence';" );
@@ -345,7 +342,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::createTable
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		$table = $this->esc( $table );
 
@@ -357,7 +354,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getColumns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$table      = $this->esc( $table, TRUE );
 
@@ -445,7 +442,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::wipeAll
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		$this->adapter->exec( 'PRAGMA foreign_keys = 0 ' );
 
@@ -463,7 +460,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
 	}
-	public function drop($t){
+	public function _drop($t){
 		$this->adapter->exec( 'PRAGMA foreign_keys = 0 ' );
 		try {
 			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );

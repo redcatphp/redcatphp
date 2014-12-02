@@ -6,7 +6,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
 use Surikat\Model\RedBeanPHP\Database;
 
 /**
@@ -23,7 +22,6 @@ use Surikat\Model\RedBeanPHP\Database;
  */
 class MySQL extends AQueryWriter implements QueryWriter
 {
-	use XQueryWriter;
 	protected $separator = 'SEPARATOR';
 	protected $agg = 'GROUP_CONCAT';
 	protected $aggCaster = '';
@@ -165,7 +163,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getTables
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		return $this->adapter->getCol( 'show tables' );
 	}
@@ -173,7 +171,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::createTable
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		$table = $this->esc( $table );
 
@@ -186,7 +184,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getColumns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$columnsRaw = $this->adapter->get( "DESCRIBE " . $this->esc( $table ) );
 
@@ -381,7 +379,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::wipeAll
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 0;' );
 
@@ -400,7 +398,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 1;' );
 	}
 
-	public function drop($t){
+	public function _drop($t){
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 0;' );
 		try {
 			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );

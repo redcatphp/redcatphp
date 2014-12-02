@@ -167,7 +167,7 @@ class Database{
 	}
 
 	function inspect( $type = NULL ){
-		return ($type === NULL) ? $this->writer->getTables() : $this->writer->getColumns( AQueryWriter::toSnake($type) );
+		return ($type === NULL) ? $this->writer->_getTables() : $this->writer->getColumns( AQueryWriter::toSnake($type) );
 	}
 
 	function store( $bean ){

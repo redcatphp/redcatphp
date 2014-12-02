@@ -5,7 +5,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter; 
 use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
 /**
  * RedBean CUBRID Writer
  *
@@ -20,7 +19,6 @@ use Surikat\Model\RedBeanPHP\QueryWriter\XQueryWriter;
  */
 class CUBRID extends AQueryWriter implements QueryWriter
 {
-	use XQueryWriter;
 	protected $caseSupport = false;
 	/**
 	 * Data types
@@ -169,7 +167,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getTables
 	 */
-	public function getTables()
+	public function _getTables()
 	{
 		$rows = $this->adapter->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 
@@ -179,7 +177,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::createTable
 	 */
-	public function createTable( $table )
+	public function _createTable( $table )
 	{
 		$sql  = 'CREATE TABLE '
 			. $this->esc( $table )
@@ -193,7 +191,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getColumns
 	 */
-	public function getColumns( $table )
+	public function _getColumns( $table )
 	{
 		$table = $this->esc( $table );
 
@@ -262,7 +260,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addColumn
 	 */
-	public function addColumn( $type, $column, $field )
+	public function _addColumn( $type, $column, $field )
 	{
 		$table  = $type;
 		$type   = $field;
@@ -352,14 +350,14 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::wipeAll
 	 */
-	public function wipeAll()
+	public function _wipeAll()
 	{
 		foreach ( $this->getTables() as $t ) {
 			$this->drop($t);
 		}
 	}
 
-	public function drop($t){
+	public function _drop($t){
 		foreach ( $this->getKeys( $t ) as $k ) {
 			$this->adapter->exec( "ALTER TABLE \"{$k['FKTABLE_NAME']}\" DROP FOREIGN KEY \"{$k['FK_NAME']}\"" );
 		}
