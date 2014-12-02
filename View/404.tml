@@ -1,4 +1,4 @@
-<Presenter: />
+<Presenter:Basic />
 <?php
 header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
 if(in_array(strtolower(pathinfo(uri::param(0),PATHINFO_EXTENSION)),array(

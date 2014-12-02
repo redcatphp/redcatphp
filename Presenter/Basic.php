@@ -1,8 +1,8 @@
-<?php namespace Surikat;
+<?php namespace Surikat\Presenter;
 use Surikat\Tool\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
-class Presenter extends ArrayObject{
+class Basic extends ArrayObject{
 	static function document(FILE $file){}
 	static function load(TML $tml){
 		if(!$tml->vFile)
@@ -24,9 +24,9 @@ class Presenter extends ArrayObject{
 		$tml->vFile->present = $o;
 	}
 	function assign(){}
-	function execute(){
-		 if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(count(view::getInstance()->getUri()->getParam())>1||!empty($_GET)))
-			view::getInstance()->error(404);
+	function execute(){	
+		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(($this->URI&&count($this->URI->getParam())>1)||!empty($_GET)))
+			View::getInstance()->error(404);
 		$this->dynamic();
 	}
 	function dynamic(){}
