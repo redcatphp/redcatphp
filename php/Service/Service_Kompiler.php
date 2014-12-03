@@ -82,47 +82,6 @@ if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
 		});
 			
 	}
-	static function Make_Ninja(){
-		echo '<form method="POST" action="./Make_Ninja"><input name="dir" type="text" value="'.(isset($_POST['dir'])?$_POST['dir']:realpath(SURIKAT_PATH.'../').'/new-ninja/').'"><input type="submit" value="New Ninja"></form>';
-		if(isset($_POST['dir'])){
-			$dir = rtrim($_POST['dir'],'/').'/';
-			echo "<h1>Making Ninja '".$dir."':</h1><pre>\r\n";
-			//if(is_dir($dir))
-				//throw new \Exception($dir.' allready exit');
-			FS::mkdir($dir);
-			self::Set_PROD_Mode($dir.'index.php');
-			$sl = strlen(SURIKAT_SPATH);
-			$callback = function($file)use($sl,$dir){
-				if(is_dir($file))
-					return;
-				$f = $dir.($b=substr($file,$sl));
-				FS::mkdir($f,true);
-				copy($file,$f);
-				echo "$b\r\n";
-			};
-			echo '<pre>';
-			FS::recurse(SURIKAT_SPATH.'css',$callback);
-			FS::recurse(SURIKAT_SPATH.'js',$callback);
-			FS::recurse(SURIKAT_SPATH.'img',$callback);
-			FS::recurse(SURIKAT_SPATH.'x-dom',$callback);
-			FS::mkdir($dir.'view');
-			copy(SURIKAT_SPATH.'view/layout.tml',$dir.'view/TML');
-			echo "view/TML\r\n";
-			copy(SURIKAT_SPATH.'view/index.tml',$dir.'view/.tml');
-			echo "view/.tml\r\n";
-			copy(SURIKAT_SPATH.'view/404.tml',$dir.'view/404.tml');
-			echo "view/404.tml\r\n";
-			file_put_contents($dir.'css/style.scss','');
-			echo "css/style.scss\r\n";
-			file_put_contents($dir.'js/script.js','');
-			echo "js/script.js\r\n";
-			copy(SURIKAT_SPATH.'htaccess',$dir.'.htaccess');
-			echo ".htaccess\r\n";
-			echo '</pre>';
-			echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
-			FS::mkdir($dir.'.tmp');
-		}
-	}
 	protected static function cachedHTTP($file){
 		return is_file($file)&&filesize($file)&&filemtime($file)>time()-self::$httpCache;
 	}

@@ -2,6 +2,7 @@
 /.tmp
 /config/deploy.ini
 /config/db.php
+/config/db.*.php
 /Surikat
 *.min.css
 *.min.js
