@@ -1,0 +1,24 @@
+<Presenter:Basic />
+<?
+header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+if(in_array(strtolower(pathinfo($THIS->URI[0],PATHINFO_EXTENSION)),array(
+	'js','css','png','jpg','jpeg','gif','svg','ttf','otf','woff','eot',
+)))
+	exit;
+?>
+<extend>
+	<attr selector="main" addClass="not-found">
+	<main>
+		<div>
+			<h1>Oops!</h1>
+			<h2>Page introuvable</h2>
+			<div class="error-details">
+				Sorry, an error has occured, Requested page not found!
+			</div>
+			<div class="error-actions">
+				<a href="">Retour à l'accueil</a>
+				<a href="Contact">Contact</a>
+			</div>
+		</div>
+	</main>
+</extend>
