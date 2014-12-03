@@ -1,4 +1,4 @@
-$css('/x-dom/geo-completer');
+$css('is.geo-completer');
 
 $css('jquery-ui/core');
 $css('jquery-ui/menu');

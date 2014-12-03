@@ -64,7 +64,7 @@
 	var obj = {
 		dev:false,
 		async:true,
-		xdom:'/x-dom/',
+		xdom:'is.',
 		path:'js/',
 		pathDetection:true,
 		pathSuffix:'.js',

@@ -1,4 +1,4 @@
-$css('/x-dom/dropdown');
+$css('is.dropdown');
 $js('jquery',function(){
 	"use strict";
 	var event = 'click'

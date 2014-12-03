@@ -8,8 +8,9 @@ use Surikat\Route\Dispatcher;
 use Surikat\Route\Finder_ByTml;
 
 class Application{
-	function run($path){
-		$dispatcher = new Dispatcher();
+	function run($path,&$dispatcher=null){
+		if(!is_object($dispatcher))
+			$dispatcher = $this->factoryDispatcher();
 		
 		$this->URI = new Finder_ByTml();
 		
@@ -25,9 +26,12 @@ class Application{
 	function __invoke($tml){
 		$this->indexExec($tml.'.tml');
 	}
+	function factoryDispatcher(){
+		return new Dispatcher();
+	}
 	
 	protected $URI;
-	protected $xDom = 'x-dom/';
+	protected $xDom = 'css/is.';
 	protected $prefixTmlCompile = '';
 	function getUri(){
 		return $this->URI;
