@@ -7,11 +7,10 @@ use Surikat\Tool\FS;
 use Surikat\Tool\PHP;
 use Surikat\Tool\Min\HTML as minHTML;
 use Surikat\Tool\Min\PHP as minPHP;
-class FILE {
+class TeMpLate {
 	var $forceCompile;
 	var $path;
-	var $dirCwd;
-	var $dirAdd = [];
+	var $dirCwd = [];
 	var $dirCompile;
 	var $dirCache;
 	var $compile = [];
@@ -23,8 +22,10 @@ class FILE {
 	function __construct($path=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'viewCompile/');
 		$this->setDirCache(SURIKAT_TMP.'viewCache/');
-		$this->setDirCwd(SURIKAT_PATH.'tml/');
-		$this->registerDirCwd(SURIKAT_SPATH.'tml/');
+		$this->setDirCwd([
+			SURIKAT_PATH.'tml/',
+			SURIKAT_SPATH.'tml/',
+		]);
 		if(Dev::has(Dev::VIEW))
 			$this->forceCompile = true;
 		if(isset($path))
@@ -43,8 +44,6 @@ class FILE {
 		}
 	}
 	function setPath($path){
-		if(strpos($path,$this->dirCwd)===0)
-			$path = substr($path,strlen($this->dirCwd));
 		$this->path = $path;
 	}
 	function setDirCompile($d){
@@ -54,34 +53,22 @@ class FILE {
 		$this->dirCache = rtrim($d,'/').'/';
 	}
 	function setDirCwd($d){
-		$this->dirCwd = rtrim($d,'/').'/';
+		$this->dirCwd = [];
+		$this->addDirCwd($d);
 	}
 	function getDirCwd(){
 		return $this->dirCwd;
 	}
-	function getAddDirCwd($d){
-		return $this->dirAdd;
+	function addDirCwd($d){
+		foreach((array)$d as $dir)
+			if(!in_array($dir,$this->dirCwd))
+				$this->dirCwd[] = rtrim($dir,'/').'/';
 	}
-	function registerDirCwd($d){
-		if(!in_array($d,$this->dirAdd))
-			$this->dirAdd[] = $d;
-	}
-	function registerCompile($call){
+	function onCompile($call){
 		$this->compile[] = $call;
 	}
-	function path($path=null){
-		if(!func_num_args())
-			return $this->path($this->path);
-		if(strpos($path,$this->dirCwd)===0)
-			$path = substr($path,strlen($this->dirCwd));
-		if(strpos($path,'/')===0&&is_file($file=$this->dirCwd.$path))
-			return $file;
-		$local = $this->dirCwd.dirname($this->path).'/'.$path;
-		if(strpos($path,'./')===0)
-			return $local;
-		if($file=realpath($local))
-			return $file;
-		return $this->dirCwd.$path;
+	function getPath(){
+		return $this->path;
 	}
 	function prepare(){
 		if(!($file=$this->find()))
@@ -113,14 +100,18 @@ class FILE {
 		include($this->dirCompile.$this->path);
 		return $this;
 	}
-	function find(){
-		if(is_file($this->dirCwd.$this->path))
-			return $this->dirCwd.$this->path;
-		foreach((array)$this->dirAdd as $dir)
-			if(is_file($dir.$this->path)){
-				$this->dirCwd = $dir;
-				return $dir.$this->path;
-			}
+	function find($path=null){
+		if(!isset($path))
+			$path = $this->path;
+		foreach($this->dirCwd as $d){			
+			if(strpos($path,'/')===0&&is_file($file=$d.$path))
+				return $file;
+			$local = $d.dirname($this->path).'/'.$path;
+			if(strpos($path,'./')===0)
+				return $local;
+			if($file=realpath($local))
+				return $file;
+		}
 	}
 	function mtime($file,$sync,$forceCache=true){
 		return sync::mtime($this->dirCache.$file,$sync,$forceCache);
@@ -157,37 +148,37 @@ class FILE {
 			$str = minPHP::minify($str);
 		return $this->compileStore($file,$str);
 	}
-	function dirCompileToDirCwd($v){
-		if(strpos($v,$this->dirCompile)===0)
-			$v = $this->dirCwd.substr($v,strlen($this->dirCompile));
-		return realpath($v);
-	}
-	function T_FILE($v){
-		return $this->dirCompileToDirCwd($v);
-	}
-	function T_DIR($v){
-		return $this->dirCompileToDirCwd($v);
-	}
-	protected static function phpEmulations($str){
-		$tokens = token_get_all($str);
-		$str = '';
-		foreach($tokens as $token)
-			switch(is_array($token)?$token[0]:null){
-				case T_DIR:
-					$str .= '$this->T_DIR(__DIR__)';
-				break;
-				case T_FILE:
-					$str .= '$this->T_FILE(__FILE__)';
-				break;
-				default:
-					$str .= is_array($token)?$token[1]:$token;
-				break;
-			}
-		return $str;
-	}
+	//function dirCompileToDirCwd($v){
+		//if(strpos($v,$this->dirCompile)===0)
+			//$v = $this->dirCwd.substr($v,strlen($this->dirCompile));
+		//return realpath($v);
+	//}
+	//function T_FILE($v){
+		//return $this->dirCompileToDirCwd($v);
+	//}
+	//function T_DIR($v){
+		//return $this->dirCompileToDirCwd($v);
+	//}
+	//protected static function phpEmulations($str){
+		//$tokens = token_get_all($str);
+		//$str = '';
+		//foreach($tokens as $token)
+			//switch(is_array($token)?$token[0]:null){
+				//case T_DIR:
+					//$str .= '$this->T_DIR(__DIR__)';
+				//break;
+				//case T_FILE:
+					//$str .= '$this->T_FILE(__FILE__)';
+				//break;
+				//default:
+					//$str .= is_array($token)?$token[1]:$token;
+				//break;
+			//}
+		//return $str;
+	//}
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
-		$str = self::phpEmulations($str);
+		//$str = self::phpEmulations($str);
 		if(!Dev::has(Dev::VIEW))
 			$str = minPHP::minify($str);
 		return file_put_contents($file,$str,LOCK_EX);
@@ -198,5 +189,55 @@ class FILE {
 		foreach($this->toCacheV as $cache)
 			$this->_cacheV($cache[0],$cache[1]);
 		return $this->compileStore($file,$str);
+	}
+	
+	protected $vars = [];
+    function get($key=null){
+		if(!func_num_args())
+			return $this->vars;
+        return isset($this->vars[$key])?$this->vars[$key]:null;
+    }
+    function set($key, $value = null) {
+        if(is_array($key)||is_object($key)){
+            foreach ($key as $k => $v)
+                $this->vars[$k] = $v;
+        }
+        else
+            $this->vars[$key] = $value;
+    }
+    function has($key) {
+        return isset($this->vars[$key]);
+    }
+    function clear($key = null){
+        if (is_null($key))
+            $this->vars = [];
+        else
+            unset($this->vars[$key]);
+    }
+    
+    function __set($k,$v){
+		$this->vars[$k] = $v;
+	}
+	function __get($k){
+		return isset($this->vars[$k])?$this->vars[$k]:null;
+	}
+	function __isset($k){
+		return isset($this->vars[$k]);
+	}
+	function __unset($k){
+		if(isset($this->vars[$k]))
+			unset($this->vars[$k]);
+	}
+	function offsetSet($k,$v){
+		return $this->__set($k,$v);
+	}
+	function offsetGet($k){
+		return $this->__get($k);
+	}
+	function offsetExists($k){
+		return $this->__isset($k);
+	}
+	function offsetUnset($k){
+		return $this->__unset($k);
 	}
 }

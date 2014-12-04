@@ -27,7 +27,7 @@ abstract class CALL_APL extends CORE{
 		return $this->callback;
 	}
 	function load(){
-		//if(!$this->vFile)
+		//if(!$this->TeMpLate)
 			//return;
 		$this->callback();
 	}

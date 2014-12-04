@@ -1,7 +1,6 @@
 <?php namespace Surikat\View;
 use Surikat\Config\Dev;
 use Surikat\View;
-use Surikat\View\FILE;
 use Surikat\View\TML;
 use Surikat\View\TML_Apply;
 use Surikat\View\CssSelector;
@@ -17,7 +16,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	var $namespace;
 	var $namespaceClass;
 	var $_namespaces;
-	var $vFile;
+	var $TeMpLate;
 	
 	protected $hiddenWrap;
 	protected $preventLoad;
@@ -64,19 +63,16 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		call_user_func_array($callback,[&$node,&$break]);
 	}
-	function vFile(){
-		return $this->vFile;
-	}
-	function pathFile($file){
-		return $this->path($file);
+	function TeMpLate(){
+		return $this->TeMpLate;
 	}
 	function getFile($file,$c=null){
-		if(!is_file($real=$this->vFile->path($file)))
+		if(!is_file($real=$this->TeMpLate->find($file)))
 			$this->throwException('&lt'.$c.' "'.$file.'"> template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
-		if($this->vFile)
+		if($this->TeMpLate)
 			return $this->parse($this->getFile($file,$c),$params);
 	}
 	function getInnerTml(){
@@ -94,21 +90,21 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				if($o instanceof CORE)
 					$this->parent = $o;
 				elseif(is_array($o)){
-					$this->vFile = array_shift($o);
+					$this->TeMpLate = array_shift($o);
 					$this->constructor = array_shift($o);
 				}
 				else{
-					$this->vFile = $o;
+					$this->TeMpLate = $o;
 					$this->constructor = array_shift($args);
 				}
 				if($this->parent)
-					$this->vFile = $this->parent->vFile;
+					$this->TeMpLate = $this->parent->TeMpLate;
 				$this->parse($parse);
 			}
 			else{
 				$this->parent = array_shift($args);
 				if($this->parent)
-					$this->vFile = $this->parent->vFile;
+					$this->TeMpLate = $this->parent->TeMpLate;
 				$this->interpret($args);
 			}
 		}
@@ -121,9 +117,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$code = "$this";
 		$h = sha1($code);
 		if($php)
-			$this->vFile->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
+			$this->TeMpLate->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
 		if($ev)
-			$this->vFile->cacheV($h,$this->evalue());
+			$this->TeMpLate->cacheV($h,$this->evalue());
 		$this->clear();
 		$this->head('<?php if($__including=$this->cacheInc(\''.$h.'\''.($extra!==null?(','.(is_string($extra)?"'".str_replace("'","\'",$extra)."'":'unserialize('.serialize($extra).')')):'').'))include $__including;?>');
 	}
@@ -534,7 +530,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$str .= '<'.$this->nodeName;
 			foreach($this->metaAttribution as $k=>$v)
 				if(is_integer($k)){
-					if($this->vFile&&$this->vFile->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+					if($this->TeMpLate&&$this->TeMpLate->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
 					else
 						$str .= ' '.$v;
@@ -542,7 +538,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				else{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
-			if($this->selfClosed&&$this->vFile&&$this->vFile->isXhtml)
+			if($this->selfClosed&&$this->TeMpLate&&$this->TeMpLate->isXhtml)
 				$str .= '></'.$this->nodeName;
 			elseif($this->selfClosed>1)
 				$str .= ' /';
@@ -776,7 +772,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 
 	function presentProperty(){
 		if(strpos(func_get_arg(0),'<?')!==false){
-			extract((array)$this->vFile->present);
+			extract((array)$this->TeMpLate->present);
 			ob_start();
 			eval('?>'.func_get_arg(0));
 			return ob_get_clean();

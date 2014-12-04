@@ -8,8 +8,8 @@ class Dispatcher {
 		return static::route($pattern, $callback, true);
 	}
 	function route($router, $callback, $prepend = false){
-		if(!$router instanceof Interface_Finder)
-			$router = new Finder($router);
+		if(!$router instanceof Router)
+			$router = new Router($router);
 		$router = [$router,$callback];
 		if($prepend)
 			array_unshift($this->routes,$router);
@@ -21,10 +21,11 @@ class Dispatcher {
 		foreach ($this->routes as $a){
 			list($router,$callback) = $a;
 			if($params = $router->match($uri)){
-				if(!is_array($params))
-					$params = [$params];
-				$params[] = $uri;
-				call_user_func_array($callback,$params);
+				call_user_func_array($callback,[
+					$params,
+					$uri,
+					$router
+				]);
 				return true;
 			}
 		}

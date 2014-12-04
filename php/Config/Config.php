@@ -1,5 +1,5 @@
 <?php namespace Surikat\Config;
-class Config {
+abstract class Config {
 	private static $registry = [];
 	private static $directory = 'config';
 	static function __callStatic($f,$args){

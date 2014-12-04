@@ -641,8 +641,8 @@ abstract class PARSER{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		if($this->vFile)
-			$msg .= ' on "'.$this->vFile->path().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+		if($this->TeMpLate)
+			$msg .= ' on "'.$this->TeMpLate->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 		throw new Exception_TML($msg);
 	}
 }

@@ -1,7 +1,7 @@
 <?php namespace Surikat\Route;
-class Finder implements Interface_Finder {
+class Router {
 	protected $match;
-	function __construct($match){
+	function __construct($match=null){
 		$this->match = $match;
 	}
 	function match($url){
@@ -25,5 +25,4 @@ class Finder implements Interface_Finder {
 		}
 		return call_user_func_array($match,func_get_args());
 	}
-
 }

@@ -11,8 +11,4 @@ class TML_Script extends TML{
 			$this->src .= '_t='.time();
 		}
 	}
-	function loadInclude(){
-		$this->innerHead(file_get_contents($this->pathFile($this->__get('include'))));
-		$this->__unset('include');
-	}
 }
