@@ -11,7 +11,7 @@ class Lang {
 		return call_user_func_array('__',func_get_args());
 	}
 	private function __construct($lg){
-		$this->setLang($lg);
+		$this->set($lg);
 	}
 	private function set($lg='en'){
 		$this->language = $lg;
@@ -27,7 +27,6 @@ class Lang {
 		putenv("LANG=$lang");
 		putenv("LANGUAGE=$lang");
 		putenv("LC_ALL=$lang");
-		T_textdomain('en_EN');
 		T_setlocale(LC_ALL,$lang);
 		T_bindtextdomain($this->domain,$this->locales_root);
 		T_textdomain($this->domain);
@@ -44,7 +43,7 @@ class Lang {
 	private static $o = [];
 	static function o($lg='en'){
 		if(!isset(self::$o[$lg]))
-			self::$o[$lg] = new i18n($lg);
+			self::$o[$lg] = new static($lg);
 		return self::$o[$lg];
 	}
 	function __call($func,$args){
