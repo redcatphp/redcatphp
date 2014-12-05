@@ -38,12 +38,6 @@ class R extends RedBeanPHP\Facade{
 			self::loadDB($key);
 		return parent::selectDatabase($key);
 	}
-	static function initialize(){		
-		if(self::loadDB('default')){
-			self::selectDatabase('default');
-			if(Dev::has(Dev::MODEL))
-				self::debug(true,2);
-		}
-	}
 }
-R::initialize();
+if(R::loadDB('default'))
+	R::selectDatabase('default');

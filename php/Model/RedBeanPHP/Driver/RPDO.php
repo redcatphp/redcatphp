@@ -8,6 +8,7 @@ use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
+use Surikat\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
 use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
 
 /**
@@ -134,6 +135,8 @@ class RPDO implements Driver
 		if ( $this->debug && $this->logger ) {
 			$this->logger->log( $sql, $bindings );
 		}
+		if(Dev::has(Dev::MODEL))
+			$this->debugger()->log($sql, $bindings);
 
 		try {
 			if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
@@ -157,6 +160,10 @@ class RPDO implements Driver
 				if ( $this->debug && $this->logger ) {
 					$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
 				}
+				
+				if(Dev::has(Dev::MODEL))
+					$this->debugger()->log('resultset: ' . count( $this->resultArray ) . ' rows');
+				
 			} else {
 				$this->resultArray = [];
 			}
@@ -165,8 +172,12 @@ class RPDO implements Driver
 			//So we need a property to convey the SQL State code.
 			$err = $e->getMessage();
 
-			if ( $this->debug && $this->logger ) $this->logger->log( 'An error occurred: ' . $err );
-
+			if ( $this->debug && $this->logger )
+				$this->logger->log( 'An error occurred: ' . $err );
+			
+			if(Dev::has(Dev::MODEL))
+				$this->debugger()->log('An error occurred: '.$err);
+				
 			$exception = new SQL( $err, 0 );
 			$exception->setSQLState( $e->getCode() );
 
@@ -536,5 +547,12 @@ class RPDO implements Driver
 	public function isConnected()
 	{
 		return $this->isConnected && $this->pdo;
+	}
+	
+	private $debugger;
+	function debugger(){
+		if(!isset($this->debugger))
+			$this->debugger = new Debug;
+		return $this->debugger;
 	}
 }
