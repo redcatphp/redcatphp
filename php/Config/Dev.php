@@ -1,20 +1,21 @@
 <?php namespace Surikat\Config;
 abstract class Dev{
 	const NO = 0;
-	const CONTROL = 2;
-	const VIEW = 4;
-	const PRESENT = 8;
-	const MODEL = 16;
-	const MODEL_SCHEMA = 32;
-	const URI = 64;
-	const I18N = 128;
-	const JS = 256;
-	const CSS = 512;
-	const IMG = 1024;
-	const STD = 174; //CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
-	const SERVER = 190; //CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
-	const NAV = 1856; //URI+JS+CSS+IMG
-	const ALL = 2046;
+	const PHP = 2;
+	const CONTROL = 4;
+	const VIEW = 8;
+	const PRESENT = 16;
+	const MODEL = 32;
+	const MODEL_SCHEMA = 64;
+	const URI = 128;
+	const I18N = 256;
+	const JS = 512;
+	const CSS = 1024;
+	const IMG = 2048;
+	const STD = 350; //PHP+CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
+	const SERVER = 382; //PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
+	const NAV = 3712; //URI+JS+CSS+IMG
+	const ALL = 4094;
 	private static $level = 78;
 	static function has($d){
 		return !!($d&self::$level);
@@ -29,7 +30,8 @@ abstract class Dev{
 		$oldLevel = self::$level;
 		if(isset($l)){
 			self::$level = $l;
-			self::errorReport(self::$level);
+			if(self::has(self::PHP))
+				self::errorReport(self::$level);
 		}
 		return $oldLevel;
 	}
