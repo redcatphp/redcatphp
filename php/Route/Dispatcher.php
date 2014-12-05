@@ -2,10 +2,10 @@
 class Dispatcher {
 	protected $routes = [];
 	function append($pattern, $callback){
-		return static::route($pattern, $callback);
+		return $this->route($pattern, $callback);
 	}
 	function prepend($pattern, $callback){
-		return static::route($pattern, $callback, true);
+		return $this->route($pattern, $callback, true);
 	}
 	function route($router, $callback, $prepend = false){
 		if(!$router instanceof Router)

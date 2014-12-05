@@ -19,19 +19,26 @@ class TeMpLate {
 	var $childNodes = [];
 	var $isXhtml;
 	var $present;
-	function __construct($path=null,$options=null){
-		$this->setDirCompile(SURIKAT_TMP.'viewCompile/');
-		$this->setDirCache(SURIKAT_TMP.'viewCache/');
+	function __construct($file=null,$vars=null,$options=null){
+		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
+		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
 		$this->setDirCwd([
 			SURIKAT_PATH.'tml/',
 			SURIKAT_SPATH.'tml/',
 		]);
-		if(Dev::has(Dev::VIEW))
-			$this->forceCompile = true;
-		if(isset($path))
-			$this->setPath($path);
+		if(isset($file))
+			$this->setPath($file);
+		if(isset($vars))
+			$this->set($vars);
 		if(isset($options))
 			$this->setOptions($options);
+	}
+	protected $Controller;
+	function setController($Controller){
+		$this->Controller = $Controller;
+	}
+	function getController(){
+		return $this->Controller;
 	}
 	function setOptions($options=[]){
 		foreach($options as $k=>$v){
@@ -79,22 +86,22 @@ class TeMpLate {
 		$this->childNodes[] = $node;
 		return $node;
 	}
-	function __eval(){
-		eval('?>'.$this->prepare());
-		return $this;
-	}
 	function evalue(){
 		$compileFile = $this->dirCompile.$this->path.'.svar';
-		if($this->forceCompile||!is_file($compileFile))
+		if((!isset($this->forceCompile)&&Dev::has(Dev::VIEW))||$this->forceCompile||!is_file($compileFile))
 			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
 			$ev = unserialize(file_get_contents($compileFile,LOCK_EX));
 		eval('?>'.$ev);
 		return $this;
 	}
-	function display($vars=[]){
-		if($this->forceCompile||!is_file($this->dirCompile.$this->path))
+	function display($file=null,$vars=[]){
+		if(isset($file))
+			$this->setPath($file);
+		if((!isset($this->forceCompile)&&Dev::has(Dev::VIEW))||!is_file($this->dirCompile.$this->path))
 			$this->compilePHP($this->dirCompile.$this->path,(string)$this->prepare());
+		if(!empty($this->vars))
+		$vars = array_merge($this->vars,$vars);
 		if(!empty($vars))
 			extract($vars);
 		include($this->dirCompile.$this->path);

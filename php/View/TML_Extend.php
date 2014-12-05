@@ -8,12 +8,14 @@ class TML_Extend extends TML {
 		//if(!$this->TeMpLate)
 			//return;
 		$this->remapAttr('file');
+		if(!isset($this->file))
+			$this->file = '';
+		if(!pathinfo($this->file,PATHINFO_EXTENSION))
+			$this->file .= '.xtml';
 		if(!$this->_extended){
 			$this->_extender = clone $this;
 			$this->__closed = true;
 			$this->_extender->_extended = $this;
-			if(!$this->file)
-				$this->file = '.xtml';
 			$this->parseFile($this->file,null,'extend');
 			foreach($this->_extender->childNodes as $extender){
 				if($extender instanceof COMMENT)

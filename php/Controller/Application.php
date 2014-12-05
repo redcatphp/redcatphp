@@ -18,6 +18,7 @@ class Application{
 	function __construct($convention=true){
 		$this->Dispatcher = new Dispatcher();
 		$this->View = new TeMpLate();
+		$this->View->setController($this);
 		if($convention)
 			$this->convention();
 	}
@@ -35,22 +36,37 @@ class Application{
 	}
 	function run($path){
 		if(! $this->Dispatcher->run($path) ){
-			//404
+			$this->error(404);
 		}
+	}
+	
+	function setDispatcher($Dispatcher){
+		$this->Dispatcher = $Dispatcher;
+	}
+	function getDispatcher(){
+		return $this->Dispatcher;
+	}
+	function setView($View){
+		$this->View = $View;
+	}
+	function getView(){
+		return $this->View;
+	}
+	function setRouter($Router){
+		$this->Router = $Router;
+	}
+	function getRouter(){
+		return $this->Router;
 	}
 	
 	protected $prefixTmlCompile = '';
 	function __invoke($params,$uri,$Router){
 		$path = $params[0];
 		$this->Router = $Router;
-		//var_dump(func_get_args());
 		if($this->i18nBySubdomain)
 			$path = $this->i18nBySubdomain($path);
 		$this->View->set('URI',$Router);
-		$this->exec($path.'.tml',[],[
-			'dirCompile'=>SURIKAT_TMP.'view/compile/'.$this->prefixTmlCompile,
-			'dirCache'=>SURIKAT_TMP.'view/cache/'.$this->prefixTmlCompile,
-		]);
+		$this->display($path.'.tml');
 	}
 	protected $i18nBySubdomain = false;
 	protected function i18nBySubdomain($path){
@@ -71,27 +87,11 @@ class Application{
 		Lang::setLocale($lang);
 		return $path;
 	}
-	protected function hookTml($s){
-		$path = ltrim($this->URI->getPath(),'/');
-		$pathFS = func_num_args()>1?func_get_arg(1):$s;
-		if(strpos($path,$s)===0){
-			$path = substr($path,strlen($s)).'.tml';
-			$this->exec($path,[],[
-				'dirCwd'=>[
-					SURIKAT_PATH.$pathFS,
-					SURIKAT_SPATH.$pathFS,
-				],
-				'dirCompile'=>SURIKAT_TMP.'view/compile/.'.$pathFS,
-				'dirCache'=>SURIKAT_TMP.'view/cache/.'.$pathFS,
-			]);
-			exit;
-		}
-	}
-	function exec($file,$vars=[],$options=[]){
+	function display($file){
+		$this->View->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
+		$this->View->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
 		try{
-			$this->View->setPath($file);
-			$this->View->setOptions($options);
-			$this->View->display($vars);
+			$this->View->display($file);
 		}
 		catch(\Surikat\View\Exception $e){
 			$this->error($e->getMessage());
@@ -99,8 +99,7 @@ class Application{
 	}
 	function error($c){
 		try{
-			$this->View->setPath($c.'.tml');
-			$this->View->display();
+			$this->View->display($c.'.tml');
 		}
 		catch(\Surikat\View\Exception $e){
 			HTTP::code($e->getMessage());

@@ -29,9 +29,25 @@ class Basic extends ArrayObject{
 	function setView($View){
 		$this->View = $View;
 	}
+	function getView(){
+		return $this->View;
+	}
 	function assign(){}
 	function execute(){	
-		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(($this->URI&&count($this->URI->getParams())>1)||!empty($_GET)))
+		if(
+			isset($this->presentAttributes->uri)
+			&&$this->presentAttributes->uri=='static'
+			&&(
+				!empty($_GET)||
+				(
+					($r = $this->getView())
+					&&($r = $r->getController())
+					&&($r = $r->getRouter())
+					&&(method_exists($r,'getParams'))
+					&&count($r->getParams())>1
+				)
+			)
+		)
 			(new Application())->error(404);
 		$this->dynamic();
 	}
