@@ -33,10 +33,10 @@ class Facade{
 	static function getVersion(){
 		return self::C_REDBEANPHP_VERSION;
 	}
-	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '' ){
+	public static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		if ( isset( self::$databases[$key] ) )
 			throw new RedException( 'A database has already be specified for this key.' );
-		self::$databases[$key] = new Database($dsn, $user, $pass, $frozen, $prefix);
+		self::$databases[$key] = new Database($dsn, $user, $pass, $frozen, $prefix, $case);
 	}
 	public static function selectDatabase( $key ){
 		if ( self::$currentDB === $key )

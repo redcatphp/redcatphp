@@ -29,12 +29,6 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIFIED        = 99;
-
-	/**
-	 * @var DBAdapter
-	 */
-	protected $adapter;
-	protected $database;
 	
 	/**
 	 * @var string
@@ -130,9 +124,9 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=false )
 	{
-		$this->setPrefix($prefix);
+		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
 			CUBRID::C_DATATYPE_INTEGER          => 'INTEGER',
 			CUBRID::C_DATATYPE_DOUBLE           => 'DOUBLE',
@@ -140,17 +134,10 @@ class CUBRID extends AQueryWriter implements QueryWriter
 			CUBRID::C_DATATYPE_SPECIAL_DATE     => 'DATE',
 			CUBRID::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
 		];
-
-		$this->sqltype_typeno = [];
-
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( ( $v ) )] = $k;
 		}
-
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
-
-		$this->adapter = $a;
-		$this->database       = $db;
 	}
 
 	/**

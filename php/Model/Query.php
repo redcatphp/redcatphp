@@ -206,21 +206,6 @@ class Query {
 			$sql .= "LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}";
 		return $sql;
 	}
-	static function typeAliasExtract($type,&$superalias=null){
-		$type = AQueryWriter::toSnake(trim($type));
-		$alias = null;
-		if(($p=strpos($type,':'))!==false){
-			if(isset($type[$p+1])&&$type[$p+1]==':'){
-				$superalias = trim(substr($type,$p+2));
-				$type = trim(substr($type,0,$p));
-			}
-			else{
-				$alias = trim(substr($type,$p+1));
-				$type = trim(substr($type,0,$p));
-			}
-		}
-		return [$type,$alias?$alias:$type];
-	}
 	function selectRelationnal($select,$colAlias=null){
 		$this->getRelationnal($select,$colAlias,true);
 		return $this;
@@ -243,7 +228,7 @@ class Query {
 		for($i=0;$i<$l;$i++){
 			switch($select[$i]){
 				case '>': //own
-					list($type,$alias) = self::typeAliasExtract($type,$superalias);
+					list($type,$alias) = $this->writer->specialTypeAliasExtract($type,$superalias);
 					if($superalias)
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
@@ -255,7 +240,7 @@ class Query {
 					$relation = '>';
 				break;
 				case '<':
-					list($type,$alias) = self::typeAliasExtract($type,$superalias);
+					list($type,$alias) = $this->writer->specialTypeAliasExtract($type,$superalias);
 					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
 						if($superalias)

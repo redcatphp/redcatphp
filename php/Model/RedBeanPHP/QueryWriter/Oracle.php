@@ -22,15 +22,6 @@ use Surikat\Model\RedBeanPHP\Database;
 class Oracle extends AQueryWriter implements QueryWriter
 {
 	
-	protected $caseSupport = false;
-	/**
-	 * Adapter
-	 *
-	 * @var RedBean_Adapter
-	 */
-	protected $adapter;
-	protected $database;
-
 	/**
 	 * character to escape keyword table/column names
 	 *
@@ -137,7 +128,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function esc( $c, $q = FALSE )
 	{
-		return parent::esc( ( !$q ) ? strtoupper( $c ) : $c, $q );
+		return parent::esc( ( !$q ) ? $c : $c, $q );
 	}
 
 	/**
@@ -147,24 +138,20 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return string table name
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=false )
 	{
-		$this->setPrefix($prefix);
-		$this->adapter        = $a;
-		$this->database       = $db;
+		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
-			RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL              => 'NUMBER(1,0)',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_UINT8             => 'NUMBER(3,0)',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32            => 'NUMBER(11,0)',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_DOUBLE            => 'FLOAT',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT8             => 'NVARCHAR2(255)',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT16            => 'NVARCHAR2(2000)',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT32            => 'CLOB',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_DATE      => 'DATE',
-			RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_TIMESTAMP => 'TIMESTAMP(6)' ];
-
-		$this->sqltype_typeno = [];
-
+			self::C_DATATYPE_BOOL              => 'NUMBER(1,0)',
+			self::C_DATATYPE_UINT8             => 'NUMBER(3,0)',
+			self::C_DATATYPE_UINT32            => 'NUMBER(11,0)',
+			self::C_DATATYPE_DOUBLE            => 'FLOAT',
+			self::C_DATATYPE_TEXT8             => 'NVARCHAR2(255)',
+			self::C_DATATYPE_TEXT16            => 'NVARCHAR2(2000)',
+			self::C_DATATYPE_TEXT32            => 'CLOB',
+			self::C_DATATYPE_SPECIAL_DATE      => 'DATE',
+			self::C_DATATYPE_SPECIAL_TIMESTAMP => 'TIMESTAMP(6)'
+		];
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[$v] = $k;
 		}
@@ -181,18 +168,18 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$tableNoQuote   = strtoupper( $this->esc( $table, TRUE ) );
-		$tableWithQuote = strtoupper( $this->esc( $table ) );
+		$tableNoQuote   = $this->esc( $table, TRUE );
+		$tableWithQuote = $this->esc( $table );
 
 		sort( $columns ); //else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = strtoupper( $this->esc( $v, TRUE ) );
+			$columns[$k] = $this->esc( $v, TRUE );
 		}
 
 		$r = $this->adapter->get( "SELECT INDEX_NAME FROM USER_INDEXES WHERE TABLE_NAME='$tableNoQuote' AND UNIQUENESS='UNIQUE'" );
 
-		$name = strtoupper( 'UQ_' . substr( sha1( implode( ',', $columns ) ), 0, 20 ) );
+		$name = 'UQ_' . substr( sha1( implode( ',', $columns ) ), 0, 20 );
 
 		if ( $r ) {
 			foreach ( $r as $i ) {
@@ -222,13 +209,13 @@ class Oracle extends AQueryWriter implements QueryWriter
 	protected function constrain( $table, $table1, $table2, $property1, $property2 )
 	{
 		try {
-			$table     = strtoupper( $this->esc( $table ) );
+			$table     = $this->esc( $table );
 
-			$table1    = strtoupper( $this->esc( $table1 ) );
-			$table2    = strtoupper( $this->esc( $table2 ) );
+			$table1    = $this->esc( $table1 );
+			$table2    = $this->esc( $table2 );
 
-			$property1 = strtoupper( $this->esc( $property1 ) );
-			$property2 = strtoupper( $this->esc( $property2 ) );
+			$property1 = $this->esc( $property1 );
+			$property2 = $this->esc( $property2 );
 
 			$fks       = $this->adapter->getCell( "
 				SELECT COUNT(*)
@@ -241,12 +228,12 @@ class Oracle extends AQueryWriter implements QueryWriter
 
 			$columns = $this->getColumns( $table );
 
-			if ( $this->code( $columns[$property1] ) !== RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32 ) {
-				$this->widenColumn( $table, $property1, RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32 );
+			if ( $this->code( $columns[$property1] ) !== self::C_DATATYPE_UINT32 ) {
+				$this->widenColumn( $table, $property1, self::C_DATATYPE_UINT32 );
 			}
 
-			if ( $this->code( $columns[$property2] ) !== RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32 ) {
-				$this->widenColumn( $table, $property2, RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32 );
+			if ( $this->code( $columns[$property2] ) !== self::C_DATATYPE_UINT32 ) {
+				$this->widenColumn( $table, $property2, self::C_DATATYPE_UINT32 );
 			}
 
 			$sql = "
@@ -279,7 +266,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function count( $beanType, $addSQL = '', $params = [] )
 	{
-		return parent::count( strtoupper( $beanType ), $addSQL, $params );
+		return parent::count( $beanType, $addSQL, $params );
 	}
 
 	/**
@@ -306,10 +293,10 @@ class Oracle extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = strtoupper( $this->esc( $table ) );
+		$table  = $this->esc( $table );
 
 		$name   = $this->limitOracleIdentifierLength( preg_replace( '/\W/', '', $name ) );
-		$column = strtoupper( $this->esc( $column ) );
+		$column = $this->esc( $column );
 
 		try {
 			$this->adapter->exec( "CREATE INDEX $name ON $table ($column) " );
@@ -336,8 +323,8 @@ class Oracle extends AQueryWriter implements QueryWriter
 			throw new Exception( $table . ' is not lowercase. With ORACLE you MUST only use lowercase table in PHP, sorry!' );
 		}
 
-		$table_with_quotes         = strtoupper( $this->esc( $table ) );
-		$safe_table_without_quotes = strtoupper( $this->esc( $table, TRUE ) );
+		$table_with_quotes         = $this->esc( $table );
+		$safe_table_without_quotes = $this->esc( $table, TRUE );
 
 		$sql = "CREATE TABLE $table_with_quotes(
                 ID NUMBER(11) NOT NULL,
@@ -387,7 +374,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 			throw new Exception( $column . ' is not lowercase. With ORACLE you MUST only use lowercase properties in PHP, sorry!' );
 		}
 
-		parent::addColumn( strtoupper( $type ), strtoupper( $column ), $field );
+		parent::addColumn( $type, $column, $field );
 	}
 
 	/**
@@ -400,14 +387,10 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return integer $insertid      insert id from driver, new record id
 	 */
-	protected function insertRecord( $table, $insertcolumns, $insertvalues )
-	{
-		foreach ( $insertcolumns as &$col ) {
-			$col = strtoupper( $col );
-		}
-
-		return parent::insertRecord( strtoupper( $table ), $insertcolumns, $insertvalues );
-	}
+	//protected function insertRecord( $table, $insertcolumns, $insertvalues )
+	//{
+		//return parent::insertRecord( $table, $insertcolumns, $insertvalues );
+	//}
 
 	/**
 	 * This method returns the datatype to be used for primary key IDS and
@@ -493,8 +476,8 @@ class Oracle extends AQueryWriter implements QueryWriter
 		$table   = $type;
 		$type    = $datatype;
 
-		$table   = strtoupper( $this->esc( $table ) );
-		$column  = strtoupper( $this->esc( $column ) );
+		$table   = $this->esc( $table );
+		$column  = $this->esc( $column );
 
 		$newtype = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
 
@@ -558,11 +541,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function updateRecord( $type, $updatevalues, $id = NULL )
 	{
-		foreach ( $updatevalues as &$updatevalue ) {
-			$updatevalue['property'] = strtoupper( $updatevalue['property'] );
-		}
-
-		return parent::updateRecord( strtoupper( $type ), $updatevalues, $id );
+		return parent::updateRecord( $type, $updatevalues, $id );
 	}
 
 	/**
@@ -584,16 +563,16 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
 	{
-		$table           = strtoupper( $this->esc( $type ) );
-		$tableNoQ        = strtoupper( $this->esc( $type, TRUE ) );
+		$table           = $this->esc( $type );
+		$tableNoQ        = $this->esc( $type, TRUE );
 
-		$targetTable     = strtoupper( $this->esc( $targetType ) );
+		$targetTable     = $this->esc( $targetType );
 
-		$column          = strtoupper( $this->esc( $field ) );
-		$columnNoQ       = strtoupper( $this->esc( $field, TRUE ) );
+		$column          = $this->esc( $field );
+		$columnNoQ       = $this->esc( $field, TRUE );
 
-		$targetColumn    = strtoupper( $this->esc( $targetField ) );
-		$targetColumnNoQ = strtoupper( $this->esc( $targetField, TRUE ) );
+		$targetColumn    = $this->esc( $targetField );
+		$targetColumnNoQ = $this->esc( $targetField, TRUE );
 
 		$fkName          = 'FK_' . ( $isDependent ? 'C_' : '' ) . $tableNoQ . '_' . $columnNoQ . '_' . $targetColumnNoQ;
 		$fkName          = $this->limitOracleIdentifierLength( $fkName );
@@ -633,7 +612,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function queryRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
-		return parent::queryRecord( $type, $this->filterConditions( $conditions ), $addSql, $bindings );
+		return parent::queryRecord( $type, $conditions, $addSql, $bindings );
 	}
 
 	/**
@@ -641,24 +620,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function deleteRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] )
 	{
-		parent::deleteRecord( $type, $this->filterConditions( $conditions ), $addSql, $bindings );
-	}
-
-	/**
-	 * Uppercase the conditions.
-	 *
-	 * @param array $conditions conditions
-	 *
-	 * @return array
-	 */
-	private function filterConditions( $conditions )
-	{
-		$upperCaseConditions = [];
-		foreach ( $conditions as $column => $value ) {
-			$upperCaseConditions[strtoupper( $column )] = $value;
-		}
-
-		return $upperCaseConditions;
+		parent::deleteRecord( $type, $conditions, $addSql, $bindings );
 	}
 
 	/**
@@ -675,15 +637,15 @@ class Oracle extends AQueryWriter implements QueryWriter
 		$this->svalue = $value;
 
 		if ( is_null( $value ) ) {
-			return RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL;
+			return self::C_DATATYPE_BOOL;
 		}
 
 		if ( $flagSpecial ) {
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d(\s\d\d:\d\d(:\d\d)?)?$/', $value ) ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_DATE;
+				return self::C_DATATYPE_SPECIAL_DATE;
 			}
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d.\d\d$/', $value ) ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_SPECIAL_TIMESTAMP;
+				return self::C_DATATYPE_SPECIAL_TIMESTAMP;
 			}
 		}
 
@@ -691,31 +653,31 @@ class Oracle extends AQueryWriter implements QueryWriter
 
 		if ( !$this->startsWithZeros( $value ) ) {
 			if ( $value == '1' || $value == '' ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_BOOL;
+				return self::C_DATATYPE_BOOL;
 			}
 
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 255 ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_UINT8;
+				return self::C_DATATYPE_UINT8;
 			}
 
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_UINT32;
+				return self::C_DATATYPE_UINT32;
 			}
 
 			if ( is_numeric( $value ) ) {
-				return RedBean_QueryWriter_Oracle::C_DATATYPE_DOUBLE;
+				return self::C_DATATYPE_DOUBLE;
 			}
 		}
 
 		if ( strlen( $value ) <= 255 ) {
-			return RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT8;
+			return self::C_DATATYPE_TEXT8;
 		}
 
 		if ( strlen( $value ) <= 2000 ) {
-			return RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT16;
+			return self::C_DATATYPE_TEXT16;
 		}
 
-		return RedBean_QueryWriter_Oracle::C_DATATYPE_TEXT32;
+		return self::C_DATATYPE_TEXT32;
 	}
 
     /**

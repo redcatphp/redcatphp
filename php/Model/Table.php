@@ -94,7 +94,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->_DataBase = $db;
 		$this->queryWriter = $this->_DataBase->getWriter();
 		$this->table = $table;
-		$this->type = AQueryWriter::toCamel($table);
+		$this->type = $this->queryWriter->reverseCase($table);
 		$this->_binder($table);
 	}
 	function getKeys(){
@@ -163,7 +163,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function dispense(){
 		$this->creating = true;
 		$this->table = $this->getMeta('type');
-		$this->type = AQueryWriter::toCamel($this->table);
+		$this->type = $this->queryWriter->reverseCase($this->table);
 		$c = get_class($this);
 		foreach($c::getDefColumns('cast') as $k=>$cast)
 			$this->bean->setMeta('cast.'.$k,$cast);
@@ -187,7 +187,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function open(){
 		$this->creating = false;
 		$this->table = $this->getMeta('type');
-		$this->type = AQueryWriter::toCamel($this->table);
+		$this->type = $this->queryWriter->reverseCase($this->table);
 		$this->trigger('read');
 	}
 	private static $_transactDepth = 0;

@@ -469,7 +469,7 @@ abstract class Repository
 	 */
 	public function count( $type, $addSQL = '', $bindings = [] )
 	{
-		$type = AQueryWriter::toSnake( $type );
+		$type = $this->writer->adaptCase( $type );
 		if ( count( explode( '_', $type ) ) > 2 ) {
 			throw new RedException( 'Invalid type for count.' );
 		}

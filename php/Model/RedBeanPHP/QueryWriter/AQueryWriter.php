@@ -2,10 +2,12 @@
 
 namespace Surikat\Model\RedBeanPHP\QueryWriter;
 
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Model\RedBeanPHP\Adapter;
+use Surikat\Model\RedBeanPHP\Database;
+use Surikat\Model\RedBeanPHP\Adapter\DBAdapter;
+use Surikat\Model\RedBeanPHP\RedException;
+use Surikat\Model\RedBeanPHP\QueryWriter;
+use Surikat\Model\RedBeanPHP\OODBBean;
 
 /**
  * RedBean Abstract Query Writer
@@ -75,10 +77,20 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 * @var array
 	 */
 	public $typeno_sqltype = [];
+	public $sqltype_typeno = [];
 	
 	function __get($k){
 		if(property_exists($this,$k))
 			return $this->$k;
+	}
+	
+	protected $caseSensitive;
+	protected $prefix = '';
+	function __construct(Adapter $a, Database $db, $prefix='', $case=true){
+		$this->adapter = $a;
+		$this->database = $db;
+		$this->prefix = $prefix;
+		$this->caseSensitive = $case;
 	}
 	
 	private static $_allTables = null;
@@ -132,21 +144,21 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		return in_array($column,array_keys($this->getColumns( $table )));
 	}
 	
-	
-	private static $camelsSnakeCase = false;
-	static function toSnake($camel){
-		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport!==false)
-			return $camel;
-        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $camel))); 
-		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $camel ));
+	function adaptCase($str){
+		if($this->caseSensitive)
+			return $str;
+		return self::snakeCase($str);
 	}
-	static function toCamel($snake){
-		if(!self::$camelsSnakeCase||self::getWriter()->caseSupport===false)
-			return $snake;
-		//$snake = explode('-',$snake);
-		//foreach($snake as &$v)
-			//$v = ucfirst($v);
-		//$snake = lcfirst(implode('',$snake));
+	function reverseCase($str){
+		if($this->caseSensitive)
+			return $str;
+		return self::camelCase($str);
+	}
+	static function snakeCase($str){
+        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $str))); 
+		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $str ));
+	}
+	static function camelCase($str){
 		$snake = ucwords(str_replace('_', ' ', $snake));
         $snake = str_replace(' ', '', $snake);
         $snake = lcfirst($str);
@@ -1138,20 +1150,27 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		return $this->esc( $table, $noQuotes );
 	}
-
-	protected $prefix = '';
-	function getPrefix(){
-		return $this->prefix;
-	}
-	function setPrefix($prefix){
-		$this->prefix = $prefix;
-	}
-	
+		
 	function autoWrapCol($s,$table,$col){
 		if($func=$this->database->getTableColumnDef($table,$col,'readCol'))
 			$s = $func.'('.$s.')';
 		if(isset(self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table])&&isset(self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col]))
 			$s = self::$sqlFilters[QueryWriter::C_SQLFILTER_READ][$table][$col];
 		return $s;
+	}
+	function specialTypeAliasExtract($type,&$superalias=null){
+		$type = $this->adaptCase(trim($type));
+		$alias = null;
+		if(($p=strpos($type,':'))!==false){
+			if(isset($type[$p+1])&&$type[$p+1]==':'){
+				$superalias = trim(substr($type,$p+2));
+				$type = trim(substr($type,0,$p));
+			}
+			else{
+				$alias = trim(substr($type,$p+1));
+				$type = trim(substr($type,0,$p));
+			}
+		}
+		return [$type,$alias?$alias:$type];
 	}
 }

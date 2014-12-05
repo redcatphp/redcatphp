@@ -36,12 +36,6 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIAL_POINT    = 90;
 	const C_DATATYPE_SPECIFIED        = 99;
-
-	/**
-	 * @var RedBean_Adapter_DBAdapter
-	 */
-	protected $adapter;
-	protected $database;
 	
 	/**
 	 * @var string
@@ -91,7 +85,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
                     ON PT.TABLE_NAME = PK.TABLE_NAME
                 WHERE C.CONSTRAINT_CATALOG = ?
                 AND PK.TABLE_NAME = ?",
-				array( $db, $table )
+				[$db, $table]
 			);
 
 			// already foreign keys added in this association table
@@ -134,10 +128,10 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 *
 	 * @param RedBean_Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=true )
 	{
-		$this->setPrefix($prefix);
-		$this->typeno_sqltype = array(
+		parent::__construct($a,$db,$prefix,$case);
+		$this->typeno_sqltype = [
 			self::C_DATATYPE_BOOL             => ' TINYINT ',
 			self::C_DATATYPE_UINT8            => ' TINYINT ',
 			self::C_DATATYPE_UINT32           => ' INT ',
@@ -148,17 +142,10 @@ class SQLServer extends AQueryWriter implements QueryWriter
 			self::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
 			self::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
 			self::C_DATATYPE_SPECIAL_POINT    => ' POINT ',
-		);
-
-		$this->sqltype_typeno = array();
-
+		];
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
-
-		$this->adapter = $a;
-		$this->database       = $db;
-		
 		//$this->encoding = $this->adapter->getDatabase()->getSQLServerEncoding();
 	}
 
@@ -204,7 +191,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
             $insertSQL = "INSERT INTO $table ( " . implode( ',', $insertcolumns ) . " ) VALUES
 			( " . implode( ',', array_fill( 0, count( $insertcolumns ), ' ? ' ) ) . " ) $suffix";
 
-            $ids = array();
+            $ids = [];
             foreach ( $insertvalues as $i => $insertvalue ) {
                 $ids[] = $this->adapter->getCell( $insertSQL, $insertvalue, $i );
             }
@@ -238,7 +225,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	{
 		$columnsRaw = $this->adapter->get( "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" . $this->esc( $table ) . "'" );
 
-		$columns = array();
+		$columns = [];
 		foreach ( $columnsRaw as $r ) {
 			$columns[$r['COLUMN_NAME']] = $r['DATA_TYPE'];
 		}
@@ -373,11 +360,11 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 */
 	public function sqlStateIn( $state, $list )
 	{
-		$stateMap = array(
+		$stateMap = [
 			'42S02' => QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 			'42S22' => QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
 			'23000' => QueryWriter::C_SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
-		);
+		];
 
 		return in_array( ( isset( $stateMap[$state] ) ? $stateMap[$state] : '0' ), $list );
 	}

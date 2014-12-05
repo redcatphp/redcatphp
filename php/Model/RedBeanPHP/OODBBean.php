@@ -672,7 +672,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		}
 
 		if ( !isset( $beautifulColumns[$property] ) ) {
-			$beautifulColumns[$property] = AQueryWriter::toSnake( $property );
+			$beautifulColumns[$property] = $this->beanHelper->getToolBox()->getWriter()->adaptCase( $property );
 		}
 
 		return $beautifulColumns[$property];
@@ -1352,7 +1352,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	{
 		if ( is_string( $typeOrBean ) ) {
 
-			$typeOrBean = AQueryWriter::toSnake($typeOrBean);
+			$typeOrBean = $this->beanHelper->getToolBox()->getWriter()->adaptCase($typeOrBean);
 
 			$bean = $this->beanHelper->getToolBox()->getRedBean()->dispense( $typeOrBean );
 
@@ -1395,7 +1395,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	public function via( $via )
 	{
-		$this->via = AQueryWriter::toSnake( $via );
+		$this->via = $this->beanHelper->getToolBox()->getWriter()->adaptCase( $via );
 
 		return $this;
 	}

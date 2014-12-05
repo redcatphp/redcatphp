@@ -43,9 +43,9 @@ class Database{
 	private $plugins = [];
 	private $exportCaseStyle = 'default';
 	
-	function __construct( $dsn = NULL, $username = NULL, $password = NULL, $frozen = FALSE, $prefix = '' ){
+	function __construct( $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
 		
-		$this->setup($dsn, $username, $password, $frozen, $prefix);
+		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
 		
 		$this->finder             = new Finder( $this->toolbox );
 		$this->associationManager = new AssociationManager( $this->toolbox );
@@ -58,7 +58,7 @@ class Database{
 		$this->tagManager         = new TagManager( $this->toolbox );
 		
 	}
-	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '' ){
+	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		if ( is_object($dsn) ) {
 			$db  = new RPDO( $dsn );
 			$dbType = $db->getDatabaseType();
@@ -81,7 +81,7 @@ class Database{
 		$wkey = trim( strtolower( $dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
 		$writerClass = '\\Surikat\\Model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
-		$this->writer      = new $writerClass( $this->adapter, $this, $prefix );
+		$this->writer      = new $writerClass( $this->adapter, $this, $prefix, $case );
 		$this->redbean     = new OODB( $this->writer );
 		$this->redbean->freeze( ( $frozen === TRUE ) );
 		$this->toolbox = new ToolBox( $this->redbean, $this->adapter, $this->writer, $this );
@@ -170,7 +170,7 @@ class Database{
 	}
 
 	function inspect( $type = NULL ){
-		return ($type === NULL) ? $this->writer->_getTables() : $this->writer->getColumns( AQueryWriter::toSnake($type) );
+		return ($type === NULL) ? $this->writer->_getTables() : $this->writer->getColumns( $this->writer->adaptCase($type) );
 	}
 
 	function store( $bean ){
@@ -212,7 +212,7 @@ class Database{
 			$type = $typeOrBeanArray;
 		if(!ctype_alnum($type))
 			throw new RedException('Invalid type: '.$type);
-		$type = AQueryWriter::toSnake($type);
+		$type = $this->writer->adaptCase($type);
 		$beanOrBeans = $this->redbean->dispense( $type, $num, $alwaysReturnArray );
 		if (isset($import))
 			$beanOrBeans->import( $import );
@@ -240,17 +240,17 @@ class Database{
 
 	function findOrDispense( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->findOrDispense( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->findOrDispense( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function batch( $type, $ids )
 	{
-		return $this->redbean->batch( AQueryWriter::toSnake($type), $ids );
+		return $this->redbean->batch( $this->writer->adaptCase($type), $ids );
 	}
 
 	function loadAll( $type, $ids )
 	{
-		return $this->redbean->batch( AQueryWriter::toSnake($type), $ids );
+		return $this->redbean->batch( $this->writer->adaptCase($type), $ids );
 	}
 
 	function exec( $sql, $bindings = [] )
@@ -308,7 +308,7 @@ class Database{
 
 	function convertToBeans( $type, $rows )
 	{
-		return $this->redbean->convertToBeans( AQueryWriter::toSnake($type), $rows );
+		return $this->redbean->convertToBeans( $this->writer->adaptCase($type), $rows );
 	}
 
 	function hasTag( $bean, $tags, $all = FALSE )
@@ -338,17 +338,17 @@ class Database{
 
 	function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
-		return $this->tagManager->taggedAll( AQueryWriter::toSnake($beanType), $tagList, $sql, $bindings );
+		return $this->tagManager->taggedAll( $this->writer->adaptCase($beanType), $tagList, $sql, $bindings );
 	}
 
 	function wipe( $beanType )
 	{
-		return $this->redbean->wipe( AQueryWriter::toSnake($beanType) );
+		return $this->redbean->wipe( $this->writer->adaptCase($beanType) );
 	}
 
 	function count( $type, $addSQL = '', $bindings = [] )
 	{
-		return $this->redbean->count( AQueryWriter::toSnake($type), $addSQL, $bindings );
+		return $this->redbean->count( $this->writer->adaptCase($type), $addSQL, $bindings );
 	}
 	
 	function begin(){
@@ -574,7 +574,7 @@ class Database{
 		return $this->trash($this->read($mix));
 	}
 	function drop($type){
-		return $this->getWriter()->drop(AQueryWriter::toSnake($type));
+		return $this->getWriter()->drop($this->writer->adaptCase($type));
 	}
 	function execMulti($sql,$bindings=[]){
 		$pdo = $this->getDatabaseAdapter()->getDatabase()->getPDO();
@@ -588,7 +588,7 @@ class Database{
 	}
 	
 	function getModelClass($type){
-		$type = AQueryWriter::toCamel($type);
+		$type = $this->writer->reverseCase($type);
 		return class_exists($c='\\Model\\Table_'.ucfirst($type))?$c:'\\Model\\Table';
 	}
 	function getClassModel($c){
@@ -677,7 +677,7 @@ class Database{
 					return $r;
 		}
 		else{
-			$table = AQueryWriter::toSnake($table);
+			$table = $this->writer->adaptCase($table);
 			$c = $this->getModelClass($table);
 			if(!$column)
 				$column = $c::getLoaderUniq($column);
@@ -700,33 +700,33 @@ class Database{
 		else{
 			if(is_string($id)||$column)
 				return $this->loadUniq($type,$id,$column);
-			return $this->redbean->load(AQueryWriter::toSnake($type),$id);
+			return $this->redbean->load($this->writer->adaptCase($type),$id);
 		}
 	}
 
 	function find( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->find( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->find( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function findAll( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->find( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->find( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function findAndExport( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->findAndExport( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->findAndExport( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function findOne( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->findOne( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->findOne( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function findLast( $type, $sql = NULL, $bindings = [] )
 	{
-		return $this->finder->findLast( AQueryWriter::toSnake($type), $sql, $bindings );
+		return $this->finder->findLast( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
 	function _uniqSetter($type,$values){

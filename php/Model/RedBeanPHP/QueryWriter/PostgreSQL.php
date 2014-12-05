@@ -47,12 +47,6 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_MONEY    = 93;
 	const C_DATATYPE_SPECIAL_POLYGON  = 94;
 	const C_DATATYPE_SPECIFIED        = 99;
-
-	/**
-	 * @var DBAdapter
-	 */
-	protected $adapter;
-	protected $database;
 	
 	/**
 	 * @var string
@@ -134,9 +128,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=true )
 	{
-		$this->setPrefix($prefix);
+		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER          => 'integer',
 			self::C_DATATYPE_BIGINT           => 'bigint',
@@ -152,15 +146,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			self::C_DATATYPE_SPECIAL_MONEY    => 'money',
 			self::C_DATATYPE_SPECIAL_POLYGON  => 'polygon',
 		];
-
-		$this->sqltype_typeno = [];
-
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
-
-		$this->adapter = $a;
-		$this->database       = $db;
 	}
 
 	/**
@@ -458,7 +446,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 					break;
 					case '.':
 					case '>': //own
-						list($type,$alias) = Query::typeAliasExtract($type,$superalias);
+						list($type,$alias) = $this->specialTypeAliasExtract($type,$superalias);
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
@@ -470,7 +458,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						$relation = '>';
 					break;
 					case '<':
-						list($type,$alias) = Query::typeAliasExtract($type,$superalias);
+						list($type,$alias) = $this->specialTypeAliasExtract($type,$superalias);
 						if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 							$i++;
 							if($superalias)

@@ -44,12 +44,6 @@ class MySQL extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_POLYGON    = 92;
 
 	const C_DATATYPE_SPECIFIED        = 99;
-
-	/**
-	 * @var DBAdapter
-	 */
-	protected $adapter;
-	protected $database;
 	
 	/**
 	 * @var string
@@ -121,9 +115,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=true )
 	{
-		$this->setPrefix($prefix);
+		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
 			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
 			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',
@@ -137,15 +131,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 			MySQL::C_DATATYPE_SPECIAL_LINESTRING => 'LINESTRING',
 			MySQL::C_DATATYPE_SPECIAL_POLYGON => 'POLYGON',
 		];
-
-		$this->sqltype_typeno = [];
-
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
-
-		$this->adapter = $a;
-		$this->database = $db;
 		$this->encoding = $this->adapter->getDatabase()->getMysqlEncoding();
 	}
 

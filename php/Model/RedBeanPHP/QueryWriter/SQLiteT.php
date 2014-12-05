@@ -29,13 +29,6 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	protected $concatenator = "cast(X'1D' as text)";
 	
 	/**
-	 * @var DBAdapter
-	 */
-
-	protected $adapter;
-	protected $database;
-	
-	/**
 	 * @var string
 	 */
 	protected $quoteCharacter = '`';
@@ -240,23 +233,17 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=true )
 	{
-		$this->setPrefix($prefix);
+		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
 			SQLiteT::C_DATATYPE_INTEGER => 'INTEGER',
 			SQLiteT::C_DATATYPE_NUMERIC => 'NUMERIC',
 			SQLiteT::C_DATATYPE_TEXT    => 'TEXT',
 		];
-
-		$this->sqltype_typeno = [];
-
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[$v] = $k;
 		}
-
-		$this->adapter = $a;
-		$this->database       = $db;
 	}
 
 	/**

@@ -26,8 +26,9 @@ class R extends RedBeanPHP\Facade{
 		
 		$frozen = isset($frozen)?$frozen:!Dev::has(Dev::MODEL_SCHEMA);		
 		$prefix = isset($prefix)?$prefix:'';
+		$case = isset($case)?$case:true;
 		
-		self::addDatabase($key,$dsn,@$user,@$password,$frozen,$prefix);
+		self::addDatabase($key,$dsn,@$user,@$password,$frozen,$prefix,$case);
 		
 		return true;
 	}
