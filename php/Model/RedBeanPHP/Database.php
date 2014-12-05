@@ -27,6 +27,9 @@ use Surikat\Model\RedBeanPHP\Driver\RPDO as RPDO;
 
 use Surikat\Model\Query;
 
+use Surikat\Model\RedBeanPHP\Plugin\Preloader;
+use Surikat\Model\RedBeanPHP\Plugin\Cooker;
+
 class Database{
 	private $toolbox;
 	private $redbean;
@@ -736,5 +739,19 @@ class Database{
 
 	function setUniqCheck($b=null){
 		Table::_checkUniq($b);
+	}
+	
+	function preload($beans, $preload, $closure = NULL){
+		$preloader = new Preloader( R::getToolBox() );
+		return $preloader->load($beans, $preload, $closure);
+	}
+	function each($beans, $preload, $closure = NULL){
+		$preloader = new Preloader( R::getToolBox() );
+		return $preloader->load($beans, $preload, $closure);
+	}
+	function graph($array, $fe = FALSE){
+		$cooker = new Cooker;
+		$cooker->setToolbox(R::getToolBox());
+		return $cooker->graph($array, $fe);
 	}
 }
