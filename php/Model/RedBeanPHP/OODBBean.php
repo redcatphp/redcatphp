@@ -1419,7 +1419,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		} else {
 			$myFieldLink = $this->__info['type'] . '_id';
 		}
-		$writer = $this->beanHelper->getToolbox()->getWriter()->esc($myFieldLink);
+		$writer = $this->beanHelper->getToolbox()->getWriter()->safeColumn($myFieldLink);
 		
 		$count = 0;
 

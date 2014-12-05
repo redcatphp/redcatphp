@@ -120,18 +120,6 @@ class Oracle extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_SPECIAL_GEOMETRYCOLLECTION = 106;
 
 	/**
-	 * Do everything that needs to be done to format a column name.
-	 *
-	 * @param string $name of column
-	 *
-	 * @return string $column name
-	 */
-	public function esc( $c, $q = FALSE )
-	{
-		return parent::esc( ( !$q ) ? $c : $c, $q );
-	}
-
-	/**
 	 * Do everything that needs to be done to format a table name.
 	 *
 	 * @param string $name of table
@@ -168,13 +156,13 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$tableNoQuote   = $this->esc( $table, TRUE );
-		$tableWithQuote = $this->esc( $table );
+		$tableNoQuote   = $this->safeTable( $table, TRUE );
+		$tableWithQuote = $this->safeTable( $table );
 
 		sort( $columns ); //else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->esc( $v, TRUE );
+			$columns[$k] = $this->safeColumn( $v, TRUE );
 		}
 
 		$r = $this->adapter->get( "SELECT INDEX_NAME FROM USER_INDEXES WHERE TABLE_NAME='$tableNoQuote' AND UNIQUENESS='UNIQUE'" );
@@ -209,13 +197,13 @@ class Oracle extends AQueryWriter implements QueryWriter
 	protected function constrain( $table, $table1, $table2, $property1, $property2 )
 	{
 		try {
-			$table     = $this->esc( $table );
+			$table     = $this->safeTable( $table );
 
-			$table1    = $this->esc( $table1 );
-			$table2    = $this->esc( $table2 );
+			$table1    = $this->safeTable( $table1 );
+			$table2    = $this->safeTable( $table2 );
 
-			$property1 = $this->esc( $property1 );
-			$property2 = $this->esc( $property2 );
+			$property1 = $this->safeColumn( $property1 );
+			$property2 = $this->safeColumn( $property2 );
 
 			$fks       = $this->adapter->getCell( "
 				SELECT COUNT(*)
@@ -293,10 +281,10 @@ class Oracle extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = $this->limitOracleIdentifierLength( preg_replace( '/\W/', '', $name ) );
-		$column = $this->esc( $column );
+		$column = $this->safeColumn( $column );
 
 		try {
 			$this->adapter->exec( "CREATE INDEX $name ON $table ($column) " );
@@ -323,8 +311,8 @@ class Oracle extends AQueryWriter implements QueryWriter
 			throw new Exception( $table . ' is not lowercase. With ORACLE you MUST only use lowercase table in PHP, sorry!' );
 		}
 
-		$table_with_quotes         = $this->esc( $table );
-		$safe_table_without_quotes = $this->esc( $table, TRUE );
+		$table_with_quotes         = $this->safeTable( $table );
+		$safe_table_without_quotes = $this->safeTable( $table, TRUE );
 
 		$sql = "CREATE TABLE $table_with_quotes(
                 ID NUMBER(11) NOT NULL,
@@ -412,7 +400,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$table      = $this->esc( $table, TRUE );
+		$table      = $this->safeTable( $table, TRUE );
 		$columnsRaw = $this->adapter->get( "SELECT LOWER(COLUMN_NAME) COLUMN_NAME, DATA_TYPE, DATA_LENGTH, DATA_PRECISION FROM ALL_TAB_COLUMNS WHERE TABLE_NAME = UPPER('$table')" );
 
 		$columns = [];
@@ -476,8 +464,8 @@ class Oracle extends AQueryWriter implements QueryWriter
 		$table   = $type;
 		$type    = $datatype;
 
-		$table   = $this->esc( $table );
-		$column  = $this->esc( $column );
+		$table   = $this->safeTable( $table );
+		$column  = $this->safeColumn( $column );
 
 		$newtype = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
 
@@ -563,16 +551,16 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 */
 	public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
 	{
-		$table           = $this->esc( $type );
-		$tableNoQ        = $this->esc( $type, TRUE );
+		$table           = $this->safeTable( $type );
+		$tableNoQ        = $this->safeTable( $type, TRUE );
 
-		$targetTable     = $this->esc( $targetType );
+		$targetTable     = $this->safeTable( $targetType );
 
-		$column          = $this->esc( $field );
-		$columnNoQ       = $this->esc( $field, TRUE );
+		$column          = $this->safeColumn( $field );
+		$columnNoQ       = $this->safeColumn( $field, TRUE );
 
-		$targetColumn    = $this->esc( $targetField );
-		$targetColumnNoQ = $this->esc( $targetField, TRUE );
+		$targetColumn    = $this->safeColumn( $targetField );
+		$targetColumnNoQ = $this->safeColumn( $targetField, TRUE );
 
 		$fkName          = 'FK_' . ( $isDependent ? 'C_' : '' ) . $tableNoQ . '_' . $columnNoQ . '_' . $targetColumnNoQ;
 		$fkName          = $this->limitOracleIdentifierLength( $fkName );
@@ -688,7 +676,7 @@ class Oracle extends AQueryWriter implements QueryWriter
      */
     public function wipe( $type )
     {
-        $table = $this->esc( $type );
+        $table = $this->safeTable( $type );
         $this->adapter->exec( "TRUNCATE TABLE $table " );
     }
 

@@ -176,7 +176,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function _createTable( $table )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		$this->adapter->exec( " CREATE TABLE $table (id SERIAL PRIMARY KEY); " );
 	}
@@ -186,7 +186,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$table      = $this->esc( $table, TRUE );
+		$table      = $this->safeTable( $table, TRUE );
 
 		$columnsRaw = $this->adapter->get( "SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'" );
 
@@ -267,8 +267,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$table   = $type;
 		$type    = $datatype;
 
-		$table   = $this->esc( $table );
-		$column  = $this->esc( $column );
+		$table   = $this->safeTable( $table );
+		$column  = $this->safeColumn( $column );
 
 		$newtype = $this->typeno_sqltype[$type];
 
@@ -280,12 +280,12 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$table = $this->esc( $table, TRUE );
+		$table = $this->safeTable( $table, TRUE );
 
 		sort( $columns ); //else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->esc( $v );
+			$columns[$k] = $this->safeColumn( $v );
 		}
 
 		$r = $this->adapter->get( "SELECT i.relname AS index_name
@@ -334,10 +334,10 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
-		$column = $this->esc( $column );
+		$column = $this->safeColumn( $column );
 
 		if ( $this->adapter->getCell( "SELECT COUNT(*) FROM pg_class WHERE relname = '$name'" ) ) {
 			return;
@@ -369,9 +369,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		try{
 			if (!$cfks) {
 				$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
-				$this->adapter->exec( "ALTER TABLE  {$this->esc($type)}
-					ADD FOREIGN KEY ( {$this->esc($field)} ) REFERENCES  {$this->esc($targetType)} (
-					{$this->esc($targetField)}) ON DELETE $delRule ON UPDATE $delRule DEFERRABLE ;" );
+				$this->adapter->exec( "ALTER TABLE  {$this->safeTable($type)}
+					ADD FOREIGN KEY ( {$this->safeColumn($field)} ) REFERENCES  {$this->safeTable($targetType)} (
+					{$this->safeColumn($targetField)}) ON DELETE $delRule ON UPDATE $delRule DEFERRABLE ;" );
 			}
 		} catch (\Exception $e ) {
 			return FALSE;
@@ -385,7 +385,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	{
 		$this->adapter->exec( 'SET CONSTRAINTS ALL DEFERRED' );
 		foreach ( $this->getTables() as $t ) {
-			$t = $this->esc( $t );
+			$t = $this->safeTable( $t );
 			$this->adapter->exec( "DROP TABLE IF EXISTS $t CASCADE " );
 		}
 		$this->adapter->exec( 'SET CONSTRAINTS ALL IMMEDIATE' );
@@ -393,7 +393,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	
 	public function _drop($t){
 		$this->adapter->exec('SET CONSTRAINTS ALL DEFERRED');
-		$t = $this->esc($t);
+		$t = $this->safeTable($t);
 		$this->adapter->exec("DROP TABLE IF EXISTS $t CASCADE ");
 		$this->adapter->exec('SET CONSTRAINTS ALL IMMEDIATE');
 	}
@@ -417,8 +417,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$sep = $this->separator;
 		$cc = "' '";
 		$q = $this->quoteCharacter;
-		$id = $this->esc('id');
-		$tb = $this->esc($table);
+		$id = $this->safeColumn('id');
+		$tb = $this->safeTable($table);
 		$_tb = $this->esc('_'.$table);
 		$groupBy = [];
 		$columns = [];
@@ -535,8 +535,8 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	function addIndexFullText($table, $col, $name = null, $lang=null ){
 		if(!isset($name))
 			$name = $table.'_'.$col.'_fulltext';
-		$col  = $this->esc($col);
-		$table  = $this->esc( $table );
+		$col  = $this->safeColumn($col);
+		$table  = $this->safeTable( $table );
 		$name   = preg_replace( '/\W/', '', $name );
 		if($this->adapter->getCell( "SELECT COUNT(*) FROM pg_class WHERE relname = '$name'" ))
 			return;

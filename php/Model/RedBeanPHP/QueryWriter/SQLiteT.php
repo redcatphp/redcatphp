@@ -58,7 +58,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	protected function getTable( $type )
 	{
-		$tableName = $this->esc( $type, TRUE );
+		$tableName = $this->safeTable( $type, TRUE );
 		$columns   = $this->getColumns( $type );
 		$indexes   = $this->getIndexes( $type );
 		$keys      = $this->getKeys( $type );
@@ -138,7 +138,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	protected function getIndexes( $type )
 	{
-		$table   = $this->esc( $type, TRUE );
+		$table   = $this->safeTable( $type, TRUE );
 		$indexes = $this->adapter->get( "PRAGMA index_list('$table')" );
 
 		$indexInfoList = [];
@@ -160,7 +160,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	protected function getKeys( $type )
 	{
-		$table = $this->esc( $type, TRUE );
+		$table = $this->safeTable( $type, TRUE );
 		$keys  = $this->adapter->get( "PRAGMA foreign_key_list('$table')" );
 
 		$keyInfoList = [];
@@ -331,7 +331,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function _createTable( $table )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		$sql   = "CREATE TABLE $table ( id INTEGER PRIMARY KEY AUTOINCREMENT ) ";
 
@@ -343,7 +343,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$table      = $this->esc( $table, TRUE );
+		$table      = $this->safeTable( $table, TRUE );
 
 		$columnsRaw = $this->adapter->get( "PRAGMA table_info('$table')" );
 
@@ -358,7 +358,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $type, $columns )
 	{
-		$name  = 'UQ_' . $this->esc( $type, TRUE ) . implode( '__', $columns );
+		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $columns );
 
 		$t     = $this->getTable( $type );
 
@@ -388,10 +388,10 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
-		$column = $this->esc( $column, TRUE );
+		$column = $this->safeColumn( $column, TRUE );
 
 		try {
 			
@@ -413,7 +413,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function wipe( $type )
 	{
-		$table = $this->esc( $type );
+		$table = $this->safeTable( $type );
 		
 		$this->adapter->exec( "DELETE FROM $table " );
 	}

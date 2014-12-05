@@ -91,16 +91,16 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	protected function buildFK( $type, $targetType, $field, $targetField, $isDep = FALSE )
 	{
-		$table           = $this->esc( $type );
-		$tableNoQ        = $this->esc( $type, TRUE );
+		$table           = $this->safeTable( $type );
+		$tableNoQ        = $this->safeTable( $type, TRUE );
 
-		$targetTable     = $this->esc( $targetType );
-		$targetTableNoQ  = $this->esc( $targetType, TRUE );
+		$targetTable     = $this->safeTable( $targetType );
+		$targetTableNoQ  = $this->safeTable( $targetType, TRUE );
 
-		$column          = $this->esc( $field );
-		$columnNoQ       = $this->esc( $field, TRUE );
+		$column          = $this->safeColumn( $field );
+		$columnNoQ       = $this->safeColumn( $field, TRUE );
 
-		$targetColumn    = $this->esc( $targetField );
+		$targetColumn    = $this->safeColumn( $targetField );
 
 		$keys            = $this->getKeys( $targetTableNoQ, $tableNoQ );
 
@@ -167,9 +167,9 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function _createTable( $table )
 	{
 		$sql  = 'CREATE TABLE '
-			. $this->esc( $table )
+			. $this->safeTable( $table )
 			. ' ("id" integer AUTO_INCREMENT, CONSTRAINT "pk_'
-			. $this->esc( $table, TRUE )
+			. $this->safeTable( $table, TRUE )
 			. '_id" PRIMARY KEY("id"))';
 
 		$this->adapter->exec( $sql );
@@ -180,7 +180,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		$columnsRaw = $this->adapter->get( "SHOW COLUMNS FROM $table" );
 
@@ -252,8 +252,8 @@ class CUBRID extends AQueryWriter implements QueryWriter
 		$table  = $type;
 		$type   = $field;
 
-		$table  = $this->esc( $table );
-		$column = $this->esc( $column );
+		$table  = $this->safeTable( $table );
+		$column = $this->safeColumn( $column );
 
 		$type   = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
 
@@ -265,12 +265,12 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		sort( $columns ); // else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->esc( $v );
+			$columns[$k] = $this->safeColumn( $v );
 		}
 
 		$r = $this->adapter->get( "SHOW INDEX FROM $table" );
@@ -308,11 +308,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
 
-		$column = $this->esc( $column );
+		$column = $this->safeColumn( $column );
 
 		$index  = $this->adapter->getRow( "SELECT 1 as `exists` FROM db_index WHERE index_name = ? ", [ $name ] );
 
@@ -349,13 +349,5 @@ class CUBRID extends AQueryWriter implements QueryWriter
 			$this->adapter->exec( "ALTER TABLE \"{$k['FKTABLE_NAME']}\" DROP FOREIGN KEY \"{$k['FK_NAME']}\"" );
 		}
 		$this->adapter->exec( "DROP TABLE \"$t\"" );
-	}
-
-	/**
-	 * @see QueryWriter::esc
-	 */
-	public function esc( $dbStructure, $noQuotes = FALSE )
-	{
-		return parent::esc( strtolower( $dbStructure ), $noQuotes );
 	}
 }

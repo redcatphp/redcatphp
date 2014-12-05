@@ -73,7 +73,7 @@ class Fluid extends Repository
 	private function createTableIfNotExists( OODBBean $bean, $table )
 	{
 		//Does table exist? If not, create
-		if ( !$this->tableExists( $this->writer->esc( $table, TRUE ) ) ) {
+		if ( !$this->tableExists( $this->writer->safeTable( $table, TRUE ) ) ) {
 			$this->writer->createTable( $table );
 			$bean->setMeta( 'buildreport.flags.created', TRUE );
 		}
@@ -144,11 +144,11 @@ class Fluid extends Repository
 				$cast   = FALSE;
 				$typeno = $this->writer->scanType( $value, TRUE );
 			}
-			if ( isset( $columns[$this->writer->esc( $property, TRUE )] ) ) { //Is this property represented in the table ?
+			if ( isset( $columns[$this->writer->safeColumn( $property, TRUE )] ) ) { //Is this property represented in the table ?
 				if ( !$cast ) { //rescan without taking into account special types >80
 					$typeno = $this->writer->scanType( $value, FALSE );
 				}
-				$sqlt = $this->writer->code( $columns[$this->writer->esc( $property, TRUE )] );
+				$sqlt = $this->writer->code( $columns[$this->writer->safeColumn( $property, TRUE )] );
 				//var_dump($property, $typeno , $sqlt);
 				if ( $typeno > $sqlt ) { //no, we have to widen the database column type
 					$this->writer->widenColumn( $table, $property, $typeno );

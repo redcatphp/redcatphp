@@ -652,10 +652,10 @@ class BeanCanResty
 
 			if ( strpos( $steps[$i], 'shared-' ) === FALSE ) {
 				$listName = 'own' . ucfirst( $steps[$i] );
-				$listType = $this->toolbox->getWriter()->esc( $steps[$i] );
+				$listType = $this->toolbox->getWriter()->safeTable( $steps[$i] );
 			} else {
 				$listName = 'shared' . ucfirst( substr( $steps[$i], 7 ) );
-				$listType = $this->toolbox->getWriter()->esc( substr( $steps[$i], 7 ) );
+				$listType = $this->toolbox->getWriter()->safeTable( substr( $steps[$i], 7 ) );
 			}
 
 			$list = $bean->withCondition( " {$listType}.id = ? ", array( $steps[$i + 1] ) )->$listName;

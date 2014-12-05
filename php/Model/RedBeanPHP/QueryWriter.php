@@ -405,6 +405,8 @@ interface QueryWriter
 	 *
 	 * @return string
 	 */
+	public function safeTable( $databaseStructure, $dontQuote = FALSE );
+	public function safeColumn( $databaseStructure, $dontQuote = FALSE );
 	public function esc( $databaseStructure, $dontQuote = FALSE );
 
 	/**

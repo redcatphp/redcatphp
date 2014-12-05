@@ -104,14 +104,14 @@ class SQLServer extends AQueryWriter implements QueryWriter
 			}
 
 			$sql = "
-				ALTER TABLE [" . $this->esc( $table ) . "]
+				ALTER TABLE [" . $this->safeTable( $table ) . "]
 				ADD FOREIGN KEY($property1) references $table1(id) ON DELETE CASCADE;
 			";
 
 			$this->adapter->exec( $sql );
 
 			$sql = "
-				ALTER TABLE " . $this->esc( $table ) . "
+				ALTER TABLE " . $this->safeTable( $table ) . "
 				ADD FOREIGN KEY($property2) references $table2(id) ON DELETE CASCADE
 			";
 
@@ -181,11 +181,11 @@ class SQLServer extends AQueryWriter implements QueryWriter
     protected function insertRecord( $type, $insertcolumns, $insertvalues )
     {
         $suffix  = $this->getInsertSuffix( $type );
-        $table   = $this->esc( $type );
+        $table   = $this->safeTable( $type );
 
         if ( count( $insertvalues ) > 0 && is_array( $insertvalues[0] ) && count( $insertvalues[0] ) > 0 ) {
             foreach ( $insertcolumns as $k => $v ) {
-                $insertcolumns[$k] = $this->esc( $v );
+                $insertcolumns[$k] = $this->safeColumn( $v );
             }
 
             $insertSQL = "INSERT INTO $table ( " . implode( ',', $insertcolumns ) . " ) VALUES
@@ -211,7 +211,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 */
 	public function _createTable( $table )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		$sql   = "CREATE TABLE [$table] ([id] [int] IDENTITY(1,1) NOT NULL, CONSTRAINT [PK_$table] PRIMARY KEY ( [id] ))";
 
@@ -223,7 +223,7 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$columnsRaw = $this->adapter->get( "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" . $this->esc( $table ) . "'" );
+		$columnsRaw = $this->adapter->get( "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" . $this->safeTable( $table ) . "'" );
 
 		$columns = [];
 		foreach ( $columnsRaw as $r ) {
@@ -309,12 +309,12 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		sort( $columns ); // Else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->esc( $v );
+			$columns[$k] = $this->safeColumn( $v );
 		}
 
 		$r    = $this->adapter->get( "EXEC sys.sp_helpindex @objname = '$table'" );
@@ -341,11 +341,11 @@ class SQLServer extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
 
-		$column = $this->esc( $column );
+		$column = $this->safeColumn( $column );
 
 		foreach ( $this->adapter->get( "EXEC sys.sp_helpindex @objname = '$table' " ) as $ind ) if ( $ind['index_name'] === $name ) return;
 
@@ -387,16 +387,16 @@ class SQLServer extends AQueryWriter implements QueryWriter
      */
     public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
     {
-        $table           = $this->esc( $type );
-        $tableNoQ        = $this->esc( $type, TRUE );
+        $table           = $this->safeTable( $type );
+        $tableNoQ        = $this->safeTable( $type, TRUE );
 
-        $targetTable     = $this->esc( $targetType );
+        $targetTable     = $this->safeTable( $targetType );
 
-        $column          = $this->esc( $field );
-        $columnNoQ       = $this->esc( $field, TRUE );
+        $column          = $this->safeColumn( $field );
+        $columnNoQ       = $this->safeColumn( $field, TRUE );
 
-        $targetColumn    = $this->esc( $targetField );
-        $targetColumnNoQ = $this->esc( $targetField, TRUE );
+        $targetColumn    = $this->safeColumn( $targetField );
+        $targetColumnNoQ = $this->safeColumn( $targetField, TRUE );
 
         $db = $this->adapter->getCell( 'SELECT DB_NAME()' );
 
@@ -440,8 +440,8 @@ class SQLServer extends AQueryWriter implements QueryWriter
     {
         $table  = $type;
         $type   = $field;
-        $table  = $this->esc( $table );
-        $column = $this->esc( $column );
+        $table  = $this->safeTable( $table );
+        $column = $this->safeColumn( $column );
 
         $type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 

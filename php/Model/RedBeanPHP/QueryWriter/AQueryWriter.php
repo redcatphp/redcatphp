@@ -428,7 +428,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		foreach ( $conditions as $column => $values ) {
 			if ( !count( $values ) ) continue;
 
-			$sql = $this->esc( $column );
+			$sql = $this->safeColumn( $column );
 			$sql .= ' IN ( ';
 
 			if ( !is_array( $values ) ) $values = [ $values ];
@@ -491,17 +491,17 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	private function getRelationalTablesAndColumns( $sourceType, $destType, $noQuote = FALSE )
 	{
-		$linkTable   = $this->esc( $this->getAssocTable( [ $sourceType, $destType ] ), $noQuote );
-		$sourceCol   = $this->esc( $sourceType . '_id', $noQuote );
+		$linkTable   = $this->safeTable( $this->getAssocTable( [ $sourceType, $destType ] ), $noQuote );
+		$sourceCol   = $this->safeColumn( $sourceType . '_id', $noQuote );
 
 		if ( $sourceType === $destType ) {
-			$destCol = $this->esc( $destType . '2_id', $noQuote );
+			$destCol = $this->safeColumn( $destType . '2_id', $noQuote );
 		} else {
-			$destCol = $this->esc( $destType . '_id', $noQuote );
+			$destCol = $this->safeColumn( $destType . '_id', $noQuote );
 		}
 
-		$sourceTable = $this->esc( $sourceType, $noQuote );
-		$destTable   = $this->esc( $destType, $noQuote );
+		$sourceTable = $this->safeTable( $sourceType, $noQuote );
+		$destTable   = $this->safeTable( $destType, $noQuote );
 
 		return [ $sourceTable, $destTable, $linkTable, $sourceCol, $destCol ];
 	}
@@ -569,13 +569,13 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		$default = $this->defaultValue;
 		$suffix  = $this->getInsertSuffix( $type );
-		$table   = $this->esc( $type );
+		$table   = $this->safeTable( $type );
 
 		if ( count( $insertvalues ) > 0 && is_array( $insertvalues[0] ) && count( $insertvalues[0] ) > 0 ) {
 
 			$insertSlots = [];
 			foreach ( $insertcolumns as $k => $v ) {
-				$insertcolumns[$k] = $this->esc( $v );
+				$insertcolumns[$k] = $this->safeColumn( $v );
 
 				if (isset(self::$sqlFilters['w'][$type][$v])) {
 					$insertSlots[] = self::$sqlFilters['w'][$type][$v];
@@ -715,18 +715,6 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		return ( strpos( $sql, 'LIMIT' ) === FALSE ) ? ( $sql . ' LIMIT 1 ' ) : $sql;
 	}
-	
-	/**
-	 * @see QueryWriter::esc
-	 */
-	public function esc( $dbStructure, $dontQuote = FALSE )
-	{
-		$this->check( $dbStructure );
-		
-		$dbStructure = $this->prefix.$dbStructure;
-		
-		return ( $dontQuote ) ? $dbStructure : $this->quoteCharacter . $dbStructure . $this->quoteCharacter;
-	}
 
 	/**
 	 * @see QueryWriter::addColumn
@@ -735,8 +723,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		$table  = $type;
 		$type   = $field;
-		$table  = $this->esc( $table );
-		$column = $this->esc( $column );
+		$table  = $this->safeTable( $table );
+		$column = $this->safeColumn( $column );
 
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 
@@ -766,7 +754,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			return $id;
 		}
 
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 		$sql   = "UPDATE $table SET ";
 
 		$p = $v = [];
@@ -774,9 +762,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		foreach ( $updatevalues as $uv ) {
 
 			if ( isset( self::$sqlFilters['w'][$type][$uv['property']] ) ) {
-				$p[] = " {$this->esc( $uv["property"] )} = ". self::$sqlFilters['w'][$type][$uv['property']];
+				$p[] = " {$this->safeColumn( $uv["property"] )} = ". self::$sqlFilters['w'][$type][$uv['property']];
 			} else {
-				$p[] = " {$this->esc( $uv["property"] )} = ? ";
+				$p[] = " {$this->safeColumn( $uv["property"] )} = ? ";
 			}
 
 			$v[] = $uv['value'];
@@ -798,9 +786,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		if ( $leftRight !== 'LEFT' && $leftRight !== 'RIGHT' && $leftRight !== 'INNER' )
 			throw new RedException( 'Invalid JOIN.' );
-		$table = $this->esc( $type );
-		$targetTable = $this->esc( $targetType );
-		$field = $this->esc( $targetType, TRUE );
+		$table = $this->safeTable( $type );
+		$targetTable = $this->safeTable( $targetType );
+		$field = $this->safeColumn( $targetType, TRUE );
 		return " {$leftRight} JOIN {$targetTable} ON {$targetTable}.id = {$table}.{$field}_id ";
 	}
 	
@@ -820,7 +808,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			}
 		}
 
-		$table = $this->esc( $type );
+		$table = $this->safeTable( $type );
 
 		$sqlFilterStr = '';
 		if ( count( self::$sqlFilters ) ) {
@@ -941,9 +929,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	public function queryTagged( $type, $tagList, $all = FALSE, $addSql = '', $bindings = array() )
 	{
 		$assocType = $this->getAssocTable( array( $type, 'tag' ) );
-		$assocTable = $this->esc( $assocType );
+		$assocTable = $this->safeTable( $assocType );
 		$assocField = $type . '_id';
-		$table = $this->esc( $type );
+		$table = $this->safeTable( $type );
 		$slots = implode( ',', array_fill( 0, count( $tagList ), '?' ) );
 		$score = ( $all ) ? count( $tagList ) : 1;
 		$sql = "
@@ -967,7 +955,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		$addSql = $this->glueSQLCondition( $addSql );
 
-		$table  = $this->esc( $type );
+		$table  = $this->safeTable( $type );
 
 		$this->updateCache(); //check if cache chain has been broken
 
@@ -1017,7 +1005,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	{
 		$addSql = $this->glueSQLCondition( $addSql );
 
-		$table  = $this->esc( $type );
+		$table  = $this->safeTable( $type );
 
 		$sql    = $this->makeSQLFromConditions( $conditions, $bindings, $addSql );
 		$sql    = "DELETE FROM {$table} {$sql}";
@@ -1057,8 +1045,8 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$table   = $type;
 		$type    = $datatype;
 
-		$table   = $this->esc( $table );
-		$column  = $this->esc( $column );
+		$table   = $this->safeTable( $table );
+		$column  = $this->safeColumn( $column );
 
 		$newtype = $this->typeno_sqltype[$type];
 
@@ -1070,7 +1058,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 */
 	public function wipe( $type )
 	{
-		$table = $this->esc( $type );
+		$table = $this->safeTable( $type );
 
 		$this->adapter->exec( "TRUNCATE $table " );
 	}
@@ -1120,35 +1108,19 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 *
 	 * @return void
 	 */
-	public function flushCache()
-	{
+	public function flushCache(){
 		$this->cache = [];
 	}
 
-	/**
-	 * @deprecated Use esc() instead.
-	 *
-	 * @param string  $column   column to be escaped
-	 * @param boolean $noQuotes omit quotes
-	 *
-	 * @return string
-	 */
-	public function safeColumn( $column, $noQuotes = FALSE )
-	{
+	public function safeColumn( $column, $noQuotes = FALSE ){
 		return $this->esc( $column, $noQuotes );
 	}
-
-	/**
-	 * @deprecated Use esc() instead.
-	 *
-	 * @param string  $table    table to be escaped
-	 * @param boolean $noQuotes omit quotes
-	 *
-	 * @return string
-	 */
-	public function safeTable( $table, $noQuotes = FALSE )
-	{
-		return $this->esc( $table, $noQuotes );
+	public function safeTable( $table, $noQuotes = FALSE ){
+		return $this->safeColumn( $this->prefix.$table, $noQuotes );
+	}
+	public function esc( $dbStructure, $dontQuote = FALSE ){
+		$this->check( $dbStructure );
+		return ( $dontQuote ) ? $dbStructure : $this->quoteCharacter . $dbStructure . $this->quoteCharacter;
 	}
 		
 	function autoWrapCol($s,$table,$col){

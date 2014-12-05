@@ -91,14 +91,14 @@ class MySQL extends AQueryWriter implements QueryWriter
 			}
 
 			$sql = "
-				ALTER TABLE " . $this->esc( $table ) . "
+				ALTER TABLE " . $this->safeTable( $table ) . "
 				ADD FOREIGN KEY($property1) references `$table1`(id) ON DELETE CASCADE ON UPDATE CASCADE;
 			";
 
 			$this->adapter->exec( $sql );
 
 			$sql = "
-				ALTER TABLE " . $this->esc( $table ) . "
+				ALTER TABLE " . $this->safeTable( $table ) . "
 				ADD FOREIGN KEY($property2) references `$table2`(id) ON DELETE CASCADE ON UPDATE CASCADE
 			";
 
@@ -161,7 +161,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	public function _createTable( $table )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		$encoding = $this->adapter->getDatabase()->getMysqlEncoding();
 		$sql   = "CREATE TABLE $table (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET={$encoding} COLLATE={$encoding}_unicode_ci ";
@@ -174,7 +174,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	public function _getColumns( $table )
 	{
-		$columnsRaw = $this->adapter->get( "DESCRIBE " . $this->esc( $table ) );
+		$columnsRaw = $this->adapter->get( "DESCRIBE " . $this->safeTable( $table ) );
 
 		$columns = [];
 		foreach ( $columnsRaw as $r ) {
@@ -266,12 +266,12 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$table = $this->esc( $table );
+		$table = $this->safeTable( $table );
 
 		sort( $columns ); // Else we get multiple indexes due to order-effects
 
 		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->esc( $v );
+			$columns[$k] = $this->safeColumn( $v );
 		}
 
 		$r    = $this->adapter->get( "SHOW INDEX FROM $table" );
@@ -302,11 +302,11 @@ class MySQL extends AQueryWriter implements QueryWriter
 	public function addIndex( $type, $name, $column )
 	{
 		$table  = $type;
-		$table  = $this->esc( $table );
+		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
 
-		$column = $this->esc( $column );
+		$column = $this->safeColumn( $column );
 
 		try {
 			foreach ( $this->adapter->get( "SHOW INDEX FROM $table " ) as $ind ) if ( $ind['Key_name'] === $name ) return;
@@ -340,10 +340,10 @@ class MySQL extends AQueryWriter implements QueryWriter
 			$fkName = 'fk_'.($type.'_'.$field);
 			$cName = 'c_'.$fkName;
 			$this->adapter->exec( "
-				ALTER TABLE  {$this->esc($type)}
+				ALTER TABLE  {$this->safeTable($type)}
 				ADD CONSTRAINT $cName
-				FOREIGN KEY $fkName ( {$this->esc($field)} ) REFERENCES {$this->esc($targetType)} (
-				{$this->esc($targetField)}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
+				FOREIGN KEY $fkName ( {$this->safeColumn($field)} ) REFERENCES {$this->safeTable($targetType)} (
+				{$this->safeColumn($targetField)}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
 
 		} catch (\Exception $e ) {
 			// Failure of fk-constraints is not a problem
