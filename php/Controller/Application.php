@@ -87,7 +87,7 @@ class Application{
 			exit;
 		}
 	}
-	protected function exec($file,$vars=[],$options=[]){
+	function exec($file,$vars=[],$options=[]){
 		try{
 			$this->View->setPath($file);
 			$this->View->setOptions($options);
@@ -97,7 +97,7 @@ class Application{
 			$this->error($e->getMessage());
 		}
 	}
-	protected function error($c){
+	function error($c){
 		try{
 			$this->View->setPath($c.'.tml');
 			$this->View->display();

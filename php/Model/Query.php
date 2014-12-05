@@ -12,10 +12,6 @@ class Query {
 	protected $composer;
 	protected $_ignore = [];
 	protected $_DataBase;
-	static function getNew($table=null,$composer='select',$writer=null){
-		$c = get_called_class();
-		return new $c($table,$composer,$writer);
-	}
 	function tableExists($table=null){
 		if(!isset($table))
 			$table = $this->table;
@@ -365,7 +361,7 @@ class Query {
 			->select('id')
 		;
 		if(!$this->table||$this->tableExists())
-			return (int)static::getNew()
+			return (int)(new static())
 				->select('COUNT(*)')
 				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
 				->getCell()

@@ -20,10 +20,10 @@ abstract class Dev{
 		return !!($d&self::$level);
 	}
 	static function on($d){
-		return self::$level = $d^self::$level;
+		return self::level($d^self::$level);
 	}
 	static function off($d){
-		return self::$level = $d&self::$level;
+		return self::level($d&self::$level);
 	}
 	static function level($l=null){
 		$oldLevel = self::$level;

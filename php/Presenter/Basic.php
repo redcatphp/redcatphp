@@ -2,6 +2,7 @@
 use Surikat\Tool\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
+use Surikat\Controller\Application;
 class Basic extends ArrayObject{
 	static function load(TML $tml){
 		if(!$tml->TeMpLate)
@@ -31,7 +32,7 @@ class Basic extends ArrayObject{
 	function assign(){}
 	function execute(){	
 		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'&&(($this->URI&&count($this->URI->getParams())>1)||!empty($_GET)))
-			View::getInstance()->error(404);
+			(new Application())->error(404);
 		$this->dynamic();
 	}
 	function dynamic(){}
