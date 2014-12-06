@@ -99,7 +99,10 @@ abstract class Base {
 	}
 	abstract function getParams();
 	function getQuery() {
-		return $this->render();
+		$q = $this->render();
+		if($this->writer)
+			$q = str_replace('{$prefix}',$this->writer->prefix,$q);
+		return $q;
 	}
 	abstract function render();
 	function debug() {
@@ -139,5 +142,9 @@ abstract class Base {
 		}
 		$str .= str_repeat(" )", count($stack));
 		return $str;
+	}
+	protected $writer;
+	function setWriter($writer){
+		$this->writer = $writer;
 	}
 }
