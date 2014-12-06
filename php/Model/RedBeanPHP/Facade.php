@@ -1,30 +1,7 @@
 <?php
-
 namespace Surikat\Model\RedBeanPHP;
-
 use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\AssociationManager as AssociationManager;
-use Surikat\Model\RedBeanPHP\TagManager as TagManager;
-use Surikat\Model\RedBeanPHP\DuplicationManager as DuplicationManager;
-use Surikat\Model\RedBeanPHP\LabelMaker as LabelMaker;
-use Surikat\Model\RedBeanPHP\Finder as Finder;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-use Surikat\Model\RedBeanPHP\Logger as Logger;
-use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
-use Surikat\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
-use Surikat\Model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
-use Surikat\Model\RedBeanPHP\Adapter as Adapter;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
-use Surikat\Model\RedBeanPHP\Driver\RPDO as RPDO;
-
 class Facade{
 	const C_REDBEANPHP_VERSION = '4.1.1-Surikat-Forked';
 	public static $toolbox;

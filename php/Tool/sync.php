@@ -2,8 +2,8 @@
 use Surikat\Tool;
 use Surikat\Tool\FS;
 class sync{
-	const TIMESPACE = 'sync_timespace/';
-	const CACHE = 'sync_cache/';
+	const TIMESPACE = 'sync/timespace/';
+	const CACHE = 'sync/cache/';
 	const EXT = '.sync';
 	static function mtime($file,$sync,$forceCache=true){
 		$syncF = SURIKAT_TMP.self::TIMESPACE.$sync.self::EXT;
