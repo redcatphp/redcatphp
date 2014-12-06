@@ -405,7 +405,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	protected $aggCaster = '::text';
 	protected $sumCaster = '::int';
 	protected $concatenator = 'chr(29)';
-	function addColumnFulltext($table, $col){
+	function _addColumnFulltext($table, $col){
 		$this->addColumn($table,$col,$this->code('tsvector'));
 	}
 	function buildColumnFulltext($table, $col, $cols ,$lang=''){
@@ -449,9 +449,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 						list($type,$alias) = $this->specialTypeAliasExtract($type,$superalias);
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
-						$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
+						$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 						if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
-							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}";
+							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}$alias{$q}.{$q}{$typeParent}_id{$q}";
 						$typeParent = $type;
 						$aliasParent = $alias;
 						$type = '';
@@ -468,9 +468,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$imp = implode('_',$rels);
 							$join[$imp][] = $alias;
 							if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
-								$tablesJoin[] = "LEFT OUTER JOIN $q{$this->prefix}$imp$q ON {$q}{$this->prefix}$typeParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}_id{$q}";
-								$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
-								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+								$tablesJoin[] = "LEFT OUTER JOIN $q$imp$q ON {$q}$typeParent{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$typeParent}_id{$q}";
+								$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
+								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
 							}
 							$shareds[] = $type;
 							$typeParent = $type;
@@ -480,9 +480,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							if($superalias)
 								$alias = $superalias.'__'.$alias;
 							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
-							$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
+							$joint = $type!=$alias?"{$q}$type{$q} as {$q}$alias{$q}":$q.$alias.$q;
 							if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_id')))
-								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$typeParent{$q}.{$q}{$type}_id{$q}";
+								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}$alias{$q}.{$q}id{$q}={$q}$typeParent{$q}.{$q}{$type}_id{$q}";
 							$typeParent = $type;
 							$relation = '<';
 						}
@@ -500,19 +500,19 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				switch($relation){
 					default:
 					case '<':
-						$c = 'COALESCE('.$writer->autoWrapCol($q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
-						$gb = $q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q;
+						$c = 'COALESCE('.$writer->autoWrapCol($q.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
+						$gb = $q.$localTable.$q.'.'.$q.$localCol.$q;
 						if(!in_array($gb,$groupBy))
 							$groupBy[] = $gb;
-						$gb = $q.$this->prefix.$localTable.$q.'.'.$q.'id'.$q;
+						$gb = $q.$localTable.$q.'.'.$q.'id'.$q;
 						if(!in_array($gb,$groupBy))
 							$groupBy[] = $gb;
 					break;
 					case '>':
-						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$this->prefix}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 					break;
 					case '<>':
-						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$this->prefix}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
+						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
 					break;
 				}
 				$c = "to_tsvector($lang$c)";
