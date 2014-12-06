@@ -85,19 +85,33 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	}
 	
 	protected $caseSensitive;
-	protected $prefix = '';
+	protected $prefix;
+	protected $prefixL;
 	function __construct(Adapter $a, Database $db, $prefix='', $case=true){
 		$this->adapter = $a;
 		$this->database = $db;
 		$this->prefix = $prefix;
+		$this->prefixL = strlen($prefix);
 		$this->caseSensitive = $case;
 	}
 	
 	private static $_allTables = null;
 	private static $_allColumns = [];
+	function unPrefix($v,$check=true){
+		if(!$check||substr($v,0,$this->prefixL)==$this->prefix)
+			return substr($v,$this->prefixL);
+		else
+			return $v;
+	}
 	function getTables(){
-		if(!isset(self::$_allTables))
+		if(!isset(self::$_allTables)){
 			self::$_allTables = $this->_getTables();
+			if($this->prefix){
+				foreach(self::$_allTables as $k=>$v){
+					self::$_allTables[$k] = $this->unPrefix($v);
+				}
+			}
+		}
 		return self::$_allTables;
 	}
 	function createTable($table){
@@ -672,7 +686,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	public function tableExists( $table )
 	{
 		$tables = $this->getTables();
-
+		$table = $this->unPrefix($table);
 		return in_array( $table, $tables );
 	}
 

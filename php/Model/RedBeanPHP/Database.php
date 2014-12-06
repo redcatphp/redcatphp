@@ -25,6 +25,7 @@ use Surikat\Model\RedBeanPHP\RedException as RedException;
 use Surikat\Model\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
 use Surikat\Model\RedBeanPHP\Driver\RPDO as RPDO;
 
+use Surikat\Model\Table;
 use Surikat\Model\Query;
 
 use Surikat\Model\RedBeanPHP\Plugin\Preloader;
