@@ -108,7 +108,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			self::$_allTables = $this->_getTables();
 			if($this->prefix){
 				foreach(array_keys(self::$_allTables) as $k){
-					if(substr($v,0,$this->prefixL)==$this->prefix)
+					if(substr(self::$_allTables[$k],0,$this->prefixL)==$this->prefix)
 						self::$_allTables[$k] = $this->unPrefix(self::$_allTables[$k],false);
 					else
 						unset(self::$_allTables[$k]);

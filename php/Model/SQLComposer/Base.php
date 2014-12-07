@@ -4,8 +4,6 @@
  * @author Shane Smith
  * @enhanced by surikat for unsettings queries fragments and params
  */
-use \Surikat\Model\PHPSQL\PHPSQLParser;
-use \Surikat\Model\PHPSQL\PHPSQLCreator;
 abstract class Base {
 
 	private function _remove_params($clause,$i=null,$params=null){
@@ -99,27 +97,11 @@ abstract class Base {
 			array_unshift($params, $mysqli_types);
 		return $params;
 	}
-	
-	static function recomposePrefixed($q,$p){
-		
-		$parser = new PHPSQLParser($q);
-		$creator = new PHPSQLCreator($parser->parsed);
-		
-		//echo '<pre>';
-		//echo htmlentities($q)."\n";
-		//echo htmlentities($creator->created)."\n";
-		//echo '</pre>';
-		//exit;
-		//loop to add prefix on tables
-		
-		return $creator->created;
-	}
-	
 	abstract function getParams();
 	function getQuery() {
 		$q = $this->render();
-		if($this->prefix)
-			$q = self::recomposePrefixed($q,$this->prefix);
+		if($this->writer)
+			$q = str_replace('{$prefix}',$this->writer->prefix,$q);
 		return $q;
 	}
 	abstract function render();
@@ -161,8 +143,8 @@ abstract class Base {
 		$str .= str_repeat(" )", count($stack));
 		return $str;
 	}
-	protected $prefix;
-	function setPrefix($prefix){
-		$this->prefix = $prefix;
+	protected $writer;
+	function setWriter($writer){
+		$this->writer = $writer;
 	}
 }
