@@ -1,6 +1,6 @@
 <?php namespace Surikat\Service; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
 use Surikat\Tool;
-use Surikat\Tool\phpgit\Git;
+use Surikat\Tool\PhpGit\Git;
 class Service_Gitview{
 	static function surikat(){
 		self::main(SURIKAT_SPATH);
@@ -27,7 +27,7 @@ class Service_Gitview{
 			}
 		}
 		elseif (isset($_GET['diff'])){
-			include("phpgit/contrib.diff.php");
+			include(SURIKAT_SPATH."php/Tool/PhpGit/contrib.diff.php");
 			$diff    = $git->getCommitDiff($_GET['diff']);
 			$changes = $diff[0];
 			foreach ($changes as $change) {

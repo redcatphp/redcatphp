@@ -14,7 +14,7 @@ use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\OODB as OODB;
 
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 
 /**
  * Abstract Repository

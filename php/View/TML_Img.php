@@ -1,5 +1,5 @@
 <?php namespace Surikat\View; 
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 class TML_Img extends TML{
 	protected $selfClosed = true;#http://www.w3.org/TR/html5/syntax.html#void-elements
 	function loaded(){

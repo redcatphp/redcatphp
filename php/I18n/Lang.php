@@ -1,6 +1,6 @@
 <?php namespace Surikat\I18n;
-use Surikat\Config\Dev;
-use Surikat\Config\Config;
+use Surikat\Core\Dev;
+use Surikat\Core\Config;
 require_once __DIR__.'/php-gettext.inc.php';
 class Lang {
 	private $locales_root;

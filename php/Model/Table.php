@@ -23,9 +23,9 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use Surikat\Model\RedBeanPHP\OODBBean;
 use Surikat\Model\RedBeanPHP\SimpleModel;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\Tool\JSON;
-use Surikat\Tool\sync;
+use Surikat\Core\Sync;
 use BadMethodCallException;
 use Model\Exception_Validation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
@@ -58,7 +58,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $str;
 	}
 	static $metaCast = [];
-	static $sync;
+	static $Sync;
 	private static $_checkUniq;
 	private $errors = [];
 	private $_relationsKeysStore = [];
@@ -232,8 +232,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$this->trigger('created');
 			else
 				$this->trigger('updated');
-			if(static::$sync)
-				sync::update('model.'.$this->table);
+			if(static::$Sync)
+				Sync::update('model.'.$this->table);
 		}
 		$this->trigger('changed');
 
@@ -262,7 +262,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				if(!call_user_func_array(['Tool\\ruler',$f],$a))
+				if(!call_user_func_array(['Core\\Ruler',$f],$a))
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}

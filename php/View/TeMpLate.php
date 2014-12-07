@@ -1,9 +1,9 @@
 <?php namespace Surikat\View;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\View;
 use Surikat\Tool;
-use Surikat\Tool\sync;
-use Surikat\Tool\FS;
+use Surikat\Core\Sync;
+use Surikat\Core\FS;
 use Surikat\Tool\PHP;
 use Surikat\Tool\Min\HTML as minHTML;
 use Surikat\Tool\Min\PHP as minPHP;
@@ -121,7 +121,7 @@ class TeMpLate {
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
-		return sync::mtime($this->dirCache.$file,$sync,$forceCache);
+		return Sync::mtime($this->dirCache.$file,$sync,$forceCache);
 	}
 	function cacheInc($h,$sync=null){
 		if(func_num_args()<2)

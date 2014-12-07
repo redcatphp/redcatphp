@@ -1,5 +1,5 @@
 <?php namespace Surikat\View;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 class TML_Script extends TML{
 	protected $noParseContent = true;
 	function loaded(){

@@ -1,6 +1,6 @@
 <?php namespace Surikat\View;
 use Surikat\View\TML;
-use Surikat\Tool\str;
+use Surikat\Core\STR;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
@@ -8,7 +8,7 @@ class TEXT extends CORE{
 		$this->parent = $parent;
 		$this->nodeName = $nodeName;
 		if($this->parent&&$this->parent->TeMpLate&&$this->parent->TeMpLate->isXhtml)
-			$text = str::cleanXhtml($text);
+			$text = STR::cleanXhtml($text);
 		
 		$text = self::phpImplode($text,$constructor);
 		$this->textInject($text,$nodeName);

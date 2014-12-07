@@ -1,8 +1,8 @@
 <?php namespace Surikat\Controller;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\I18n\Lang;
-use Surikat\Tool\HTTP;
-use Surikat\Tool\ArrayObject;
+use Surikat\Core\HTTP;
+use Surikat\Core\ArrayObject;
 use Surikat\View\TeMpLate;
 use Surikat\View\TML;
 use Surikat\View\Toolbox as ViewToolbox;

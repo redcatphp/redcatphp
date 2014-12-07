@@ -1,8 +1,8 @@
 <?php namespace Surikat\Model;
 use ArrayAccess;
 use BadMethodCallException;
-use Surikat\Config\Dev;
-use Surikat\Tool\str;
+use Surikat\Core\Dev;
+use Surikat\Core\STR;
 use Surikat\Model;
 use Surikat\Model\RedBeanPHP\QueryWriter;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
@@ -43,6 +43,9 @@ class Query {
 	}
 	function getTable(){
 		return $this->table;
+	}
+	function getPrefix(){
+		return $this->prefix;
 	}
 	function __destruct(){
 		unset($this->composer);
@@ -479,7 +482,7 @@ class Query {
 					if($ln)
 						$p = strpos($sql,$find,$ln);
 					else
-						$p = str::posnth($sql,$find,is_integer($k)?$k:0,$ln);
+						$p = STR::posnth($sql,$find,is_integer($k)?$k:0,$ln);
 					$nSql = '';
 					if($p!==false)
 						$nSql .= substr($sql,0,$p);

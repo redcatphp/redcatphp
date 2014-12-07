@@ -1,10 +1,10 @@
 <?php namespace Surikat\View;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use ReflectionClass;
 class TML_Dev extends TML{
 	protected $hiddenWrap = true;
 	function load(){
-		$refl = new ReflectionClass('Surikat\\Config\\Dev');
+		$refl = new ReflectionClass('Surikat\\Core\\Dev');
 		$c = $refl->getConstants();
 		if(!empty($this->attributes)){
 			foreach($this->attributes as $dev)

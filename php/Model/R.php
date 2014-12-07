@@ -1,7 +1,7 @@
 <?php namespace Surikat\Model;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\Model;
-use Surikat\Config\Config;
+use Surikat\Core\Config;
 use Surikat\Model\RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper;
 use Surikat\Model\RedBeanPHP\RedException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;

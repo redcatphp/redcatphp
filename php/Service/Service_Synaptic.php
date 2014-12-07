@@ -1,11 +1,11 @@
 <?php namespace Surikat\Service;
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\Tool;
-use Surikat\Tool\HTTP;
+use Surikat\Core\HTTP;
 use Surikat\Tool\JSON;
-use Surikat\Tool\FS;
-use Surikat\Tool\scssc_server;
-use Surikat\Tool\scssc;
+use Surikat\Core\FS;
+use Surikat\Core\SCSSCServer;
+use Surikat\Core\SCSSC;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
 class Service_Synaptic {
@@ -203,9 +203,9 @@ class Service_Synaptic {
 	}
 	protected static function scss($path) {
 		set_time_limit(0);
-		scssc::$allowImportCSS = true;
-		scssc::$allowImportRemote = true;
-		$server = new scssc_server(dirname($path));
+		SCSSC::$allowImportCSS = true;
+		SCSSC::$allowImportRemote = true;
+		$server = new SCSSCServer(dirname($path));
 		$server->serve(pathinfo($path,PATHINFO_FILENAME).'.scss');
 	}
 }

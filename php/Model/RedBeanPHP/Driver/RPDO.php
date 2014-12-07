@@ -2,7 +2,7 @@
 
 namespace Surikat\Model\RedBeanPHP\Driver;
 
-use Surikat\Config\Dev;
+use Surikat\Core\Dev;
 use Surikat\Model\RedBeanPHP\Driver as Driver;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
