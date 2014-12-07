@@ -233,7 +233,7 @@ class Query {
 		$l = strlen($select);
 		$type = '';
 		$typeParent = $this->table;
-		$aliasParent = $this->table;
+		$aliasParent = $this->prefix.$this->table;
 		$q = $this->writer->quoteCharacter;
 		$shareds = [];
 		for($i=0;$i<$l;$i++){
@@ -244,14 +244,23 @@ class Query {
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}{$this->prefix}$alias{$q}":$q.$this->prefix.$alias.$q;
 					if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
-						$this->join("LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}");
+						$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
-					$aliasParent = $alias;
+					$aliasParent = $this->prefix.$alias;
 					$type = '';
 					$relation = '>';
 				break;
 				case '<':
 					list($type,$alias) = $this->writer->specialTypeAliasExtract($type,$superalias);
+					if(substr($type,-1)=='2'){
+						if($type==$alias)
+							$alias = substr($alias,0,-1);
+						$type = substr($type,0,-1);
+						$two = true;
+					}
+					else
+						$two = false;
+						
 					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //shared
 						$i++;
 						if($superalias)
@@ -263,12 +272,14 @@ class Query {
 						if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
 							if($superalias)
 								$imp = $superalias.'__'.$imp;
-							$this->join("LEFT OUTER JOIN $impt ON {$q}{$this->prefix}$typeParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}_id{$q}");
+							$this->join("LEFT OUTER JOIN $impt ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_id{$q}");
 							$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}{$this->prefix}$alias{$q}":$q.$this->prefix.$alias.$q;
-							$this->join("LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}");
-							$shareds[] = $type;
+							$this->join("LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_id{$q}");
+							if(!$two)
+								$shareds[] = $type;
 						}
 						$typeParent = $type;
+						$aliasParent = $this->prefix.$alias;
 						$relation = '<>';
 					}
 					else{ //parent
@@ -295,28 +306,28 @@ class Query {
 		$sep = $this->writer->separator;
 		$cc = $this->writer->concatenator;
 		if(!$colAlias)
-			$colAlias = ($superalias?$superalias:$table).$relation.$col;
+			$colAlias = ($superalias?$superalias:$alias).$relation.$col;
 		if($colAlias)
 			$colAlias = ' as '.$q.$colAlias.$q;
 		if($autoSelectId)
-			$idAlias = ' as '.$q.$table.$relation.'id'.$q;
+			$idAlias = ' as '.$q.$alias.$relation.'id'.$q;
 		if($exist){
 			switch($relation){
 				case '<':
-					$this->select($this->writer->autoWrapCol($q.$this->prefix.$table.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
+					$this->select($this->writer->autoWrapCol($q.$this->prefix.$alias.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
 					if($autoSelectId)
-						$this->select($q.$this->prefix.$table.$q.'.'.$q.'id'.$q.$idAlias);
-					$this->groupBy($q.$this->prefix.$table.$q.'.'.$q.'id'.$q);
+						$this->select($q.$this->prefix.$alias.$q.'.'.$q.'id'.$q.$idAlias);
+					$this->groupBy($q.$this->prefix.$alias.$q.'.'.$q.'id'.$q);
 				break;
 				case '>':
-					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
+					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$alias}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
 					if($autoSelectId)
-						$this->select("{$agg}(COALESCE({$q}{$this->prefix}{$table}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
+						$this->select("{$agg}(COALESCE({$q}{$this->prefix}{$alias}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})".$idAlias);
 				break;
 				case '<>':
-					$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$table}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
+					$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$alias}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc} {$sep} {$cc})".$colAlias);
 					if($autoSelectId)
-						$this->select("{$agg}({$q}{$this->prefix}{$table}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
+						$this->select("{$agg}({$q}{$this->prefix}{$alias}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 				break;
 			}
 			$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
