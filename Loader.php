@@ -1,4 +1,5 @@
 <?php namespace Surikat;
+use Exception;
 abstract class Loader{
 	private static $namespaces = [];
 	private static $superNamespaces = [];
@@ -36,10 +37,8 @@ abstract class Loader{
 				if(isset(self::$superNamespaces[$prefix])){
 					foreach(self::$superNamespaces[$prefix] as $base_dir){
 						$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-						if(self::requireFile($file)){
-							self::$checked[] = $class;
+						if(self::loadFile($file,$class))
 							return;
-						}
 					}
 					return;
 				}
@@ -51,18 +50,19 @@ abstract class Loader{
 			if(isset(self::$namespaces[$prefix])){
 				foreach(self::$namespaces[$prefix] as $base_dir){
 					$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
-					if(self::requireFile($file)){
-						self::$checked[] = $class;
+					if(self::loadFile($file,$class))
 						return;
-					}
 				}
 			}
 		}
 		self::extendSuperClass($class);
 	}
-	private static function requireFile($file){
+	private static function loadFile($file,$class){
 		if(file_exists($file)){
 			require $file;
+			if(!class_exists($class,false)&&!interface_exists($class,false)&&!trait_exists($class,false))
+				throw new Exception('Class "'.$class.'" not found as expected in "'.$file.'"');
+			self::$checked[] = $class;
 			return true;
 		}
 		return false;
@@ -100,4 +100,4 @@ Loader::addNamespace('',SURIKAT_PATH.'php');
 Loader::addSuperNamespace('Surikat',SURIKAT_SPATH.'php');
 set_include_path('.');
 spl_autoload_register(['Surikat\\Loader','classLoad']);
-set_exception_handler(['Surikat\\Dev','catchException']);
+set_exception_handler(['Surikat\\Core\\Dev','catchException']);
