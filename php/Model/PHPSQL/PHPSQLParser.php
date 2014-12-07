@@ -1,4 +1,4 @@
-<?php
+<?php namespace Surikat\Model\PHPSQL;
 
 /**
  * php-sql-parser.php
@@ -39,8 +39,8 @@
  * @version   SVN: $Id: PHPSQLParser.php 757 2013-12-16 09:54:05Z phosco@gmx.de $
  */
 
-require_once dirname(__FILE__) . '/positions/PositionCalculator.php';
-require_once dirname(__FILE__) . '/processors/DefaultProcessor.php';
+//require_once dirname(__FILE__) . '/positions/PositionCalculator.php';
+//require_once dirname(__FILE__) . '/processors/DefaultProcessor.php';
 
 /**
  * This class implements the parser functionality.
@@ -95,4 +95,3 @@ class PHPSQLParser {
         return $this->parsed;
     }
 }
-?>
