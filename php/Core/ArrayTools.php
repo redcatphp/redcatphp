@@ -1,4 +1,4 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\Core;
 class ArrayTools{
 	static function array_merge_recursive(){
 		$args = func_get_args();
