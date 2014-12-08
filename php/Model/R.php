@@ -13,22 +13,36 @@ class R extends RedBeanPHP\Facade{
 			$key = 'default';
 		if($key!='default')
 			$getter = $getter.'_'.implode('_',explode('/',$key));
-		$conf = Config::$getter();
-		if(!$conf)
+
+		$type = Config::$getter('type');
+		if(!$type)
 			return;
-		extract($conf);
+		$port = Config::$getter('port');
+		$host = Config::$getter('host');
+		$file = Config::$getter('file');
+		$name = Config::$getter('name');
+		$prefix = Config::$getter('prefix');
+		$case = Config::$getter('case');
+		$frozen = Config::$getter('frozen');
+		$user = Config::$getter('user');
+		$password = Config::$getter('password');
 		
-		$port = isset($port)&&$port?';port='.$port:'';
-		$host = isset($host)?'host='.$host:(isset($file)?$file:'');
-		$dbname = isset($name)?';dbname='.$name:'';
+		if($port)
+			$port = ';port='.$port;
+		if($host)
+			$host = 'host='.$host;
+		elseif($file)
+			$host = $file;
+		if($name)
+			$name = ';dbname='.$name;
+		if(!isset($frozen))
+			$frozen = !Dev::has(Dev::MODEL_SCHEMA);		
+		if(!isset($case))
+			$case = true;
+		$dsn = $type.':'.$host.$port.$name;
 		
-		$dsn = $type.':'.$host.$port.$dbname;
 		
-		$frozen = isset($frozen)?$frozen:!Dev::has(Dev::MODEL_SCHEMA);		
-		$prefix = isset($prefix)?$prefix:'';
-		$case = isset($case)?$case:true;
-		
-		self::addDatabase($key,$dsn,@$user,@$password,$frozen,$prefix,$case);
+		self::addDatabase($key,$dsn,$user,$password,$frozen,$prefix,$case);
 		
 		return true;
 	}
