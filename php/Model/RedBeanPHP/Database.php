@@ -602,7 +602,7 @@ class Database{
 			$name = $this->name=='default'?'':ucfirst($this->name).'\\';
 			$c = '\\Model\\Table';
 			$cl = '\\Model\\'.$name.'Table';
-			$cla = $cl.'_'.ucfirst($type);
+			$cla = $cl.ucfirst($type);
 			if(class_exists($cla))
 				$cache[$k] = $cla;
 			elseif($name&&class_exists($cl))
