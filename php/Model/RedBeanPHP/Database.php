@@ -22,7 +22,7 @@ use Surikat\Model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+use Surikat\Model\RedBeanPHP\BeanHelper\SimpleBeanHelper as SimpleBeanHelper;
 use Surikat\Model\RedBeanPHP\Driver\RPDO as RPDO;
 
 use Surikat\Model\Table;
@@ -32,6 +32,7 @@ use Surikat\Model\RedBeanPHP\Plugin\Preloader;
 use Surikat\Model\RedBeanPHP\Plugin\Cooker;
 
 class Database{
+	private $name;
 	private $toolbox;
 	private $redbean;
 	private $writer;
@@ -44,7 +45,9 @@ class Database{
 	private $plugins = [];
 	private $exportCaseStyle = 'default';
 	
-	function __construct( $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
+	function __construct( $name = 'default', $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
+		
+		$this->name = $name;
 		
 		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
 		
@@ -54,10 +57,13 @@ class Database{
 		$this->labelMaker         = new LabelMaker( $this->toolbox );
 		$helper                   = new SimpleModelHelper();
 		$helper->attachEventListeners( $this->redbean );
-		$this->redbean->setBeanHelper( new SimpleFacadeBeanHelper($this) );
+		$this->redbean->setBeanHelper( new SimpleBeanHelper($this) );
 		$this->duplicationManager = new DuplicationManager( $this->toolbox );
 		$this->tagManager         = new TagManager( $this->toolbox );
 		
+	}
+	function getName(){
+		return $this->name;
 	}
 	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		if ( is_object($dsn) ) {
@@ -589,8 +595,22 @@ class Database{
 	}
 	
 	function getModelClass($type){
-		$type = $this->writer->reverseCase($type);
-		return class_exists($c='\\Model\\Table_'.ucfirst($type))?$c:'\\Model\\Table';
+		static $cache = [];
+		$k = $this->name.'.'.$type;
+		if(!isset($cache[$k])){
+			$type = $this->writer->reverseCase($type);
+			$name = $this->name=='default'?'':ucfirst($this->name).'\\';
+			$c = '\\Model\\Table';
+			$cl = '\\Model\\'.$name.'Table';
+			$cla = $cl.'_'.ucfirst($type);
+			if(class_exists($cla))
+				$cache[$k] = $cla;
+			elseif($name&&class_exists($cl))
+				$cache[$k] = $cl;
+			else
+				$cache[$k] = $c;
+		}
+		return $cache[$k];
 	}
 	function getClassModel($c){
 		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
