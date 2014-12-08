@@ -1,4 +1,4 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\Core;
 use Surikat\Core\FS;
 abstract class Images {
 	public static $extensions = ['jpg','jpeg','png','gif','bmp','tiff','ico'];
