@@ -183,6 +183,8 @@ RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}/Surikat/$1.$2 -f
 RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff)$ /Surikat/$1.$2 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ /img/404.png [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
 
 
