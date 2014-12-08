@@ -19,7 +19,7 @@
 	<footer>
 		
 	</footer>
-	<script type="text/javascript" src="js/js.pack.js"></script>
+	<script type="text/javascript" src="js/js-is.pack.js"></script>
 	<script type="text/javascript">
 		$js('script');
 	</script>
