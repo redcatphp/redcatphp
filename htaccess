@@ -135,8 +135,7 @@ AddType text/x-vcard                   vcf
 	Header unset ETag
 </IfModule>
 FileETag None
-Options -MultiViews 
-ErrorDocument 404 /404.html
+Options -MultiViews
 AddDefaultCharset utf-8
 AddCharset utf-8 .html .css .js .xml .json .rss .atom
 <IfModule php5_module>
