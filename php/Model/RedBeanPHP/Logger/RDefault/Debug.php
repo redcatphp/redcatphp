@@ -60,7 +60,7 @@ class Debug extends RDefault implements Logger
 		if(is_numeric( $value ))
 			$value = str_replace(',','.',$value);
 		elseif ( $value !== 'NULL')
-			$value = "'$value'";
+			$value = "'".str_replace("'","\'",$value)."'";
 
 		return $value;
 	}
