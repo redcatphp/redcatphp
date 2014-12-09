@@ -176,6 +176,10 @@ RewriteRule ^robots\.txt$ /Surikat/robots_cdn.txt [L]
 RewriteCond %{SERVER_PORT} ^443$
 RewriteRule ^robots\.txt$ /Surikat/robots_ssl.txt [L]
 
+#Domain - Canonicalize domain
+#RewriteCond %{HTTP_HOST} !mydomain.com$ [NC]
+#RewriteRule ^(.*)$ http://mydomain.com/$1 [L,R=301] 
+
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/Surikat/
@@ -186,13 +190,7 @@ RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ /img/404.png [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
 
-
-#Surikat bootstrap
+#Surikat Bootstrap
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ index.php/$1 [L,QSA]
-
-#Domain - Avoid Duplicate-Content
-#RewriteCond %{HTTP_HOST} !^mydomain.com$ [NC]
-#RewriteCond %{HTTP_HOST} !^cdn.mydomain.com$ [NC]
-#RewriteRule ^(.*)$ http://mydomain.com/$1 [L,R=301]
