@@ -62,7 +62,9 @@ class Query {
 				$params = $this->composer->getParams();
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
-				return $this->_DataBase->$f($this->composer->getQuery(),$params);
+				$sql = $this->composer->getQuery();
+				list($sql,$params) = self::nestBinding($sql,$params);
+				return $this->_DataBase->$f($sql,$params);
 			}
 			return;
 		}
@@ -91,9 +93,9 @@ class Query {
 								$binds = $sql->getParams();
 							$sql = $sql->getQuery();
 						}
-						if(is_array($binds))
-							$args = self::nestBinding($sql,$binds);
-						else
+						//if(is_array($binds))
+							//$args = self::nestBinding($sql,$binds);
+						//else
 							$args = [$sql,$binds];
 						if($un){
 							if(is_array($args[1])&&empty($args[1]))
@@ -488,9 +490,9 @@ class Query {
 						$nSql .= substr($sql,0,$p);
 					$binderL = $binder;
 					if($i)
-						foreach($binderL as &$v)
-							if($v!='?')
-								$v .= $i;
+						foreach($binderL as &$_v)
+							if($_v!='?')
+								$_v .= $i;
 					$nSql .= '('.implode(',',$binderL).')';
 					$ln = strlen($nSql);
 					$nSql .= substr($sql,$p+strlen($find));

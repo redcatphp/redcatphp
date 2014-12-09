@@ -57,6 +57,7 @@ abstract class Base {
 	protected $columns = [];
 	protected $tables = [];
 	protected $params = [];
+	protected $paramsAssoc = [];
 	protected $mysqli_types = [ ];
 	function add_table($table,  array $params = null, $mysqli_types = "") {
 		if(!empty($params)||!in_array($table,$this->tables))
@@ -76,14 +77,22 @@ abstract class Base {
 				$this->params[$clause] = [];
 			if (!empty($mysqli_types))
 				$this->mysqli_types[$clause] .= $mysqli_types;
-			$this->params[$clause][] = $params;
+			$addParams = [];
+			foreach($params as $k=>$v){
+				if(is_integer($k))
+					$addParams[] = $v;
+				else
+					$this->set($k,$v);
+			}
+			if(!empty($addParams))
+				$this->params[$clause][] = $addParams;
 		}
 		return $this;
 	}
 	protected function _get_params($order) {
 		if (!is_array($order))
 			$order = func_get_args();
-		$params = [ ];
+		$params = [];
 		$mysqli_types = "";
 		foreach ($order as $clause) {
 			if(empty($this->params[$clause]))
@@ -93,8 +102,11 @@ abstract class Base {
 			if(isset($this->mysqli_types[$clause]))
 				$mysqli_types .= $this->mysqli_types[$clause];
 		}
+		foreach($this->paramsAssoc as $k=>$v)
+			$params[$k] = $v;
 		if(!empty($this->mysqli_types))
 			array_unshift($params, $mysqli_types);
+		//var_dump($params);
 		return $params;
 	}
 	abstract function getParams();
@@ -146,5 +158,13 @@ abstract class Base {
 	protected $writer;
 	function setWriter($writer){
 		$this->writer = $writer;
+	}
+	
+	function set($k,$v){
+		$k = ':'.ltrim($k,':');
+		$this->paramsAssoc[$k] = $v;
+	}
+	function get($k){
+		return $this->paramsAssoc[$k];
 	}
 }

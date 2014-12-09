@@ -33,8 +33,8 @@ abstract class Where extends Base {
 		return $this->remove_property('where',[')']);
 	}
 	
-	protected $where = [ ];
-	protected $with = [ ];
+	protected $where = [];
+	protected $with = [];
 	function where($where,  array $params = null, $mysqli_types = "") {
 		$this->where[] = $where;
 		$this->_add_params('where', $params, $mysqli_types);
