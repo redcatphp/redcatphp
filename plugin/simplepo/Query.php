@@ -1,6 +1,6 @@
 <?php namespace SimplePO;
-use control\FS;
-use model\R;
+use Core\FS;
+use Model\R;
 class Query{
 	private $sql = "";
 	private $sql_args = array();

@@ -1,8 +1,7 @@
 <?php namespace SimplePO;
-use control;
-use i18n\phpmo;
-use i18n\tmlGetText;
-use model\R;
+use I18n\phpmo;
+use I18n\tmlGetText;
+use Model\R;
 class MessageService {
 	var $potfile = 'langs/messages.pot';
 	function getMessages($id) {
@@ -24,11 +23,11 @@ class MessageService {
 		$q->sql("UPDATE message SET comments=?, msgstr=?, flags=? WHERE id=?", $comments, $msgstr, $flags, $id)->execute();
 	}
 	function makePot(){
-		$potfile = control::$CWD.$this->potfile;
-		$pot = file_get_contents(control::$CWD.'langs/header.pot');
+		$potfile = SURIKAT_PATH.$this->potfile;
+		$pot = file_get_contents(SURIKAT_PATH.'langs/header.pot');
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
-		$pot .= tmlGetText::parse(control::$CWD.'view',control::$CWD);
+		$pot .= tmlGetText::parse(SURIKAT_PATH.'view',SURIKAT_PATH);
 		file_put_contents($potfile,$pot);
 	}
 	function cleanObsolete(){
@@ -38,7 +37,7 @@ class MessageService {
 	
 	function countPotMessages(){
 		$POParser = new POParser();
-		return ['message_count'=>$POParser->countEntriesFromStream(fopen(control::$CWD.'langs/messages.pot', 'r'))];
+		return ['message_count'=>$POParser->countEntriesFromStream(fopen(SURIKAT_PATH.'langs/messages.pot', 'r'))];
 	}
 
 	function importCatalogue($cid=null,$lg=null){
@@ -55,7 +54,7 @@ class MessageService {
 			return;
 		
 		R::exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
-		SimplePO::import($lg,control::$CWD.$this->potfile);
+		SimplePO::import($lg,SURIKAT_PATH.$this->potfile);
 	}
 	function exportCatalogue($cid=null,$lg=null){
 		R::selectDatabase('langs');
@@ -70,7 +69,7 @@ class MessageService {
 		if(!isset($lg)||!isset($cid))
 			return;
 		
-		$path = control::$CWD.'langs/'.$lg.'/LC_MESSAGES/messages.';
+		$path = SURIKAT_PATH.'langs/'.$lg.'/LC_MESSAGES/messages.';
 		$po = $path.'po';
 		$mo = $path.'mo';
 		SimplePO::export($lg,$po);

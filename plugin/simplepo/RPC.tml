@@ -1,5 +1,5 @@
 <?
-control::addNamespace('SimplePO',__DIR__);
+Loader::addNamespace('SimplePO',__DIR__);
 header('Content-Type: application/json; charset=UTF-8;');
 $request = $_POST;
 $service = new SimplePO\MessageService();

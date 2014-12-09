@@ -2,8 +2,8 @@
 <?
 use model\R;
 use SimplePO\SimplePO;
-control::addNamespace('SimplePO',__DIR__);
-$dir = control::$CWD.'langs';
+Loader::addNamespace('SimplePO',__DIR__);
+$dir = SURIKAT_PATH.'langs';
 if(!file_exists($dir.'/langs.db')){
 	R::selectDatabase('langs');
 	foreach(explode(';',file_get_contents(__DIR__.'/install.sql')) as $l)
@@ -12,7 +12,7 @@ if(!file_exists($dir.'/langs.db')){
 foreach(glob($dir.'/*',GLOB_ONLYDIR) as $d)
 	  SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
 ?>
-<extend './TML'>
+<extend>
 	<append 'head'>
 		<script src="index.js" type="text/javascript" charset="utf-8"></script>
 	</append>
