@@ -17,7 +17,6 @@ class Router_ByTml extends Router_SuperURI{
 		if($this->dirHook)
 			$params[0] = substr($params[0],strlen($this->dirHook));
 		$file = $this->dir.'/'.$params[0].'.tml';
-		//var_dump($params);
 		if(	is_file(SURIKAT_PATH.$file)
 			||is_file(SURIKAT_SPATH.$file))
 			return $params;
