@@ -488,10 +488,7 @@ class Query {
 		foreach($binds as $k=>$v){
 			if(is_array($v)){
 				$find = '?';
-				$binder = [];
-				foreach(array_keys($v) as $_k){
-					$binder[] = '?';
-				}
+				$c = count($v);
 				$av = array_values($v);
 				$i = 0;
 				$ln = 0;
@@ -502,14 +499,12 @@ class Query {
 						$p = STR::posnth($sql,$find,is_integer($k)?$k:0,$ln);
 					if($p!==false){
 						$nSql = substr($sql,0,$p);
-						$binderL = $binder;
-						$nSql .= '('.implode(',',$binderL).')';
+						$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
 						$ln = strlen($nSql);
 						$nSql .= substr($sql,$p+strlen($find));
 						$sql = $nSql;
-						foreach($binderL as $y=>$_k){
+						for($y=0;$y<$c;$y++)
 							$nBinds[] = $av[$y];
-						}
 					}
 					$i++;
 				}
