@@ -9,16 +9,18 @@ if(in_array(strtolower(pathinfo(@$_SERVER['PATH_INFO'],PATHINFO_EXTENSION)),arra
 <extend>
 	<attr selector="main" addClass="not-found">
 	<main>
-		<div>
+		<article>
 			<h1>Oops!</h1>
-			<h2>Page introuvable</h2>
-			<div class="error-details">
-				Sorry, an error has occured, Requested page not found!
+			<div>
+				<h2>Page introuvable</h2>
+				<div class="error-details">
+					Sorry, an error has occured, Requested page not found!
+				</div>
+				<div class="error-actions">
+					<a href="">Retour à l'accueil</a>
+					<a href="Contact">Contact</a>
+				</div>
 			</div>
-			<div class="error-actions">
-				<a href="">Retour à l'accueil</a>
-				<a href="Contact">Contact</a>
-			</div>
-		</div>
+		</article>
 	</main>
 </extend>
