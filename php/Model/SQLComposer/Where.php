@@ -75,8 +75,11 @@ abstract class Where extends Base {
 		$this->_add_params('with', $params, $mysqli_types);
 		return $this;
 	}
-	protected function _render_where() {
-		return Base::_render_bool_expr($this->where);
+	protected function _render_where($removeUnbinded=true){
+		$where = $this->where;
+		if($removeUnbinded)
+			$where = $this->removeUnbinded($where);
+		return Base::_render_bool_expr($where);
 	}
 
 

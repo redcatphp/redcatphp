@@ -147,18 +147,23 @@ class Select extends Where {
 			$this->having[] = [ ')' ];
 		return $this;
 	}
-	protected function _render_having() {
-		return Base::_render_bool_expr($this->having);
+	protected function _render_having($removeUnbinded=true){
+		$having = $this->having;
+		if($removeUnbinded)
+			$having = $this->removeUnbinded($having);
+		return Base::_render_bool_expr($having);
 	}
-	function render() {
+	function render($removeUnbinded=true) {
 		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific
 		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
 		$from = "\nFROM " . implode("\n\t", $this->tables);
-		$where = empty($this->where) ? "" : "\nWHERE " . $this->_render_where();
+		$where = $this->_render_where($removeUnbinded);
+		if(!empty($where))
+		$where =  "\nWHERE $where";
 		$group_by = empty($this->group_by) ? "" : "\nGROUP BY " . implode(", ", $this->group_by);
 		$with_rollup = $this->with_rollup ? "WITH ROLLUP" : "";
-		$having = empty($this->having) ? "" : "\nHAVING " . $this->_render_having();
+		$having = empty($this->having) ? "" : "\nHAVING " . $this->_render_having($removeUnbinded);
 		$order_by = empty($this->order_by) ? "" : "\nORDER BY " . implode(", ", $this->order_by);
 		$limit = "";
 		if ($this->limit) {

@@ -108,9 +108,8 @@ abstract class Base {
 			array_unshift($params, $mysqli_types);
 		return $params;
 	}
-	abstract function getParams();
-	function getQuery() {
-		$q = $this->render();
+	function getQuery($removeUnbinded=true){
+		$q = $this->render($removeUnbinded);
 		if($this->writer)
 			$q = str_replace('{$prefix}',$this->writer->prefix,$q);
 		return $q;
@@ -165,5 +164,25 @@ abstract class Base {
 	}
 	function get($k){
 		return $this->paramsAssoc[$k];
+	}
+	
+	function removeUnbinded($a){
+		foreach(array_keys($a) as $k){
+			if(is_array($a[$k]))
+				continue;
+			$e = str_replace('::','',$a[$k]);
+			if(strpos($e,':')!==false){
+				preg_match_all('/:((?:[a-z][a-z0-9_]*))/is',$e,$match);
+				if(isset($match[0])){
+					foreach($match[0] as $m){
+						if(!isset($this->paramsAssoc[$m])){
+							unset($a[$k]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		return $a;
 	}
 }
