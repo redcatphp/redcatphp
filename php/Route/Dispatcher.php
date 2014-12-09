@@ -20,7 +20,7 @@ class Dispatcher {
 	function run($uri){
 		foreach ($this->routes as $a){
 			list($router,$callback) = $a;
-			if($params = $router->match($uri)){
+			if(null !== $params = $router->match($uri)){
 				call_user_func_array($callback,[
 					$params,
 					$uri,
