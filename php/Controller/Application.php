@@ -24,6 +24,7 @@ class Application{
 	}
 	function convention(){
 		$this->Dispatcher
+			->prepend(new Router_ByTml('plugin'),$this)
 			->prepend('/service/',['Service\\Service','method'])
 			->append(new Router_ByTml(),$this)
 		;
@@ -65,6 +66,15 @@ class Application{
 		$this->Router = $Router;
 		if($this->i18nBySubdomain)
 			$path = $this->i18nBySubdomain($path);
+		if(method_exists($Router,'getDirHook')){
+			$hook = $Router->getDirHook();
+			$this->View->setDirCompile(SURIKAT_TMP.$hook.'/compile/');
+			$this->View->setDirCache(SURIKAT_TMP.$hook.'/cache/');
+			$this->View->setDirCwd([
+				SURIKAT_PATH.$hook.'/',
+				SURIKAT_SPATH.$hook.'/',
+			]);
+		}
 		$this->View->set('URI',$Router);
 		$this->display($path.'.tml');
 	}
