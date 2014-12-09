@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <title>Surikat Framework - &copy; wildSurikat.com</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-	<base href="http://<?=$_SERVER['SERVER_NAME']?>/">
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Surikat Framework - &copy; wildSurikat.com</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<base href="<?=$BASE_HREF?>">
 	<link href="css/style.css" rel="stylesheet" type="text/css">
-  </head>
+</head>
 <body>
 	<header>
 		
@@ -20,8 +20,11 @@
 		
 	</footer>
 	<script type="text/javascript" src="js/js-is.pack.js"></script>
-	<script type="text/javascript">
+	<script type="text/javascript"><?use Core\Dev;?>
+		<?if(Dev::has(Dev::CSS)):?>$css().dev=true;<?endif;?>
+		<?if(Dev::has(Dev::JS)):?>$js().dev=true;<?endif;?>
 		$js('script');
+		<?if(Dev::has(Dev::CONTROL)):?>if(console) console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=Core\Chrono::get()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');<?endif;?>
 	</script>
 </body>
 </html>

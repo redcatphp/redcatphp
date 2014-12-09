@@ -3,6 +3,7 @@ use Surikat\Core\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 use Surikat\Controller\Application;
+use Surikat\Core\Domain;
 class Basic extends ArrayObject{
 	static function load(TML $tml){
 		if(!$tml->TeMpLate)
@@ -15,6 +16,8 @@ class Basic extends ArrayObject{
 			'presentNamespaces'	=> $tml->_namespaces,
 		]);
 		$o->setView($tml->TeMpLate);
+		$o->BASE_HREF = Domain::getBaseHref();
+		$o->timeCompiled = time();
 		$o->assign();
 		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
 		$head .= '$THIS->setView($this);';
@@ -49,6 +52,7 @@ class Basic extends ArrayObject{
 			)
 		)
 			(new Application())->error(404);
+		$this->time = time();
 		$this->dynamic();
 	}
 	function dynamic(){}
