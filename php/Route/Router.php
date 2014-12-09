@@ -1,5 +1,5 @@
 <?php namespace Surikat\Route;
-class Router {
+class Router implements Route {
 	protected $match;
 	function __construct($match=null){
 		$this->match = $match;

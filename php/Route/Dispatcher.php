@@ -8,7 +8,7 @@ class Dispatcher {
 		return $this->route($pattern, $callback, true);
 	}
 	function route($router, $callback, $prepend = false){
-		if(!$router instanceof Router)
+		if(!$router instanceof Route)
 			$router = new Router($router);
 		$router = [$router,$callback];
 		if($prepend)
