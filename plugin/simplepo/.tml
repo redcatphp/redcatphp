@@ -1,4 +1,4 @@
-<present: />
+<Presenter:Basic />
 <?
 use Model\R;
 use SimplePO\SimplePO;
