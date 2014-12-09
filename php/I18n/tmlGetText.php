@@ -15,11 +15,18 @@ class tmlGetText{
 	}
 	private static function dir($dir,$sourceDir=null){
 		$msg = '';
-		foreach(glob($dir.'/*') as $entry)
-			if (is_dir($entry))
-				$msg .= self::dir($entry,$sourceDir);
+		$dir = rtrim($dir,'/').'/';
+		$dh = opendir($dir);
+		while($file=readdir($dh)){
+			if($file=='.'||$file=='..')
+				continue;
+			$f = $dir.$file;
+			if (is_dir($f))
+				$msg .= self::dir($f,$sourceDir);
 			else
-				$msg .= self::file($entry,$sourceDir);
+				$msg .= self::file($f,$sourceDir);
+		}
+		closedir($dh);
 		return $msg;
 	}
 	private static function file($file,$sourceDir=null){

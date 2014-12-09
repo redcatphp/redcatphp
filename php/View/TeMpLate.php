@@ -124,16 +124,26 @@ class TeMpLate {
 		return $this;
 	}
 	function find($path=null){
-		if(!isset($path))
-			$path = $this->path;
-		foreach($this->dirCwd as $d){			
-			if(strpos($path,'/')===0&&is_file($file=$d.$path))
-				return $file;
-			$local = $d.dirname($this->path).'/'.$path;
-			if(strpos($path,'./')===0)
-				return $local;
-			if($file=realpath($local))
-				return $file;
+		if(func_num_args()){
+			if(strpos($path,'/')===0&&is_file($path))
+				return $path;
+			foreach($this->dirCwd as $d){
+				if(strpos($path,'/')===0&&is_file($file=$d.$path))
+					return $file;
+				$local = $d.dirname($this->path).'/'.$path;
+				if(strpos($path,'./')===0)
+					return $local;
+				if($file=realpath($local))
+					return $file;
+				if(is_file($file=$d.$path))
+					return $file;
+			}
+		}
+		else{
+			foreach($this->dirCwd as $d){
+				if(is_file($file=$d.$this->path))
+					return $file;
+			}
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
@@ -174,13 +184,16 @@ class TeMpLate {
 	function dirCompileToDirCwd($v){
 		$dirC = rtrim($this->dirCompile,'/');
 		foreach($this->dirCwd as $d){
+			$path = $v;
 			if(strpos($v,$dirC)===0)
-				$dir = rtrim($d,'/').substr($v,strlen($dirC));
-			$path = realpath($dir);
-			if($path)
+				$path = rtrim($d,'/').substr($v,strlen($dirC));
+			$path = realpath($path);
+			if($path){
+				$v = $path;
 				break;
+			}
 		}
-		return $path;
+		return $v;
 	}
 	function T_FILE($v){
 		return $this->dirCompileToDirCwd($v);

@@ -1,7 +1,12 @@
 <?php namespace Surikat\Core; 
 abstract class FS {
-	static function recurse($file,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
-		foreach(glob($file.'/'.($pattern?$pattern:'*')) as $f){
+	static function recurse($dir,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
+		$dir = rtrim($dir,'/').'/';
+		$dh = opendir($dir);
+		while($file=readdir($dh)){
+			if($file=='.'||$file=='..')
+				continue;
+			$f = $dir.$file;
 			if($skiplink&&is_link($f)){
 				continue;
 			}
@@ -16,6 +21,7 @@ abstract class FS {
 				$ret[] = call_user_func($arg,$f);
 			}
 		}
+		closedir($dh);
 		return $ret;
 	}
 	static function mkdir($file,$isFile=null){
