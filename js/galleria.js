@@ -5691,7 +5691,7 @@ Galleria.addTheme = function( theme ) {
 
     var css = false,
         reg;
-
+        
     if ( typeof theme.css === 'string' ) {
 
         // look for manually added CSS

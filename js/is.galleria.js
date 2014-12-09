@@ -15,7 +15,7 @@ $js(true,['jquery','galleria.js'],function(){
 	Galleria.addTheme({
 		name: 'classic',
 		author: 'Galleria',
-		css: 'galleria.classic.css',
+		css: 'css/is.galleria.css',
 		defaults: {
 			transition: 'slide',
 			thumbCrop:  'height',
@@ -24,9 +24,7 @@ $js(true,['jquery','galleria.js'],function(){
 			_toggleInfo: true
 		},
 		init: function(options) {
-
-			Galleria.requires(1.4, 'This version of Classic theme requires Galleria 1.4 or later');
-
+			
 			// add some elements
 			this.addElement('info-link','info-close');
 			this.append({
