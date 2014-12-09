@@ -453,6 +453,7 @@ class Query {
 	}
 	static function nestBinding($sql,$binds){
 		do{
+			list($sql,$binds) = self::pointBindingLoop($sql,(array)$binds);
 			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
 			$containA = false;
 			foreach($binds as $v)
@@ -462,24 +463,38 @@ class Query {
 		while($containA);
 		return [$sql,$binds];
 	}
-	private static function nestBindingLoop($sql,$binds){
+	private static function pointBindingLoop($sql,$binds){
 		$nBinds = [];
-		$ln = 0;
+		foreach($binds as $k=>$v){
+			if(is_integer($k))
+				$nBinds[] = $v;
+		}
+		$i = 0;
+		foreach($binds as $k=>$v){
+			if(!is_integer($k)){
+				$find = ':'.ltrim($k,':');
+				while(false!==$p=strpos($sql,$find)){
+					$preSql = substr($sql,0,$p);
+					$sql = $preSql.'?'.substr($sql,$p+strlen($find));
+					$c = count(explode('?',$preSql))-1;
+					array_splice($nBinds,$c,0,[$v]);
+				}
+			}
+			$i++;
+		}
+		return [$sql,$nBinds];
+	}
+	private static function nestBindingLoop($sql,$binds){
 		foreach($binds as $k=>$v){
 			if(is_array($v)){
-				if(is_integer($k))
-					$find = '?';
-				else
-					$find = ':'.ltrim($k,':');
+				$find = '?';
 				$binder = [];
 				foreach(array_keys($v) as $_k){
-					if(is_integer($_k))
-						$binder[] = '?';
-					else
-						$binder[] = ':slot_'.$k.'_'.ltrim($_k,':');
+					$binder[] = '?';
 				}
 				$av = array_values($v);
 				$i = 0;
+				$ln = 0;
 				do{
 					if($ln)
 						$p = strpos($sql,$find,$ln);
@@ -488,19 +503,12 @@ class Query {
 					if($p!==false){
 						$nSql = substr($sql,0,$p);
 						$binderL = $binder;
-						if($i)
-							foreach($binderL as &$_v)
-								if($_v!='?')
-									$_v .= $i;
 						$nSql .= '('.implode(',',$binderL).')';
 						$ln = strlen($nSql);
 						$nSql .= substr($sql,$p+strlen($find));
 						$sql = $nSql;
 						foreach($binderL as $y=>$_k){
-							if($_k=='?')
-								$nBinds[] = $av[$y];
-							else
-								$nBinds[$_k] = $av[$y];
+							$nBinds[] = $av[$y];
 						}
 					}
 					$i++;
@@ -508,12 +516,7 @@ class Query {
 				while(!is_integer($k)&&strpos($sql,$find)!==false);
 			}
 			else{
-				if(is_integer($k))
-					$nBinds[] = $v;
-				else{
-					$key = ':'.ltrim($k,':');
-					$nBinds[$key] = $v;
-				}
+				$nBinds[] = $v;
 			}
 		}
 		return [$sql,$nBinds];
