@@ -19,6 +19,7 @@ class TeMpLate {
 	var $childNodes = [];
 	var $isXhtml;
 	var $present;
+	protected $devCompileFile;
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
 		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
@@ -55,6 +56,7 @@ class TeMpLate {
 	}
 	function setDirCompile($d){
 		$this->dirCompile = rtrim($d,'/').'/';
+		$this->devCompileFile = $this->dirCompile.'.dev';
 	}
 	function setDirCache($d){
 		$this->dirCache = rtrim($d,'/').'/';
@@ -95,9 +97,23 @@ class TeMpLate {
 		eval('?>'.$ev);
 		return $this;
 	}
+	function devRegeneration(){
+		if(Dev::has(Dev::VIEW)){
+			if(!is_file($this->devCompileFile)){
+				FS::mkdir($this->devCompileFile,true);
+				file_put_contents($this->devCompileFile,'');
+			}
+		}
+		elseif(is_file($this->devCompileFile)){
+			unlink($this->devCompileFile);
+			FS::rmdir($this->dirCompile);
+			FS::rmdir($this->dirCache);
+		}
+	}
 	function display($file=null,$vars=[]){
 		if(isset($file))
 			$this->setPath($file);
+		$this->devRegeneration();
 		if((!isset($this->forceCompile)&&Dev::has(Dev::VIEW))||!is_file($this->dirCompile.$this->path))
 			$this->compilePHP($this->dirCompile.$this->path,(string)$this->prepare());
 		if(!empty($this->vars))
