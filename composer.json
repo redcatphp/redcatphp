@@ -1,5 +1,5 @@
 {
-	"name": "Surikat",
+	"name": "surikat/surikat",
 	"type": "library",
 	"description": "Surikat is a Full Stack Framework for Web Development",
 	"keywords": ["Framework", "Full-Stack", "DRY", "Template", "TML", "ORM", "MVC", "MVP", "MVPC"],
