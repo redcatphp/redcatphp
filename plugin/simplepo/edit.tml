@@ -1,5 +1,5 @@
 <present: />
-	<extend './TML'>
+	<extend>
 	<append 'head'>
 		<script src="edit.js" type="text/javascript" charset="utf-8"></script>
 	</append>
