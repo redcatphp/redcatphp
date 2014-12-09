@@ -171,37 +171,38 @@ class TeMpLate {
 			$str = minPHP::minify($str);
 		return $this->compileStore($file,$str);
 	}
-	//function dirCompileToDirCwd($v){
-		//if(strpos($v,$this->dirCompile)===0)
-			//$v = $this->dirCwd.substr($v,strlen($this->dirCompile));
-		//return realpath($v);
-	//}
-	//function T_FILE($v){
-		//return $this->dirCompileToDirCwd($v);
-	//}
-	//function T_DIR($v){
-		//return $this->dirCompileToDirCwd($v);
-	//}
-	//protected static function phpEmulations($str){
-		//$tokens = token_get_all($str);
-		//$str = '';
-		//foreach($tokens as $token)
-			//switch(is_array($token)?$token[0]:null){
-				//case T_DIR:
-					//$str .= '$this->T_DIR(__DIR__)';
-				//break;
-				//case T_FILE:
-					//$str .= '$this->T_FILE(__FILE__)';
-				//break;
-				//default:
-					//$str .= is_array($token)?$token[1]:$token;
-				//break;
-			//}
-		//return $str;
-	//}
+	function dirCompileToDirCwd($v){
+		$dir = rtrim($this->dirCompile,'/');
+		if(strpos($v,$dir)===0)
+			$v = $this->dirCwd[0].substr($v,strlen($dir));
+		return realpath($v);
+	}
+	function T_FILE($v){
+		return $this->dirCompileToDirCwd($v);
+	}
+	function T_DIR($v){
+		return $this->dirCompileToDirCwd($v);
+	}
+	protected static function phpEmulations($str){
+		$tokens = token_get_all($str);
+		$str = '';
+		foreach($tokens as $token)
+			switch(is_array($token)?$token[0]:null){
+				case T_DIR:
+					$str .= '$this->T_DIR(__DIR__)';
+				break;
+				case T_FILE:
+					$str .= '$this->T_FILE(__FILE__)';
+				break;
+				default:
+					$str .= is_array($token)?$token[1]:$token;
+				break;
+			}
+		return $str;
+	}
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
-		//$str = self::phpEmulations($str);
+		$str = self::phpEmulations($str);
 		if(!Dev::has(Dev::VIEW))
 			$str = minPHP::minify($str);
 		return file_put_contents($file,$str,LOCK_EX);
