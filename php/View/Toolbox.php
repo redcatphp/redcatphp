@@ -1,6 +1,6 @@
 <?php namespace Surikat\View;
 class Toolbox{
-	static function xDom($TML,$href='css/is.'){
+	static function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
 		if(!$head&&$TML->find('body',0)){
 			$head = $TML;

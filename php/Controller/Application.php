@@ -30,7 +30,7 @@ class Application{
 		;
 		$this->View->onCompile(function($TML){
 			ViewToolbox::registerPresenter($TML);
-			ViewToolbox::xDom($TML);
+			ViewToolbox::JsIs($TML);
 			if(!Dev::has(Dev::VIEW))
 				ViewToolbox::autoMIN($TML);
 		});
@@ -66,10 +66,9 @@ class Application{
 		$this->Router = $Router;
 		if($this->i18nBySubdomain)
 			$path = $this->i18nBySubdomain($path);
-		if(method_exists($Router,'getDirHook')){
-			$hook = $Router->getDirHook();
-			$this->View->setDirCompile(SURIKAT_TMP.$hook.'/compile/');
-			$this->View->setDirCache(SURIKAT_TMP.$hook.'/cache/');
+		if(method_exists($Router,'getDirHook')
+			&&$hook = $Router->getDirHook()){
+			$this->prefixTmlCompile .= '.'.$hook.'/';
 			$this->View->setDirCwd([
 				SURIKAT_PATH.$hook.'/',
 				SURIKAT_SPATH.$hook.'/',
@@ -93,7 +92,7 @@ class Application{
 		}
 		else
 			$lang = 'en';
-		$this->prefixTmlCompile = '.'.$lang.'/';
+		$this->prefixTmlCompile .= '.'.$lang.'/';
 		Lang::setLocale($lang);
 		return $path;
 	}

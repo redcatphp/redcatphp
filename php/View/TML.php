@@ -1,5 +1,5 @@
 <?php namespace Surikat\View;
-use Surikat\I18n;
+use Surikat\I18n\Lang;
 class TML extends CORE{
 	function loaded(){
 		
@@ -21,6 +21,6 @@ class TML extends CORE{
 	
 	function loadI18n_($v,$k){
 		$this->removeAttr('i18n-'.$k);
-		$this->attr($k,i18n::gettext($v));
+		$this->attr($k,Lang::gettext($v));
 	}
 }

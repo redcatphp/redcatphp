@@ -1,6 +1,6 @@
 <present: />
 <?
-use model\R;
+use Model\R;
 use SimplePO\SimplePO;
 Loader::addNamespace('SimplePO',__DIR__);
 $dir = SURIKAT_PATH.'langs';

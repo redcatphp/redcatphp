@@ -172,10 +172,15 @@ class TeMpLate {
 		return $this->compileStore($file,$str);
 	}
 	function dirCompileToDirCwd($v){
-		$dir = rtrim($this->dirCompile,'/');
-		if(strpos($v,$dir)===0)
-			$v = $this->dirCwd[0].substr($v,strlen($dir));
-		return realpath($v);
+		$dirC = rtrim($this->dirCompile,'/');
+		foreach($this->dirCwd as $d){
+			if(strpos($v,$dirC)===0)
+				$dir = rtrim($d,'/').substr($v,strlen($dirC));
+			$path = realpath($dir);
+			if($path)
+				break;
+		}
+		return $path;
 	}
 	function T_FILE($v){
 		return $this->dirCompileToDirCwd($v);
