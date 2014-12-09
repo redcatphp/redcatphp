@@ -24,7 +24,7 @@ class Application{
 	}
 	function convention(){
 		$this->Dispatcher
-			->append('/service/',['Service\\Service','method'])
+			->prepend('/service/',['Service\\Service','method'])
 			->append(new Router_ByTml(),$this)
 		;
 		$this->View->onCompile(function($TML){
