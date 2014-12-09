@@ -61,7 +61,7 @@ class Application{
 	
 	protected $prefixTmlCompile = '';
 	function __invoke($params,$uri,$Router){
-		$path = $params[0];
+		$path = is_string($params)?$params:$params[0];
 		$this->Router = $Router;
 		if($this->i18nBySubdomain)
 			$path = $this->i18nBySubdomain($path);
