@@ -27,7 +27,7 @@ class MessageService {
 		$pot = file_get_contents(SURIKAT_PATH.'langs/header.pot');
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
-		$pot .= tmlGetText::parse(SURIKAT_PATH.'view',SURIKAT_PATH);
+		$pot .= tmlGetText::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
 		file_put_contents($potfile,$pot);
 	}
 	function cleanObsolete(){
