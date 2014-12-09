@@ -106,7 +106,6 @@ abstract class Base {
 			$params[$k] = $v;
 		if(!empty($this->mysqli_types))
 			array_unshift($params, $mysqli_types);
-		//var_dump($params);
 		return $params;
 	}
 	abstract function getParams();

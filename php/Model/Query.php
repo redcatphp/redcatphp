@@ -485,23 +485,23 @@ class Query {
 						$p = strpos($sql,$find,$ln);
 					else
 						$p = STR::posnth($sql,$find,is_integer($k)?$k:0,$ln);
-					$nSql = '';
-					if($p!==false)
-						$nSql .= substr($sql,0,$p);
-					$binderL = $binder;
-					if($i)
-						foreach($binderL as &$_v)
-							if($_v!='?')
-								$_v .= $i;
-					$nSql .= '('.implode(',',$binderL).')';
-					$ln = strlen($nSql);
-					$nSql .= substr($sql,$p+strlen($find));
-					$sql = $nSql;
-					foreach($binderL as $y=>$_k){
-						if($_k=='?')
-							$nBinds[] = $av[$y];
-						else
-							$nBinds[$_k] = $av[$y];
+					if($p!==false){
+						$nSql = substr($sql,0,$p);
+						$binderL = $binder;
+						if($i)
+							foreach($binderL as &$_v)
+								if($_v!='?')
+									$_v .= $i;
+						$nSql .= '('.implode(',',$binderL).')';
+						$ln = strlen($nSql);
+						$nSql .= substr($sql,$p+strlen($find));
+						$sql = $nSql;
+						foreach($binderL as $y=>$_k){
+							if($_k=='?')
+								$nBinds[] = $av[$y];
+							else
+								$nBinds[$_k] = $av[$y];
+						}
 					}
 					$i++;
 				}
