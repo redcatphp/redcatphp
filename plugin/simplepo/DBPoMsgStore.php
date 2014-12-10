@@ -32,6 +32,6 @@ class DBPoMsgStore {
 	}
 	function read(){
 		$q = new Query();
-		return $q->sql("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isHeader=0 ORDER BY isHeader DESC,isObsolete,id", $this->catalogue_id)->fetchAll();
+		return $q->sql("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", $this->catalogue_id)->fetchAll();
 	}
 }

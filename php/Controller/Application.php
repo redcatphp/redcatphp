@@ -8,7 +8,7 @@ use Surikat\View\TML;
 use Surikat\View\Toolbox as ViewToolbox;
 use Surikat\Route\Dispatcher;
 use Surikat\Route\Router_ByTml;
-use Surikat\Route\Domain;
+use Surikat\Core\Domain;
 
 class Application{
 	protected $Dispatcher;
@@ -93,7 +93,8 @@ class Application{
 		else
 			$lang = 'en';
 		$this->prefixTmlCompile .= '.'.$lang.'/';
-		Lang::setLocale($lang);
+		Lang::set($lang);
+		$this->View->onCompile('\\Surikat\\View\\Toolbox::Internationalization');
 		return $path;
 	}
 	function display($file){

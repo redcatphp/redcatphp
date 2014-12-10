@@ -1,4 +1,5 @@
 <?php namespace Surikat\View;
+use Surikat\I18n\Lang;
 class Toolbox{
 	static function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
@@ -56,5 +57,16 @@ class Toolbox{
 	static function registerPresenter($TML){
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 			$TML->prepend('<Presenter:Basic uri="static" />');
+	}
+	static function Internationalization($TML,$cache=true){
+		$TML('html')->attr('lang',Lang::get());
+		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
+		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
+			if($el->data('i18n',false)!==false)
+				if($cache)
+					$el->write(Lang::gettext(trim("$el")));
+				else
+					$el->write("<?php echo __('".str_replace("'","\'",trim("$el"))."'); ?>");
+		});
 	}
 }
