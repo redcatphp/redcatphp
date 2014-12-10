@@ -23,9 +23,13 @@ class SimplePO {
 		$this->POParser = new POParser($this->MsgStore);
 	}
 	function exportation($file){
-		$this->POParser->writePoFileToStream(fopen($file,'w'));
+		$stream = fopen($file,'w');
+		$this->POParser->writePoFileToStream($stream);
+		fclose($stream);
 	}
 	function importation($file){
-		$this->POParser->parseEntriesFromStream(fopen( $file, 'r'));
+		$stream = fopen($file,'r');
+		$this->POParser->parseEntriesFromStream($stream);
+		fclose($stream);
 	}
 }

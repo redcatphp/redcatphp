@@ -1,7 +1,7 @@
 <?php namespace SimplePO;
-use I18n\phpmo;
-use I18n\tmlGetText;
-use Model\R;
+use Surikat\I18n\phpmo;
+use Surikat\I18n\tmlGetText;
+use Surikat\Model\R;
 class MessageService {
 	var $potfile = 'langs/messages.pot';
 	function getMessages($id) {
