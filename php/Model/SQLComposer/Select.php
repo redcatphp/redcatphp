@@ -65,6 +65,7 @@ class Select extends Where {
 	protected $with_rollup = false;
 	protected $having = [ ];
 	protected $order_by = [ ];
+	protected $sort;
 	protected $limit = null;
 	function __construct($select = null,  array $params = null, $mysqli_types = "") {
 		if (isset($select))
@@ -81,6 +82,11 @@ class Select extends Where {
 	function distinct($distinct = true) {
 		$this->distinct = (bool)$distinct;
 		return $this;
+	}
+	function sort($desc=false) {
+		if(is_string($desc))
+			$desc = strtoupper($desc);
+		$this->sort = ($desc&&$desc!='ASC')||$desc=='DESC'?'DESC':'ASC';
 	}
 	function groupBy($group_by,  array $params = null, $mysqli_types = "") {
 		if(!empty($params)||!in_array($group_by,$this->group_by))
@@ -165,6 +171,7 @@ class Select extends Where {
 		$with_rollup = $this->with_rollup ? "WITH ROLLUP" : "";
 		$having = empty($this->having) ? "" : "\nHAVING " . $this->_render_having($removeUnbinded);
 		$order_by = empty($this->order_by) ? "" : "\nORDER BY " . implode(", ", $this->order_by);
+		$sort = !empty($this->order_by)&&$this->sort?$this->sort:'';
 		$limit = "";
 		if ($this->limit) {
 			$limit = "\nLIMIT {$this->limit}";
@@ -172,7 +179,7 @@ class Select extends Where {
 				$limit .= "\nOFFSET {$this->offset}";
 			}
 		}
-		return "{$with} SELECT {$distinct} {$columns} {$from} {$where} {$group_by} {$with_rollup} {$having} {$order_by} {$limit}";
+		return "{$with} SELECT {$distinct} {$columns} {$from} {$where} {$group_by} {$with_rollup} {$having} {$order_by} {$sort} {$limit}";
 	}
 	function getParams() {
 		return $this->_get_params('with','select', 'tables', 'where', 'group_by', 'having', 'order_by');
