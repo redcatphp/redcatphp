@@ -1,5 +1,4 @@
 <?php namespace SimplePO;
-use Surikat\I18n\phpmo;
 use Surikat\I18n\msgfmt;
 use Surikat\I18n\tmlGetText;
 use Surikat\Model\R;
