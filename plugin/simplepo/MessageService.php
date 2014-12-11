@@ -74,20 +74,16 @@ class MessageService {
 		return ['message_count'=>$POParser->countEntriesFromStream(fopen(SURIKAT_PATH.'langs/messages.pot', 'r'))];
 	}
 
-	function importCatalogue($cid=null,$lg=null){
-		if(!isset($cid))
-			$cid = (int)@$_POST['cid'];
-		if(!isset($lg))
-			$lg = @$_POST['lang'];
-		if(!isset($cid)&&$lg)
-			$cid = $this->db->getCell('SELECT id from catalogue WHERE name=?',[$lg]);
-		if(!isset($lg)&&$cid)
-			$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
-		if(!isset($lg)||!isset($cid))
+	function importCatalogue(){
+		if(!isset($_POST['cid']))
 			return;
-		
+		$cid = (int)$_POST['cid'];
+		$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
+		if(!isset($lg))
+			return;
+		$atline = @$_POST['atline'];
 		$this->db->exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
-		SimplePO::import($lg,SURIKAT_PATH.$this->potfile);
+		return SimplePO::import($lg,SURIKAT_PATH.$this->potfile,$atline);
 	}
 	function exportCatalogue($cid=null,$lg=null){
 		if(!isset($cid))

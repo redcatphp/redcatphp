@@ -47,12 +47,25 @@ $(function(){
 				table.find('tbody').append(html);
 				var $row = table.find('tr:last');
 				
+				var updater;
+				updater = function(cid,t){
+					$.post('RPC',{method:'importCatalogue',cid:cid,atline:t},function(data){
+						if(data.result.timeout){
+							updater(cid,data.result.timeout);
+							$('.atline').text('parsing line: '+data.result.timeout);
+						}
+						else{
+							$('.atline').remove();
+							init();
+							$('#cat_box').css('opacity',1);
+						}
+					},'json');					
+				};
+				
 				$row.find('button.update_cat').click(function(){
-					$('body').css('opacity',0.2);
-					$.post('RPC',{method:'importCatalogue',cid:$(this).attr('data-id')},function(data){
-						init();
-						$('body').css('opacity',1);
-					},'json');
+					$('#cat_box').css('opacity',0.2);
+					$('body').append('<div class="atline" style="z-index:10;position:absolute;top:0;left:0;"></div>');
+					updater($(this).attr('data-id'),false);
 				});
 				$row.find('button.compile_cat').click(function(){
 					$('body').css('opacity',0.2);

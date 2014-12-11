@@ -91,11 +91,16 @@ class POParser{
 		}
 		return $entry_count;
 	}
-	function parseEntriesFromStream($fh) {
+	function parseEntriesFromStream($fh,$atline=null) {
 		$this->lineNumber = 0;
 		$entry_count = 0;
 		$entry_lines = [];
-
+		
+		$time_limit = 5;
+		$time_start = time();
+		$atline = (int)$atline;
+		$r = [];
+		
 		while( ($line = fgets($fh)) !== false ) {
 			$this->lineNumber++;
 			$line = $this->parseLine($line);
@@ -104,14 +109,21 @@ class POParser{
 			}
 			else {
 				$entry = $this->reduceLines($entry_lines);
-				$this->saveEntry( $entry, $entry_count++ );
+				if(!$atline||$this->lineNumber>=$atline)
+					$this->saveEntry( $entry, $entry_count++ );
 				$entry_lines = [];
+				if((time()-$time_start)>=$time_limit){
+					$r = ['timeout'=>$this->lineNumber];
+					break;
+				}
 			}
 		}
 		if ( $entry_lines ){
 			$entry = $this->reduceLines($entry_lines);
 			$this->saveEntry( $entry, $entry_count++ );
 		}
+		//var_dump($this->lineNumber);exit;
+		return $r;
 	}
 	
 	function parseLine( $line ){

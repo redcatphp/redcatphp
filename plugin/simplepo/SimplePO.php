@@ -3,8 +3,8 @@ class SimplePO {
 	protected $catalogue_name;
 	protected $MsgStore;
 	protected $POParser;
-	static function import($name,$file){
-		return self::catalogue($name)->importation($file);
+	static function import($name,$file,$atline=null){
+		return self::catalogue($name)->importation($file,$atline);
 	}
 	static function export($name,$file){
 		return self::catalogue($name)->exportation($file);
@@ -27,9 +27,10 @@ class SimplePO {
 		$this->POParser->writePoFileToStream($stream);
 		fclose($stream);
 	}
-	function importation($file){
+	function importation($file,$atline=null){
 		$stream = fopen($file,'r');
-		$this->POParser->parseEntriesFromStream($stream);
+		$r = $this->POParser->parseEntriesFromStream($stream,$atline);
 		fclose($stream);
+		return $r;
 	}
 }
