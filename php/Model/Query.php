@@ -4,6 +4,7 @@ use BadMethodCallException;
 use Surikat\Core\Dev;
 use Surikat\Core\STR;
 use Surikat\Model;
+use Surikat\Model\RedBeanPHP\Database;
 use Surikat\Model\RedBeanPHP\QueryWriter;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
 class Query {
@@ -23,6 +24,10 @@ class Query {
 		return $this->writer->columnExists($table,$column);
 	}
 	function __construct($table=null,$composer='select',$db=null,$writer=null){
+		if($table instanceof Database){
+			$db = $table;
+			unset($table);
+		}
 		if(!$db)
 			$this->_DataBase = R::getInstance();
 		if(!$writer)
