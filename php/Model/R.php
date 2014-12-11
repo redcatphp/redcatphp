@@ -41,6 +41,13 @@ class R extends RedBeanPHP\Facade{
 		
 		return true;
 	}
+	static function getDatabase($key=null){
+		if(!$key)
+			$key = 'default';
+		if(!isset(self::$databases[$key]))
+			self::loadDB($key);
+		return parent::getInstance($key);
+	}
 	static function selectDatabase($key){
 		if(!$key)
 			$key = 'default';

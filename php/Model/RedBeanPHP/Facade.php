@@ -16,13 +16,13 @@ class Facade{
 		self::$databases[$key] = new Database($key, $dsn, $user, $pass, $frozen, $prefix, $case);
 	}
 	public static function selectDatabase( $key ){
-		if ( self::$currentDB === $key )
-			return false;
-		if ( !isset( self::$databases[$key] ) )
-			throw new RedException( 'No database has been specified for this key : '.$key.'.' );
-		self::configureFacadeWithToolbox( self::$databases[$key]->getToolBox() );
-		self::$currentDB = $key;
-		return true;
+		if ( self::$currentDB !== $key ){
+			if ( !isset( self::$databases[$key] ) )
+				throw new RedException( 'No database has been specified for this key : '.$key.'.' );
+			self::configureFacadeWithToolbox( self::$databases[$key]->getToolBox() );
+			self::$currentDB = $key;
+		}
+		return self::$databases[$key];
 	}
 	public static function configureFacadeWithToolbox( ToolBox $tb ){
 		$oldTools                 = self::$toolbox;
