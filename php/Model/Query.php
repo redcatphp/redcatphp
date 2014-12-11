@@ -26,10 +26,11 @@ class Query {
 	function __construct($table=null,$composer='select',$db=null,$writer=null){
 		if($table instanceof Database){
 			$db = $table;
-			unset($table);
+			$table = null;
 		}
 		if(!$db)
-			$this->_DataBase = R::getInstance();
+			$db = R::getInstance();
+		$this->_DataBase = $db;
 		if(!$writer)
 			$writer = $this->_DataBase->getWriter();
 		$this->writer = $writer;
@@ -38,9 +39,10 @@ class Query {
 		$this->composer = $composer;
 		$this->composer->setWriter($writer);
 		$this->prefix = $this->writer->prefix;
-		$this->setTable($table);
-		if(isset($table))
+		if(isset($table)){
+			$this->setTable($table);
 			$this->from($table);
+		}
 	}
 	function setTable($table=null){
 		$this->table = $table;
