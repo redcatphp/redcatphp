@@ -27,15 +27,10 @@ class msgfmt{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/
 	// see documentation at http://www.gnu.org/software/gettext/manual/gettext.html#PO-Files
 	private static function parsePoFile($in) {
 		// read .po file
-		$fc= file_get_contents($in);
+		$fh = fopen($in, 'r');
+		if($fh===false)
+			return false;
 		// normalize newlines
-		$fc= str_replace(array (
-			"\r\n",
-			"\r"
-		), array (
-			"\n",
-			"\n"
-		), $fc);
 
 		// results array
 		$hash= array ();
@@ -46,65 +41,74 @@ class msgfmt{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/
 		$fuzzy= false;
 
 		// iterate over lines
-		foreach (explode("\n", $fc) as $line) {
-			$line= trim($line);
-			if ($line === '')
-				continue;
+		while(($stream = fgets($fh, 65536)) !== false) {
+			$stream= str_replace(array (
+				"\r\n",
+				"\r"
+			), array (
+				"\n",
+				"\n"
+			), $stream);
+			foreach(explode("\n",$stream) as $line){
+				$line= trim($line);
+				if ($line === '')
+					continue;
 
-			@list ($key, $data)= explode(' ', $line, 2);
+				@list ($key, $data)= explode(' ', $line, 2);
 
-			switch ($key) {
-				case '#,' : // flag...
-					$fuzzy= in_array('fuzzy', preg_split('/,\s*/', $data));
-				case '#' : // translator-comments
-				case '#.' : // extracted-comments
-				case '#:' : // reference...
-				case '#|' : // msgid previous-untranslated-string
-					// start a new entry
-					if (sizeof($temp) && array_key_exists('msgid', $temp) && array_key_exists('msgstr', $temp)) {
-						if (!$fuzzy)
-							$hash[]= $temp;
-						$temp= array ();
-						$state= null;
-						$fuzzy= false;
-					}
-					break;
-				case 'msgctxt' :
-					// context
-				case 'msgid' :
-					// untranslated-string
-				case 'msgid_plural' :
-					// untranslated-string-plural
-					$state= $key;
-					$temp[$state]= $data;
-					break;
-				case 'msgstr' :
-					// translated-string
-					$state= 'msgstr';
-					$temp[$state][]= $data;
-					break;
-				default :
-					if (strpos($key, 'msgstr[') !== FALSE) {
-						// translated-string-case-n
+				switch ($key) {
+					case '#,' : // flag...
+						$fuzzy= in_array('fuzzy', preg_split('/,\s*/', $data));
+					case '#' : // translator-comments
+					case '#.' : // extracted-comments
+					case '#:' : // reference...
+					case '#|' : // msgid previous-untranslated-string
+						// start a new entry
+						if (sizeof($temp) && array_key_exists('msgid', $temp) && array_key_exists('msgstr', $temp)) {
+							if (!$fuzzy)
+								$hash[]= $temp;
+							$temp= array ();
+							$state= null;
+							$fuzzy= false;
+						}
+						break;
+					case 'msgctxt' :
+						// context
+					case 'msgid' :
+						// untranslated-string
+					case 'msgid_plural' :
+						// untranslated-string-plural
+						$state= $key;
+						$temp[$state]= $data;
+						break;
+					case 'msgstr' :
+						// translated-string
 						$state= 'msgstr';
 						$temp[$state][]= $data;
-					} else {
-						// continued lines
-						switch ($state) {
-							case 'msgctxt' :
-							case 'msgid' :
-							case 'msgid_plural' :
-								$temp[$state] .= "\n" . $line;
-								break;
-							case 'msgstr' :
-								$temp[$state][sizeof($temp[$state]) - 1] .= "\n" . $line;
-								break;
-							default :
-								// parse error
-								return FALSE;
+						break;
+					default :
+						if (strpos($key, 'msgstr[') !== FALSE) {
+							// translated-string-case-n
+							$state= 'msgstr';
+							$temp[$state][]= $data;
+						} else {
+							// continued lines
+							switch ($state) {
+								case 'msgctxt' :
+								case 'msgid' :
+								case 'msgid_plural' :
+									$temp[$state] .= "\n" . $line;
+									break;
+								case 'msgstr' :
+									$temp[$state][sizeof($temp[$state]) - 1] .= "\n" . $line;
+									break;
+								default :
+									// parse error
+									return FALSE;
+							}
 						}
-					}
-					break;
+						break;
+				}
 			}
 		}
 
