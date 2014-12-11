@@ -94,6 +94,9 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$this->prefixL = strlen($prefix);
 		$this->caseSensitive = $case;
 	}
+	function getDatabase(){
+		return $this->database;
+	}
 	
 	private static $_allTables = null;
 	private static $_allColumns = [];

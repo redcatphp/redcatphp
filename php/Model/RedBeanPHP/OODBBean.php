@@ -7,6 +7,7 @@ use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
 use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Model\RedBeanPHP\Database;
 
 /**
  * OODBBean (Object Oriented DataBase Bean)
@@ -81,6 +82,15 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	 */
 	protected $all = FALSE;
 
+	
+	private $database;
+	function __construct(Database $db){
+		$this->database = $db;
+	}
+	function store(){
+		$this->database->store($this);
+	}
+	
 	/**
 	* Parses the join in the with-snippet.
 	* For instance:

@@ -368,7 +368,7 @@ class Fluid extends Repository
 		$beans = [];
 		for ( $i = 0; $i < $number; $i++ ) {
 			$OODBBEAN = defined( 'REDBEAN_OODBBEAN_CLASS' ) ? REDBEAN_OODBBEAN_CLASS : 'Surikat\Model\RedBeanPHP\OODBBean';
-			$bean = new $OODBBEAN;
+			$bean = new $OODBBEAN($this->writer->getDatabase());
 			$bean->initializeForDispense( $type, $this->oodb->getBeanHelper() );
 			$this->check( $bean );
 			$this->oodb->signal( 'dispense', $bean );
