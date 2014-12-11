@@ -1,8 +1,13 @@
 <?php namespace Surikat\Route;
 class Router implements Route {
 	protected $match;
-	function __construct($match=null){
+	protected $Controller;
+	function __construct($match=null,$Controller=null){
 		$this->match = $match;
+		$this->setController($Controller);
+	}
+	function setController($Controller){
+		$this->Controller = $Controller;
 	}
 	function match($url){
 		$match = $this->match;
