@@ -91,11 +91,10 @@ var appController = (function() {
 	  moveBy(1);
 	  $('#msgstr').focus();
 	});
-	
+	$('#fuzz').click(function(){
+		beforeBlur();
+	});
 	$('#msgstr')
-		.focus(function(e){
-			$('#fuzz').attr('checked',false);
-		})
 		.on('blur',function(e){
 			beforeBlur();
 		})
@@ -150,11 +149,11 @@ var appController = (function() {
 	var msg = msgs[$row.data('index')];
 	var dirty = $('#msgstr').val() != msg.msgstr || 
 				$('#comments').val() != msg.comments || 
-				$('#fuzz').is(':checked') != msg.fuzzy;
+				$('#fuzz').prop('checked') != msg.fuzzy;
 				
 	if (dirty) {
 	  msg.msgstr = $('#msgstr').val().replace(/\n+$/,'');
-	  msg.fuzzy = $('#fuzz').is(':checked');
+	  msg.fuzzy = $('#fuzz').prop('checked');
 	  msg.comments = $('#comments').val();
 	  $row.trigger('sync');
 	  $.messageService('updateMessage', 
@@ -239,7 +238,7 @@ var appController = (function() {
 	$('#comments').val(msg.comments);
 	$('#msgid').html( $.nl2br($.escape(msg.msgid)) || "-" );
 	$('#msgstr').val(msg.msgstr?msg.msgstr:'');
-	( msg.fuzzy == 1 ) ? $('#fuzz').attr('checked',true) : $('#fuzz').attr('checked',false);
+	( msg.fuzzy == 1 ) ? $('#fuzz').prop('checked',true) : $('#fuzz').prop('checked',false);
 	$('#edit_id').attr( 'value', msg.id );
   };
   
