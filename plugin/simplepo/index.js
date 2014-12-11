@@ -18,7 +18,8 @@ $(function(){
 	var $container = $('div.data');
 	var init = function(){
 		$.post('RPC',{method:'countPotMessages'},function(data){
-			$('#counter').text('('+(data.result.message_count-1)+' messages)');
+			if(data.result)
+				$('#counter').text('('+(data.result.message_count-1)+' messages)');
 		},'json');
 		$.messageService("getCatalogues", [], function(data){
 		  var table = $('<table><tbody> </tbody></table>');

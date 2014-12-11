@@ -1,5 +1,6 @@
 <?php namespace SimplePO;
 use Surikat\I18n\phpmo;
+use Surikat\I18n\msgfmt;
 use Surikat\I18n\tmlGetText;
 use Surikat\Model\R;
 class MessageService {
@@ -73,7 +74,7 @@ class MessageService {
 		$po = $path.'po';
 		$mo = $path.'mo';
 		SimplePO::export($lg,$po);
-		phpmo::convert($po,$mo);
+		msgfmt::convert($po,$mo);
 		
 		foreach(glob($path.'*.mo') as $f)
 			unlink($f);

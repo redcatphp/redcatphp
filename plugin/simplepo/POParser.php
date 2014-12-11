@@ -120,7 +120,7 @@ class POParser{
 		foreach($this->match_expressions as $m) {
 			if(preg_match($m['re_match'],$line) ) {
 				preg_match($m['re_capture'],$line,$matches);
-				$line_object['value'] = $matches[1];
+				$line_object['value'] = isset($matches[1])?$matches[1]:null;
 				$line_object['type'] = $m['type'];
 			}
 		}
@@ -150,6 +150,8 @@ class POParser{
 	*	 "World"
 	*/
 	function encodeStringFormat($message_string){
+		$result = strtr($message_string, ['\n'=>"\n"]);
+		
 		// translate the characters to escapted versions.
 		$translations = ["\n"=>"\\n",'"'=>'\\"',"\\"=>"\\\\"];
 		$result = strtr($message_string, $translations);
