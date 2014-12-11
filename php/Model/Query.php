@@ -485,6 +485,7 @@ class Query {
 		return [$sql,$nBinds];
 	}
 	private static function nestBindingLoop($sql,$binds){
+		$nBinds = [];
 		foreach($binds as $k=>$v){
 			if(is_array($v)){
 				$find = '?';
