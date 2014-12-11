@@ -28,6 +28,10 @@ class Query {
 			$db = $table;
 			$table = null;
 		}
+		if($composer instanceof Database){
+			$db = $composer;
+			$composer = 'select';
+		}
 		if(!$db)
 			$db = R::getInstance();
 		$this->_DataBase = $db;
