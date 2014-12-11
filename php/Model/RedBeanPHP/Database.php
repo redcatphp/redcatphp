@@ -45,10 +45,12 @@ class Database{
 	private $plugins = [];
 	private $exportCaseStyle = 'default';
 	
+	private $dbType;
+	private $dsn;
+	
 	function __construct( $name = 'default', $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
 		
 		$this->name = $name;
-		
 		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
 		
 		$this->finder             = new Finder( $this->toolbox );
@@ -66,13 +68,14 @@ class Database{
 		return $this->name;
 	}
 	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
+		$this->dsn = $dsn;
 		if ( is_object($dsn) ) {
 			$db  = new RPDO( $dsn );
-			$dbType = $db->getDatabaseType();
+			$this->dbType = $db->getDatabaseType();
 		} else {
-			$dbType = substr( $dsn, 0, strpos( $dsn, ':' ) );
-			if(is_numeric(substr($dbType,-1)))
-				$dsn = substr($dsn,0,($l=strlen($dbType))-1).substr($dsn,$l);
+			$this->dbType = substr( $dsn, 0, strpos( $dsn, ':' ) );
+			if(is_numeric(substr($this->dbType,-1)))
+				$dsn = substr($dsn,0,($l=strlen($this->dbType))-1).substr($dsn,$l);
 			$db = new RPDO( $dsn, $user, $pass, TRUE );
 		}
 		$this->adapter = new DBAdapter( $db );
@@ -85,7 +88,7 @@ class Database{
 			'sqlsrv' => 'SQLServer',
 			'cubrid' => 'CUBRID',
 		];
-		$wkey = trim( strtolower( $dbType ) );
+		$wkey = trim( strtolower( $this->dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
 		$writerClass = '\\Surikat\\Model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
 		$this->writer      = new $writerClass( $this->adapter, $this, $prefix, $case );
@@ -116,6 +119,12 @@ class Database{
 		} else {
 			return $this->adapter->$method( $sql, $bindings );
 		}
+	}
+	function exists(){
+		if($this->dbType=='sqlite')
+			return is_file(substr($this->dsn,7));
+		else
+			return $this->testConnection();
 	}
 	function testConnection(){
 		if ( !isset( $this->adapter ) ) return FALSE;
