@@ -1,10 +1,8 @@
 <Presenter:Basic />
 <?
-use Model\R;
 use SimplePO\SimplePO;
 Loader::addNamespace('SimplePO',__DIR__);
-$dir = SURIKAT_PATH.'langs';
-foreach(glob($dir.'/*',GLOB_ONLYDIR) as $d)
+foreach(glob(SURIKAT_PATH.'langs/*',GLOB_ONLYDIR) as $d)
 	  SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
 ?>
 <extend>
