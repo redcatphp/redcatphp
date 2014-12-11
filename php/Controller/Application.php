@@ -1,6 +1,5 @@
 <?php namespace Surikat\Controller;
 use Surikat\Core\Dev;
-use Surikat\I18n\Lang;
 use Surikat\Core\HTTP;
 use Surikat\Core\ArrayObject;
 use Surikat\View\TeMpLate;
@@ -8,7 +7,6 @@ use Surikat\View\TML;
 use Surikat\View\Toolbox as ViewToolbox;
 use Surikat\Route\Dispatcher;
 use Surikat\Route\Router_ByTml;
-use Surikat\Core\Domain;
 
 class Application{
 	protected $Dispatcher;
@@ -24,9 +22,9 @@ class Application{
 	}
 	function convention(){
 		$this->Dispatcher
-			->prepend(new Router_ByTml('plugin'),$this)
+			->prepend(new Router_ByTml('plugin',$this),$this)
 			->prepend('/service/',['Service\\Service','method'])
-			->append(new Router_ByTml(),$this)
+			->append(new \Route\Router_ByTml(null,$this),$this)
 		;
 		$this->View->onCompile(function($TML){
 			ViewToolbox::registerPresenter($TML);
@@ -64,8 +62,6 @@ class Application{
 	function __invoke($params,$uri,$Router){
 		$path = is_string($params)?$params:$params[0];
 		$this->Router = $Router;
-		if($this->i18nBySubdomain)
-			$path = $this->i18nBySubdomain($path);
 		if(method_exists($Router,'getDirHook')
 			&&$hook = $Router->getDirHook()){
 			$this->prefixTmlCompile .= '.'.$hook.'/';
@@ -76,26 +72,6 @@ class Application{
 		}
 		$this->View->set('URI',$Router);
 		$this->display($path.'.tml');
-	}
-	protected $i18nBySubdomain = false;
-	protected function i18nBySubdomain($path){
-		if($lang=Domain::getSubdomainLang()){
-			if(file_exists($langFile='langs/'.$lang.'.ini')){
-				$langMap = parse_ini_file($langFile);
-				if(isset($langMap[$path]))
-					$templatePath = $langMap[$path];
-				elseif(($k=array_search($path,$langMap))!==false){
-					header('Location: /'.$k,301);
-					exit;
-				}
-			}
-		}
-		else
-			$lang = 'en';
-		$this->prefixTmlCompile .= '.'.$lang.'/';
-		Lang::set($lang);
-		$this->View->onCompile('\\Surikat\\View\\Toolbox::Internationalization');
-		return $path;
 	}
 	function display($file){
 		$this->View->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
