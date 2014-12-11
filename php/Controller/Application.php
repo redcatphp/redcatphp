@@ -13,12 +13,18 @@ class Application{
 	protected $View;
 	protected $Router;
 	
-	function __construct($convention=true){
+	protected $useConvention = true;
+	
+	function __construct(){
 		$this->Dispatcher = new Dispatcher();
 		$this->View = new TeMpLate();
 		$this->View->setController($this);
-		if($convention)
+		if($this->useConvention)
 			$this->convention();
+		$this->setHooks();
+	}
+	function setHooks(){
+		
 	}
 	function convention(){
 		$this->Dispatcher
