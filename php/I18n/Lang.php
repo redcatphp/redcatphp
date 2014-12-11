@@ -7,18 +7,22 @@ class Lang {
 	private $domain;
 	private $locale;
 	private $language;
+	private $country;
 	protected static $lang = 'en';
+	protected static $countryCode;
 	static function gettext(){
 		return call_user_func_array('__',func_get_args());
 	}
 	static function get(){
 		return static::$lang;
 	}
-	static function set($lg=null){
+	static function set($lg=null,$ct=null){
 		if(!isset($lg))
 			$lg = static::$lang;
-		static::$lang = $lg;
-		$o = new static($lg);
+		if(!isset($ct))
+			$ct = static::$countryCode;
+		static::$countryCode = $ct;
+		$o = new static($lg,$ct);
 		$lang = $o->locale;
 		putenv("LANG=$lang");
 		putenv("LANGUAGE=$lang");
@@ -32,13 +36,13 @@ class Lang {
 			$tz = @date_default_timezone_get();
 		date_default_timezone_set($tz);
 	}
-	function __construct($lg='en'){
+	function __construct($lg=null,$country=null){
 		$this->locales_root = SURIKAT_PATH.'langs';
-		$this->handle($lg);
-	}
-	function handle($lg){
 		$this->language = $lg;
-		$this->locale = strtolower($this->language).'_'.strtoupper($this->language);
+		$this->country = $country;
+		$this->locale = strtolower($this->language);
+		if(isset($this->country))
+			$this->locale .= '_'.strtoupper($this->country);
 		if(Dev::has(Dev::I18N))
 			$this->domain = $this->getLastMoFile();
 		else

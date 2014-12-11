@@ -103,7 +103,7 @@ function get_list_of_locales($locale) {
 /**
  * Utility function to get a StreamReader for the given text domain.
  */
-function _get_reader($domain=null, $category=5, $enable_cache=true) {
+function _get_reader($domain=null, $category=5, $enable_cache=false) {
     global $text_domains, $default_domain, $LC_CATEGORIES;
     if (!isset($domain)) $domain = $default_domain;
     if (!isset($text_domains[$domain]->l10n)) {
@@ -127,6 +127,7 @@ function _get_reader($domain=null, $category=5, $enable_cache=true) {
           $text_domains[$domain] = new domain(); // Initialize an empty domain object.
         $text_domains[$domain]->l10n = new gettext_reader($input,$enable_cache);
     }
+    //var_dump($text_domains[$domain]->l10n);
     return $text_domains[$domain]->l10n;
 }
 
@@ -227,18 +228,10 @@ function _setlocale($category, $locale) {
  */
 function _bindtextdomain($domain, $path) {
     global $text_domains;
-    // ensure $path ends with a slash ('/' should work for both, but lets still play nice)
-    if (substr(php_uname(), 0, 7) == "Windows") {
-      if ($path[strlen($path)-1] != '\\' and $path[strlen($path)-1] != '/')
-        $path .= '\\';
-    } else {
-      if ($path[strlen($path)-1] != '/')
-        $path .= '/';
-    }
-    if (!array_key_exists($domain, $text_domains)) {
-      // Initialize an empty domain object.
+	if ($path[strlen($path)-1] != '/')
+		$path .= '/';
+    if (!array_key_exists($domain, $text_domains))
       $text_domains[$domain] = new domain();
-    }
     $text_domains[$domain]->path = $path;
 }
 
@@ -376,7 +369,6 @@ function T_bindtextdomain($domain, $path) {
     else return _bindtextdomain($domain, $path);
 }
 function T_bind_textdomain_codeset($domain, $codeset) {
-    // bind_textdomain_codeset is available only in PHP 4.2.0+
     if (_check_locale_and_function('bind_textdomain_codeset'))
         return bind_textdomain_codeset($domain, $codeset);
     else return _bind_textdomain_codeset($domain, $codeset);
