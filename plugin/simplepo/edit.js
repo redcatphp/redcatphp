@@ -73,12 +73,48 @@ var NotificationObj = (function() {
   };
 })();
 // GLOBAL 
-
-
+  
+  var cat_id = parseInt(window.location.href.match(/cat_id=(\d+)/)[1]);
+  var limitation,page,count,pages,sort,order;
+  limitation = 15;
+  page = window.location.href.match(/page=(\d+)/);
+  sort = window.location.href.match(/sort=((?:[a-z][a-z0-9_]*))/);
+  order = window.location.href.match(/order=((?:[a-z][a-z0-9_]*))/);
+  if(order)
+    order = order[1];
+  else
+	order = 'msgid';
+  if(sort)
+    sort = sort[1];
+  else
+	sort = 'asc';
+  if(page)
+	page = parseInt(page[1]);
+  else
+    page = 1;
+  $(function(){
+	$('#msg_table_head thead th.'+order).addClass('sort-'+sort);
+  });
 var appController = (function() {
   var msgs;
-  var cat_id = parseInt(window.location.href.match(/cat_id=(\d+)/)[1]);
-  
+    
+    $.messageService('getCountMessages',[cat_id],function(total){
+		pages = Math.ceil(total/limitation);
+		$('#pagination').pagination({
+			pages: pages,
+			currentPage: page,
+			cssStyle: 'compact-theme',
+			onPageClick: function(pageNumber, event){
+				var nhref = window.location.href;
+				if(nhref.match(/page=(\d+)/))
+					nhref = nhref.replace('page='+page,'page='+pageNumber);
+				else
+					nhref += '&page='+pageNumber;
+				document.location.href = nhref;
+			}
+		});
+	});
+ 
   var initEvents = function() {
 	// Add click event to message table entries
 	$('body').on("click",'#msg_table td',function() {
@@ -190,10 +226,7 @@ var appController = (function() {
   var fillMsgTable = function(catalogue_id) {
 	$('#loading_indicator').show();
 	if ($('#errors span').text() != "") return;
-	var limit,offset;
-	limit = 0;
-	offset = 0;
-	$.messageService('getMessages',[catalogue_id,limit,offset],function(d){
+	$.messageService('getMessages',[catalogue_id,page,order,sort],function(d){
 	  msgs = d; // save data to global messages
 	  if (!(msgs && msgs.length) ) {
 		NotificationObj.showError("No Messages Found");
@@ -266,16 +299,25 @@ $(appController.init);
 var sortController = {
   init: function() {
 	$('#msg_table_head thead th').click(function() {
-	  var column_index = $(this).closest('thead')
-						  .find('th')
-						  .index(this);
+	  var column_index = $(this).closest('thead').find('th').index(this);
 	  var direction = !!$(this).hasClass('sort-desc') || !$(this).hasClass('sort-asc');
-	  
-	  $(this).siblings().andSelf().removeClass('sort-asc').removeClass('sort-desc');
-	  
-	  $(this).addClass(direction ? 'sort-asc' : 'sort-desc');
-	  
-	  $('#msg_table').tsort(column_index,direction);
+		if(pages==1){			
+		  $(this).siblings().andSelf().removeClass('sort-asc').removeClass('sort-desc');
+		  $(this).addClass(direction ? 'sort-asc' : 'sort-desc');
+		  $('#msg_table').tsort(column_index,direction);
+		}
+		else{
+			var nhref = window.location.href;
+			if(nhref.match(/order=((?:[a-z][a-z0-9_]*))/))
+				nhref = nhref.replace('order='+order,'order='+$(this).attr('class').split(' ')[0]);
+			else
+				nhref += '&order='+order;
+			if(nhref.match(/sort=((?:[a-z][a-z0-9_]*))/))
+				nhref = nhref.replace('sort='+sort,'sort='+(direction?'asc':'desc'));
+			else
+				nhref += '&sort='+(direction?'asc':'desc');
+			document.location.href = nhref;
+		}
 	});
   }
 };

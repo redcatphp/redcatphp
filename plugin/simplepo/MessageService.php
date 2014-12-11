@@ -9,10 +9,37 @@ class MessageService {
 	function __construct() {
 		$this->db = include(__DIR__.'/dbo.php');
 	}
-	function getMessages($id, $limit, $offset) {
+	function getCountMessages($id){
+		return (new Query('message',$this->db))
+			->select('COUNT(*)')
+			->where('catalogue_id=? AND isHeader != 1',[$id])
+			->getCell()
+		;
+	}
+	function getMessages($id, $page, $order, $sort) {
+		$limit = 15;
+		$offset = ($page-1)*$limit;
+		switch($order){
+			case 'fuzzy':
+				$order = 'flags';
+			break;
+			case 'depr':
+				$order = 'isObsolete';
+			break;
+			default:
+				$order = 'msgid';
+			break;
+			case 'msgid':
+			case 'msgstr':
+			case 'isObsolete':
+			case 'flags':
+			break;
+		}
 		$messages = (new Query('message',$this->db))
 			->where('catalogue_id=? AND isHeader <> 1',[$id])
-			->orderBy("msgstr != '', flags != 'fuzzy'")
+			//->orderBy("msgstr != '', flags != 'fuzzy'")
+			->orderBy($order)
+			->sort($sort)
 			->limit($limit)
 			->offset($offset)
 			->getAll()

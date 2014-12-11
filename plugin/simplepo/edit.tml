@@ -1,7 +1,9 @@
 <Presenter:Basic />
 <extend>
 	<append 'head'>
+		<script src="jquery.simplePagination.js" type="text/javascript" charset="utf-8"></script>
 		<script src="edit.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="simplePagination.css" />
 	</append>
 	<body>
 		<div id="body_w">
@@ -66,6 +68,7 @@
 			<div id="ref_data"></div>
 			<div id="update_data"></div>
 			<div id="com_data"></div>
+			<div id="pagination"></div>
 			<div id="foot">
 				Original source code from <a href="http://code.google.com/p/simplepo/">Simple Po</a> by the hackers at <a href="http://www.yabla.com/" target="_blank">Yabla</a> remasterised by <a href="http://wildsurikat.com" target="_blank">Surikat</a>
 			</div>
