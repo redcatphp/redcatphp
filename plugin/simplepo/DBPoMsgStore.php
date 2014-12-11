@@ -1,19 +1,19 @@
 <?php namespace SimplePO;
 use model\R;
 class DBPoMsgStore {
+	private $db;
+	function __construct() {
+		$this->db = include(__DIR__.'/dbo.php');
+	}
 	function init( $catalogue_name ){
-		$q = new Query();
-		$catalogue = $q->sql("SELECT * FROM catalogue WHERE name = ?",$catalogue_name)->fetch();
-		if (!$catalogue) {
-			$q->sql("INSERT INTO catalogue (name) VALUES (?)",$catalogue_name)->execute();
-			$this->catalogue_id = $q->insertId();
-		} else {
-			$this->catalogue_id = $catalogue['id'];
-		}
+		$catalogue = $this->db->findOrNewOne('catalogue',['name'=>$catalogue_name]);
+		if (!$catalogue->id)
+			$catalogue->store();
+		$this->catalogue_id = $catalogue->id;
 	}
 	function write( $msg, $isHeader ){
 		$msg['isHeader'] = $isHeader ? 1 : 0;		
-		$b = R::findOrNewOne('message',[
+		$b = $this->db->findOrNewOne('message',[
 			'catalogue_id'=>$this->catalogue_id,
 			'msgid'=>@$msg["msgid"],
 			'reference'=> @$msg["reference"],
@@ -28,10 +28,9 @@ class DBPoMsgStore {
 			'flags'=> @$msg["flags"],
 		] as $k=>$v)
 			$b->$k = $v;
-		R::store($b);
+		$this->db->store($b);
 	}
 	function read(){
-		$q = new Query();
-		return $q->sql("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", $this->catalogue_id)->fetchAll();
+		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", $this->catalogue_id);
 	}
 }

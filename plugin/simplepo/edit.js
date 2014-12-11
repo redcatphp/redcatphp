@@ -190,7 +190,10 @@ var appController = (function() {
   var fillMsgTable = function(catalogue_id) {
 	$('#loading_indicator').show();
 	if ($('#errors span').text() != "") return;
-	$.messageService('getMessages',[catalogue_id],function(d){
+	var limit,offset;
+	limit = 0;
+	offset = 0;
+	$.messageService('getMessages',[catalogue_id,limit,offset],function(d){
 	  msgs = d; // save data to global messages
 	  if (!(msgs && msgs.length) ) {
 		NotificationObj.showError("No Messages Found");

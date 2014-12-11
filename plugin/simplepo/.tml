@@ -4,11 +4,6 @@ use Model\R;
 use SimplePO\SimplePO;
 Loader::addNamespace('SimplePO',__DIR__);
 $dir = SURIKAT_PATH.'langs';
-if(!file_exists($dir.'/langs.db')){
-	R::selectDatabase('langs');
-	foreach(explode(';',file_get_contents(__DIR__.'/install.sql')) as $l)
-		R::execMulti($l);
-}
 foreach(glob($dir.'/*',GLOB_ONLYDIR) as $d)
 	  SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
 ?>

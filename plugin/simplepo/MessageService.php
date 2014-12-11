@@ -2,11 +2,21 @@
 use Surikat\I18n\msgfmt;
 use Surikat\I18n\tmlGetText;
 use Surikat\Model\R;
+use Surikat\Model\Query;
 class MessageService {
 	var $potfile = 'langs/messages.pot';
-	function getMessages($id) {
-		$q = new Query();
-		$messages = $q->sql("SELECT * FROM message WHERE catalogue_id=? AND isHeader <> 1 ORDER BY msgstr != '', flags != 'fuzzy' ", $id)->fetchAll();
+	private $db;
+	function __construct() {
+		$this->db = include(__DIR__.'/dbo.php');
+	}
+	function getMessages($id, $limit, $offset) {
+		$messages = (new Query('message',$this->db))
+			->where('catalogue_id=? AND isHeader <> 1',[$id])
+			->orderBy("msgstr != '', flags != 'fuzzy'")
+			->limit($limit)
+			->offset($offset)
+			->getAll()
+		;
 		foreach($messages as &$m) {
 			$m['fuzzy'] = strpos($m['flags'],'fuzzy') !== FALSE;
 			$m['isObsolete'] = !!$m['isObsolete'];
@@ -14,13 +24,11 @@ class MessageService {
 		return $messages;
 	}
 	function getCatalogues(){
-		$q = new Query();
-		return $q->sql("SELECT c.name,c.id,COUNT(*) as message_count, COALESCE(SUM(LENGTH(m.msgstr) >0),0) as translated_count FROM catalogue c LEFT JOIN message m ON m.catalogue_id=c.id AND m.isHeader=0 GROUP BY c.id")->fetchAll();
+		return $this->db->getAll("SELECT c.name,c.id,COUNT(*) as message_count, COALESCE(SUM(LENGTH(m.msgstr) >0),0) as translated_count FROM catalogue c LEFT JOIN message m ON m.catalogue_id=c.id AND m.isHeader=0 GROUP BY c.id");
 	}
 	function updateMessage($id, $comments, $msgstr, $fuzzy){
-		$q = new Query();
 		$flags = $fuzzy&&$fuzzy!='false' ? 'fuzzy' : '';
-		$q->sql("UPDATE message SET comments=?, msgstr=?, flags=? WHERE id=?", $comments, $msgstr, $flags, $id)->execute();
+		$this->db->exec("UPDATE message SET comments=?, msgstr=?, flags=? WHERE id=?", [$comments, $msgstr, $flags, $id]);
 	}
 	function makePot(){
 		$potfile = SURIKAT_PATH.$this->potfile;
@@ -31,8 +39,7 @@ class MessageService {
 		file_put_contents($potfile,$pot);
 	}
 	function cleanObsolete(){
-		R::selectDatabase('langs');
-		R::exec("DELETE FROM message WHERE isObsolete=1");
+		$this->db->exec("DELETE FROM message WHERE isObsolete=1");
 	}
 	
 	function countPotMessages(){
@@ -41,31 +48,29 @@ class MessageService {
 	}
 
 	function importCatalogue($cid=null,$lg=null){
-		R::selectDatabase('langs');
 		if(!isset($cid))
 			$cid = (int)@$_POST['cid'];
 		if(!isset($lg))
 			$lg = @$_POST['lang'];
 		if(!isset($cid)&&$lg)
-			$cid = R::getCell('SELECT id from catalogue WHERE name=?',[$lg]);
+			$cid = $this->db->getCell('SELECT id from catalogue WHERE name=?',[$lg]);
 		if(!isset($lg)&&$cid)
-			$lg = R::getCell('SELECT name from catalogue WHERE id=?',[$cid]);
+			$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
 		if(!isset($lg)||!isset($cid))
 			return;
 		
-		R::exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
+		$this->db->exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
 		SimplePO::import($lg,SURIKAT_PATH.$this->potfile);
 	}
 	function exportCatalogue($cid=null,$lg=null){
-		R::selectDatabase('langs');
 		if(!isset($cid))
 			$cid = (int)@$_POST['cid'];
 		if(!isset($lg))
 			$lg = @$_POST['lang'];
 		if(!isset($cid)&&$lg)
-			$cid = R::getCell('SELECT id from catalogue WHERE name=?',[$lg]);
+			$cid = $this->db->getCell('SELECT id from catalogue WHERE name=?',[$lg]);
 		if(!isset($lg)&&$cid)
-			$lg = R::getCell('SELECT name from catalogue WHERE id=?',[$cid]);
+			$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
 		if(!isset($lg)||!isset($cid))
 			return;
 		
