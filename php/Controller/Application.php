@@ -65,6 +65,9 @@ class Application{
 	}
 	
 	protected $prefixTmlCompile = '';
+	function addPrefixTmlCompile($prefix){
+		$this->prefixTmlCompile .= $prefix;
+	}
 	function __invoke($params,$uri,$Router){
 		$path = is_string($params)?$params:$params[0];
 		$this->Router = $Router;

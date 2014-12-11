@@ -46,7 +46,7 @@ class Router_ByTml extends Router_SuperURI{
 		}
 		else
 			$lang = 'en';
-		$this->prefixTmlCompile .= '.'.$lang.'/';
+		$this->Controller->addPrefixTmlCompile('.'.$lang.'/');
 		Lang::set($lang);
 		$this->Controller->getView()->onCompile('\\Surikat\\View\\Toolbox::Internationalization');
 		return $templatePath;
