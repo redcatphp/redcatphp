@@ -76,6 +76,8 @@ class Debug extends RDefault implements Logger
 	 */
 	protected function output( $str )
 	{
+		if(!headers_sent())
+			header('Content-Type: text/html; charset=utf-8');
 		$this->logs[] = $str;
 		if ( !$this->mode ) echo '<pre>'.htmlentities($str).'</pre>';
 	}
