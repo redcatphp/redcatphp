@@ -19,7 +19,7 @@ class MessageService {
 	}
 	function updateMessage($id, $comments, $msgstr, $fuzzy){
 		$q = new Query();
-		$flags = $fuzzy ? 'fuzzy' : '';
+		$flags = $fuzzy&&$fuzzy!='false' ? 'fuzzy' : '';
 		$q->sql("UPDATE message SET comments=?, msgstr=?, flags=? WHERE id=?", $comments, $msgstr, $flags, $id)->execute();
 	}
 	function makePot(){
