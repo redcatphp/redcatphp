@@ -164,9 +164,8 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 #Directory Traversal Protection
 RewriteRule "(^|/)\." - [F]
 
-#Dynamic vhost reset
+#Reset
 DirectoryIndex index.php
-RewriteBase /
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]

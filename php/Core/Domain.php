@@ -5,19 +5,23 @@ abstract class Domain {
 	static function setBaseHref($href){
 		self::$baseHref = $href;
 	}
-	static function getBaseHref(){		
+	static function getBaseHref(){
 		if(!isset(self::$baseHref)){
 			$ssl = @$_SERVER["HTTPS"]=="on";
 			$port = @$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
 			$href = 'http'.($ssl?'s':'').'://'.$_SERVER['SERVER_NAME'].$port.'/';
 			self::setBaseHref($href);
 		}
-		return self::$baseHref.self::$baseHrefSuffix;
+		return self::$baseHref.self::getBaseHrefSuffix();
 	}
 	static function setBaseHrefSuffix($href){
 		self::$baseHrefSuffix = $href;
 	}
-	static function getBaseHrefSuffix($href){
+	static function getBaseHrefSuffix(){
+		if(!isset(self::$baseHrefSuffix)){
+			if($_SERVER['DOCUMENT_ROOT'].'/'!=SURIKAT_PATH)
+				self::$baseHrefSuffix = substr(SURIKAT_PATH,strlen($_SERVER['DOCUMENT_ROOT'])+1);
+		}
 		return self::$baseHrefSuffix;
 	}
 	static function getSubdomainLang($domain=null){
