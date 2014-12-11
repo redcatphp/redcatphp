@@ -248,7 +248,7 @@ class POParser{
 			"comments"=>"# ", 
 			"extractedComments"=>"#. ", 
 			"reference"=>"#: ", 
-			"flags"=>"#, ", 
+			"flags"=>"#. ", 
 			"previousUntranslatedString"=>"#| "
 		];		
 		$msg = "";
