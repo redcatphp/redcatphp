@@ -6,7 +6,7 @@ use Surikat\View\TeMpLate;
 use Surikat\View\TML;
 use Surikat\View\Toolbox as ViewToolbox;
 use Surikat\Route\Dispatcher;
-use Surikat\Route\Router_ByTml;
+use Route\Router_ByTml;
 
 class Application{
 	protected $Dispatcher;
@@ -30,7 +30,7 @@ class Application{
 		$this->Dispatcher
 			->prepend(new Router_ByTml('plugin',$this),$this)
 			->prepend('/service/',['Service\\Service','method'])
-			->append(new \Route\Router_ByTml(null,$this),$this)
+			->append(new Router_ByTml(null,$this),$this)
 		;
 		$this->View->onCompile(function($TML){
 			ViewToolbox::registerPresenter($TML);
