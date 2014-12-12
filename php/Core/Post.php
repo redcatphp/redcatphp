@@ -19,7 +19,7 @@ class Post extends ArrayObject{
 	}
 	static function clearPersistance($k=null,$p=null){
 		Session::start();
-		$p = $p===null?sha1($_SERVER['PATH_INFO']):$p;
+		$p = $p===null?sha1(@$_SERVER['PATH_INFO']):$p;
 		if(isset($_SESSION[self::$key])&&isset($_SESSION[self::$key][$p])){
 			if($k!==null){
 				if(isset($_SESSION[self::$key][$p][$k]))
@@ -48,7 +48,7 @@ class Post extends ArrayObject{
 			}
 			return $r;
 		}
-		$p = $p===null?sha1($_SERVER['PATH_INFO']):$p;
+		$p = $p===null?sha1(@$_SERVER['PATH_INFO']):$p;
 		if($persistant&&!isset($_SESSION[self::$key]))
 			$_SESSION[self::$key] = [];
 		if($persistant&&!isset($_SESSION[self::$key][$p]))
