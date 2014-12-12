@@ -180,11 +180,21 @@ RewriteRule ^robots\.txt$ /Surikat/robots_ssl.txt [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}/Surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff)$ /Surikat/$1.$2 [L,QSA]
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|php)$ /Surikat/$1.$2 [L,QSA]
+
+#Surikat Mirroring for directory to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !^/Surikat/
+RewriteCond %{DOCUMENT_ROOT}/Surikat/%{REQUEST_URI}/index.php -f
+RewriteRule ^(.*)$ /Surikat/$1/index.php [L,QSA]
+
+#Custom 404 image
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ /img/404.png [L,QSA]
+
+#SCSS + Synaptic
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
+RewriteRule ^(.*)\.(css|js)$ service/synaptic?file=$1.$2 [L]
 
 #Avoid Duplicate Content on by removing index.php access
 RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
