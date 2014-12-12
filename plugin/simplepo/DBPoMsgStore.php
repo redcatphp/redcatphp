@@ -31,6 +31,6 @@ class DBPoMsgStore {
 		$this->db->store($b);
 	}
 	function read(){
-		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", $this->catalogue_id);
+		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", [$this->catalogue_id]);
 	}
 }
