@@ -1,94 +1,26 @@
 <?php namespace Surikat\Service;
 use Surikat\Core\Dev;
-use Surikat\Tool;
-use Surikat\Core\HTTP;
-use Surikat\Tool\JSON;
-use Surikat\Core\FS;
 use Surikat\Core\SCSSCServer;
 use Surikat\Core\SCSSC;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
 class Service_Synaptic {
-	static $SEND_HEADERS = true;
 	static function method(){
-		if(isset($_GET['file'])){
+		if(isset($_GET['file']))
 			self::load($_GET['file']);
-		}
-		elseif(isset($_GET['json'])){
-			$json = (array)(func_num_args()>0?func_get_arg(0):(isset($_GET['json'])?JSON::decode($_GET['json'],true):null));
-			$exclude = (array)(func_num_args()>1?func_get_arg(1):(isset($_GET['exclude'])?JSON::decode($_GET['exclude'],true):null));
-			foreach($json as $k)
-				if($k)
-					self::load($k,null,$exclude);
-
-		}
 	}
-	private static $__loaded = [];
-	private static $__synapses = [];
-	protected static function get($k,$from=null){
-		$tmp = self::$SEND_HEADERS;
-		self::$SEND_HEADERS = false;
-		ob_start();
-		self::load($k,$from);
-		self::$SEND_HEADERS = $tmp;
-		return ob_get_clean();
-	}
-	protected static function load($k,$from=null,$exclude=[]){
-		$remote = strpos($k,'://')!==false;
-		$dir = '';
-		if(!$remote){
-			$k = FS::get_absolute_path($k);
-			if(strpos($k,'/'))
-				$dir = dirname($k);
-		}
-		if(!isset(self::$__synapses[$dir])){
-			if(is_file($file=SURIKAT_PATH.$dir.'/synaptic.json')){
-				$synapse = JSON::decode(file_get_contents($file));
-				self::$__synapses[$dir] = $synapse;
-			}
-			else{
-				self::$__synapses[$dir] = null;
-			}
-		}
-		$fk = basename($k);
-		$synaptic = self::$__synapses[$dir]&&isset(self::$__synapses[$dir]->$fk)?self::$__synapses[$dir]->$fk:null;
-		if(is_string($synaptic))
-			$synaptic = (array)$synaptic;
-		if(is_array($synaptic))
-			$synaptic = (object)['dependencies'=>$synaptic];
-		if($synaptic){
-			if(isset($synaptic->realpath))
-				return self::load($synaptic->realpath,$k,$exclude);
-			if(isset($synaptic->dependencies))
-				foreach((array)$synaptic->dependencies as $d)
-					self::load(($dir&&strpos($d,'/')!==0&&strpos($d,'://')===false?$dir.'/':'').$d,null,$exclude);
-		}
-		if(in_array($k,self::$__loaded))
-			return;
-		self::$__loaded[] = $k;
-		if($remote){
-			$args = [$k];
-			if($synaptic&&isset($synaptic->updateDay))
-				$args[] = $synaptic->updateDay;
-			if($synaptic&&isset($synaptic->cacheAlias))
-				$args[] = $synaptic->cacheAlias;
-			call_user_func_array(['self','cacheRemote'],$args);
-		}
-		elseif(is_file($k)){
+	protected static $expires = 2592000;
+	protected static function load($k,$from=null){
+		if(is_file($k)){
 			switch($extension=strtolower(pathinfo($k,PATHINFO_EXTENSION))){
 				case 'js':
-					self::cacheExpires();
-					self::contentType('application/javascript');
-					readfile($k);
-				break;
-				case 'json':
-					self::cacheExpires();
-					self::contentType('application/json');
+					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
+					header('Content-Type: application/javascript; charset:utf-8');
 					readfile($k);
 				break;
 				case 'css':
-					self::cacheExpires();
-					self::contentType('text/css');
+					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
+					header('Content-Type: text/css; charset:utf-8');
 					if(!$from||strpos($k,'://')!==false||($dir1=dirname($k))==($dir2=dirname($from)))
 						readfile($k);
 					else{
@@ -101,8 +33,6 @@ class Service_Synaptic {
 						$dir1 = '';
 						for($i=$i;$i<$c;$i++)
 							$dir1 .= $xd1[$i];
-						
-						
 						$relativity = rtrim(str_repeat('../',substr_count($k,'/')-$i).$dir1,'/').'/';
 						echo "/* SynapticURI $k => $from: $relativity\r\n */";
 						echo preg_replace('#url\((?!\s*[\'"]?(?:https?:)?//)\s*([\'"])?#',"url($1{$relativity}",file_get_contents($k));
@@ -147,29 +77,6 @@ class Service_Synaptic {
 			}
 		}
 	}
-	protected static function contentType($type){
-		return self::header('Content-Type: '.$type.'; charset:utf-8');
-	}
-	protected static function cacheExpires($expires=2592000){ //1 month
-		self::header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires).'GMT');
-	}
-	protected static function header($header){
-		if(self::$SEND_HEADERS&&!headers_sent())
-			header($header);
-	}
-	protected static function cacheFile($arg,$ext=''){
-		return SURIKAT_TMP.'synaptic_cache/'.trim($arg,'/').($ext?'.'.ltrim($ext,'.'):'');
-	}
-	protected static function cacheStore($file,$str){
-		FS::mkdir($file,true);
-		return file_put_contents($file,$str,LOCK_EX);
-	}
-	protected static function cacheRemote($rf,$day=7,$alias=null){
-		$file = self::cacheFile($alias?$alias:str_replace(['://','/'],'.',$rf));
-		if((!is_file($file)||!filesize($file)||$day===true)||($day&&(time()-filemtime($file))>(86400*$day)))
-			self::cacheStore($file,file_get_contents($rf));
-		readfile($file);
-	}
 	protected static function minifyJS($f,$min){
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
@@ -177,7 +84,8 @@ class Service_Synaptic {
 		$c = JS::minify(file_get_contents($f));
 		if(!Dev::has(Dev::JS))
 			file_put_contents($min,$c);
-		@header('Content-Type:application/javascript; charset=utf-8');
+		if(!headers_sent())
+			header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
 	}
 	protected static function minifyCSS($f){
@@ -198,7 +106,8 @@ class Service_Synaptic {
 		$c = CSS::minify($c);
 		if(!Dev::has(Dev::CSS))
 			file_put_contents(dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css',$c);
-		@header('Content-Type:text/css; charset=utf-8');
+		if(!headers_sent())
+			header('Content-Type:text/css; charset=utf-8');
 		echo $c;
 	}
 	protected static function scss($path) {
