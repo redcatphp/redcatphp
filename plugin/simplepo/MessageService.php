@@ -86,24 +86,18 @@ class MessageService {
 			$this->db->exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
 		return SimplePO::import($lg,SURIKAT_PATH.$this->potfile,$atline);
 	}
-	function exportCatalogue($cid=null,$lg=null){
-		if(!isset($cid))
-			$cid = (int)@$_POST['cid'];
-		if(!isset($lg))
-			$lg = @$_POST['lang'];
-		if(!isset($cid)&&$lg)
-			$cid = $this->db->getCell('SELECT id from catalogue WHERE name=?',[$lg]);
-		if(!isset($lg)&&$cid)
-			$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
-		if(!isset($lg)||!isset($cid))
+	function exportCatalogue(){
+		if(!isset($_POST['cid']))
 			return;
-		
+		$cid = (int)$_POST['cid'];
+		$lg = $this->db->getCell('SELECT name from catalogue WHERE id=?',[$cid]);
+		if(!isset($lg))
+			return;
 		$path = SURIKAT_PATH.'langs/'.$lg.'/LC_MESSAGES/messages.';
 		$po = $path.'po';
 		$mo = $path.'mo';
 		SimplePO::export($lg,$po);
 		msgfmt::convert($po,$mo);
-		
 		foreach(glob($path.'*.mo') as $f)
 			unlink($f);
 		copy($mo,$path.time().'.mo');
