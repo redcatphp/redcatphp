@@ -283,7 +283,7 @@ class Database{
 	{
 		$sql = (string)$sql;
 		if(stripos($sql,'LIMIT')===false)
-			$sql .= 'LIMIT 1';
+			$sql .= ' LIMIT 1';
 		return $this->query( 'getCell', $sql, $bindings );
 	}
 
