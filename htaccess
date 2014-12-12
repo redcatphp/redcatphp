@@ -164,9 +164,6 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 #Directory Traversal Protection
 RewriteRule "(^|/)\." - [F]
 
-#Reset
-DirectoryIndex index.php
-
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
 RewriteRule ^robots\.txt$ /Surikat/robots_cdn.txt [L]
@@ -188,6 +185,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ /img/404.png [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(css|js)$ /service/synaptic?file=$1.$2 [L]
+
+#Avoid Duplicate Content on by removing index.php access
+RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
+RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
 
 #Surikat Bootstrap
 RewriteCond %{REQUEST_FILENAME} !-f
