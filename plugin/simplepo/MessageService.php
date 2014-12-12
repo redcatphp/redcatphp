@@ -82,7 +82,8 @@ class MessageService {
 		if(!isset($lg))
 			return;
 		$atline = @$_POST['atline'];
-		$this->db->exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
+		if(!$atline)
+			$this->db->exec("UPDATE message SET isObsolete=1 WHERE catalogue_id=?",[$cid]);
 		return SimplePO::import($lg,SURIKAT_PATH.$this->potfile,$atline);
 	}
 	function exportCatalogue($cid=null,$lg=null){
