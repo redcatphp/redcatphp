@@ -190,7 +190,7 @@ RewriteRule ^(.*)$ /Surikat/$1/index.php [L,QSA]
 
 #Custom 404 image
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ /img/404.png [L,QSA]
+RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ service/synaptic?file=img/404.png&code=404 [L,QSA]
 
 #SCSS + Synaptic
 RewriteCond %{REQUEST_FILENAME} !-f
