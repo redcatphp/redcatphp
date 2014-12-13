@@ -100,8 +100,6 @@ a.top_btns{
 	z-index:1;
 	display:none;
 	text-align:center;
-	-moz-border-radius:6px;
-	-webkit-border-radius:6px;
 	border-radius:6px;
 }
 #messages {
@@ -116,8 +114,6 @@ a.top_btns{
 	display:none;
 	opacity:0;
 	text-align:center;
-	-moz-border-radius:6px;
-	-webkit-border-radius:6px;
 	border-radius:6px;
 }
 #nav {
@@ -218,20 +214,12 @@ a.top_btns{
 		margin:0;
 		padding:5px 5px;
 		color:#FFF;
-		-moz-border-radius-topleft:6px;
-		-moz-border-radius-topright:6px;
-		-webkit-border-top-left-radius:6px;
-		-webkit-border-top-right-radius:6px;
-		border-radius-topleft:6px;
-		border-radius-topright:6px;
+		border-top-left-radius:6px;
+		border-top-right-radius:6px;
 	}
 	.block #edit_bar_table {
-		-moz-border-radius-bottomleft:6px;
-		-moz-border-radius-bottomright:6px;
-		-webkit-border-bottom-left-radius:6px;
-		-webkit-border-bottom-right-radius:6px;
-		border-radius-bottomleft:6px;
-		border-radius-bottomright:6px;
+		border-bottom-left-radius:6px;
+		border-bottom-right-radius:6px;
 	}
 	.block h3 a {
 		color:#555;
@@ -395,4 +383,30 @@ a.top_btns{
 	display:blowk;
 	width:400px;
 	margin:0 auto;
+}
+
+.flags{
+	margin-top:5px;
+	margin-bottom:5px;
+	margin-left:12px;
+	margin-right:12px;
+	border:1px solid #DADADA;
+    display: block;
+    float: left;
+    padding: 5px;
+	a{
+		img{
+			vertical-align: middle;
+		}
+		color: #000;
+		display: block;
+		float: left;
+		height: 16px;
+		margin-bottom: 1px;
+		margin-top: 1px;
+		padding: 0;
+		text-align: left;
+		text-decoration: none;
+		width: 150px;
+	}
 }

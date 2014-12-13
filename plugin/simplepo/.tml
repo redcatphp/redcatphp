@@ -17,5 +17,6 @@ foreach(glob(SURIKAT_PATH.'langs/*',GLOB_ONLYDIR) as $d)
 			<div class="data"></div>
 		  </div>
 		</div>
+		<div class="flags"></div>
 	</body>
 </extend>
