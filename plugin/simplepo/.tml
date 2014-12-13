@@ -1,6 +1,6 @@
 <Presenter:Basic />
 <extend>
-	<append 'head'>
+	<append "head">
 		<script src="index.js" type="text/javascript" charset="utf-8"></script>
 	</append>
 	<body>
