@@ -11,15 +11,31 @@ class Service_Synaptic {
 			self::load($_GET['file']);
 	}
 	protected static $expires = 2592000;
+	protected static $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	protected static function load($k,$from=null){
-		if(is_file($k)){
-			switch($extension=strtolower(pathinfo($k,PATHINFO_EXTENSION))){
-				case 'js':
+		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
+		if(!in_array($extension,self::$allowedExtensions)){
+			HTTP::code(403);
+			exit;
+		}
+		switch($extension){
+			case 'js':
+				if(is_file($k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
 					header('Content-Type: application/javascript; charset:utf-8');
 					readfile($k);
-				break;
-				case 'css':
+				}
+				elseif(substr($k,-7,-3)=='.min'){
+					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
+					self::minifyJS($kv,$k);
+				}
+				else{
+					HTTP::code(404);
+					throw new Exception('404');
+				}
+			break;
+			case 'css':
+				if(is_file($k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
 					header('Content-Type: text/css; charset:utf-8');
 					if(!$from||strpos($k,'://')!==false||($dir1=dirname($k))==($dir2=dirname($from)))
@@ -38,25 +54,8 @@ class Service_Synaptic {
 						echo "/* SynapticURI $k => $from: $relativity\r\n */";
 						echo preg_replace('#url\((?!\s*[\'"]?(?:https?:)?//)\s*([\'"])?#',"url($1{$relativity}",file_get_contents($k));
 					}
-				break;
-				default:
-					readfile($k);
-				break;
-			}
-		}
-		else{
-			if(substr($k,-3)=='.js'){
-				if(substr($k,-7,-3)=='.min'){
-					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					self::minifyJS($kv,$k);
 				}
-				else{
-					HTTP::code(404);
-					throw new Exception('404');
-				}
-			}
-			elseif(substr($k,-4)=='.css'){
-				if(substr($k,-8,-4)=='.min')
+				elseif(substr($k,-8,-4)=='.min')
 					self::minifyCSS(substr($k,0,-8).'.css');
 				elseif(
 					is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss')
@@ -71,11 +70,22 @@ class Service_Synaptic {
 					HTTP::code(404);
 					throw new Exception('404');
 				}
-			}
-			else{
-				HTTP::code(404);
-				throw new Exception('404');
-			}
+			break;
+			case 'png':
+			case 'jpg':
+			case 'jpeg':
+			case 'gif':
+				if(isset($_GET['code'])&&($_GET['code']=='404'||$_GET['code']=='403'))
+					HTTP::code((int)$_GET['code']);
+				header('Content-Type:image/'.$extension.'; charset=utf-8');
+				if(is_file(SURIKAT_PATH.$k))
+					$file = SURIKAT_PATH.$k;
+				elseif(is_file(SURIKAT_SPATH.$k))
+					$file = SURIKAT_SPATH.$k;
+				else
+					HTTP::code(404);
+				readfile($file);
+			break;
 		}
 	}
 	protected static function minifyJS($f,$min){
