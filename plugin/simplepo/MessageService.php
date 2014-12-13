@@ -51,6 +51,8 @@ class MessageService {
 		return $messages;
 	}
 	function getCatalogues(){
+		foreach(glob(SURIKAT_PATH.'langs/*',GLOB_ONLYDIR) as $d)
+			SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
 		return $this->db->getAll("SELECT c.name,c.id,COUNT(*) as message_count, COALESCE(SUM(LENGTH(m.msgstr) >0),0) as translated_count FROM catalogue c LEFT JOIN message m ON m.catalogue_id=c.id AND m.isHeader=0 GROUP BY c.id");
 	}
 	function updateMessage($id, $comments, $msgstr, $fuzzy){
