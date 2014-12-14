@@ -174,15 +174,45 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->_on[$f] = [];
 		$this->_on[$f][] = $c;
 	}
+	function triggerRelated($f){
+		foreach($this as $o){
+			if(is_object($o)){
+				$o->trigger($f);
+			}
+			elseif(is_array($o)){
+				foreach($o as $_o){
+					if(is_object($_o)){
+						$_o->trigger($f);
+					}
+				}
+			}
+		}
+	}
 	function trigger(){
 		$args = func_get_args();
 		$f = array_shift($args);
+		$propag = false;
+		$asc = false;
+		if(is_bool($f)){
+			$propag = true;
+			$asc = $f;
+			$f = array_shift($args);
+		}
+		if($propag&&$asc){
+			$this->triggerRelated($f);
+		}
 		$c = 'on'.ucfirst($f);
-		if(method_exists($this,$c))
+		if(method_exists($this,$c)){
 			call_user_func_array([$this,$c],$args);
-		if(isset($this->_on[$f]))
-			foreach($this->_on[$f] as $c)
+		}
+		if(isset($this->_on[$f])){
+			foreach($this->_on[$f] as $c){
 				call_user_func($c,$this,$args);
+			}
+		}
+		if($propag&&!$asc){
+			$this->triggerRelated($f);
+		}
 	}
 	function open(){
 		$this->creating = false;
@@ -201,7 +231,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->_rulerConvention();
 		$this->_indexConvention();
 
-		$this->trigger('validate');
+		$this->trigger(true,'validate');
 		if($this->breakValidationOnError&&($e=$this->getErrors())){
 			if(Dev::has(Dev::MODEL))
 				print_r($e);
@@ -214,7 +244,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->_DataBase->rollback();
 			$this->throwValidationError($e);
 		}
-		else{		
+		else{
 			if(self::$_transactDepth==0)
 				$this->_DataBase->commit();
 			$this->trigger('change');

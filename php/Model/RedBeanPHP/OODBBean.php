@@ -87,21 +87,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	function __construct(Database $db){
 		$this->database = $db;
 	}
-	function store($asc=true){
-		if($asc){
-			foreach($this as $o){
-				if(is_object($o)){
-					$this->database->store($o);
-				}
-				elseif(is_array($o)){
-					foreach($o as $_o){
-						if(is_object($_o)){
-							$this->database->store($_o);
-						}
-					}
-				}
-			}
-		}
+	function store(){
 		$this->database->store($this);
 	}
 	
