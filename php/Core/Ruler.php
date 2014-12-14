@@ -48,13 +48,13 @@ class Ruler {
 		return is_numeric($v);
 	}
 	static function integer($v){
-		return is_integer(filter_var($v, FILTER_VALIDATE_INT));
+		return is_integer($v)||is_integer(filter_var($v, FILTER_VALIDATE_INT));
 	}
 	static function boolean($v){
-		return is_bool(filter_var($v, FILTER_VALIDATE_BOOLEAN));
+		return is_bool($v)||is_bool(filter_var($v, FILTER_VALIDATE_BOOLEAN));
 	}
 	static function float($v){
-		return filter_var($v, FILTER_VALIDATE_FLOAT);
+		return is_float($v)||filter_var($v, FILTER_VALIDATE_FLOAT);
 	}
 	static function url($v){
 		return filter_var($v, FILTER_VALIDATE_URL);
