@@ -68,6 +68,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $creating;
 	protected $checkUniq = true;
 	protected $_on = [];
+	protected $_onces = [];
 	protected $queryWriter;
 	static function _checkUniq($b=null){
 		self::$_checkUniq = isset($b)?!!$b:true;
@@ -171,15 +172,15 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->_on[$f][] = $c;
 	}
 	function triggerRelated($f,$asc=true){
-		foreach($this->bean as $o){
-			if(is_object($o)&&!$o->getMeta('once.'.$f)){
-				$o->setMeta('once.'.$f,true);
+		foreach($this as $o){
+			if(is_object($o)&&!isset($o->_onces[$f])){
+				$o->_onces[$f] = true;
 				$o->trigger($asc,$f);
 			}
 			elseif(is_array($o)){
 				foreach($o as $_o){
-					if(is_object($_o)&&!$_o->getMeta('once.'.$f)){
-						$_o->setMeta('once.'.$f,true);
+					if(is_object($_o)&&!isset($_o->_onces[$f])){
+						$_o->_onces[$f] = true;
 						$_o->trigger($asc,$f);
 					}
 				}
@@ -255,6 +256,8 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				Sync::update('model.'.$this->table);
 		}
 		$this->trigger('changed');
+		if(isset($this->_onces['validate']))
+			unset($this->_onces['validate']);
 
 	}
 	function _filterConvention(){
@@ -454,7 +457,20 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $this->bean;
 	}
 	function getIterator(){
-        return $this->bean->getIterator();
+		$props = $this->bean->getProperties();
+		foreach($props as $k=>$v){
+			if(is_object($v)){
+				$props[$k] = $v->box();
+			}
+			elseif(is_array($v)){
+				foreach($v as $_k=>$_v){
+					if(is_object($_v)){
+						$props[$k][$_k] = $_v->box();
+					}
+				}
+			}
+		}
+        return new\ArrayIterator( $props );
 	}
 	function offsetSet($offset,$value){
         return $this->bean->offsetSet($offset,$value);
