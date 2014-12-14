@@ -2,6 +2,7 @@
 use Surikat\Model\RedBeanPHP\QueryWriter\PostgreSQL;
 use Surikat\Model\RedBeanPHP\QueryWriter\MySQL;
 use Surikat\Tool\Geocoding;
+use Surikat\Core\Ruler;
 trait Mixin_Geopoint{
 	static $columnPointCast	= 'point';
 	static $columnPointWriteCol;
@@ -28,15 +29,21 @@ trait Mixin_Geopoint{
 		return $this->earthRadius;
 	}
 	function checkLat($lat,$nul=true){
-		if($lat!='')
+		if($lat!=''){
+			if(!Ruler::float($lat))
+				return false;
 			$lat = (float)$lat;
+		}
 		if(($nul&&(!isset($lat)||$lat===false))||($lat<=90.0&&$lat>=-90.0))
 			return $lat;
 		return false;
 	}
 	function checkLon($lon,$nul=true){
-		if($lon!='')
+		if($lon!=''){
+			if(!Ruler::float($lon))
+				return false;
 			$lon = (float)$lon;
+		}
 		if(($nul&&(!isset($lon)||$lon===false))||($lon<=180.0&&$lon>=-180.0))
 			return $lon;
 		return false;
