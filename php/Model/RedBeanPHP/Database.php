@@ -190,7 +190,8 @@ class Database{
 	}
 
 	function store( $bean ){
-		return $this->redbean->store( $bean );
+		if($bean->storing())
+			return $this->redbean->store( $bean );
 	}
 
 	function freeze( $tf = TRUE ){
@@ -794,16 +795,17 @@ class Database{
 	}
 	
 	function preload($beans, $preload, $closure = NULL){
-		$preloader = new Preloader( R::getToolBox() );
+		$preloader = new Preloader( $this->getToolBox() );
 		return $preloader->load($beans, $preload, $closure);
 	}
 	function each($beans, $preload, $closure = NULL){
-		$preloader = new Preloader( R::getToolBox() );
+		$preloader = new Preloader( $this->getToolBox() );
 		return $preloader->load($beans, $preload, $closure);
 	}
 	function graph($array, $fe = FALSE){
 		$cooker = new Cooker;
-		$cooker->setToolbox(R::getToolBox());
+		$cooker->setToolbox($this->getToolBox());
 		return $cooker->graph($array, $fe);
 	}
+	
 }

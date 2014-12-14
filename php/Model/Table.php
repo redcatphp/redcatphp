@@ -68,7 +68,6 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $creating;
 	protected $checkUniq = true;
 	protected $_on = [];
-	protected $breakValidationOnError;
 	protected $queryWriter;
 	static function _checkUniq($b=null){
 		self::$_checkUniq = isset($b)?!!$b:true;
@@ -76,23 +75,20 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function checkUniq($b=null){
 		$this->checkUniq = isset($b)?!!$b:true;
 	}
-	function breakOnError($b=null){
-		$this->breakValidationOnError = isset($b)?!!$b:true;
-	}
 	function _binder($table){
 		if(!in_array($table,self::$__binded)){
-			$c = $this->_DataBase->getModelClass($table);
+			$c = $this->Database->getModelClass($table);
 			foreach($c::getDefColumns('readCol') as $col=>$func)
-				$this->_DataBase->bindFunc('read', $table.'.'.$col, $func);
+				$this->Database->bindFunc('read', $table.'.'.$col, $func);
 			foreach($c::getDefColumns('writeCol') as $col=>$func)
-				$this->_DataBase->bindFunc('write', $table.'.'.$col, $func);
+				$this->Database->bindFunc('write', $table.'.'.$col, $func);
 			self::$__binded[] = $table;
 		}
 	}
-	private $_DataBase;
+	private $Database;
 	function __construct($table,$db){
-		$this->_DataBase = $db;
-		$this->queryWriter = $this->_DataBase->getWriter();
+		$this->Database = $db;
+		$this->queryWriter = $this->Database->getWriter();
 		$this->table = $table;
 		$this->type = $this->queryWriter->reverseCase($table);
 		$this->_binder($table);
@@ -174,15 +170,17 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$this->_on[$f] = [];
 		$this->_on[$f][] = $c;
 	}
-	function triggerRelated($f){
-		foreach($this as $o){
-			if(is_object($o)){
-				$o->trigger($f);
+	function triggerRelated($f,$asc=true){
+		foreach($this->bean as $o){
+			if(is_object($o)&&!$o->getMeta('once.'.$f)){
+				$o->setMeta('once.'.$f,true);
+				$o->trigger($asc,$f);
 			}
 			elseif(is_array($o)){
 				foreach($o as $_o){
-					if(is_object($_o)){
-						$_o->trigger($f);
+					if(is_object($_o)&&!$_o->getMeta('once.'.$f)){
+						$_o->setMeta('once.'.$f,true);
+						$_o->trigger($asc,$f);
 					}
 				}
 			}
@@ -199,7 +197,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			$f = array_shift($args);
 		}
 		if($propag&&$asc){
-			$this->triggerRelated($f);
+			$this->triggerRelated($f,$asc);
 		}
 		$c = 'on'.ucfirst($f);
 		if(method_exists($this,$c)){
@@ -211,7 +209,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			}
 		}
 		if($propag&&!$asc){
-			$this->triggerRelated($f);
+			$this->triggerRelated($f,$asc);
 		}
 	}
 	function open(){
@@ -220,40 +218,31 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->type = $this->queryWriter->reverseCase($this->table);
 		$this->trigger('read');
 	}
-	private static $_transactDepth = 0;
-	function update(){
-		if(self::$_transactDepth==0)
-			$this->_DataBase->begin();
-		self::$_transactDepth++;
-			
-		$this->_relationsKeysStore();
+	
+	function store(){
+		$this->Database->store($this);
+	}
+	function storing(){
 		$this->_filterConvention();
 		$this->_rulerConvention();
 		$this->_indexConvention();
-
 		$this->trigger(true,'validate');
-		if($this->breakValidationOnError&&($e=$this->getErrors())){
-			if(Dev::has(Dev::MODEL))
-				print_r($e);
-			$this->throwValidationError($e);
-		}
-			
 		$e = $this->getErrors();
-		self::$_transactDepth--;
 		if($e){
-			$this->_DataBase->rollback();
 			$this->throwValidationError($e);
 		}
 		else{
-			if(self::$_transactDepth==0)
-				$this->_DataBase->commit();
-			$this->trigger('change');
-			if($this->creating)
-				$this->trigger('create');
-			else
-				$this->trigger('update');
+			return true;
 		}
-		
+	}
+	
+	function update(){
+		$this->_relationsKeysStore();
+		$this->trigger('change');
+		if($this->creating)
+			$this->trigger('create');
+		else
+			$this->trigger('update');
 	}
 	function after_update(){
 		$this->_relationsKeysRestore();
@@ -311,7 +300,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(!empty($uniqs)){
 			if(	$this->checkUniq
 				&&self::$_checkUniq!==false
-				&&($r=$this->_DataBase->findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
+				&&($r=$this->Database->findOne($this->table,implode(' = ? OR ',array_keys($uniqs)).' = ? ', array_values($uniqs)))
 				&&$r->id!=$this->bean->id
 			){
 				$throwed = false;
@@ -326,7 +315,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			}
 			if(isset($uniqs[static::$loadUniq]))
 				unset($uniqs[static::$loadUniq]);
-			if(!empty($uniqs)&&!$this->_DataBase->getRedBean()->isFrozen())
+			if(!empty($uniqs)&&!$this->Database->getRedBean()->isFrozen())
 				$this->queryWriter->addUniqueIndex($this->table,array_keys($uniqs));
 		}
 	}
@@ -341,7 +330,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		foreach(static::getDefColumns('fulltext') as $col=>$cols){
 			$lang = static::getColumnDef($col,'fulltextLanguage');
 			$this->on('created',function($entry)use($t,&$w,$col,$cols,$lang){
-				if(!in_array($col,array_keys($this->_DataBase->inspect($t)))){
+				if(!in_array($col,array_keys($this->Database->inspect($t)))){
 					$w->addColumnFulltext($t, $col);
 					$w->buildColumnFulltext($t, $col, $cols, $lang);
 					$w->addIndexFullText($t, $col, null , $lang);
@@ -374,35 +363,35 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 
 	function arraySetter($k, $v){
 		if(isset($v['id'])&&$id=$v['id']){
-			$val = $this->_DataBase->load($k,$id);
+			$val = $this->Database->load($k,$id);
 			foreach($v as $_k=>$_v)
 				if($k!='id')
 					$v->$_k = $_v;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
-			if(!($val = $this->_DataBase->load($k,$id)))
-				$val = $this->_DataBase->newOne($k,$v);
+			if(!($val = $this->Database->load($k,$id)))
+				$val = $this->Database->newOne($k,$v);
 			foreach($v as $_k=>$_v)
 				if($k!=static::$loadUniq)
 					$v->$_k = $_v;
 		}
 		else
-			$val = $this->_DataBase->newOne($this->type.ucfirst($k),$v);
+			$val = $this->Database->newOne($this->type.ucfirst($k),$v);
 		return [$k,$val];
 	}
 	function arraysSetter($k, $v){
 		$uk = ucfirst($k);
 		if(isset($v['id'])&&$id=$v['id']){
-			$v = $this->_DataBase->load($k,$id);
+			$v = $this->Database->load($k,$id);
 			$k = 'shared'.$uk;
 		}
 		elseif(isset($v[static::$loadUniq])&&($id=$v[static::$loadUniq])){
-			if(!($v = $this->_DataBase->load($k,$id)))
-				$v = $this->_DataBase->newOne($k,$v);
+			if(!($v = $this->Database->load($k,$id)))
+				$v = $this->Database->newOne($k,$v);
 			$k = 'shared'.$uk;
 		}
 		else{
-			$v = $this->_DataBase->newOne($this->type.$uk,$v);
+			$v = $this->Database->newOne($this->type.$uk,$v);
 			$k = 'xown'.ucfirst($this->type).$uk;
 		}
 		return [$k,$v];

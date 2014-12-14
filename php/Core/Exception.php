@@ -1,7 +1,7 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\Core;
 class Exception extends \Exception{
     private $_data;
-    public function __construct($message, $code = 0, Exception $previous = null, $data = null){
+    function __construct($message, $code = 0, Exception $previous = null, $data = null){
 		foreach(func_get_args() as $arg)
 			if(is_string($arg))
 				$message = $arg;
@@ -20,10 +20,10 @@ class Exception extends \Exception{
         parent::__construct($message, $code, $previous);
         $this->_data = $data;
     }
-    public function getData(){
+    function getData(){
 		return $this->_data;
 	}
-    public function setData($data){
+    function setData($data){
 		$this->_data = $data;
 	}
 }

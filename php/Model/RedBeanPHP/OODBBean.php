@@ -87,9 +87,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	function __construct(Database $db){
 		$this->database = $db;
 	}
-	function store(){
-		$this->database->store($this);
-	}
+	
 	
 	/**
 	* Parses the join in the with-snippet.
