@@ -586,6 +586,28 @@ class Database{
 			$model->$k = $v;
 		return $model;
 	}
+	function remove($type){
+		$type = $this->writer->adaptCase($type);
+		$this->exec('DELETE FROM '.$type);
+		$tables = $this->writer->getTables();
+		foreach($tables as $table){
+			if(strpos($table,'_')!==false){
+				$x = explode('_',$table);
+				if($x[0]==$type||$x[1]==$type){
+					$this->wipe($table);
+					$this->drop($table);
+					continue;
+				}
+			}
+			$columns = array_keys($this->writer->getColumns($table));
+			$col = $type.'_id';
+			if(in_array($col,$columns)){
+				$this->exec('ALTER TABLE '.$table.' DROP COLUMN '.$col);
+			}
+		}
+		$this->drop($type);
+		
+	}
 	function delete($mix){
 		return $this->trash($this->read($mix));
 	}
