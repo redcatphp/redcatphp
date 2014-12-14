@@ -74,7 +74,9 @@ class TeMpLate {
 				$this->dirCwd[] = rtrim($dir,'/').'/';
 	}
 	function onCompile($call,$prepend=false){
-		if($prepend)
+		if(is_integer($prepend))
+			$this->compile[$prepend] = $call;
+		elseif($prepend)
 			array_push($this->compile,$call);
 		else
 			array_unshift($this->compile,$call);
@@ -86,6 +88,7 @@ class TeMpLate {
 		if(!($file=$this->find()))
 			throw new Exception('404');
 		$node = new TML(file_get_contents($file),$this);
+		ksort($this->compile);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);
 		$this->childNodes[] = $node;
