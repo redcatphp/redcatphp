@@ -73,8 +73,11 @@ class TeMpLate {
 			if(!in_array($dir,$this->dirCwd))
 				$this->dirCwd[] = rtrim($dir,'/').'/';
 	}
-	function onCompile($call){
-		$this->compile[] = $call;
+	function onCompile($call,$prepend=false){
+		if($prepend)
+			array_push($this->compile,$call);
+		else
+			array_unshift($this->compile,$call);
 	}
 	function getPath(){
 		return $this->path;
