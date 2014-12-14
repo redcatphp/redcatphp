@@ -16,7 +16,7 @@ abstract class Base {
 				if(isset($this->mysqli_types[$clause]))
 					$this->mysqli_types[$clause] = substr($this->mysqli_types[$clause],count($this->params[$clause][$i])*-1);
 				unset($this->params[$clause][$i]);
-				array_merge($this->params[$clause]); //reorder
+				$this->params[$clause] = array_values($this->params[$clause]); //reindex
 				return true;
 			}
 		}
@@ -31,16 +31,18 @@ abstract class Base {
 				$found = $this->_remove_params($k,$i,$params);
 				if(!isset($params)||$found)
 					unset($this->{$k}[$i]);
+				$this->{$k} = array_values($this->{$k}); //reindex
 				if((isset($params)&&$found)||(!isset($params)&&$once))
-					break;
+					return $i;
 			}
-		return $this;
 	}
 	function unJoin($table=null,$params=null){
-		return $this->remove_property('tables',$table,$params);
+		$this->remove_property('tables',$table,$params);
+		return $this;
 	}
 	function unFrom($table=null,$params=null){
-		return $this->remove_property('tables',$table,$params);
+		$this->remove_property('tables',$table,$params);
+		return $this;
 	}
 	private static $__apiProp = [
 		'select'=>'columns',

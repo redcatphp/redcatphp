@@ -2,24 +2,30 @@
 use Surikat\Model\SQLComposer;
 abstract class Where extends Base {
 	function unWhere($where=null,$params=null){
-		return $this->remove_property('where',$where,$params);
+		$this->remove_property('where',$where,$params);
+		return $this;
 	}
 	function unWith($with=null,$params=null){
-		return $this->remove_property('with',$with,$params);
+		$this->remove_property('with',$with,$params);
+		return $this;
 	}
 	function unWhereIn($where,$params=null){
 		list($where, $params) = SQLComposer::in($where, $params);
-		return $this->remove_property('where',$where,$params);
+		$this->remove_property('where',$where,$params);
+		return $this;
 	}
 	function unWhereOp($column, $op,  array $params=null){
 		list($where, $params) = SQLComposer::applyOperator($column, $op, $params);
-		return $this->remove_property('where',$where,$params);
+		$this->remove_property('where',$where,$params);
+		return $this;
 	}
 	function unOpenWhereAnd() {
-		return $this->remove_property('where',[ '(', 'AND' ]);
+		$this->remove_property('where',[ '(', 'AND' ]);
+		return $this;
 	}
 	function unOpenWhereOr() {
-		return $this->remove_property('where',[ '(', 'OR' ]);
+		$this->remove_property('where',[ '(', 'OR' ]);
+		return $this;
 	}
 	function unOpenWhereNotAnd() {
 		$this->remove_property('where',[ '(', 'NOT' ]);
@@ -30,7 +36,8 @@ abstract class Where extends Base {
 		return $this->unOpenWhereOr();
 	}
 	function unCloseWhere() {
-		return $this->remove_property('where',[')']);
+		$this->remove_property('where',[')']);
+		return $this;
 	}
 	
 	protected $where = [];
