@@ -34,9 +34,9 @@ class SCSSCServer{
 		$v = scssc::$VERSION;
 		$t = @date('r');
 		$css = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
-		file_put_contents($out, $css);
+		file_put_contents($out, $css, LOCK_EX);
 		file_put_contents($this->importsCacheName($out),
-			serialize($this->scss->getParsedFiles()));
+			serialize($this->scss->getParsedFiles()),LOCK_EX);
 		return $css;
 	}
 	function serve($in,$salt = '') {

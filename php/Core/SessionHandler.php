@@ -13,7 +13,7 @@ class SessionHandler{
         return (string)@file_get_contents("$this->savePath/sess_$id");
     }
     function write($id, $data){
-        return file_put_contents("$this->savePath/sess_$id", $data) === false ? false : true;
+        return file_put_contents("$this->savePath/sess_$id", $data, LOCK_EX) === false ? false : true;
     }
     function destroy($id){
         $file = "$this->savePath/sess_$id";
