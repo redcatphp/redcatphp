@@ -91,8 +91,12 @@ class TeMpLate {
 		ksort($this->compile);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);
+		$this->removeTmpAttr($node);
 		$this->childNodes[] = $node;
 		return $node;
+	}
+	function removeTmpAttr($node){
+		$node('[tmp-attr]')->removeAttr('tmp-attr');
 	}
 	function evalue(){
 		$compileFile = $this->dirCompile.$this->path.'.svar';

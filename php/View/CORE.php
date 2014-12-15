@@ -620,6 +620,20 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		else
 			return $this->__get($k);
 	}
+	function tmpAttr($k){
+		$a = (array)parse_str($this->attr('tmp-attr'));
+		if(func_num_args()<2){
+			return isset($a[$k])?$a[$k]:null;
+		}
+		if(is_array($k)){
+			foreach($k as $_k=>$v)
+				$a[$_k] = $v;
+		}
+		else{
+			$a[$k] = func_get_arg(1);
+		}
+		$this->attr('tmp-attr',http_build_query($a));
+	}
 	function removeAttr($k){
 		if(is_array($k)){
 			foreach($k as $v)
