@@ -1,5 +1,5 @@
 <?php namespace Surikat\Core;
-use Surikat\Core\ArrayTools;
+use Surikat\Core\Arrays;
 class Config extends ArrayObject {
 	private static $registry = [];
 	private static $directory = 'config';
@@ -43,7 +43,7 @@ class Config extends ArrayObject {
 				$conf = include($inc);
 				if(is_array($conf)){
 					if(is_array($this->conf))
-						$this->conf = ArrayTools::array_merge_recursive($conf,$this->conf);
+						$this->conf = Arrays::merge_recursive($conf,$this->conf);
 					else
 						$this->conf = $conf;
 					break;
