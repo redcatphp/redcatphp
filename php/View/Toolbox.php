@@ -58,7 +58,7 @@ class Toolbox{
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 			$TML->prepend('<Presenter:Basic uri="static" />');
 	}
-	static function Internationalization($TML,$cache=false){
+	static function Internationalization($TML,$cache=true){
 		$TML('html')->attr('lang',Lang::get());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
