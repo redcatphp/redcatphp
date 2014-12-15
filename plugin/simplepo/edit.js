@@ -301,6 +301,7 @@ var sortController = {
 	$('#msg_table_head thead th').click(function() {
 	  var column_index = $(this).closest('thead').find('th').index(this);
 	  var direction = !!$(this).hasClass('sort-desc') || !$(this).hasClass('sort-asc');
+	  var nOrder = $(this).attr('class').split(' ')[0];
 		if(pages==1){			
 		  $(this).siblings().andSelf().removeClass('sort-asc').removeClass('sort-desc');
 		  $(this).addClass(direction ? 'sort-asc' : 'sort-desc');
@@ -309,14 +310,15 @@ var sortController = {
 		else{
 			var nhref = window.location.href;
 			if(nhref.match(/order=((?:[a-z][a-z0-9_]*))/))
-				nhref = nhref.replace('order='+order,'order='+$(this).attr('class').split(' ')[0]);
+				nhref = nhref.replace('order='+order,'order='+nOrder);
 			else
-				nhref += '&order='+order;
+				nhref += '&order='+nOrder;
 			if(nhref.match(/sort=((?:[a-z][a-z0-9_]*))/))
 				nhref = nhref.replace('sort='+sort,'sort='+(direction?'asc':'desc'));
 			else
 				nhref += '&sort='+(direction?'asc':'desc');
-			document.location.href = nhref;
+			console.log(nhref);
+			//document.location.href = nhref;
 		}
 	});
   }
