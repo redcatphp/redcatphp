@@ -37,8 +37,7 @@ class MessageService {
 		}
 		$messages = (new Query('message',$this->db))
 			->where('catalogue_id=? AND isHeader <> 1',[$id])
-			//->orderBy("msgstr != '', flags != 'fuzzy'")
-			->orderBy($order)
+			->orderBy($order.' COLLATE NOCASE')
 			->sort($sort)
 			->limit($limit)
 			->offset($offset)
