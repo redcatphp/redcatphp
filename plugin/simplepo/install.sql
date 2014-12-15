@@ -13,7 +13,6 @@ CREATE TABLE "message" (
 	"reference" text,
 	"flags" text,
 	"isObsolete" integer,
-	"isHeader" integer,
 	"previousUntranslatedString" text,
 	"updatedAt" NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY ("catalogue_id") REFERENCES "catalogue" ("id")

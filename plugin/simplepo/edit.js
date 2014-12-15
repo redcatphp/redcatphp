@@ -317,8 +317,7 @@ var sortController = {
 				nhref = nhref.replace('sort='+sort,'sort='+(direction?'asc':'desc'));
 			else
 				nhref += '&sort='+(direction?'asc':'desc');
-			console.log(nhref);
-			//document.location.href = nhref;
+			document.location.href = nhref;
 		}
 	});
   }

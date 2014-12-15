@@ -24,7 +24,7 @@ class SimplePO {
 	}
 	function exportation($file){
 		$stream = fopen($file,'w');
-		$this->POParser->writePoFileToStream($stream);
+		$this->POParser->writePoFileToStream($stream,file_get_contents(SURIKAT_PATH.'langs/header.pot'));
 		fclose($stream);
 	}
 	function importation($file,$atline=null){

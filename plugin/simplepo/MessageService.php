@@ -12,7 +12,7 @@ class MessageService {
 	function getCountMessages($id){
 		return (new Query('message',$this->db))
 			->select('COUNT(*)')
-			->where('catalogue_id=? AND isHeader != 1',[$id])
+			->where('catalogue_id=?',[$id])
 			->getCell()
 		;
 	}
@@ -36,7 +36,7 @@ class MessageService {
 			break;
 		}
 		$messages = (new Query('message',$this->db))
-			->where('catalogue_id=? AND isHeader <> 1',[$id])
+			->where('catalogue_id=?',[$id])
 			->orderBy($order.' COLLATE NOCASE')
 			->sort($sort)
 			->limit($limit)
@@ -52,7 +52,7 @@ class MessageService {
 	function getCatalogues(){
 		foreach(glob(SURIKAT_PATH.'langs/*',GLOB_ONLYDIR) as $d)
 			SimplePO::catalogue(pathinfo($d,PATHINFO_FILENAME));
-		return $this->db->getAll("SELECT c.name,c.id,COUNT(*) as message_count, COALESCE(SUM(LENGTH(m.msgstr) >0),0) as translated_count FROM catalogue c LEFT JOIN message m ON m.catalogue_id=c.id AND m.isHeader=0 GROUP BY c.id");
+		return $this->db->getAll("SELECT c.name,c.id,COUNT(*) as message_count, COALESCE(SUM(LENGTH(m.msgstr) >0),0) as translated_count FROM catalogue c LEFT JOIN message m ON m.catalogue_id=c.id GROUP BY c.id");
 	}
 	function updateMessage($id, $comments, $msgstr, $fuzzy){
 		$flags = $fuzzy&&$fuzzy!='false' ? 'fuzzy' : '';

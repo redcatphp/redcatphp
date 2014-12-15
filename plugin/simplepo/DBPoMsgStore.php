@@ -11,13 +11,13 @@ class DBPoMsgStore {
 			$catalogue->store();
 		$this->catalogue_id = $catalogue->id;
 	}
-	function write( $msg, $isHeader ){
-		$msg['isHeader'] = $isHeader ? 1 : 0;		
+	function write($msg){
+		if(!$msg["msgid"])
+			return;
 		$b = $this->db->findOrNewOne('message',[
 			'catalogue_id'=>$this->catalogue_id,
-			'msgid'=>@$msg["msgid"],
+			'msgid'=>$msg["msgid"],
 			'reference'=> @$msg["reference"],
-			'isHeader'=> @$msg['isHeader'],
 		]);
 		foreach([
 			'isObsolete'=> 0,
@@ -31,6 +31,6 @@ class DBPoMsgStore {
 		$this->db->store($b);
 	}
 	function read(){
-		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY isHeader DESC,isObsolete,id", [$this->catalogue_id]);
+		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY msgid COLLATE NOCASE ASC", [$this->catalogue_id]);
 	}
 }
