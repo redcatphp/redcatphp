@@ -24,14 +24,16 @@ class TML extends CORE{
 		$this->attr($k,Lang::gettext($v));
 	}
 	
+	private static $loadVarsIndex = 100;
 	function loadVars($v){
-		if(0||!$this->TeMpLate)
+		if(!$this->TeMpLate)
 			return;
-		static $index = 0;
-		$index++;
+		self::$loadVarsIndex++;
+		$index = self::$loadVarsIndex;
 		$this->attr('compileVars',$index);
 		$this->TeMpLate->onCompile(function($TML)use($v,$index){
 			$el = $TML->find("[compileVars=$index]",0);
+			$el->removeAttr('compileVars');
 			$rw = $el->getInnerTml();
 			if(substr($rw,0,11)=='<?php echo '&&substr($rw,-3)==';?>'){
 				$rw = substr($rw,11,-3);
@@ -41,9 +43,7 @@ class TML extends CORE{
 			}
 			$rw = '<?php echo sprintf('.$rw.','.$v.');?>';
 			$el->write($rw);
-			$el->removeAttr('compileVars');
-		},100);
-		$this->tmpAttr('compileVars',true);
+		},self::$loadVarsIndex);
 		$this->removeAttr('vars');
 	}
 }

@@ -58,14 +58,14 @@ class Toolbox{
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 			$TML->prepend('<Presenter:Basic uri="static" />');
 	}
-	static function Internationalization($TML,$cache=true){
+	static function Internationalization($TML,$cache=false){
 		$TML('html')->attr('lang',Lang::get());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = trim("$el");
 			if(!$rw)
 				return;
-			if($el->data('i18n',false)!==false){
+			if($el->data('i18n')!==false){
 				if($cache){
 					$rw = Lang::gettext($rw);
 				}
