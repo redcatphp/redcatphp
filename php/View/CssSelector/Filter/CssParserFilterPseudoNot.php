@@ -7,6 +7,6 @@ class CssParserFilterPseudoNot extends CssParserFilterPseudo{
 		$this->_items = $input;
 	}
 	function match($node, $position, $items){
-		return in_array($node,$items);
+		return in_array($node,$items,true);
 	}
 }

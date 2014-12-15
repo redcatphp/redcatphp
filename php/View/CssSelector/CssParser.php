@@ -14,6 +14,7 @@ use Surikat\View\CssSelector\Model\CssParserModelFactor;
 use Surikat\View\CssSelector\Model\CssParserModelSelector;
 use Surikat\View\CssSelector\TextParserException;
 use Surikat\View\CssSelector\TextParser;
+use Surikat\Core\Arrays;
  
 /**
  * selectorList			  = selector {"," selector}
@@ -296,7 +297,7 @@ class CssParser extends TextParser{
 				$selector->filter($this->_node)
 			);
 		} while ($this->eq(","));
-		return new ArrayObject(array_unique($nodes));
+		return new ArrayObject(Arrays::unique($nodes));
 	}
 	protected function _parse(){
 		return $this->is("selectorList");

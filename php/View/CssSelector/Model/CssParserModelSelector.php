@@ -1,6 +1,7 @@
 <?php
 namespace Surikat\View\CssSelector\Model;
 use Surikat\View\CssSelector\Model\CssParserModelFactor;
+use Surikat\Core\Arrays;
 class CssParserModelSelector{
 	private $_factors = [];
 	function addFactor($factor){
@@ -19,6 +20,7 @@ class CssParserModelSelector{
 		$ret = [];
 		foreach ($nodes as $node)
 			$ret = array_merge($ret, $factor->filter($node));
-		return array_unique($ret);
+		return Arrays::unique($ret);
+		return $ret;
 	}
 }
