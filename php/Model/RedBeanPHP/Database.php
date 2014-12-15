@@ -660,7 +660,10 @@ class Database{
 		$bind = [];
 		$params = $this->_uniqSetter($type,$params);
 		foreach($params as $k=>$v){
-			$query[] = $k.'=?';
+			if($v===null)
+				$query[] = $k.' IS ?';
+			else
+				$query[] = $k.'=?';
 			$bind[] = $v;
 		}
 		$query = implode(' AND ',$query);
