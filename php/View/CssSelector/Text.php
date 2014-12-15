@@ -1,6 +1,6 @@
 <?php
 namespace Surikat\View\CssSelector;
-class Text{
+abstract class Text{
 	static function isEmpty($str){
 		return $str === null || is_string($str) && strlen($str) == 0;
 	}
