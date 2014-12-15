@@ -21,6 +21,7 @@ class DBPoMsgStore {
 		]);
 		foreach([
 			'isObsolete'=> 0,
+			'msgstr'=> (string)$b->msgstr,
 			'comments'=> @$msg["translator-comments"],
 			'extractedComments'=> @$msg["extracted-comments"],
 			'previousUntranslatedString'=> @$msg["previous-untranslated-string"],
