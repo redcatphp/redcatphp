@@ -91,11 +91,15 @@ class TeMpLate {
 		ksort($this->compile);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);
-		$this->removeTmpAttr($node);
+		$this->removeTmp($node);
 		$this->childNodes[] = $node;
 		return $node;
 	}
-	function removeTmpAttr($node){
+	function removeTmp($node){
+		$node('[tmp-wrap]')->each(function($el){
+			$el->replaceWith($el->getInnerTml());
+		});
+		$node('[tmp-tag]')->remove();
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
 	}
 	function evalue(){
