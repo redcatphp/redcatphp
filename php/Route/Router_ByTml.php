@@ -1,5 +1,6 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
+use Surikat\Core\Config;
 use Surikat\Core\Domain;
 use I18n\Lang;
 use Surikat\View\Toolbox as View_Toolbox;
