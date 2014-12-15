@@ -21,6 +21,7 @@ class Lang {
 			$lg = static::$lang;
 		if(!isset($ct))
 			$ct = static::$countryCode;
+		static::$lang = $lg;
 		static::$countryCode = $ct;
 		$o = new static($lg,$ct);
 		$lang = $o->locale;

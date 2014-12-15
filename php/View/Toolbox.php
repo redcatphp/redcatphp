@@ -1,5 +1,6 @@
 <?php namespace Surikat\View;
-use Surikat\I18n\Lang;
+use I18n\Lang;
+use Surikat\Core\Domain;
 class Toolbox{
 	static function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
@@ -58,7 +59,7 @@ class Toolbox{
 		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 			$TML->prepend('<Presenter:Basic uri="static" />');
 	}
-	static function Internationalization($TML,$cache=true){
+	static function i18nGettext($TML,$cache=true){
 		$TML('html')->attr('lang',Lang::get());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
@@ -76,5 +77,23 @@ class Toolbox{
 				$el->write($rw);
 			}
 		});
+	}
+	static function i18nRel($TML,$lang,$path,$langMap=null){
+		$head = $TML->find('head',0);
+		
+		if(!isset($langMap)&&file_exists($langFile='langs/'.$lang.'.ini')){
+			$langMap = parse_ini_file($langFile);
+		}
+		$xPath = $path;
+		if($langMap&&isset($langMap[$path])){
+			$xPath = $langMap[$path];
+		}
+		$head->append('<link rel="alternate" href="'.Domain::getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		foreach(glob('langs/*.ini') as $langFile){
+			$lg = pathinfo($langFile,PATHINFO_FILENAME);
+			$langMap = parse_ini_file($langFile);
+			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
+			$head->append('<link rel="alternate" href="'.Domain::getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+		}
 	}
 }

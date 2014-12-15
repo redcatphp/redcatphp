@@ -1,7 +1,8 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
 use Surikat\Core\Domain;
-use Surikat\I18n\Lang;
+use I18n\Lang;
+use Surikat\View\Toolbox as View_Toolbox;
 class Router_ByTml extends Router_SuperURI{
 	protected $match;
 	protected $dir = 'tml';
@@ -33,6 +34,7 @@ class Router_ByTml extends Router_SuperURI{
 	protected $i18nBySubdomain = false;
 	protected function i18nBySubdomain($path){
 		$templatePath = $path;
+		$langMap = false;
 		if($lang=Domain::getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
@@ -45,10 +47,17 @@ class Router_ByTml extends Router_SuperURI{
 			}
 		}
 		else
-			$lang = 'en';
+			$lang = Config::langs('default');
 		$this->Controller->addPrefixTmlCompile('.'.$lang.'/');
+		
 		Lang::set($lang);
-		$this->Controller->getView()->onCompile('\\Surikat\\View\\Toolbox::Internationalization');
+		$view = $this->Controller->getView();
+		
+		$view->onCompile(function($TML)use($lang,$path,$langMap){
+			View_Toolbox::i18nGettext($TML);
+			View_Toolbox::i18nRel($TML,$lang,$path,$langMap);
+		});
+		
 		return $templatePath;
 	}
 }
