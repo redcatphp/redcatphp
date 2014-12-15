@@ -80,6 +80,8 @@ class Toolbox{
 	}
 	static function i18nRel($TML,$lang,$path,$langMap=null){
 		$head = $TML->find('head',0);
+		if(!$head)
+			return;
 		
 		if(!isset($langMap)&&file_exists($langFile='langs/'.$lang.'.ini')){
 			$langMap = parse_ini_file($langFile);
