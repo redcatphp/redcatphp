@@ -63,16 +63,12 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$indexes   = $this->getIndexes( $type );
 		$keys      = $this->getKeys( $type );
 
-		$table = [
+		return [
 			'columns' => $columns,
 			'indexes' => $indexes,
 			'keys' => $keys,
 			'name' => $tableName
 		];
-
-		$this->tableArchive[$tableName] = $table;
-
-		return $table;
 	}
 
 	/**
