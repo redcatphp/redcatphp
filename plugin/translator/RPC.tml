@@ -1,8 +1,8 @@
 <?
-Loader::addNamespace('SimplePO',__DIR__);
+Loader::addNamespace('Translator',__DIR__);
 header('Content-Type: application/json; charset=UTF-8;');
 $request = $_POST;
-$service = new SimplePO\MessageService();
+$service = new Translator\MessageService();
 $response = ['error'=>null];
 if(@$request['id'])
 	$response['id'] = $request['id'];

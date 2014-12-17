@@ -1,21 +1,16 @@
-<?php namespace SimplePO;
-use model\R;
+<?php namespace Translator;
 class DBPoMsgStore {
 	private $db;
-	function __construct() {
-		$this->db = include(__DIR__.'/dbo.php');
-	}
-	function init( $catalogue_name ){
-		$catalogue = $this->db->findOrNewOne('catalogue',['name'=>$catalogue_name]);
-		if (!$catalogue->id)
-			$catalogue->store();
-		$this->catalogue_id = $catalogue->id;
+	private $id;
+	function __construct($db,$id){
+		$this->id = $id;
+		$this->db = $db;
 	}
 	function write($msg){
 		if(!$msg["msgid"])
 			return;
 		$b = $this->db->findOrNewOne('message',[
-			'catalogue_id'=>$this->catalogue_id,
+			'catalogue_id'=>$this->id,
 			'msgid'=>$msg["msgid"],
 			'reference'=> @$msg["reference"],
 		]);
@@ -31,6 +26,6 @@ class DBPoMsgStore {
 		$this->db->store($b);
 	}
 	function read(){
-		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY msgid COLLATE NOCASE ASC", [$this->catalogue_id]);
+		return $this->db->getAll("SELECT * FROM message WHERE catalogue_id = ? AND LENGTH(msgstr)>0 AND isObsolete=0 ORDER BY msgid COLLATE NOCASE ASC", [$this->id]);
 	}
 }

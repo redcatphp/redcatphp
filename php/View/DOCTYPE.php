@@ -32,11 +32,11 @@ class DOCTYPE extends CORE{
 			case 'xhtml':
 				$str = '<?php
 				if(stristr(@$_SERVER["HTTP_ACCEPT"],"application/xhtml+xml")){
-					header("Content-Type: application/xhtml+xml; charset=UTF-8");
+					header("Content-Type: application/xhtml+xml; charset=utf-8");
 					'.$xml.'
 				}
 				else{
-					header("Content-Type: text/html; charset=UTF-8");
+					header("Content-Type: text/html; charset=utf-8");
 					?><!DOCTYPE html><?php
 				}
 					

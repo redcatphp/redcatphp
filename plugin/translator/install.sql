@@ -17,5 +17,3 @@ CREATE TABLE "message" (
 	"updatedAt" NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY ("catalogue_id") REFERENCES "catalogue" ("id")
 );
-
-CREATE UNIQUE INDEX "catalogue_name" ON "catalogue" ("name");

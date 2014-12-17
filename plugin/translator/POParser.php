@@ -1,4 +1,4 @@
-<?php namespace SimplePO;
+<?php namespace Translator;
 class POParser{
 	var $fileHandle;
 	var $entryStore;
