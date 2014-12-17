@@ -19,50 +19,12 @@ a.top_btns{
 		color: #222;
 	}
 }
-#cat_box{
-	margin-top: 30px;
-    text-align: left;
-    padding: 0px 5px 0px 12px;
-	.block{
-		margin-bottom: 6px;
-		.data{
-			margin: 0px;
-			background-color: #FFFFFF;
-			border-left: 1px solid #CCCCCC;
-			border-bottom: 1px solid #CCCCCC;
-			border-right: 1px solid #CCCCCC;
-			padding: 5px 8px 9px;
-			a {
-				color: #0000CC;
-			}
-		}
-		h3{
-			margin: 0px;
-			font-size: 10pt;
-			background: url("img/gray-grad.png") repeat-x scroll left top #DFDFDF;
-			border: 1px solid #CCCCCC;
-			font-size: 12pt;
-			margin: 0px;
-			padding: 5px;
-			color: #FFFFFF;
-			 a{
-				color: #333333;
-				text-decoration: none;
-				cursor: default;
-				&:hover{
-					color: #000000;
-					font-weight: bold;
-				}
-			}
-		}
-	}
-}
-
 
 .progressbar {
-    width: 100px;
+    width: 100%;
     border: 1px solid #CCCCCC;
-    height: 10px;
+    height: 20px;
+    border-radius:6px;
     margin: 0px 3px;
     background-color: #AA0000;
 	.inner {
@@ -72,9 +34,12 @@ a.top_btns{
 	}
 }
 
-
-/* edit */
+.atline{
+	display:none;
+	float:left;
+}
 #body_w {
+	height:610px;
 	margin:5px 5px 0 5px;
 }
 #errors {
@@ -107,18 +72,19 @@ a.top_btns{
 	border-radius:6px;
 }
 #nav {
-	margin:0;
-	margin-bottom:10px;
 	background: #E4E4E4 url('img/navbg.gif') scroll repeat-x 0 0;
-	padding:1px 0;
-	padding-right:10px;
-	border:1px solid #AAA;
+	border: 1px solid #aaa;
+    display: block;
+    padding-top: 5px;
+    margin: 0 0 10px;
+    position: relative;
+    width: 100%;
+    text-align:left;
+    float:left;
 	a {
 		display:block;
-		float:left;
 		text-decoration:none;
 		padding:6px 12px 6px 12px;
-		line-height:120%;
 		color:#333;
 		font-weight:bold;
 		border-left:1px solid #FFF;
@@ -128,14 +94,37 @@ a.top_btns{
 			color:#FFF;
 		}
 	}
-	.right {
-		padding:4px 12px;
-		float:right;
+	>*{
+		margin-bottom:5px;
 	}
-	.left {
-		padding:6px 12px;
-		float:left;
+	#actions button{
+		display: block;
+		float: left;
+		position: relative;
+		width: 50%;
 	}
+	@?include grid(1-98-1, 1-48-1,1-48-1, 1-48-1,1-48-1);
+	@?include grid(1-98-1, 1-23-1,1-23-1,1-23-1,1-23-1,  480px);
+	@?include grid(1-18-1,1-18-1,1-18-1,1-18-1,1-18-1,  800px);
+}
+.stats{
+	margin-top: -17px;
+    position: absolute;
+    width: 100%;
+}
+#cat_stats{
+	text-align:center;
+}
+#selected-lang{
+	img{
+		vertical-align: middle;
+	}
+}
+#selected-lang{
+    
+}
+#edition{
+	float:left;
 }
 #edit_bar {
 	position:absolute;
@@ -291,13 +280,6 @@ a.top_btns{
 		background:transparent url('img/arrow.png') no-repeat scroll 0 -18px;
 	}
 }
-#scroll_container {
-/*
-	height:500px;
-*/
-	overflow-y:auto;
-	overflow-x:hidden;
-}
 #msg_table td {
 	background-color:#FFF;
 	border-bottom:1px solid #DADADA;
@@ -404,17 +386,4 @@ a.top_btns{
 	text-decoration: underline;
 	font-weight:bold;
 	color:#f00;
-}
-
-.selected-lang{
-	position:absolute;
-	top:0;
-	right:0;
-	margin-top:5px;
-	margin-right:15px;
-	width: 150px;
-	height: 16px;
-	img{
-		vertical-align: middle;
-	}
 }

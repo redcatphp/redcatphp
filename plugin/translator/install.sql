@@ -15,5 +15,5 @@ CREATE TABLE "message" (
 	"isObsolete" integer,
 	"previousUntranslatedString" text,
 	"updatedAt" NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY ("catalogue_id") REFERENCES "catalogue" ("id")
+	FOREIGN KEY ("catalogue_id") REFERENCES "catalogue" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );

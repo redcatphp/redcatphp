@@ -3,6 +3,7 @@ class Catalogue {
 	protected $db;
 	protected $lang;
 	protected $name;
+	protected $id;
 	protected $POParser;
 	function __construct($db,$lang,$name){
 		$this->db = $db;
@@ -14,6 +15,9 @@ class Catalogue {
 		$this->id = $catalogue->id;
 		$MsgStore = new DBPoMsgStore($this->db,$this->id);
 		$this->POParser = new POParser($MsgStore);
+	}
+	function id(){
+		return $this->id;
 	}
 	function export($file){
 		$stream = fopen($file,'w');

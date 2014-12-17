@@ -1,14 +1,14 @@
+<Presenter: uri="dynamic" />
 <?
 Loader::addNamespace('Translator',__DIR__);
 header('Content-Type: application/json; charset=UTF-8;');
-$request = $_POST;
 $service = new Translator\MessageService();
 $response = ['error'=>null];
-if(@$request['id'])
-	$response['id'] = $request['id'];
-if(method_exists($service,@$request['method'])) {
+$method = @$_GET['method'];
+$params = (array)@$_POST['params'];
+if(method_exists($service,$method)) {
 	try {
-		$response['result'] = call_user_func_array([$service, @$request['method']], (array)@$request['params']);
+		$response['result'] = call_user_func_array([$service, $method], $params);
 	}
 	catch (Exception $e) {
 		$response['error'] = ['code' => -31000,'message' => $e->getMessage()];

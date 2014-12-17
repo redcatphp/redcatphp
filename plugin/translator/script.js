@@ -15,21 +15,22 @@ var nl2br = function(str) {
 	if(str)
 		return str.replace("\n",'<br />');
 };
-var messageService = function(method, params,callback,error_handler) {
-	$.post('RPC',{
-			"method":method,
-			"params":params,
-			"id":Math.random()
+var messageService = function(method,params,callback,error_handler) {
+	$.ajax({
+		url:'RPC?method='+method,
+		type:'POST',
+		data:{
+			"params":params
 		},
-		function(obj) {
+		success: function(obj){
 			if(obj.error) {
 				error_handler ? error_handler(obj.error) : NotificationObj.showError(obj.error.message + "	" + method);
 			} else {
 				callback(obj.result);
 			}
 		},
-		"json"
-	);		 
+		dataType: 'json'
+	});		 
 };
 var NotificationObj = {
 	init: function(){
@@ -58,360 +59,326 @@ var NotificationObj = {
 	}
 };
 
-
-var lang = window.location.href.match(/lg=((?:[a-z][a-z0-9_]*))/);
-if(lang){
-	lang = lang[1];
+var urlVars = [], hash;
+var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+var y = 0;
+for(var i = 0; i < hashes.length; i++){
+	hash = hashes[i].split('=');
+	if(hash.length){
+		urlVars[hash[0]] = hash[1];
+	}
+	else{
+		urlVars[y] = hashes[i];
+		y++;
+	}
 }
-var cat_id = window.location.href.match(/cat_id=(\d+)/);
-var catName = window.location.href.match(/name=((?:[a-z][a-z0-9_]*))/);
-if(catName)
-	catName = catName[1];
-else
-	catName = 'messages';
-if(cat_id)
-	cat_id = parseInt(cat_id[1]);
-var limitation,page,count,pages,sort,order;
-limitation = 15;
-page = window.location.href.match(/page=(\d+)/);
-sort = window.location.href.match(/sort=((?:[a-z][a-z0-9_]*))/);
-order = window.location.href.match(/order=((?:[a-z][a-z0-9_]*))/);
-if(order)
-	order = order[1];
-else
-	order = 'msgid';
-if(sort)
-	sort = sort[1];
-else
-	sort = 'asc';
-if(page)
-	page = parseInt(page[1]);
-else
-	page = 1;
+var $get = function(k,def){
+	return typeof(urlVars[k])!='undefined'&&urlVars[k]!=''?urlVars[k]:(typeof(def)!='undefined'?def:'');
+};
+
+var
+	lang	= $get('lang'),
+	catName	= $get('name','messages'),
+	limit	= 15,
+	pages	= 1,
+	page	= parseInt($get('page',1)),
+	sorting	= $get('sorting','asc'),
+	order	= $get('order','msgid')
+;
 
 // Get the stored catalogues
-var getCatalogues = function(catId){
+var getCatalogues = function(){
 	 messageService('getCatalogues', [lang], function(data){
 		if (data.length == 0){
 			NotificationObj.showError("No PO Catalalogues Found.");
 			return;
 		}
+		var catList = $('#catalogue_list');
 		for (var i = 0; i<data.length; ++i){
 			var opt = $("<option />");
 			opt.attr('data-name',data[i]).text(data[i]);
 			if(data[i]==catName){
 				opt.attr('selected','selected');
 			}
-			opt.appendTo($('#catalogue_list'));
-			if (data[i] == catName) {
-				$('#cat_name').text(data[i]);
-			}
+			catList.append(opt);
 		}
+		catList.change(function(){
+			var val = $(this).val();
+			var nhref = window.location.href;
+			if($get('name')!='')
+				nhref = nhref.replace('name='+catName,'name='+val);
+			else
+				nhref += '&name='+val;
+			window.location.href = nhref;
+		});
 	});
 	
 };
-var getStats = function( catId ){
-	var $container = $('#nav div.data');
-	messageService("getStats", [lang,catId], function(data){
-		var table = $('<table><tbody> </tbody></table>');
-		$container.html(table);
-		for (var i = 0; i<data.length; ++i){
-			var name = data[i].name;
-			var html = ''
-				+ '<tr><td>'
-				+ '<div class="progressbar"> <div class="inner"> </div> </div>'
-				+ '</td><td>'
-				+ '<span class="percent"></span> - <span class="translated" ></span> of <span class="total"></span>'
-				+ '</td><td>'
-				+ '<button class="update_cat" data-id="'+data[i].id+'">update</button>'
-				+ '</td><td>'
-				+ '<button class="compile_cat" data-id="'+data[i].id+'">compile</button>'
-				+ '</td></tr>';
- 
-			table.find('tbody').append(html);
-			var $row = table.find('tr:last');
-			
-			var updater;
-			updater = function(cid,t){
-				messageService('importCatalogue',[cid,t],function(data){
-					if(data.timeout){
-						updater(cid,data.timeout);
-						$('.atline').text('parsing line: '+data.timeout);
-					}
-					else{
-						$('.atline').remove();
-						window.location.href = window.location.href;
-						$('#cat_box').css('opacity',1);
-					}
-				});
-			};
-			
-			$row.find('button.update_cat').click(function(){
-					$('#cat_box').css('opacity',0.2);
-					$('body').append('<div class="atline" style="z-index:10;position:absolute;top:0;left:0;"></div>');
-					updater($(this).attr('data-id'),false);
+var getStats = function(){
+	messageService("getStats", [lang,catName], function(cat){
+		var updater;
+		updater = function(t){
+			messageService('importCatalogue',[lang,catName,t],function(data){
+				if(data.timeout){
+					updater(data.timeout);
+					$('.atline').text('line: '+data.timeout+' ...');
+				}
+				else{
+					$('.atline').hide();
+					$('button.update_cat').show();
+					window.location.href = window.location.href;
+				}
 			});
-			$row.find('button.compile_cat').click(function(){
-					$('body').css('opacity',0.2);
-					messageService('exportCatalogue',[$(this).attr('data-id')],function(){
-						$('body').css('opacity',1);
-					});
+		};
+		
+		$('button.update_cat').click(function(){
+			$('.atline')
+				.width($(this).width())
+				.height($(this).height())
+				.text('line: 0 ...')
+				.show()
+			;
+			$(this).hide();
+			updater();
+		});
+		$('button.compile_cat').click(function(){
+			$('#body_w').css('opacity',0.2);
+			messageService('exportCatalogue',[lang,catName],function(){
+				$('#body_w').css('opacity',1);
 			});
-			
-			$row.find('.inner')
-				.css( 'width',
-					$row.find('.progressbar').width()	* 
-					( data[i].translated_count / (data[i].message_count-1))
-				);
-			
-			$row.find('.translated').text(data[i].translated_count);
-			$row.find('.total').text(data[i].message_count-1);
-			var percent = (data[i].translated_count!='0'?parseInt(data[i].translated_count / (data[i].message_count-1) *100):'0') + " %";
-			$row.find('.percent').text(percent);
-		}
+		});
+		
+		$('.progressbar .inner')
+			.css( 'width',
+				$('.progressbar').width()	* 
+				( cat.translated_count / (cat.message_count-1))
+			);
+		
+		$('.translated').text(cat.translated_count?cat.translated_count:0);
+		$('.total').text(cat.message_count?cat.message_count-1:0);
+		var percent = (cat.translated_count?parseInt(cat.translated_count / (cat.message_count-1) *100):'0') + " %";
+		$('.percent').text(percent);
 	});
 };
 
 $(function(){
 	NotificationObj.init();
-	$.get('edit.html',function(html){
-		var loadEdition = function(){
-			$('#body_w').height('470px').html(html);		
-			var msgs;
-			messageService('getCountMessages',[lang,cat_id],function(total){
-				pages = Math.ceil(total/limitation);
-				$('#pagination').pagination({
-					pages: pages,
-					currentPage: page,
-					cssStyle: 'compact-theme',
-					onPageClick: function(pageNumber, event){
-						event.preventDefault();
-						var nhref = window.location.href;
-						if(nhref.match(/page=(\d+)/))
-								nhref = nhref.replace('page='+page,'page='+pageNumber);
-						else
-								nhref += '&page='+pageNumber;
-						window.location.href = nhref;
-					}
-				});
-			});
-
-			var moveBy = function(num) {
-				var moveTo = getCurrentMessage() + num;
-				moveTo < msgs.length && moveTo >= 0 && selectMessage(moveTo);
-			};
-
-			var selectMessage = function (index) {
-				//beforeBlur();
-				$('#msg_table').find('tbody tr.selected').removeClass('selected');
-				var arr_index = $('#msg_table').find('tbody tr:eq(' +(index)+ ')').addClass('selected').data('index');
-				fillEditBar(arr_index);
-				setScroll();
-			};
-
-			var getCurrentMessage = function() {
-				return $('#msg_table tr.selected').prevAll().length;
-			};
-			
-			var beforeBlur = function(){
-				if ( !$('#msg_table tr.selected').length ) return;
-				var $row = $('#msg_table tr:eq(' + getCurrentMessage() + ')');
-				var msg = msgs[$row.data('index')];
-				var dirty = $('#msgstr').val() != msg.msgstr || $('#comments').val() != msg.comments || $('#fuzz').prop('checked') != msg.fuzzy;
-				if (dirty) {
-					msg.msgstr = $('#msgstr').val().replace(/\n+$/,'');
-					msg.fuzzy = $('#fuzz').prop('checked');
-					msg.comments = $('#comments').val();
-					$row.trigger('sync');
-					messageService('updateMessage', [msg.id, msg.comments, msg.msgstr, msg.fuzzy],function(){
-						getStats(cat_id);
-					});
-				}
-			};
-			
-			var setScroll = function() {
-				var ot = $('#msg_table tr.selected').position().top - $('#msg_table').position().top;
-				var rh = $('#msg_table tr.selected').height();
-				var sh = $('#scroll_container').height();
-				var st = $('#scroll_container').scrollTop();
-				if(ot < st) {
-					$('#scroll_container').scrollTop(ot);
-				}
-				if(ot + rh - sh > st) {
-					$('#scroll_container').scrollTop(ot+rh-sh);
-				}
-			};
-			var sync = function () {
-
-				var $row2 = $(this);
-				var msg2 = msgs[$row2.data("index")];
-				$row2.find('td.msgid div').text(msg2.msgid).end().find('td.msgstr div').text(msg2.msgstr);
-				msg2.msgstr == "" ? $row2.addClass('empty') : $row2.removeClass('empty');
-				msg2.fuzzy == 1 ? $row2.addClass('f').find('.fuzzy').text('F') : $row2.removeClass('f').find('.fuzzy').text('');
-				msg2.isObsolete && $row2.addClass('d').find('.depr').text('D');
-			};
-			var renderRowAsString = function(obj) {
-				var tr_class = "" 
-					+ (!obj.msgstr.length ? 'empty ' : '')
-					+ (obj.fuzzy == 1 ? 'f ' : '')
-					+ (obj.isObsolete ? 'd ' : ''); 
-				return	''
-					+	'<tr class="' + tr_class + '"><td class="msgid"><div><span>'
-					+ escape(obj.msgid) + '</span></div></td>'
-					+ '<td class="msgstr"><div>'
-					+ (obj.msgstr?escape(obj.msgstr):'') + '</div></td>'
-					+ '<td class="fuzzy">'
-					+ (obj.fuzzy == 1 ? 'F' : '')
-					+ '</td>'
-					+ '<td class="depr">'
-					+ (obj.isObsolete ? 'D' : '')
-					+ '</td>';
-			}
-
-			// Fill the Edit Bar with the selected message
-			var fillEditBar = function(index){
-				var msg = msgs[index];
-				$('#ref_data').html( nl2br(escape(msg.reference)) || '-' );
-				$('#com_data').html( nl2br(escape(msg.extractedComments)) || '-' );
-				$('#update_data').html( msg.updatedAt || '-' );
-				$('#comments').val(msg.comments);
-				$('#msgid').html( nl2br(escape(msg.msgid)) || "-" );
-				$('#msgstr').val(msg.msgstr?msg.msgstr:'');
-				( msg.fuzzy == 1 ) ? $('#fuzz').prop('checked',true) : $('#fuzz').prop('checked',false);
-				$('#edit_id').attr( 'value', msg.id );
-			};
-				
-			getCatalogues(cat_id);
-			getStats(cat_id);
-			
-			$('#msg_table_head thead th').click(function() {
-				var column_index = $(this).closest('thead').find('th').index(this);
-				var direction = !!$(this).hasClass('sort-desc') || !$(this).hasClass('sort-asc');
-				var nOrder = $(this).attr('class').split(' ')[0];
-					if(pages==1){						
-						$(this).siblings().andSelf().removeClass('sort-asc').removeClass('sort-desc');
-						$(this).addClass(direction ? 'sort-asc' : 'sort-desc');
-						$('#msg_table').tsort(column_index,direction);
-					}
-					else{
-						var nhref = window.location.href;
-						if(nhref.match(/order=((?:[a-z][a-z0-9_]*))/))
-								nhref = nhref.replace('order='+order,'order='+nOrder);
-						else
-								nhref += '&order='+nOrder;
-						if(nhref.match(/sort=((?:[a-z][a-z0-9_]*))/))
-								nhref = nhref.replace('sort='+sort,'sort='+(direction?'asc':'desc'));
-						else
-								nhref += '&sort='+(direction?'asc':'desc');
-						window.location.href = nhref;
-					}
-			});
-			
-			// Add toggle effect
-			$('#edit_bar .block h3 a.expand').click(function(){
-				$(this).parents('.block').find('.data').toggle('fast');
-			}).parents('.block').find('.data').toggle();
-			
-			// Add rollover effect to Side Bar
-			var left = $('div.block').offset().left;
-			var top = $('div.block').offset().top + $('div.block').height();
-			$('body').on("mouseover", '#ref_head',function(){
-				$('#ref_data').css({'left':left, 'top':top}).fadeIn('fast');
-			}).on("mouseout", '#ref_head',function(){
-				$('#ref_data').fadeOut();
-			});
-			$('body').on("mouseover", '#update_head',function(){
-				$('#update_data').css({'left':left, 'top':top}).fadeIn('fast');
-			}).on("mouseout",'#update_head', function(){
-				$('#update_data').fadeOut();
-			});
-			$('body').on("mouseover", '#src_com_head',function(){
-				$('#com_data').css({'left':left, 'top':top}).fadeIn('fast');
-			}).on("mouseout", '#src_com_head',function(){
-				$('#com_data').fadeOut();
-			});
-			
-			$(this).resize(function() {
-				var w = $(this).width();
-				var h = $(this).height();
-				var l = $('#message_container').offset().left;
-				$('#message_container').css({width:w-l});
-				$('#msg_table,#msg_table_head').css({width:w-l-20});
-			}).resize();
-			
-			$('#clean_obsolete').click(function(e){
-				$('body').css('opacity',0.2);
-				e.preventDefault();
-				messageService('cleanObsolete',[],function(){
-					window.location.href = window.location.href;
-				});
-				return false;
-			});
-			
-			$('#loading_indicator').show();
-			if ($('#errors span').text() != "") return;
-			messageService('getMessages',[lang,cat_id,page,order,sort],function(d){
-				msgs = d; // save data to global messages
-				if (msgs && msgs.length){
-					var $tbody = $('#msg_table tbody').empty(), html="";
-					
-					$.each(msgs,function(i,e){
-						html += renderRowAsString(e);
-					})
-					$tbody.append(html)
-						.find('tr')
-						.each(function(i,e){
-							$(e).data('index',i)
-							.bind('sync',sync);
-						});
-					selectMessage(0);
-				}
-				$('#loading_indicator').hide();
-			});
-			
-			//init events
-			$('#msg_table td').click(function(){
-				selectMessage($(this).parent('tr').prevAll().length );
-			});
-			$('#next').click(function(e){
-				e.preventDefault();
-				moveBy(1);
-				$('#msgstr').focus();
-			});
-			$('#fuzz').click(function(){
-				beforeBlur();
-			});
-			$('#msgstr').blur(function(e){
-				beforeBlur();
-			});
-			$(document).keydown(function(e){
-				var nt = e.target.type,code;
-				if( !(nt == 'input' || nt == 'textarea') ) {
-					code = e.which || e.keyCode;
-					switch(e.which || e.keyCode) {
-						case 37:
-						case 38:
-							moveBy(-1);
-							e.preventDefault();
-						break;
-						case 39:
-						case 40:
-							moveBy(1);
-							e.preventDefault();
-						break;
-					}
+	var flags = $('.flags');
+	if(lang){
+		$('#selected-lang').append('<img width="16" height="16" src="../../img/langs/'+lang+'.png" /> '+local_names[lang]+' ('+lang+')');
+	}
+	for(k in local_names){
+		flags.append('<a href="?lang='+k+'" data-lang="'+k+'"'+(lang&&lang==k?' class="selected"':'')+'><img width="16" height="16" src="../../img/langs/'+k+'.png" /> '+local_names[k]+'</a>');
+	}
+	if($('#body_w').length){
+		var msgs = {};
+		messageService('getCountMessages',[lang,catName],function(total){
+			pages = Math.ceil(total/limit);
+			$('#pagination').pagination({
+				pages: pages,
+				currentPage: page,
+				cssStyle: 'compact-theme',
+				onPageClick: function(pageNumber, event){
+					event.preventDefault();
+					var nhref = window.location.href;
+					if($get('page')!='')
+						nhref = nhref.replace('page='+page,'page='+pageNumber);
+					else
+						nhref += '&page='+pageNumber;
+					window.location.href = nhref;
 				}
 			});
-			
-			$('#msg_table_head thead th.'+order).addClass('sort-'+sort);
+		});
+
+		var moveBy = function(num) {
+			var moveTo = getCurrentMessage() + num;
+			moveTo < msgs.length && moveTo >= 0 && selectMessage(moveTo);
 		};
-		var flags = $('.flags');
-		if(lang){
-			$('body').append('<div class="selected-lang"><img width="16" height="16" src="../../img/langs/'+lang+'.png" /> '+local_names[lang]+'</div');
+
+		var selectMessage = function (index) {
+			$('#msg_table').find('tbody tr.selected').removeClass('selected');
+			var arr_index = $('#msg_table').find('tbody tr:eq(' +(index)+ ')').addClass('selected').data('index');
+			fillEditBar(arr_index);
+		};
+
+		var getCurrentMessage = function() {
+			return $('#msg_table tr.selected').prevAll().length;
+		};
+		
+		var beforeBlur = function(){
+			if ( !$('#msg_table tr.selected').length ) return;
+			var $row = $('#msg_table tr:eq(' + getCurrentMessage() + ')');
+			var msg = msgs[$row.data('index')];
+			var dirty = $('#msgstr').val() != msg.msgstr || $('#comments').val() != msg.comments || $('#fuzz').prop('checked') != msg.fuzzy;
+			if (dirty) {
+				msg.msgstr = $('#msgstr').val().replace(/\n+$/,'');
+				msg.fuzzy = $('#fuzz').prop('checked');
+				msg.comments = $('#comments').val();
+				$row.trigger('sync');
+				messageService('updateMessage', [msg.id, msg.comments, msg.msgstr, msg.fuzzy],function(){
+					getStats();
+				});
+			}
+		};
+		
+		var sync = function () {
+			var $row2 = $(this);
+			var msg2 = msgs[$row2.data("index")];
+			$row2.find('td.msgid div').text(msg2.msgid).end().find('td.msgstr div').text(msg2.msgstr);
+			msg2.msgstr == "" ? $row2.addClass('empty') : $row2.removeClass('empty');
+			msg2.fuzzy == 1 ? $row2.addClass('f').find('.fuzzy').text('F') : $row2.removeClass('f').find('.fuzzy').text('');
+			msg2.isObsolete && $row2.addClass('d').find('.depr').text('D');
+		};
+		var renderRowAsString = function(obj) {
+			var tr_class = "" 
+				+ (!obj.msgstr.length ? 'empty ' : '')
+				+ (obj.fuzzy == 1 ? 'f ' : '')
+				+ (obj.isObsolete ? 'd ' : ''); 
+			return	''
+				+	'<tr class="' + tr_class + '"><td class="msgid"><div><span>'
+				+ escape(obj.msgid) + '</span></div></td>'
+				+ '<td class="msgstr"><div>'
+				+ (obj.msgstr?escape(obj.msgstr):'') + '</div></td>'
+				+ '<td class="fuzzy">'
+				+ (obj.fuzzy == 1 ? 'F' : '')
+				+ '</td>'
+				+ '<td class="depr">'
+				+ (obj.isObsolete ? 'D' : '')
+				+ '</td>';
 		}
-		for(k in local_names){
-			flags.append('<a href="?lg='+k+'" data-lang="'+k+'"'+(lang&&lang==k?' class="selected"':'')+'><img width="16" height="16" src="../../img/langs/'+k+'.png" /> '+local_names[k]+'</a>');
-		}
+
+		// Fill the Edit Bar with the selected message
+		var fillEditBar = function(index){
+			var msg = msgs[index];
+			$('#ref_data').html( nl2br(escape(msg.reference)) || '-' );
+			$('#com_data').html( nl2br(escape(msg.extractedComments)) || '-' );
+			$('#update_data').html( msg.updatedAt || '-' );
+			$('#comments').val(msg.comments);
+			$('#msgid').html( nl2br(escape(msg.msgid)) || "-" );
+			$('#msgstr').val(msg.msgstr?msg.msgstr:'');
+			( msg.fuzzy == 1 ) ? $('#fuzz').prop('checked',true) : $('#fuzz').prop('checked',false);
+			$('#edit_id').attr( 'value', msg.id );
+		};
+			
+		getCatalogues();
+		getStats();
+		
+		$('#msg_table_head thead th').click(function() {
+			var column_index = $(this).closest('thead').find('th').index(this);
+			var direction = !!$(this).hasClass('sort-desc') || !$(this).hasClass('sort-asc');
+			var nOrder = $(this).attr('class').split(' ')[0];
+				if(pages==1){						
+					$(this).siblings().andSelf().removeClass('sort-asc').removeClass('sort-desc');
+					$(this).addClass(direction ? 'sort-asc' : 'sort-desc');
+					$('#msg_table').tsort(column_index,direction);
+				}
+				else{
+					var nhref = window.location.href;
+					if($get('order')!='')
+						nhref = nhref.replace('order='+order,'order='+nOrder);
+					else
+						nhref += '&order='+nOrder;
+					if($get('sorting')!='')
+						nhref = nhref.replace('sorting='+sorting,'sorting='+(direction?'asc':'desc'));
+					else
+						nhref += '&sorting='+(direction?'asc':'desc');
+					window.location.href = nhref;
+				}
+		});
+		
+		// Add toggle effect
+		$('#edit_bar .block h3 a.expand').click(function(){
+			$(this).parents('.block').find('.data').toggle('fast');
+		}).parents('.block').find('.data').toggle();
+		
+		// Add rollover effect to Side Bar
+		var left = $('div.block').offset().left;
+		var top = $('div.block').offset().top + $('div.block').height();
+		$('body').on("mouseover", '#ref_head',function(){
+			$('#ref_data').css({'left':left, 'top':top}).fadeIn('fast');
+		}).on("mouseout", '#ref_head',function(){
+			$('#ref_data').fadeOut();
+		});
+		$('body').on("mouseover", '#update_head',function(){
+			$('#update_data').css({'left':left, 'top':top}).fadeIn('fast');
+		}).on("mouseout",'#update_head', function(){
+			$('#update_data').fadeOut();
+		});
+		$('body').on("mouseover", '#src_com_head',function(){
+			$('#com_data').css({'left':left, 'top':top}).fadeIn('fast');
+		}).on("mouseout", '#src_com_head',function(){
+			$('#com_data').fadeOut();
+		});
+		
+		$(this).resize(function() {
+			var w = $(this).width();
+			var h = $(this).height();
+			var l = $('#message_container').offset().left;
+			$('#message_container').css({width:w-l});
+			$('#msg_table,#msg_table_head').css({width:w-l-20});
+		}).resize();
+		
+		$('#clean_obsolete').click(function(e){
+			$('body').css('opacity',0.2);
+			e.preventDefault();
+			messageService('cleanObsolete',[lang,catName],function(){
+				window.location.href = window.location.href;
+			});
+			return false;
+		});
+		
+		$('#loading_indicator').show();
+		if ($('#errors span').text() != "") return;
+		messageService('getMessages',[lang,catName,page,order,sorting],function(d){
+			msgs = d; // save data to global messages
+			if (msgs && msgs.length){
+				var $tbody = $('#msg_table tbody'), html="";			
+				$.each(msgs,function(i,e){
+					html += renderRowAsString(e);
+				})
+				$tbody.append(html).find('tr').each(function(i,e){
+					$(e).data('index',i).bind('sync',sync);
+				});
+				$('tr',$tbody).click(function(){
+					console.log('click');
+					selectMessage($(this).prevAll().length);
+				});
+				selectMessage(0);
+			}
+			$('#loading_indicator').hide();
+		});
+		
+		$('#next').click(function(e){
+			e.preventDefault();
+			moveBy(1);
+			$('#msgstr').focus();
+		});
+		$('#fuzz').click(function(){
+			beforeBlur();
+		});
+		$('#msgstr').blur(function(e){
+			beforeBlur();
+		});
+		$(document).keydown(function(e){
+			var nt = e.target.type,code;
+			if( !(nt == 'input' || nt == 'textarea') ) {
+				code = e.which || e.keyCode;
+				switch(e.which || e.keyCode) {
+					case 37:
+					case 38:
+						moveBy(-1);
+						e.preventDefault();
+					break;
+					case 39:
+					case 40:
+						moveBy(1);
+						e.preventDefault();
+					break;
+				}
+			}
+		});
+		
+		$('#msg_table_head thead th.'+order).addClass('sort-'+sorting);
 		
 		var countPotMessages = function(){
 			messageService('countPotMessages',[],function(count){
@@ -421,17 +388,13 @@ $(function(){
 		};
 		countPotMessages();
 		$('#makepot').click(function(e){
-				e.preventDefault();
-				$('body').css('opacity',0.2);
-				messageService('makePot',[],function(){
-					countPotMessages();
-					$('body').css('opacity',1);
-				});
-				return false;
+			e.preventDefault();
+			$('body').css('opacity',0.2);
+			messageService('makePot',[],function(){
+				countPotMessages();
+				$('body').css('opacity',1);
+			});
+			return false;
 		});
-		
-		if(lang){
-			loadEdition();
-		}
-	});
+	}
 });
