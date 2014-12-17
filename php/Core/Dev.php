@@ -49,7 +49,16 @@ abstract class Dev{
 		}
 	}
 	static function catchException($e){
-		echo '<div style="color:#F00;display:block;position:relative;z-index:99999;">! '.$e->getMessage().' <a href="#" onclick="document.getElementById(\''.($id=uniqid('e')).'\').style.visibility=document.getElementById(\''.$id.'\').style.visibility==\'visible\'?\'hidden\':\'visible\';return false;">StackTrace</a></div><pre id="'.$id.'" style="visibility:hidden;display:block;position:relative;z-index:99999;">'.htmlentities($e->getTraceAsString()).'</pre>';
+		if(!headers_sent())
+			header("Content-Type: text/html; charset=utf-8");
+		echo '<div style="color:#F00;display:block;position:relative;z-index:99999;">! '.$e->getMessage().' <a href="#" onclick="document.getElementById(\''.($id=uniqid('e')).'\').style.visibility=document.getElementById(\''.$id.'\').style.visibility==\'visible\'?\'hidden\':\'visible\';return false;">StackTrace</a></div><pre id="'.$id.'" style="visibility:hidden;display:block;position:relative;z-index:99999;">';
+		echo "\n#".get_class($e);
+		if(method_exists($e,'getData')){
+			echo ':';
+			var_dump($e->getData());
+		}
+		echo htmlentities($e->getTraceAsString());
+		echo '</pre>';
 		return false;
 	}
 }
