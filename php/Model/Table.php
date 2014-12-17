@@ -43,7 +43,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	function onDeleted(){}
 	#</workflow>
 	private static $__binded = [];
-	protected static $loadUniq = 'name';
+	protected static $loadUniq = 'uniq';
 	protected static $loadUniqs = [];
 	static function getLoadUniq(){
 		return static::$loadUniq;
