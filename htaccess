@@ -180,7 +180,7 @@ RewriteRule ^robots\.txt$ /Surikat/robots_ssl.txt [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}/Surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|json|php)$ /Surikat/$1.$2 [L,QSA]
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|json|php|html)$ /Surikat/$1.$2 [L,QSA]
 
 #Surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
