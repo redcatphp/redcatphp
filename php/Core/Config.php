@@ -2,21 +2,28 @@
 use Surikat\Core\Arrays;
 class Config extends ArrayObject {
 	private static $registry = [];
-	private static $directory = 'config';
+	protected static $directory = 'config';
 	static function __callStatic($f,$args){
 		if(!isset(self::$registry[$f]))
 			self::$registry[$f] = new static($f);
 		$ref =& self::$registry[$f]->conf;
-		foreach($args as $k){
-			if(!is_array($ref))
-				return;
-			if(array_key_exists($k,$ref)){
-				$ref =& $ref[$k];
+		if(!empty($args)){
+			foreach($args as $k){
+				if(!is_array($ref))
+					return;
+				if(array_key_exists($k,$ref)){
+					$ref =& $ref[$k];
+				}
+				else{
+					if(self::$registry[$f]->loadConf())
+						return static::__callStatic($f,$args);
+					return;
+				}
 			}
-			else{
-				if(self::$registry[$f]->loadConf())
-					return self::__callStatic($f,$args);
-				return;
+		}
+		else{
+			while(self::$registry[$f]->loadConf()){
+				$ref =& self::$registry[$f]->conf;
 			}
 		}
 		return $ref;
@@ -24,23 +31,24 @@ class Config extends ArrayObject {
 	private $conf = false;
 	private $file;
 	private $key;
+	protected $extension = '.php';
 	function __construct($f){
 		$this->key = $f;
-		$this->file = str_replace('_','.',$f).'.php';
+		$this->file = str_replace('_','.',$f).$this->extension;
 		$this->dirs = [
-			SURIKAT_PATH.self::$directory.'/',
-			SURIKAT_SPATH.self::$directory.'/',
+			SURIKAT_PATH.static::$directory.'/',
+			SURIKAT_SPATH.static::$directory.'/',
 		];
 		$this->loadConf();
 	}
-	function loadConf(){
+	protected function loadConf(){
 		if(empty($this->dirs))
 			return;
 		foreach(array_keys($this->dirs) as $k){
 			$d = $this->dirs[$k];
 			unset($this->dirs[$k]);
 			if(is_file($inc=$d.$this->file)){
-				$conf = include($inc);
+				$conf = $this->getConf($inc);
 				if(is_array($conf)){
 					if(is_array($this->conf))
 						$this->conf = Arrays::merge_recursive($conf,$this->conf);
@@ -51,5 +59,8 @@ class Config extends ArrayObject {
 			}
 		}
 		return true;
+	}
+	protected function getConf($inc){
+		return include($inc);
 	}
 }
