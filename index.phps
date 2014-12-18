@@ -7,7 +7,7 @@ use Core\Dev;
 Dev::level(
 	//Dev::CONTROL
 	Dev::STD
-	//|Dev::URI
+	//|Dev::ROUTE
 	//|Dev::MODEL
 	|Dev::CSS
 	|Dev::JS

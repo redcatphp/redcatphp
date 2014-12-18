@@ -7,7 +7,7 @@ abstract class Dev{
 	const PRESENT = 16;
 	const MODEL = 32;
 	const MODEL_SCHEMA = 64;
-	const URI = 128;
+	const ROUTE = 128;
 	const I18N = 256;
 	const JS = 512;
 	const CSS = 1024;
