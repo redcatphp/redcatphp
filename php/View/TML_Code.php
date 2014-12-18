@@ -2,8 +2,21 @@
 class TML_Code extends TML{
 	protected $noParseContent = true;
 	function load(){
-		$text = $this->getInnerTml();
-		$this->clearInner();
-		$this->innerHead[] = htmlentities($text);
+		$this->remapAttr('file');
+		if($this->file){
+			if($this->TeMpLate&&($find = $this->TeMpLate->find($this->file))){
+				$text = file_get_contents($find);
+			}
+			$this->selfClosed = false;
+			$this->removeAttr('file');
+		}
+		else{
+			$text = $this->getInnerTml();
+			$this->clearInner();
+		}
+		$text = htmlentities($text);
+		if($this->parent->nodeName!='pre'&&!$this->keepNl)
+			$text = nl2br($text);
+		$this->innerHead[] = $text;
 	}
 }
