@@ -3,7 +3,9 @@ use Surikat\Tool\GitDeploy\GitDeploy;
 use Surikat\Core\ConfigINI;
 class Service_Deploy{
 	static function directOutput(){
-		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
+		set_time_limit(0);
+		ob_implicit_flush(true);
+		@ob_end_flush();
 	}
 	static function method(){
 		self::directOutput();

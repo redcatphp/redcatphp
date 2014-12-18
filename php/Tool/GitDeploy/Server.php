@@ -114,7 +114,7 @@ abstract class Server {
         foreach ($changes['upload'] as $file => $contents) {
 			$uploadedSize += strlen($contents);
             if($this->set_file($file, $contents))
-				GitDeploy::logmessage("Uploaded: $file \t\t\t".FS::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
+				GitDeploy::logmessage("Uploaded: $file ".FS::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
         }
 
         foreach ($changes['delete'] as $file) {
