@@ -49,7 +49,7 @@ abstract class PARSER{
 			$str = substr($str,0,-3);
 		return $str;
 	}
-	private function short_open_tag(&$s){
+	static function short_open_tag(&$s){
 		$str = '';
 		$c = strlen($s)-1;
 		for($i=0;$i<=$c;$i++){
