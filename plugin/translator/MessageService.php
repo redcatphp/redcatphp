@@ -97,7 +97,7 @@ class MessageService {
 	
 	function makePot(){
 		$potfile = SURIKAT_PATH.$this->potfile;
-		$pot = file_get_contents(SURIKAT_PATH.'langs/header.pots');
+		$pot = Catalogue::headerPots();
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
 		$pot .= tmlGetText::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);

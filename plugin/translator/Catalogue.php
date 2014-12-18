@@ -1,10 +1,19 @@
 <?php namespace Translator;
+use Surikat\Core\FS;
 class Catalogue {
 	protected $db;
 	protected $lang;
 	protected $name;
 	protected $id;
 	protected $POParser;
+	static function headerPots(){
+		$pots = SURIKAT_PATH.'langs/header.pots';
+		if(!is_file($pots)){
+			FS::mkdir($pots,true);
+			copy(__DIR__.'/header.pots',$pots);
+		}
+		return file_get_contents($pots);
+	}
 	function __construct($db,$lang,$name){
 		$this->db = $db;
 		$this->lang = $lang;
@@ -21,7 +30,7 @@ class Catalogue {
 	}
 	function export($file){
 		$stream = fopen($file,'w');
-		$this->POParser->writePoFileToStream($stream,file_get_contents(SURIKAT_PATH.'langs/header.pots'));
+		$this->POParser->writePoFileToStream($stream,self::headerPots());
 		fclose($stream);
 	}
 	function import($file,$atline=null){
