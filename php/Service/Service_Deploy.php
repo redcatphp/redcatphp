@@ -21,6 +21,11 @@ class Service_Deploy{
 		echo '</pre>';
 		
 	}
+	static function oneShot(){
+		self::autocommit();
+		self::surikatIn();
+		self::method();
+	}
 	static function surikatShared(){
 		self::directOutput();
 		echo '<pre>';
