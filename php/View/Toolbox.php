@@ -77,6 +77,15 @@ class Toolbox{
 				$el->write($rw);
 			}
 		});
+		$TML('*')->each(function($TML){
+			foreach($TML->attributes as $k=>$v){
+				if(strpos($k,'i18n-')===0){
+					$TML->removeAttr($k);
+					$TML->attr(substr($k,5),Lang::gettext($v));
+				}
+			}
+		});
+		$TML('*[i18n]')->removeAttr('i18n');
 	}
 	static function i18nRel($TML,$lang,$path,$langMap=null){
 		$head = $TML->find('head',0);

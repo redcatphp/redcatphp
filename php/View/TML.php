@@ -1,5 +1,4 @@
 <?php namespace Surikat\View;
-use Surikat\I18n\Lang;
 class TML extends CORE{
 	function loaded(){
 		
@@ -17,11 +16,6 @@ class TML extends CORE{
 		$this->preventLoad = true;
 		unset($this->metaAttribution['cacheStatic']);
 		$this->cacheForge(null,false,true);
-	}
-	
-	function loadI18n_($v,$k){
-		$this->removeAttr('i18n-'.$k);
-		$this->attr($k,Lang::gettext($v));
 	}
 	
 	private static $loadVarsIndex = 100;
