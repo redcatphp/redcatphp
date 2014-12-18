@@ -106,9 +106,16 @@ abstract class Server {
             GitDeploy::logmessage("Turned maintenance mode on.");
         }
 
+		$totalSize = 0;
         foreach ($changes['upload'] as $file => $contents) {
-            if ($list_only) {
-                GitDeploy::logmessage("Uploaded: $file");
+			$totalSize += strlen($contents);
+		}
+		$humanTotalSize = FS::humanSize($totalSize);
+		$uploadedSize = 0;
+        foreach ($changes['upload'] as $file => $contents) {
+			$totalSize += strlen($contents);
+            if ($uploadedSize) {
+                GitDeploy::logmessage("Uploaded: $file ".FS::humanSize(strlen($contents)).'  ('.(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
             } else {
                 $this->set_file($file, $contents);
             }
