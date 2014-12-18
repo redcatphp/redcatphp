@@ -5,10 +5,10 @@ class Config {
     public static function getArgs() {
         $argv = (array)@$_SERVER['argv'];
 
-        $deploy = SURIKAT_PATH.'deploy.ini';
+        $deploy = SURIKAT_PATH.'config/deploy.ini';
         $commands = ['-l', '-r', '-c', '-d', '--revert', '--log', '--repo'];
 
-        $deploy_file = isset($argv[1]) ? end($argv) : "deploy.ini";
+        $deploy_file = isset($argv[1]) ? end($argv) : "config/deploy.ini";
 
         if (!in_array($deploy_file, $commands)) {
             $deploy = $deploy_file . (substr($deploy_file, -4) === '.ini' ? '' : '.ini');
