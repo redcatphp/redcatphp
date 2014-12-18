@@ -149,6 +149,9 @@ Options All -Indexes
 	Deny from all
 </FilesMatch>
 
+ErrorDocument 403 /403
+ErrorDocument 404 /404
+
 Options +FollowSymlinks
 RewriteEngine On
 

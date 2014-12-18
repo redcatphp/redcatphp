@@ -1,21 +1,17 @@
 <Presenter:Basic />
 <?
 use Core\HTTP;
-HTTP::code(404);
-if(in_array(strtolower(pathinfo(@$_SERVER['PATH_INFO'],PATHINFO_EXTENSION)),array(
-	'js','css','png','jpg','jpeg','gif','svg','ttf','otf','woff','eot',
-)))
-	exit;
+HTTP::code(403);
 ?>
 <extend>
 	<attr selector="main" addClass="not-found">
 	<main>
 		<article>
-			<h1>Oops!</h1>
+			<h1>Forbidden!</h1>
 			<div>
-				<h2>Page introuvable</h2>
+				<h2>You should not be here</h2>
 				<div class="error-details">
-					Sorry, an error has occured, Requested page not found!
+					You don't have permission to access this ressource on this server.
 				</div>
 				<div class="error-actions">
 					<a href="">Go back to home</a>
