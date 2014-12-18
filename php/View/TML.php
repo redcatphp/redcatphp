@@ -22,11 +22,12 @@ class TML extends CORE{
 	function loadVars($v){
 		if(!$this->TeMpLate)
 			return;
-		self::$loadVarsIndex++;
-		$index = self::$loadVarsIndex;
+		$index = uniqid();
 		$this->attr('compileVars',$index);
 		$this->TeMpLate->onCompile(function($TML)use($v,$index){
 			$el = $TML->find("[compileVars=$index]",0);
+			if(!$el)
+				return;
 			$el->removeAttr('compileVars');
 			$rw = $el->getInnerTml();
 			if(substr($rw,0,11)=='<?php echo '&&substr($rw,-3)==';?>'){
@@ -37,7 +38,7 @@ class TML extends CORE{
 			}
 			$rw = '<?php echo sprintf('.$rw.','.$v.');?>';
 			$el->write($rw);
-		},self::$loadVarsIndex);
+		},self::$loadVarsIndex++);
 		$this->removeAttr('vars');
 	}
 }
