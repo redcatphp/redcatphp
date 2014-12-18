@@ -116,6 +116,8 @@ var getCatalogues = function(){
 };
 var getStats = function(){
 	messageService("getStats", [lang,catName], function(cat){
+		if(cat.message_count)
+			cat.message_count = cat.message_count-1;
 		var updater;
 		updater = function(t){
 			messageService('importCatalogue',[lang,catName,t],function(data){
@@ -151,12 +153,12 @@ var getStats = function(){
 		$('.progressbar .inner')
 			.css( 'width',
 				$('.progressbar').width()	* 
-				( cat.translated_count / (cat.message_count-1))
+				( cat.translated_count / (cat.message_count))
 			);
 		
 		$('.translated').text(cat.translated_count?cat.translated_count:0);
-		$('.total').text(cat.message_count?cat.message_count-1:0);
-		var percent = (cat.translated_count?parseInt(cat.translated_count / (cat.message_count-1) *100):'0') + " %";
+		$('.total').text(cat.message_count?cat.message_count:0);
+		var percent = (cat.message_count&&cat.translated_count?parseInt(cat.translated_count / (cat.message_count) *100):'0') + " %";
 		$('.percent').text(percent);
 	});
 };
