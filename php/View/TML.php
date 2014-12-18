@@ -24,6 +24,7 @@ class TML extends CORE{
 			return;
 		$index = uniqid();
 		$this->attr('compileVars',$index);
+		$this->removeAttr('vars');
 		$this->TeMpLate->onCompile(function($TML)use($v,$index){
 			$el = $TML->find("[compileVars=$index]",0);
 			if(!$el)
@@ -39,6 +40,5 @@ class TML extends CORE{
 			$rw = '<?php echo sprintf('.$rw.','.$v.');?>';
 			$el->write($rw);
 		},self::$loadVarsIndex++);
-		$this->removeAttr('vars');
 	}
 }
