@@ -142,6 +142,13 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 	php_value session.cookie_httponly true
 </IfModule>
 
+Options All -Indexes
+#Block access to certain file types
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
+	Order Allow,Deny
+	Deny from all
+</FilesMatch>
+
 Options +FollowSymlinks
 RewriteEngine On
 
