@@ -1,6 +1,6 @@
 <?php namespace Surikat\Tool\GitDeploy;
 class FTP extends Server {
-    public function connect($server) {
+    function connect($server) {
         if (!extension_loaded('ftp')) {
             GitDeploy::error("You need the FTP extension to be enabled if you want to deploy via FTP.");
         }
@@ -25,8 +25,7 @@ class FTP extends Server {
 
         GitDeploy::logmessage("Connected to: {$this->host}");
     }
-
-    public function get_file($file, $ignore_if_error = false) {
+    function get_file($file, $ignore_if_error = false) {
         $tmpFile = tempnam(sys_get_temp_dir(), 'GITDEPLOYPHP');
 
         if ($ignore_if_error) {
@@ -48,7 +47,7 @@ class FTP extends Server {
         }
     }
 
-    public function set_file($file, $contents, $die_if_fail = false) {        
+    function set_file($file, $contents, $die_if_fail = false) {        
         # Make sure the folder exists in the FTP server.
 
         $dir = explode("/", dirname($file));
@@ -86,10 +85,9 @@ class FTP extends Server {
                 # Try deleting the file and reuploading.
                 # This resolves a CHMOD issue with some FTP servers.
                 $this->unset_file($file);
-                $this->set_file($file, $contents, true);
+                return $this->set_file($file, $contents, true);
             }
         } else {
-            GitDeploy::logmessage("Uploaded: $file");
             return true;
         }
     }
@@ -113,12 +111,12 @@ class FTP extends Server {
         }
     }
 
-    public function mkdir($file) {
+    function mkdir($file) {
         if(@ftp_mkdir($this->connection, $file))
 			GitDeploy::logmessage("Created directory: $file");
     }
 
-    public function unset_file($file) {
+    function unset_file($file) {
         $this->recursive_remove($file);
         GitDeploy::logmessage("Deleted: $file");
     }

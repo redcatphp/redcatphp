@@ -1,20 +1,19 @@
 <?php namespace Surikat\Tool\GitDeploy;
+use Surikat\Core\FS;
 abstract class Server {
     public $connection;
     public $current_commit;
     public $host;
     public $existing_paths_cache;
     public $clean_directories;
-    public $ignore_files;
+    public $ignore_files = ['.gitignore', 'config/deploy.ini'];
     public $upload_untracked;
     public $server;
 
-    public function __construct($server, $deploy_script = 'deploy.ini') {
+    public function __construct($server) {
         $this->server = $server;
         $this->clean_directories = $server['clean_directories'];
-        $this->ignore_files = array_merge([
-            '.gitignore', '.gitattributes', '.gitmodules', 'deploy.ini', 'git-deploy', $deploy_script
-                ], $server['ignore_files']);
+        $this->ignore_files = array_merge($this->ignore_files, $server['ignore_files']);
         $this->upload_untracked = $server['upload_untracked'];
         $this->host = "{$server['scheme']}://{$server['user']}@{$server['host']}:{$server['port']}{$server['path']}";
         $this->connect($server);
@@ -113,12 +112,9 @@ abstract class Server {
 		$humanTotalSize = FS::humanSize($totalSize);
 		$uploadedSize = 0;
         foreach ($changes['upload'] as $file => $contents) {
-			$totalSize += strlen($contents);
-            if ($uploadedSize) {
-                GitDeploy::logmessage("Uploaded: $file ".FS::humanSize(strlen($contents)).'  ('.(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
-            } else {
-                $this->set_file($file, $contents);
-            }
+			$uploadedSize += strlen($contents);
+            if($this->set_file($file, $contents))
+				GitDeploy::logmessage("Uploaded: $file \t\t\t".FS::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
         }
 
         foreach ($changes['delete'] as $file) {

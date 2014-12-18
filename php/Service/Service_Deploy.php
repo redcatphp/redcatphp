@@ -1,7 +1,6 @@
 <?php namespace Surikat\Service;
-use Surikat\Tool;
 use Surikat\Tool\GitDeploy\GitDeploy;
-use Surikat\Tool\GitDeploy\Config;
+use Surikat\Core\ConfigINI;
 class Service_Deploy{
 	static function directOutput(){
 		set_time_limit(0);ob_implicit_flush(true);ob_end_flush();
@@ -36,13 +35,14 @@ class Service_Deploy{
 	}
 	static function autocommit(){ //need the .git have recursively full permission (www-data have to be able to write)
 		self::directOutput();
-		$ini = @parse_ini_file(SURIKAT_PATH.'deploy.ini',true);
-		if(!@$ini['user.email']||!@$ini['user.name'])
-			trigger_error('You have to define user.email and user.name in deploy.ini',256);
+		$email = ConfigINI::deploy('user.email');
+		$name = ConfigINI::deploy('user.name');
+		if(!$email||!$name)
+			trigger_error('You have to define user.email and user.name in config/deploy.ini',256);
 		echo '<pre>';
 		self::exec('cd '.SURIKAT_PATH);
-		self::exec('git config --local user.email "'.$ini['user.email'].'"');
-		self::exec('git config --local user.name "'.$ini['user.name'].'"');
+		self::exec('git config --local user.email "'.$email.'"');
+		self::exec('git config --local user.name "'.$name.'"');
 		self::exec('git add --all .');
 		$message = "auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time());
 		self::exec('git commit -m "'.$message.'"');

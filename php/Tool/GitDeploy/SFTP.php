@@ -1,7 +1,6 @@
 <?php namespace Surikat\Tool\GitDeploy;
 class SFTP extends Server {
-
-    public function connect($server) {
+    function connect($server) {
         $this->connection = new Net_SFTP($server['host'], $server['port'], 10);
         $logged_in = false;
         
@@ -24,7 +23,7 @@ class SFTP extends Server {
         GitDeploy::logmessage("Connected to: {$this->host}");
     }
 
-    public function get_file($file, $ignore_if_error = false) {
+    function get_file($file, $ignore_if_error = false) {
         $contents = $this->connection->get($file);
         if ($contents) {
             return $contents;
@@ -38,7 +37,7 @@ class SFTP extends Server {
         }
     }
 
-    public function set_file($file, $contents) {
+    function set_file($file, $contents) {
         $file = $file;
         $dir = explode("/", dirname($file));
         $path = "";
@@ -65,7 +64,6 @@ class SFTP extends Server {
         }
 
         if ($this->connection->put($file, $contents)) {
-            GitDeploy::logmessage("Uploaded: $file");
             return true;
         } else {
             GitDeploy::error("Failed to upload {$file}. Deployment will stop to allow you to check what went wrong.");
@@ -86,12 +84,12 @@ class SFTP extends Server {
         }
     }
 
-    public function mkdir($file) {
+    function mkdir($file) {
         $this->connection->mkdir($file);
         GitDeploy::logmessage("Created directory: $file");
     }
 
-    public function unset_file($file) {
+    function unset_file($file) {
         $this->recursive_remove($file, false);
         GitDeploy::logmessage("Deleted: $file");
     }
