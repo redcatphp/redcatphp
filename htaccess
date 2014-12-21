@@ -151,6 +151,7 @@ Options All -Indexes
 
 ErrorDocument 403 /403
 ErrorDocument 404 /404
+ErrorDocument 500 /500
 
 Options +FollowSymlinks
 RewriteEngine On
@@ -173,6 +174,10 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
 #Directory Traversal Protection
 RewriteRule "(^|/)\." - [F]
+
+#Protect Surikat directory from direct access
+RewriteCond %{THE_REQUEST} ^(GET|POST)\ /Surikat/
+RewriteRule ^Surikat/(.*)$ /$1 [R=301,L]
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
