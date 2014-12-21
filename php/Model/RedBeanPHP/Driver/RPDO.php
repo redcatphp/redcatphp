@@ -342,7 +342,7 @@ class RPDO implements Driver
 		if(!$statement)
 			$statement = $this->exec($sql, $bindings);
 		$fetch = $statement->fetch();
-		if(!$fetch)
+		if($fetch===false)
 			$statement = false;
 		return $fetch;
 	}
