@@ -65,8 +65,16 @@ class Toolbox{
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
 			$l = strlen($rw);
-			$left = substr($rw,0,$l-strlen(ltrim($rw)));
-			$right = substr($rw,$l-strlen(rtrim($rw)));
+			$left = $l-strlen(ltrim($rw));
+			if($left)
+				$left = substr($rw,0,$left);
+			else
+				$left = '';
+			$right = $l-strlen(rtrim($rw));
+			if($right)
+				$right = substr($rw,$right);
+			else
+				$right = '';
 			$rw = trim($rw);
 			if(!$rw)
 				return;
