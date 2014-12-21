@@ -63,7 +63,11 @@ class Toolbox{
 		$TML('html')->attr('lang',Lang::get());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
-			$rw = trim("$el");
+			$rw = "$el";
+			$l = strlen($rw);
+			$left = substr($rw,0,$l-strlen(ltrim($rw)));
+			$right = substr($rw,$l-strlen(rtrim($rw)));
+			$rw = trim($rw);
 			if(!$rw)
 				return;
 			if($el->data('i18n')!==false){
@@ -74,7 +78,7 @@ class Toolbox{
 					$rw = str_replace("'","\'",$rw);
 					$rw = "<?php echo __('$rw');?>";
 				}
-				$el->write($rw);
+				$el->write($left.$rw.$right);
 			}
 		});
 		$TML('*')->each(function($TML){
