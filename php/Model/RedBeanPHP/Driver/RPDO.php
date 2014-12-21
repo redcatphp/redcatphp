@@ -154,15 +154,20 @@ class RPDO implements Driver
 			if ( $statement->columnCount() ) {
 
 				$fetchStyle = ( isset( $options['fetchStyle'] ) ) ? $options['fetchStyle'] : NULL;
-
-				$this->resultArray = $statement->fetchAll( $fetchStyle );
-
-				if ( $this->debug && $this->logger ) {
-					$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
-				}
 				
-				if(Dev::has(Dev::MODEL))
-					$this->debugger()->log('resultset: ' . count( $this->resultArray ) . ' rows');
+				if($fetchStyle!==false){
+					$this->resultArray = $statement->fetchAll( $fetchStyle );
+
+					if ( $this->debug && $this->logger ) {
+						$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
+					}
+					
+					if(Dev::has(Dev::MODEL))
+						$this->debugger()->log('resultset: ' . count( $this->resultArray ) . ' rows');
+				}
+				else{
+					return $statement;
+				}
 				
 			} else {
 				$this->resultArray = [];
@@ -331,7 +336,22 @@ class RPDO implements Driver
 
 		return $this->resultArray;
 	}
-
+	
+	function fetch($sql, $bindings = []){
+		static $statement = null;
+		if(!$statement)
+			$statement = $this->exec($sql, $bindings);
+		$fetch = $statement->fetch();
+		if(!$fetch)
+			$statement = false;
+		return $fetch;
+	}
+	function exec($sql, $bindings = []){
+		return $this->runQuery($sql, $bindings, [
+			'fetchStyle' => false,
+		]);
+	}
+	
 	/**
 	 * @see Driver::GetAssocRow
 	 */

@@ -78,6 +78,11 @@ class DBAdapter extends Observable implements Adapter
 
 		return $this->db->GetAll( $sql, $bindings );
 	}
+	
+	function fetch( $sql, $bindings = [] ){
+		$this->signal( 'sql_exec', $this );
+		return $this->db->fetch($sql, $bindings);
+	}
 
 	/**
 	 * @see Adapter::getRow
