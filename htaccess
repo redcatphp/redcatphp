@@ -203,6 +203,11 @@ RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}/Surikat/%{REQUEST_URI}/index.php -f
 RewriteRule ^(.*)$ /Surikat/$1/index.php [L,QSA]
 
+#Prevent hotlinking
+#RewriteCond %{HTTP_REFERER} !^$
+#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?mydomain.com [NC]
+#RewriteRule \.(jpg|jpeg|png|gif|mp3|ogg|wav|mp4|mov|flv)$ - [NC,F,L]
+
 #Custom 404 image
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ service/synaptic?file=img/404.png&code=404 [L,QSA]
