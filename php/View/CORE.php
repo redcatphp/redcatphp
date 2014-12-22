@@ -516,9 +516,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	private function indentationIndex(){
 		return $this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0;
 	}
-	private function indentationTab($ml=null){
+	private function indentationTab(){
 		if(Dev::has(Dev::VIEW)&&!$this instanceof PHP&&$this->nodeName&&!$this->hiddenWrap)
-			return ($ml!==false?"\n":'').str_repeat("  ",$this->indentationIndex());
+			return "\n".str_repeat("  ",$this->indentationIndex());
 	}
 	function getInner(){
 		return implode('',$this->innerHead).implode('',$this->childNodes).implode('',$this->innerFoot);
@@ -545,8 +545,11 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			$str .= '>';
 		}
 		$str .= $this->getInner();
-		if(!$this->selfClosed&&!$this->hiddenWrap)
-			$str .= $this->indentationTab(substr_count($str,"\n")>1)."</".$this->nodeName.">";
+		if(!$this->selfClosed&&!$this->hiddenWrap){
+			if(substr_count($str,"\n")>1)
+				$str .= $this->indentationTab();
+			$str .= "</".$this->nodeName.">";
+		}
 		$str .= implode('',$this->foot);
 		return $str;
 	}
