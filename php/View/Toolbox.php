@@ -66,13 +66,13 @@ class Toolbox{
 			$rw = "$el";
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
+			$right = $l-strlen(rtrim($rw));
 			if($left)
 				$left = substr($rw,0,$left);
 			else
 				$left = '';
-			$right = $l-strlen(rtrim($rw));
 			if($right)
-				$right = substr($rw,$right);
+				$right = substr($rw,-1*$right);
 			else
 				$right = '';
 			$rw = trim($rw);
