@@ -1,6 +1,7 @@
 <?php namespace Surikat\View;
 use I18n\Lang;
 use Surikat\Core\Domain;
+use Surikat\Core\Dev;
 class Toolbox{
 	static function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
@@ -28,12 +29,16 @@ class Toolbox{
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
 	}
 	static function autoMIN($TML){
-		foreach($TML('link[href]') as $l)
-			if(strpos($l,'://')===false)
-				$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
-		foreach($TML('script[src]') as $s)
-			if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
-				$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
+		if(!Dev::has(Dev::CSS)){
+			foreach($TML('link[href]') as $l)
+				if(strpos($l,'://')===false)
+					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
+		}
+		if(!Dev::has(Dev::JS)){
+			foreach($TML('script[src]') as $s)
+				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
+					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
+		}
 	}
 	static function setCDN($TML,$url=true){
 		if($url===true){
