@@ -2,26 +2,30 @@
 abstract class FS {
 	static function recurse($dir,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
 		$dir = rtrim($dir,'/').'/';
-		$dh = opendir($dir);
-		while($file=readdir($dh)){
-			if($file=='.'||$file=='..')
-				continue;
-			$f = $dir.$file;
-			if($skiplink&&is_link($f)){
-				continue;
-			}
-			elseif($asc){
-				$ret[] = call_user_func($arg,$f);
-				if(is_dir($f))
-					$ret[] = self::recurse($f,$arg);
-			}
-			else{
-				if(is_dir($f))
-					$ret[] = self::recurse($f,$arg);
-				$ret[] = call_user_func($arg,$f);
+		if(is_dir($dh)){
+			$dh = opendir($dir);
+			if($dh){
+				while($file=readdir($dh)){
+					if($file=='.'||$file=='..')
+						continue;
+					$f = $dir.$file;
+					if($skiplink&&is_link($f)){
+						continue;
+					}
+					elseif($asc){
+						$ret[] = call_user_func($arg,$f);
+						if(is_dir($f))
+							$ret[] = self::recurse($f,$arg);
+					}
+					else{
+						if(is_dir($f))
+							$ret[] = self::recurse($f,$arg);
+						$ret[] = call_user_func($arg,$f);
+					}
+				}
+				closedir($dh);
 			}
 		}
-		closedir($dh);
 		return $ret;
 	}
 	static function mkdir($file,$isFile=null){
@@ -50,17 +54,21 @@ abstract class FS {
         return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
     static function rmdir($dir){
-		$dh = opendir($dir);
-		while($file=readdir($dh)){
-			if($file!='.'&&$file!='..'){
-				$fullpath = $dir.'/'.$file;
-				if(is_file($fullpath))
-					unlink($fullpath);
-				else
-					self::rmdir($fullpath);
+		if(is_dir($dir)){
+			$dh = opendir($dir);
+			if($dh){
+				while($file=readdir($dh)){
+					if($file!='.'&&$file!='..'){
+						$fullpath = $dir.'/'.$file;
+						if(is_file($fullpath))
+							unlink($fullpath);
+						else
+							self::rmdir($fullpath);
+					}
+				}
+				closedir($dh);
 			}
 		}
-		closedir($dh);
 		return is_dir($dir);
 	}
 }
