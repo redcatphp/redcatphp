@@ -182,8 +182,14 @@ abstract class PARSER{
 							$quote = $xmlText{($i+1)};
 							$y = $i+2;
 							$charContainer .= '='.$quote;
-							while(($ch=$xmlText{($y++)})!=$quote)
-								$charContainer .= $ch;
+							while(($ch=$xmlText{($y++)})!=$quote){
+								if($ch=='\\'&&$xmlText[$y]==$quote){
+									$charContainer .= htmlentities($xmlText[$y]);
+									$y++;
+								}
+								else
+									$charContainer .= $ch;
+							}
 							$charContainer .= $quote;
 							$i = $y-1;
 						break;
@@ -391,6 +397,11 @@ abstract class PARSER{
 						break;
 					}
 				break;
+				case '\\':
+					$i++;
+					if(isset($xmlText[$i]))
+						$charContainer .= htmlentities($xmlText[$i]);
+				break;
 				default:
 					$charContainer .= $currentChar;
 				break;
@@ -491,11 +502,23 @@ abstract class PARSER{
 					elseif($currentState==self::STATE_ATTR_VALUE)
 						$valueDump .= $currentChar;
 				break;
+				case '\\':
+					$i++;
+					if ($currentState == self::STATE_ATTR_KEY){
+						if(isset($attrText[$i]))
+							$keyDump .= htmlentities($attrText[$i]);
+					}
+					else{
+						if(isset($attrText[$i]))
+							$valueDump .= htmlentities($attrText[$i]);
+					}
+				break;
 				default:
 					if ($currentState == self::STATE_ATTR_KEY)
 						$keyDump .= $currentChar;
 					else
 						$valueDump .= $currentChar;
+				break;
 			}
 		}
 		if(trim($keyDump))
