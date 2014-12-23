@@ -74,11 +74,21 @@ abstract class CALL_APL extends CORE{
 	}
 	function extendLoad(){
 		$c = $this->callback();
-		if($extend = $this->closest('extend'))
-			if($this->selector)
-				$extend->children($this->selector,true)->$c($this);
-			else
+		if($extend = $this->closest('extend')){
+			if($this->selector){
+				foreach($extend->children($this->selector) as $i=>$tg){
+					if($i)
+						$append = clone $this;
+					else
+						$append = $this;
+					$append->parent = $tg;
+					$tg->$c($append);
+				}
+			}
+			else{
 				$extend->closest()->$c($this);
+			}
+		}
 	}
 	function applyLoad($apply = null){
 		$c = $this->callback();

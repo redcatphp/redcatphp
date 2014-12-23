@@ -10,8 +10,17 @@ class TML_Foreach extends TML {
 		return $this->e.$as;
 	}
 	function load(){
-		array_unshift($this->head,'<?php foreach('.$this->getForeach().'){?>');
+		array_unshift($this->head,"<?php foreach({$this->getForeach()}){?>\n");
 		if(!$this->selfClosed)
-			array_push($this->foot,'<?php }?>');
+			array_push($this->foot,"<?php }?>\n");
+	}
+	
+	function loadCacheSync($v,$k){
+		parent::loadCacheSync($v,$k);
+		array_push($this->foot,"\n");
+	}
+	function loadedCacheStatic($v){
+		parent::loadCacheStatic($v);
+		array_push($this->foot,"\n");
 	}
 }

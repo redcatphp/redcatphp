@@ -23,6 +23,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	protected $selfClosed;
 	protected $__closed;
 	protected $noParseContent;
+	protected $footIndentationForce;
 	
 	protected $foot = [];
 	protected $head = [];
@@ -74,12 +75,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function parseFile($file,$params=null,$c=null){
 		if($this->TeMpLate)
 			return $this->parse($this->getFile($file,$c),$params);
-	}
-	function getInnerTml(){
-		$str = '';
-		foreach($this->childNodes as $c)
-			$str .= $c;
-		return $str;
 	}
 	function __construct(){
 		$args = func_get_args();
@@ -513,22 +508,37 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				return $i;
 	}
 
-	private function indentationIndex(){
-		return $this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0;
+	protected function indentationIndex(){
+		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
-	private function indentationTab(){
-		if(Dev::has(Dev::VIEW)&&!$this instanceof PHP&&$this->nodeName&&!$this->hiddenWrap)
-			return "\n".str_repeat("  ",$this->indentationIndex());
+	protected function isIndented(){
+		return Dev::has(Dev::VIEW)&&$this->nodeName&&!$this->hiddenWrap;
+	}
+	protected function indentationTab($force=null){
+		if($this->isIndented()||$force)
+			return "\n".str_repeat("\t",$this->indentationIndex());
+	}
+	function getInnerTml(){
+		return implode('',$this->childNodes);
 	}
 	function getInner(){
 		return implode('',$this->innerHead).implode('',$this->childNodes).implode('',$this->innerFoot);
 	}
+	private $maxCharByLine = 80;
 	function __toString(){
 		$str = $this->indentationTab();
-		$str .= implode('',$this->head);
+		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
 			$str .= '<'.$this->nodeName;
-			foreach($this->metaAttribution as $k=>$v)
+			$maxChar = $this->maxCharByLine;
+			$lp = false;
+			foreach($this->metaAttribution as $k=>$v){
+				if(strlen($str)>$maxChar){
+					$maxChar += $this->maxCharByLine;
+					if($lp)
+						$str .= "\n";
+					$str .= $this->indentationTab();
+				}
 				if(is_integer($k)){
 					if($this->TeMpLate&&$this->TeMpLate->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
@@ -538,19 +548,30 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				else{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
+				$lp = is_integer($k)&&($v instanceof PHP);
+			}
 			if($this->selfClosed&&$this->TeMpLate&&$this->TeMpLate->isXhtml)
 				$str .= '></'.$this->nodeName;
 			elseif($this->selfClosed>1)
 				$str .= ' /';
 			$str .= '>';
 		}
-		$str .= $this->getInner();
-		if(!$this->selfClosed&&!$this->hiddenWrap){
-			if(substr_count($str,"\n")>1)
-				$str .= $this->indentationTab();
-			$str .= "</".$this->nodeName.">";
+		$inner = $this->getInner();
+		if(substr_count($inner,"\n")<2&&strlen($str)<$this->maxCharByLine
+			&&strlen($inner)<$this->maxCharByLine
+			&&!empty($this->childNodes)&&$this->isIndented()
+		){
+			$ind = strlen(array_values($this->childNodes)[0]->indentationTab());
+			$inner = substr($inner,$ind);
 		}
-		$str .= implode('',$this->foot);
+		$str .= $inner;
+		$foot = implode('',$this->foot);		
+		if($this->footIndentationForce||(!$this->selfClosed&&!$this->hiddenWrap
+			&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1))
+			$str .= $this->indentationTab($this->footIndentationForce);
+		if(!$this->selfClosed&&!$this->hiddenWrap)
+			$str .= '</'.$this->nodeName.'>';
+		$str = $head.$str.$foot;
 		return $str;
 	}
 	function clear(){

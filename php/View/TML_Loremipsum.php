@@ -2,6 +2,7 @@
 class TML_Loremipsum extends TML {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
+	protected $footIndentationForce = true;
 	function load(){
 		if($this->mini){
 			$this->html="false";
