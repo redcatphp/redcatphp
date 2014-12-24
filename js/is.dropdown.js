@@ -6,11 +6,12 @@ $js('jquery',function(){
 	var backdrop = '.dropdown-backdrop'
 	var toggle   = '[is=dropdown] li:has(ul)>a'
 	var Dropdown = function (element) {
-		var $el = $(element).on(event+'.xdom.dropdown', this.toggle)
+		var $el = $(element).on(event+'.is.dropdown', this.toggle)
 	}
 	Dropdown.prototype.toggle = function (e) {
 		var $this = $(this)
 		if ($this.is('.disabled, :disabled')) return
+		if(!$this.parent().find('ul:not(.disabled)').length) return
 		var $parent  = $this.parent()
 		var isActive = $parent.hasClass('open')
 		clearMenus()
@@ -19,11 +20,11 @@ $js('jquery',function(){
 				// if mobile we we use a backdrop because click events don't delegate
 				$('<div class="dropdown-backdrop"/>').insertAfter($(this)).on('click', clearMenus)
 			}
-			$parent.trigger(e = $.Event('show.xdom.dropdown'))
+			$parent.trigger(e = $.Event('show.is.dropdown'))
 			if (e.isDefaultPrevented()) return
 			$parent
 				.toggleClass('open')
-				.trigger('shown.xdom.dropdown')
+				.trigger('shown.is.dropdown')
 			$this.focus()
 		}
 		return false
@@ -52,15 +53,15 @@ $js('jquery',function(){
 		var $this = $(this)
 		var href = $this.attr('href')
 		if(href&&href.indexOf('javascript:')!==0&&href!='#')
-			document.location = href
+			window.location = href
 	}
 	var clearMenus = function(){
 		$(toggle).each(function(e){
 			var $parent = $(this).parent()
 			if (!$parent.hasClass('open')) return
-			$parent.trigger(e = $.Event('hide.xdom.dropdown'))
+			$parent.trigger(e = $.Event('hide.is.dropdown'))
 			if (e.isDefaultPrevented()) return
-			$parent.removeClass('open').trigger('hidden.xdom.dropdown')
+			$parent.removeClass('open').trigger('hidden.is.dropdown')
 		})
 	}
 	$.fn.dropdown = function (option) {
@@ -72,8 +73,8 @@ $js('jquery',function(){
 		})
 	}
 	$(document)
-		.on(event+'.xdom.dropdown.data-api', clearMenus)
-		.on(event+'.xdom.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
-		.on(event2+'.xdom.dropdown.data-api'  , toggle, Dropdown.prototype.godirect)
-		.on('keydown.xdom.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
+		.on(event+'.is.dropdown.data-api', clearMenus)
+		.on(event+'.is.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
+		.on(event2+'.is.dropdown.data-api'  , toggle, Dropdown.prototype.godirect)
+		.on('keydown.is.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
 });
