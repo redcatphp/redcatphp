@@ -13,7 +13,7 @@ $js('jquery',function(){
 			if(val){
 				val = '+phonemic:'+val;
 			}
-			document.location = document.location.protocol+'//'+document.location.hostname+'/'+select.val()+val;
+			window.location = window.location.protocol+'//'+window.location.hostname+'/'+select.val()+val;
 			return false;
 		});
 		$js([

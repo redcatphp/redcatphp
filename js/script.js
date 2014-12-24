@@ -18,7 +18,7 @@ $js('jquery',function(){
 		}
 		return loc;
 	}
-	var location = document.location.pathname;
+	var location = window.location.pathname;
 	location = decodeURIComponent(location.substr(1));
 	var loc = splitter(location,['+','/',':','-']);
 	var loc2 = splitterOnce(location,['+','-']);
