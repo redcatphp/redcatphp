@@ -1,7 +1,9 @@
 <?php namespace Translator;
 use Surikat\Core\FS;
 use Surikat\I18n\msgfmt;
-use Surikat\I18n\tmlGetText;
+use Surikat\I18n\getTextExtractorTML;
+use Surikat\I18n\getTextExtractorPHP;
+use Surikat\I18n\Gettext\Extractors\Po;
 use Surikat\Model\R;
 use Surikat\Model\Query;
 class MessageService {
@@ -100,10 +102,12 @@ class MessageService {
 		$pot = Catalogue::headerPots();
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
-		$pot .= tmlGetText::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
+		$pot .= getTextExtractorTML::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
+		$pot .= getTextExtractorPHP::parse(SURIKAT_PATH.'php',SURIKAT_PATH);
 		file_put_contents($potfile,$pot);
 	}
 	function countPotMessages(){
-		return (new POParser())->countEntriesFromStream(fopen(SURIKAT_PATH.'langs/messages.pot', 'r'));
+		//return (new POParser())->countEntriesFromStream(fopen(SURIKAT_PATH.'langs/messages.pot', 'r'));
+		return count(Po::fromFile(SURIKAT_PATH.'langs/messages.pot')->getArrayCopy());
 	}
 }
