@@ -1,4 +1,5 @@
 <?php namespace Surikat\Tool\Crypto;
+use Surikat\Tool\Crypto\Image;
 /*
 exemple:
 

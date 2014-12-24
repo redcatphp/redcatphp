@@ -1,45 +1,5 @@
 <?php namespace Surikat\Tool\Crypto;
 class Toolbox{
-	static function hash($info,$hash=false){
-		if($hash)
-			return self::hash($info)==$hash;
-		else
-			return hash('sha256',SurikatConfig('salts.0').$info.SurikatConfig('salts.1'));
-	}
-	static function doubleSalt($toHash,$username){
-		$password = str_split($toHash,(strlen($toHash)/2)+1);
-		$hash = hash('md5', $username.$password[0].'centerSalt'.$password[1]);
-		return $hash;
-	}
-	static function steganoUserMaker($login,$pass,$path=null){
-		if($path==null)
-			$path = DATA_PATH.'users';
-		Stegano::EncryptBox(self::hasher($pass), $path.'/'.md5($login).'.png', hash('sha512',$login));
-	}
-	public static function steganoUserChecker($login,$pass,$path=null){
-		if($path==null) $path = DATA_PATH.'users';
-		if(is_file($path.'/'.md5($login).'.png')){
-			$hash = Stegano::Decrypt($path.'/'.md5($login).'.png', hash('sha512',$login));
-			if($hash&&self::hasher($pass, $hash))
-				return true;
-		}
-		return false;
-	}
-	public static function hasher($info, $encdata = false){
-		$strength = "08";
-		if($encdata){
-			if(substr($encdata, 0, 60) == crypt($info, "$2a$".$strength."$".substr($encdata, 60)))
-				return true;
-			else
-				return false;
-		}
-		else{
-			$salt = "";
-			for ($i = 0; $i < 22; $i++)
-				$salt .= substr("./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", mt_rand(0, 63), 1);
-			return crypt($info, "$2a$".$strength."$".$salt).$salt;
-		}
-	}
 	public static function crypt_apr1_md5($plainpasswd) {
 		$salt = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8);
 		$len = strlen($plainpasswd);

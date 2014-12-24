@@ -7,6 +7,8 @@ class TML_Code extends TML{
 			if($this->TeMpLate&&($find = $this->TeMpLate->find($this->file))){
 				$text = file_get_contents($find);
 			}
+			else
+				return;
 			$this->selfClosed = false;
 			$this->removeAttr('file');
 		}
