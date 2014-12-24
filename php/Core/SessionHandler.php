@@ -24,8 +24,8 @@ class SessionHandler{
     function gc($maxlifetime){
 		$maxlifetime = self::$maxNoConnectionTime;
         foreach(glob("$this->savePath/sess_*") as $file)
-			if(filemtime($file)+$maxlifetime<time()&&file_exists($file))
-				unlink($file);
+			if(filemtime($file)+$maxlifetime<time())
+				@unlink($file);
         return true;
     }
 }
