@@ -28,7 +28,7 @@ class Translations extends \ArrayObject
             throw new \Exception("The method $name does not exists");
         }
 
-        return call_user_func_array('Gettext\\Extractors\\'.$matches[1].'::from'.$matches[2], $arguments);
+        return call_user_func_array('Surikat\\I18n\\Gettext\\Extractors\\'.$matches[1].'::from'.$matches[2], $arguments);
     }
 
     /**
@@ -45,7 +45,7 @@ class Translations extends \ArrayObject
 
         array_unshift($arguments, $this);
 
-        return call_user_func_array('Gettext\\Generators\\'.$matches[1].'::to'.$matches[2], $arguments);
+        return call_user_func_array('Surikat\\I18n\\Gettext\\Generators\\'.$matches[1].'::to'.$matches[2], $arguments);
     }
 
     /**
