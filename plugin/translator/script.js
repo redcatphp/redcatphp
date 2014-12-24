@@ -382,21 +382,21 @@ $(function(){
 		
 		$('#msg_table_head thead th.'+order).addClass('sort-'+sorting);
 		
-		var countPotMessages = function(){
-			messageService('countPotMessages',[],function(count){
-				if(count)
-					$('#counter').text('('+(count-1)+' messages)');
-			});
-		};
-		countPotMessages();
-		$('#makepot').click(function(e){
-			e.preventDefault();
-			$('body').css('opacity',0.2);
-			messageService('makePot',[],function(){
-				countPotMessages();
-				$('body').css('opacity',1);
-			});
-			return false;
-		});
 	}
+	var countPotMessages = function(){
+		messageService('countPotMessages',[],function(count){
+			if(count)
+				$('#counter').text('('+(count-1)+' messages)');
+		});
+	};
+	countPotMessages();
+	$('#makepot').click(function(e){
+		e.preventDefault();
+		$('body').css('opacity',0.2);
+		messageService('makePot',[],function(){
+			countPotMessages();
+			$('body').css('opacity',1);
+		});
+		return false;
+	});
 });
