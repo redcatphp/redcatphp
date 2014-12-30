@@ -175,38 +175,29 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 #Directory Traversal Protection
 RewriteRule "(^|/)\." - [F]
 
-#Protect Surikat directory from direct access
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/Surikat/
-RewriteRule ^Surikat/(.*)$ /$1 [R=301,L]
+#Get the current CWD
+RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+RewriteRule ^.*$ - [E=CWD:%2]
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
-RewriteRule ^robots\.txt$ /Surikat/robots_cdn.txt [L]
+RewriteRule ^robots\.txt$ %{ENV:CWD}Surikat/robots_cdn.txt [L]
 
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
-RewriteRule ^robots\.txt$ /Surikat/robots_ssl.txt [L]
-
-#Domain - Canonicalize domain
-#RewriteCond %{HTTP_HOST} !mydomain.com$ [NC]
-#RewriteRule ^(.*)$ http://mydomain.com/$1 [L,R=301] 
+RewriteRule ^robots\.txt$ %{ENV:CWD}Surikat/robots_ssl.txt [L]
 
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^/Surikat/
-RewriteCond %{DOCUMENT_ROOT}/Surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|json|php|html)$ /Surikat/$1.$2 [L,QSA]
+RewriteCond %{REQUEST_URI} !^%{ENV:CWD}Surikat/
+RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}Surikat/$1.$2 -f
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|php)$ %{ENV:CWD}Surikat/$1.$2 [L,QSA]
 
 #Surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^/Surikat/
-RewriteCond %{DOCUMENT_ROOT}/Surikat/%{REQUEST_URI}/index.php -f
-RewriteRule ^(.*)$ /Surikat/$1/index.php [L,QSA]
-
-#Prevent hotlinking
-#RewriteCond %{HTTP_REFERER} !^$
-#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?mydomain.com [NC]
-#RewriteRule \.(jpg|jpeg|png|gif|mp3|ogg|wav|mp4|mov|flv)$ - [NC,F,L]
+RewriteCond %{REQUEST_URI} !^%{ENV:CWD}Surikat/
+RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}Surikat/%{REQUEST_URI}/index.php -f
+RewriteRule ^(.*)$ %{ENV:CWD}Surikat/$1/index.php [L,QSA]
 
 #Custom 404 image
 RewriteCond %{REQUEST_FILENAME} !-f

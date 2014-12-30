@@ -32,5 +32,5 @@ $js('jquery',function(){
 		$('main').css('opacity',0.5);
 	});
 });
-<!--#include virtual="/js/retro.js" -->
+<!--#include virtual="./retro.js" -->
 $css('print.min','print');

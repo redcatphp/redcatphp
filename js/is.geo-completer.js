@@ -95,7 +95,7 @@ $js(true,[
 			var geocoder = new google.maps.Geocoder();
 			var autocompleteService = new google.maps.places.AutocompleteService();
 			
-			var params = <!--#include virtual="/service/autocomplete/geoinit" -->; //Pyrénées-Orientales Square
+			var params = <!--#include virtual="../../service/autocomplete/geoinit" -->; //Pyrénées-Orientales Square
 			//$.getJSON('service/autocomplete/geoinit',function(params){
 			var bounds = new google.maps.LatLngBounds(
 				new google.maps.LatLng(params.southWestLatMainBound,params.southWestLngMainBound),

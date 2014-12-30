@@ -1,7 +1,7 @@
 <?
 global $img,$resolutions,$screens;
 if(!isset($img))
-	$img = '/img/';
+	$img = '../img/';
 if(!isset($resolutions))
 	$resolutions = array(480,640,768,800,960,1024,1260,1366,1920);
 	$screens = $resolutions;
