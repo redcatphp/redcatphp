@@ -25,6 +25,7 @@ class Lang {
 		static::$countryCode = $ct;
 		$o = new static($lg,$ct);
 		$lang = $o->locale;
+		//$lang .= '.utf8';
 		putenv("LANG=$lang");
 		putenv("LANGUAGE=$lang");
 		putenv("LC_ALL=$lang");

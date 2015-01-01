@@ -52,6 +52,8 @@ class Router_ByTml extends Router_SuperURI{
 		$this->Controller->addPrefixTmlCompile('.'.$lang.'/');
 		
 		Lang::set($lang);
+		//Lang::set($lang,$lang);
+		
 		$view = $this->Controller->getView();
 		
 		$view->onCompile(function($TML)use($lang,$path,$langMap){

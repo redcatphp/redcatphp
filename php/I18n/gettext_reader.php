@@ -252,7 +252,6 @@ class gettext_reader {
     if ($this->short_circuit)
       return $string;
     $this->load_tables();
-
     if ($this->enable_cache) {
       // Caching enabled, get translated string from cache
       if (array_key_exists($string, $this->cache_translations))
