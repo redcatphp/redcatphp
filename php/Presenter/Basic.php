@@ -16,7 +16,6 @@ class Basic extends ArrayObject{
 			'presentNamespaces'	=> $tml->_namespaces,
 		]);
 		$o->setView($tml->TeMpLate);
-		$o->BASE_HREF = Domain::getBaseHref();
 		$o->timeCompiled = time();
 		$o->assign();
 		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
@@ -53,6 +52,7 @@ class Basic extends ArrayObject{
 		)
 			(new Application())->error(404);
 		$this->time = time();
+		$this->BASE_HREF = Domain::getBaseHref();
 		$this->dynamic();
 	}
 	function dynamic(){}
