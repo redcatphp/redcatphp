@@ -37,6 +37,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	const C_DATATYPE_TEXT8            = 4;
 	const C_DATATYPE_TEXT16           = 5;
 	const C_DATATYPE_TEXT32           = 6;
+	const C_DATATYPE_TEXTUTF8         = 7;
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIAL_POINT    = 90;
@@ -119,17 +120,18 @@ class MySQL extends AQueryWriter implements QueryWriter
 	{
 		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [
-			MySQL::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
-			MySQL::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',
-			MySQL::C_DATATYPE_DOUBLE           => 'DOUBLE',
-			MySQL::C_DATATYPE_TEXT8            => 'VARCHAR(255)',
-			MySQL::C_DATATYPE_TEXT16           => 'TEXT',
-			MySQL::C_DATATYPE_TEXT32           => 'LONGTEXT',
-			MySQL::C_DATATYPE_SPECIAL_DATE     => 'DATE',
-			MySQL::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
-			MySQL::C_DATATYPE_SPECIAL_POINT    => 'POINT',
-			MySQL::C_DATATYPE_SPECIAL_LINESTRING => 'LINESTRING',
-			MySQL::C_DATATYPE_SPECIAL_POLYGON => 'POLYGON',
+			self::C_DATATYPE_BOOL             => 'TINYINT(1) UNSIGNED',
+			self::C_DATATYPE_UINT32           => 'INT(11) UNSIGNED',
+			self::C_DATATYPE_DOUBLE           => 'DOUBLE',
+			self::C_DATATYPE_TEXT8            => 'VARCHAR(255)',
+			self::C_DATATYPE_TEXT16           => 'TEXT',
+			self::C_DATATYPE_TEXT32           => 'LONGTEXT',
+			self::C_DATATYPE_TEXTUTF8         => 'VARCHAR(191)',
+			self::C_DATATYPE_SPECIAL_DATE     => 'DATE',
+			self::C_DATATYPE_SPECIAL_DATETIME => 'DATETIME',
+			self::C_DATATYPE_SPECIAL_POINT    => 'POINT',
+			self::C_DATATYPE_SPECIAL_LINESTRING => 'LINESTRING',
+			self::C_DATATYPE_SPECIAL_POLYGON => 'POLYGON',
 		];
 		foreach ( $this->typeno_sqltype as $k => $v ) {
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
@@ -191,52 +193,56 @@ class MySQL extends AQueryWriter implements QueryWriter
 	{
 		$this->svalue = $value;
 
-		if ( is_null( $value ) ) return MySQL::C_DATATYPE_BOOL;
-		if ( $value === INF ) return MySQL::C_DATATYPE_TEXT8;
+		if ( is_null( $value ) ) return self::C_DATATYPE_BOOL;
+		if ( $value === INF ) return self::C_DATATYPE_TEXT8;
 
 		if ( $flagSpecial ) {
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) ) {
-				return MySQL::C_DATATYPE_SPECIAL_DATE;
+				return self::C_DATATYPE_SPECIAL_DATE;
 			}
 			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d$/', $value ) ) {
-				return MySQL::C_DATATYPE_SPECIAL_DATETIME;
+				return self::C_DATATYPE_SPECIAL_DATETIME;
 			}
 			if ( preg_match( '/^POINT\(/', $value ) ) {
-				return MySQL::C_DATATYPE_SPECIAL_POINT;
+				return self::C_DATATYPE_SPECIAL_POINT;
 			}
 			if ( preg_match( '/^LINESTRING\(/', $value ) ) {
-				return MySQL::C_DATATYPE_SPECIAL_LINESTRING;
+				return self::C_DATATYPE_SPECIAL_LINESTRING;
 			}
 			if ( preg_match( '/^POLYGON\(/', $value ) ) {
-				return MySQL::C_DATATYPE_SPECIAL_POLYGON;
+				return self::C_DATATYPE_SPECIAL_POLYGON;
 			}
 		}
 
 		//setter turns TRUE FALSE into 0 and 1 because database has no real bools (TRUE and FALSE only for test?).
 		if ( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' ) {
-			return MySQL::C_DATATYPE_BOOL;
+			return self::C_DATATYPE_BOOL;
 		}
 
 		if ( !$this->startsWithZeros( $value ) ) {
 
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 ) {
-				return MySQL::C_DATATYPE_UINT32;
+				return self::C_DATATYPE_UINT32;
 			}
 
 			if ( is_numeric( $value ) ) {
-				return MySQL::C_DATATYPE_DOUBLE;
+				return self::C_DATATYPE_DOUBLE;
 			}
 		}
-
+		
+		if ( mb_strlen( $value, 'UTF-8' ) <= 191 ) {
+            return self::C_DATATYPE_TEXTUTF8;
+        }
+        
 		if ( mb_strlen( $value, 'UTF-8' ) <= 255 ) {
-			return MySQL::C_DATATYPE_TEXT8;
+			return self::C_DATATYPE_TEXT8;
 		}
 
 		if ( mb_strlen( $value, 'UTF-8' ) <= 65535 ) {
-			return MySQL::C_DATATYPE_TEXT16;
+			return self::C_DATATYPE_TEXT16;
 		}
 
-		return MySQL::C_DATATYPE_TEXT32;
+		return self::C_DATATYPE_TEXT32;
 	}
 
 	/**
