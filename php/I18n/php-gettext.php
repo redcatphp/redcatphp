@@ -127,7 +127,6 @@ function _get_reader($domain=null, $category=5, $enable_cache=false) {
           $text_domains[$domain] = new domain(); // Initialize an empty domain object.
         $text_domains[$domain]->l10n = new gettext_reader($input,$enable_cache);
     }
-    //var_dump($text_domains[$domain]->l10n);
     return $text_domains[$domain]->l10n;
 }
 
@@ -263,6 +262,7 @@ function _gettext($msgid) {
  * Alias for gettext.
  */
 function __($msgid) {
+    if (_check_locale_and_function()) return _($msgid);
     return _gettext($msgid);
 }
 
@@ -383,7 +383,7 @@ function T_gettext($msgid) {
 }
 function T_($msgid) {
     if (_check_locale_and_function()) return _($msgid);
-    return __($msgid);
+    return _gettext($msgid);
 }
 function T_ngettext($singular, $plural, $number) {
     if (_check_locale_and_function())
@@ -473,7 +473,7 @@ if (!function_exists('gettext')) {
         return _gettext($msgid);
     }
     function _($msgid) {
-        return __($msgid);
+        return _getext($msgid);
     }
     function ngettext($singular, $plural, $number) {
         return _ngettext($singular, $plural, $number);
