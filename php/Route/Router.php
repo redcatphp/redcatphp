@@ -14,7 +14,7 @@ class Router implements Route {
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
 				$match = function($url)use($match){
-					if(preg_match($pattern, $url, $params)){
+					if(preg_match($match, $url, $params)){
 						array_shift($params);
 						return array_values($params);
 					}
