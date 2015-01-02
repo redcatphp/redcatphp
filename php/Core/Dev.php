@@ -16,7 +16,7 @@ abstract class Dev{
 	const SERVER = 382; //PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
 	const NAV = 3712; //URI+JS+CSS+IMG
 	const ALL = 4094;
-	private static $level = 78;
+	private static $level = 0;
 	static function has($d){
 		return !!($d&self::$level);
 	}

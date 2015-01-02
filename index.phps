@@ -4,21 +4,18 @@
 if(!@include(__DIR__.'/Surikat/Loader.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/Loader.php');
 use Core\Dev;
-Dev::level(	
-	//Dev::NO
-	//|Dev::PHP
-	//|Dev::CONTROL
-	//|Dev::VIEW
-	//|Dev::PRESENT
-	//|Dev::MODEL
-	//|Dev::MODEL_SCHEMA
-	//|Dev::ROUTE
-	//|Dev::I18N
-	//|Dev::IMG
-	//|Dev::SERVER //PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
-	//|Dev::NAV //URI+JS+CSS+IMG
-	Dev::STD //PHP+CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
-	|Dev::JS
-	|Dev::CSS
-);
+//Dev::on(Dev::PHP);
+//Dev::on(Dev::CONTROL);
+//Dev::on(Dev::VIEW);
+//Dev::on(Dev::PRESENT);
+//Dev::on(Dev::MODEL);
+//Dev::on(Dev::MODEL_SCHEMA);
+//Dev::on(Dev::ROUTE);
+//Dev::on(Dev::I18N);
+//Dev::on(Dev::IMG);
+//Dev::on(Dev::SERVER);	//PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
+//Dev::on(Dev::NAV);	//URI+JS+CSS+IMG
+Dev::on(Dev::STD);	//PHP+CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
+Dev::on(Dev::CSS);
+Dev::on(Dev::JS);
 (new Controller\Application())->run(@$_SERVER['PATH_INFO']);
