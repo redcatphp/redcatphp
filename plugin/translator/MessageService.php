@@ -103,6 +103,7 @@ class MessageService {
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
 		$pot .= getTextExtractorTML::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
+		$pot .= getTextExtractorPHP::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
 		$pot .= getTextExtractorPHP::parse(SURIKAT_PATH.'php',SURIKAT_PATH);
 		file_put_contents($potfile,$pot);
 	}
