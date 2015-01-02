@@ -22,6 +22,8 @@ class TML_Code extends TML{
 			$this->clearInner();
 		}
 		$text = htmlentities($text);
+		$text = str_replace('&amp;lt;','&lt;',$text);
+		$text = str_replace('&amp;gt;','&gt;',$text);
 		$text = ltrim($text,"\n");
 		if($stripTab)
 			$text = str_replace("\t",'',$text);
