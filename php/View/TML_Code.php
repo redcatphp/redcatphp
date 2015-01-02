@@ -17,8 +17,11 @@ class TML_Code extends TML{
 			$this->clearInner();
 		}
 		$text = htmlentities($text);
-		if($this->parent->nodeName!='pre'&&!$this->keepNl)
+		if($this->parent->nodeName!='pre'&&!$this->keepNl){
+			$text = str_replace("\t","    ",$text);
+			$text = str_replace(" ","&nbsp;",$text);
 			$text = nl2br($text);
+		}
 		$this->innerHead[] = $text;
 	}
 }
