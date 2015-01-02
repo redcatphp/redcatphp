@@ -23,11 +23,29 @@ namespace Surikat\I18n{
 		protected static $defaultLocalesRoot;
 		protected static $suffixLocales = '.utf8';
 		
-		static function n__($singular, $plural, $number){
-			return self::current()->ngettext($singular, $plural, $number);
+		static function n__($singular,$plural,$number,$lang=null,$domain=null){
+			if(isset($lang)||isset($domain)){
+				if(!isset($lang))
+					$lang = self::current()->locale;
+				if(!isset($domain))
+					$domain = self::current()->domain;
+				$o = self::factory($lang,$domain);
+			}
+			else
+				$o = self::current();
+			return $o->ngettext($singular, $plural, $number);
 		}
-		static function __($msgid){
-			return self::current()->gettext($msgid);
+		static function __($msgid,$lang=null,$domain=null){
+			if(isset($lang)||isset($domain)){
+				if(!isset($lang))
+					$lang = self::current()->locale;
+				if(!isset($domain))
+					$domain = self::current()->domain;
+				$o = self::factory($lang,$domain);
+			}
+			else
+				$o = self::current();
+			return $o->gettext($msgid);
 		}
 		static function currentLangCode(){
 			return self::current()->getLangCode();
@@ -206,10 +224,11 @@ namespace Surikat\I18n{
 	Lang::initialize();
 }
 namespace{
-	function __(){
-		return call_user_func_array(['Surikat\\I18n\\Lang','__'],func_get_args());
+	use Surikat\I18n\Lang;
+	function __($msgid,$lang=null,$domain=null){
+		return Lang::__($msgid,$lang,$domain);
 	}
-	function n__(){
-		return call_user_func_array(['Surikat\\I18n\\Lang','n__'],func_get_args());
+	function n__($singular,$plural,$number,$lang=null,$domain=null){
+		return Lang::n__($singular, $plural, $number,$lang,$domain);
 	}
 }
