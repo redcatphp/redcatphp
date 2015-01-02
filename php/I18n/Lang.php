@@ -73,7 +73,7 @@ namespace Surikat\I18n{
 				$this->realDomain = $this->getLastMoFile();
 			else
 				$this->realDomain = $this->domain;
-			
+			$this->realLocale = $this->locale.static::$suffixLocales;
 			$this->altLocales = GettextEmulator::get_list_of_locales($this->realLocale);
 			if(function_exists('setlocale')){
 				foreach($this->altLocales as $lc){
@@ -97,13 +97,13 @@ namespace Surikat\I18n{
 							if(false!==$p=strpos($lc,'@'))
 								$lc = substr($lc,0,$p);
 							$this->locale = $lc;
+							$this->realLocale = $this->locale.static::$suffixLocales;
 							$this->EMULATEGETTEXT = 0;
 							break;
 						}
 					}
 				}
 			}
-			$this->realLocale = $this->locale.static::$suffixLocales;
 			$this->bind();
 		}
 		function GettextEmulator(){
@@ -142,7 +142,6 @@ namespace Surikat\I18n{
 			$this->bindtextdomain($this->realDomain,$this->localesRoot);
 			$this->textdomain($this->realDomain);
 			$this->bind_textdomain_codeset($this->realDomain, "UTF-8");
-			return $this;
 		}
 		function getLocale(){
 			return $this->locale;

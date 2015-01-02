@@ -65,7 +65,7 @@ class Toolbox{
 			$TML->prepend('<Presenter:Basic uri="static" />');
 	}
 	static function i18nGettext($TML,$cache=true){
-		$TML('html',0)->attr('lang',Lang::currentLangCode());
+		$TML('html')->attr('lang',Lang::currentLangCode());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
@@ -85,7 +85,7 @@ class Toolbox{
 				return;
 			if($el->data('i18n')!==false){
 				if($cache){
-					$rw = Lang::__($rw);
+					$rw = __($rw);
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
@@ -98,7 +98,7 @@ class Toolbox{
 			foreach($TML->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
 					$TML->removeAttr($k);
-					$TML->attr(substr($k,5),Lang::__($v));
+					$TML->attr(substr($k,5),__($v));
 				}
 			}
 		});
