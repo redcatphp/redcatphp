@@ -18,6 +18,11 @@ abstract class PARSER{
 	private static $PIC_L;
 	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
+	protected $parseReplacement = [
+		'\\<'=>'&lt;',
+		'\\>'=>'&gt;',
+		'\\"'=>'&quot;',
+	];
 	static function initialize(){
 		self::$PI_HEX = [self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1])];
 		self::$PIO_L = strlen(self::PIO);
@@ -126,7 +131,10 @@ abstract class PARSER{
 			$xmlText .= self::PIO.$uid.self::PIC;
 		}
 		else
-			$xmlText .= $xml;		
+			$xmlText .= $xml;
+		
+		$xmlText = str_replace(array_keys($this->parseReplacement),array_values($this->parseReplacement),$xmlText);
+		
 		$state = self::STATE_PROLOG_NONE;
 		$charContainer = '';
 		$quoteType = '';
@@ -183,12 +191,7 @@ abstract class PARSER{
 							$y = $i+2;
 							$charContainer .= '='.$quote;
 							while(($ch=$xmlText{($y++)})!=$quote){
-								if($ch=='\\'&&$xmlText[$y]==$quote){
-									$charContainer .= htmlentities($xmlText[$y]);
-									$y++;
-								}
-								else
-									$charContainer .= $ch;
+								$charContainer .= $ch;
 							}
 							$charContainer .= $quote;
 							$i = $y-1;
@@ -397,11 +400,6 @@ abstract class PARSER{
 						break;
 					}
 				break;
-				case '\\':
-					$i++;
-					if(isset($xmlText[$i]))
-						$charContainer .= htmlentities($xmlText[$i]);
-				break;
 				default:
 					$charContainer .= $currentChar;
 				break;
@@ -501,17 +499,6 @@ abstract class PARSER{
 					}
 					elseif($currentState==self::STATE_ATTR_VALUE)
 						$valueDump .= $currentChar;
-				break;
-				case '\\':
-					$i++;
-					if ($currentState == self::STATE_ATTR_KEY){
-						if(isset($attrText[$i]))
-							$keyDump .= htmlentities($attrText[$i]);
-					}
-					else{
-						if(isset($attrText[$i]))
-							$valueDump .= htmlentities($attrText[$i]);
-					}
 				break;
 				default:
 					if ($currentState == self::STATE_ATTR_KEY)
