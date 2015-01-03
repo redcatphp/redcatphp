@@ -441,6 +441,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 				$vn = [];
 
 				foreach ( $value as $i => $b ) {
+					if ( !( $b instanceof OODBBean ) ) continue;
 					$vn[] = $b->export( $meta, FALSE, FALSE, $filters );
 					$value = $vn;
 				}
