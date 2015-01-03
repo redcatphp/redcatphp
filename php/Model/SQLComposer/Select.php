@@ -175,7 +175,16 @@ class Select extends Where {
 		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific
 		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
-		$from = "\nFROM " . implode("\n\t", $this->tables);
+		$from = '';
+		foreach($this->tables as $t){
+			if(!empty($from)){
+				$from .= "\n\t";
+				if(strpos($t,'JOIN ')===false)
+					$from .= ',';
+			}
+			$from .= $t;
+		}
+		$from = "\nFROM ".$from;
 		$where = $this->_render_where($removeUnbinded);
 		if(!empty($where))
 		$where =  "\nWHERE $where";
