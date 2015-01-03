@@ -11,6 +11,7 @@ class Router implements Route {
 	}
 	function match($url){
 		$match = $this->match;
+		$url = ltrim($url,'/');
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
 				$match = function($url)use($match){
@@ -22,7 +23,7 @@ class Router implements Route {
 			}
 			else{
 				$match = function($url)use($match){
-					if(strpos(ltrim($url,'/'),ltrim($match,'/'))===0){
+					if(strpos($url,ltrim($match,'/'))===0){
 						return substr($url,strlen($match));
 					}
 				};
