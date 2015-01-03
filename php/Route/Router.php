@@ -23,7 +23,7 @@ class Router implements Route {
 			}
 			else{
 				$match = function($url)use($match){
-					if(strpos($url,ltrim($match,'/'))===0){
+					if(strpos(ltrim($url,'/'),ltrim($match,'/'))===0){
 						return substr($url,strlen($match));
 					}
 				};
