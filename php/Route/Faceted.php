@@ -1,32 +1,38 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
-class Router_SuperURI extends Router implements ArrayAccess{
-	protected $separators = [
-		'Eq'=>':',
-		'And'=>'+',
-		'Or'=>'&',
-	];
-	function match($path){
-		$path = ltrim($path,'/');
+class Faceted implements ArrayAccess{
+	protected $separatorAnd = '+';
+	protected $separatorEq = ':';
+	protected $separatorOr = '&';
+	function buildPath(){
+		$uriParams = $this->uriParams;
+		$path = array_shift($uriParams);
+		foreach($uriParams as $k=>$param){
+			if(is_integer($k))
+				$path .= $this->separatorsAnd;
+			else
+				$path .= $this->separatorsEq;
+			if(is_array($param))
+				$param = implode($this->separatorsOr,$param);
+			$path .= $param;
+		}
+		return $path;
+	}
+	function __invoke(&$uri){
+		$path = ltrim($uri,'/');
 		$this->path = $path;
 		$uriParams = [];
-		$min = [];
-		if(($pos=strpos($path,$this->separators['Eq']))!==false)
-			$min[] = $pos;
-		if(($pos=strpos($path,$this->separators['And']))!==false)
-			$min[] = $pos;
-		if(!empty($min)){
-			$sepDir = min($min);
-			$uriParams[0] = substr($path,0,$sepDir);
-			$path = substr($path,$sepDir);
-			$x = explode($this->separators['And'],$path);
+		if(($pos=strpos($path,$this->separatorAnd))!==false){
+			$uriParams[0] = substr($path,0,$pos);
+			$path = substr($path,$pos);
+			$x = explode($this->separatorAnd,$path);
 			foreach($x as $v){
-				$x2 = explode($this->separators['Or'],$v);
-				if($k=$i=strpos($v,$this->separators['Eq'])){
+				$x2 = explode($this->separatorOr,$v);
+				if($k=$i=strpos($v,$this->separatorEq)){
 					$k = substr($v,0,$i);
 					$v = substr($v,$i+1);
 				}
-				$v = strpos($v,$this->separators['Or'])?explode($this->separators['Or'],$v):$v;
+				$v = strpos($v,$this->separatorOr)?explode($this->separatorOr,$v):$v;
 				if($k)
 					$uriParams[$k] = $v;
 				elseif(!empty($v))
@@ -56,7 +62,7 @@ class Router_SuperURI extends Router implements ArrayAccess{
 	function filterParam($s){
 		$s = trim($s);
 		$s = strip_tags($s);
-		$forbid = array_merge(array_values($this->separators),$this->forbiddenChrParam);
+		$forbid = array_merge([$this->separatorAnd,$this->separatorOr,$this->separatorEq],$this->forbiddenChrParam);
 		$s = str_replace($forbid,$this->separatorWord,$s);
 		$s = trim($s,$this->separatorWord);
 		if(strpos($s,$this->separatorWord.$this->separatorWord)!==false){
@@ -69,11 +75,6 @@ class Router_SuperURI extends Router implements ArrayAccess{
 		}
 		return $s;
 	}
-	
-	function param(){ //deprecated
-		return func_num_args()?$this->uriParams[func_get_arg(0)]:$this->uriParams;
-	}
-	
 	function getParams(){
 		return $this->uriParams;
 	}
