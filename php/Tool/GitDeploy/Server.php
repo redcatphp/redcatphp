@@ -132,7 +132,9 @@ abstract class Server {
 
         foreach ($changes['submodules'] as $submodule) {
             $this->set_file('REVISION', $submodule_meta[$submodule]['target_subcommit']);
+            GitDeploy::logmessage("Uploaded: REVISION");
             $this->set_file('PREVIOUS_REVISION', (empty($submodule_meta[$submodule]['current_subcommit']) ? $submodule_meta[$submodule]['target_subcommit'] : $submodule_meta[$submodule]['current_subcommit']));
+            GitDeploy::logmessage("Uploaded: PREVIOUS_REVISION");
         }
 
         $this->set_current_commit($target_commit, $list_only);
@@ -150,7 +152,9 @@ abstract class Server {
     protected function set_current_commit($target_commit, $list_only = false) {
         if (!$list_only) {
             $this->set_file('REVISION', $target_commit);
+            GitDeploy::logmessage("Uploaded: REVISION");
             $this->set_file('PREVIOUS_REVISION', (empty($this->current_commit) ? $target_commit : $this->current_commit));
+            GitDeploy::logmessage("Uploaded: PREVIOUS_REVISION");
         }
         
         if (isset($this->server['maintenance_file'])) {
