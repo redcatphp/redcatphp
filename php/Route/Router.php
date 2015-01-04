@@ -11,10 +11,10 @@ class Router implements Route {
 	}
 	function match($url){
 		$match = $this->match;
+		$url = ltrim($url,'/');
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
 				$match = function($url)use($match){
-					$url = ltrim($url,'/');
 					if(preg_match($match, $url, $params)){
 						array_shift($params);
 						return array_values($params);
@@ -23,7 +23,6 @@ class Router implements Route {
 			}
 			else{
 				$match = function($url)use($match){
-					$url = ltrim($url,'/');
 					$match = ltrim($match,'/');
 					if(strpos($url,ltrim($match,'/'))===0){
 						return substr($url,strlen($match));
@@ -31,6 +30,6 @@ class Router implements Route {
 				};
 			}
 		}
-		return call_user_func_array($match,func_get_args());
+		return call_user_func($match,$url);
 	}
 }
