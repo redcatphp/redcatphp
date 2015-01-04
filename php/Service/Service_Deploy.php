@@ -23,9 +23,9 @@ class Service_Deploy{
 		
 	}
 	static function oneShot(){
-		self::autocommit();
+		self::directOutput();
 		self::surikatIn();
-		self::method();
+		self::autocommit();
 	}
 	static function surikatShared(){
 		self::directOutput();
