@@ -818,6 +818,10 @@ var doc    = window.document,
                         link = this;
                         return false;
                     }
+                    else if( new RegExp( href.substr(0,-4)+'.min.css' ).test( this.href ) ) {
+                        link = this;
+                        return false;
+                    }
                 });
 
                 if ( typeof id === 'function' ) {
@@ -5697,7 +5701,8 @@ Galleria.addTheme = function( theme ) {
         // look for manually added CSS
         $('link').each(function( i, link ) {
             reg = new RegExp( theme.css );
-            if ( reg.test( link.href ) ) {
+            reg2 = new RegExp( theme.css.substr(0,-4)+'.min.css' );
+            if ( reg.test( link.href ) || reg2.test( link.href ) ) {
 
                 // we found the css
                 css = true;
