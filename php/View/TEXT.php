@@ -7,7 +7,7 @@ class TEXT extends CORE{
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
 		$this->nodeName = $nodeName;
-		if($this->parent&&$this->parent->TeMpLate&&$this->parent->TeMpLate->isXhtml)
+		if($this->parent&&$this->parent->View&&$this->parent->View->isXhtml)
 			$text = STR::cleanXhtml($text);
 		
 		$text = self::phpImplode($text,$constructor);

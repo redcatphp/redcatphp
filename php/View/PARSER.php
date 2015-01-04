@@ -651,8 +651,8 @@ abstract class PARSER{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		if($this->TeMpLate)
-			$msg .= ' on "'.$this->TeMpLate->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+		if($this->View)
+			$msg .= ' on "'.$this->View->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 		throw new Exception_TML($msg);
 	}
 }

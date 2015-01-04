@@ -8,12 +8,12 @@ class DOCTYPE extends CORE{
 	var $nodeName = 'DOCTYPE';
 	function __construct($parent,$nodeName,$text,$constructor){
 		$this->parent = $parent;
-		$this->TeMpLate = $parent->TeMpLate;
+		$this->View = $parent->View;
 		$text = self::phpImplode($text,$constructor);
 		$this->contentText = $text;
 		$this->__compat = substr($this->contentText,10,-1);
-		if($this->__compat!='html'&&$this->TeMpLate)
-			$this->TeMpLate->isXhtml = true;
+		if($this->__compat!='html'&&$this->View)
+			$this->View->isXhtml = true;
 	}
 	function getInner(){
 		return $this->contentText;

@@ -2,7 +2,7 @@
 class TML_Include extends CALL_SUB{
 	protected $selfClosed = true;
 	function load(){
-		//if(!$this->TeMpLate)
+		//if(!$this->View)
 			//return;
 		$this->remapAttr('file');
 		$file = $this->__get('file');

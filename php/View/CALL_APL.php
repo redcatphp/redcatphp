@@ -27,7 +27,7 @@ abstract class CALL_APL extends CORE{
 		return $this->callback;
 	}
 	function load(){
-		//if(!$this->TeMpLate)
+		//if(!$this->View)
 			//return;
 		$this->callback();
 	}
