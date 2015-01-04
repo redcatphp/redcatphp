@@ -176,18 +176,42 @@ class Select extends Where {
 		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
 		$from = '';
+			
+		$tables = [];
+		$joins = [];
+		$mt = $this->getMainTable();
 		foreach($this->tables as $t){
-			if(!empty($from)){
-				$from .= "\n\t";
-				if(strpos($t,'JOIN ')===false)
-					$from .= ',';
-			}
-			$from .= $t;
+			if(!is_array($t))
+				$tables[] = $t;
+			elseif(isset($t[1]))
+				$joins[$t[0]][] = $t[1];
+			elseif($mt)
+				$joins[$mt][] = $t[0];
+			else
+				$joins[] = $t[0];
 		}
+		foreach($tables as $t){
+			$from .= "\n";
+			if(strpos($t,'(')===false&&strpos($t,')')===false&&strpos($t,' ')===false)
+				$from .= $this->Query->quote($this->writer->prefix.$t);
+			else
+				$from .= $t;
+			if(isset($joins[$t])){
+				foreach($joins[$t] as $j){
+					$from .= "\n\t".$j;
+				}
+				unset($joins[$t]);
+			}
+			$from .= ',';
+		}
+		$from = rtrim($from,',');
+		foreach($joins as $j)
+			$from .= $j;
+		
 		$from = "\nFROM ".$from;
 		$where = $this->_render_where($removeUnbinded);
 		if(!empty($where))
-		$where =  "\nWHERE $where";
+			$where =  "\nWHERE $where";
 		$group_by = empty($this->group_by) ? "" : "\nGROUP BY " . implode(", ", $this->group_by);
 		$order_by = '';
 		if(!empty($this->order_by)){

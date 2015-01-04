@@ -36,8 +36,12 @@ abstract class Base {
 					return $i;
 			}
 	}
-	function unJoin($table=null,$params=null){
-		$this->remove_property('tables',$table,$params);
+	function unTableJoin($table=null,$join=null,$params=null){
+		$this->remove_property('tables',[$table,$join],$params);
+		return $this;
+	}
+	function unJoin($join=null,$params=null){
+		$this->remove_property('tables',$join,$params);
 		return $this;
 	}
 	function unFrom($table=null,$params=null){
@@ -67,8 +71,11 @@ abstract class Base {
 		$this->_add_params('tables', $params, $mysqli_types);
 		return $this;
 	}
-	function join($table,  array $params = null, $mysqli_types = "") {
-		return $this->add_table($table, $params, $mysqli_types);
+	function tableJoin($table,$join,array $params = null,$mysqli_types = "") {
+		return $this->add_table([$table,$join], $params, $mysqli_types);
+	}
+	function join($join,array $params = null,$mysqli_types = "") {
+		return $this->add_table((array)$join, $params, $mysqli_types);
 	}
 	function from($table,  array $params = null, $mysqli_types = "") {
 		return $this->add_table($table, $params, $mysqli_types);
@@ -158,6 +165,13 @@ abstract class Base {
 	protected $writer;
 	function setWriter($writer){
 		$this->writer = $writer;
+	}
+	protected $Query;
+	function setQuery($Query){
+		$this->Query = $Query;
+	}
+	function getMainTable(){
+		return $this->Query->getTable();
 	}
 	
 	function set($k,$v){

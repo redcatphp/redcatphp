@@ -42,6 +42,7 @@ class Query {
 			$composer = SQLComposer::$composer();
 		$this->composer = $composer;
 		$this->composer->setWriter($writer);
+		$this->composer->setQuery($this);
 		$this->prefix = $this->writer->prefix;
 		if(isset($table)){
 			$this->setTable($table);
@@ -184,12 +185,12 @@ class Query {
 		}
 		return $args;
 	}
-	protected function composerFrom(){
-		$args = func_get_args();
-		if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false)
-			$args[0] = $this->quote($this->writer->prefix.$args[0]);
-		return $args;
-	}
+	//protected function composerFrom(){
+		//$args = func_get_args();
+		//if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false)
+			//$args[0] = $this->quote($this->writer->prefix.$args[0]);
+		//return $args;
+	//}
 	protected function composerWhere(){
 		$args = func_get_args();
 		if(isset($args[0])&&is_array($args[0]))
@@ -625,7 +626,7 @@ class Query {
 				$this->select($this->writer->autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 				$this->groupBy($q.$parent.$q.'.'.$q.$col.$q);
 			}
-			$this->join(" LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->groupBy($q.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
@@ -634,15 +635,15 @@ class Query {
 			$rel = [$this->table,$share];
 			sort($rel);
 			$rel = implode('_',$rel);
-			$this->join(" LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
-			$this->join(" LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}");
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col){
 				if(strrpos($col,'_id')!==strlen($col)-3)
 					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			}
-			$this->join(" LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns))){
 			$this->groupBy($q.$this->table.$q.'.'.$q.'id'.$q);
