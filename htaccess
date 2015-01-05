@@ -189,13 +189,13 @@ RewriteRule ^robots\.txt$ %{ENV:CWD}Surikat/robots_ssl.txt [L]
 
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^%{ENV:CWD}Surikat/
+RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}Surikat/$1.$2 -f
 RewriteRule ^(.*)\.(css|js|png|jpg|gif|ttf|woff|php)$ %{ENV:CWD}Surikat/$1.$2 [L,QSA]
 
 #Surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^%{ENV:CWD}Surikat/
+RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}Surikat/%{REQUEST_URI}/index.php -f
 RewriteRule ^(.*)$ %{ENV:CWD}Surikat/$1/index.php [L,QSA]
 
