@@ -9,10 +9,13 @@ abstract class Server {
     public $ignore_files = ['.gitignore', 'config/deploy.ini'];
     public $upload_untracked;
     public $server;
+    public $maintenance;
+    public $htaccess;
 
     public function __construct($server) {
         $this->server = $server;
         $this->clean_directories = $server['clean_directories'];
+        $this->maintenance = $server['maintenance'];
         $this->ignore_files = array_merge($this->ignore_files, $server['ignore_files']);
         $this->upload_untracked = $server['upload_untracked'];
         $this->host = "{$server['scheme']}://{$server['user']}@{$server['host']}:{$server['port']}{$server['path']}";
@@ -99,11 +102,11 @@ abstract class Server {
 
         GitDeploy::logmessage("Will upload $count_upload file" . ($count_upload == 1 ? '' : 's') . ".");
         GitDeploy::logmessage("Will delete $count_delete file" . ($count_delete == 1 ? '' : 's') . ".");
-        
-        if (isset($this->server['maintenance_file'])) {
-            $this->set_file($this->server['maintenance_file'], $this->server['maintenance_on_value']);
-            GitDeploy::logmessage("Turned maintenance mode on.");
-        }
+		
+		if($this->maintenance){
+			$this->set_file('.htaccess', file_get_contents(SURIKAT_SPATH.'htaccess_307'));
+			GitDeploy::logmessage("Turned maintenance mode on.");
+		}
 
 		$totalSize = 0;
         foreach ($changes['upload'] as $file => $contents) {
@@ -112,6 +115,10 @@ abstract class Server {
 		$humanTotalSize = FS::humanSize($totalSize);
 		$uploadedSize = 0;
         foreach ($changes['upload'] as $file => $contents) {
+			if($this->maintenance&&$file=='.htaccess'){
+				$this->htaccess = $contents;
+				continue;
+			}
 			$uploadedSize += strlen($contents);
             if($this->set_file($file, $contents))
 				GitDeploy::logmessage("Uploaded: $file ".FS::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
@@ -156,12 +163,10 @@ abstract class Server {
             $this->set_file('PREVIOUS_REVISION', (empty($this->current_commit) ? $target_commit : $this->current_commit));
             GitDeploy::logmessage("Uploaded: PREVIOUS_REVISION");
         }
-        
-        if (isset($this->server['maintenance_file'])) {
-            $this->set_file($this->server['maintenance_file'], $this->server['maintenance_off_value']);
-            GitDeploy::logmessage("Turned maintenance mode off.");
-        }
-        
+        if($this->maintenance){
+			$this->set_file('.htaccess', $this->htaccess?$this->htaccess:file_get_contents(SURIKAT_PATH.'.htaccess'));
+			GitDeploy::logmessage("Turned maintenance mode off");
+		}
         GitDeploy::logmessage("Finished working on: {$this->host}");
     }
 }

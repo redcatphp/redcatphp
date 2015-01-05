@@ -83,8 +83,4 @@ ignore_files[] = another/file/toignore.php
 upload_untracked[] = folder/to/upload
 upload_untracked[] = another/file/toignore.php
 
-maintenance_file = 'maintenance.php'
-maintenance_on_value = '<?php $under_maintenance = true;?>'
-maintenance_off_value = '<?php $under_maintenance = false;?>'
-
 */

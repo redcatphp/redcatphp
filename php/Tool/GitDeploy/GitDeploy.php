@@ -44,17 +44,20 @@ abstract class GitDeploy{
 				'port' => 21,
 				'path' => '/',
 				'passive' => true,
+				'maintenance' => true,
 				'clean_directories' => [],
 				'ignore_files' => [],
 				'upload_untracked' => []
-					], $options);
+			], $options);
 			if($parent){
 				$options['path'] = dirname(rtrim($options['path'],'/')).'/'.$parent;
 				$options['clean_directories'] = [];
+				$options['maintenance'] = false;
 			}
 			if($child){
 				$options['path'] = rtrim($options['path'],'/').'/'.$child;
 				$options['clean_directories'] = [];
+				$options['maintenance'] = false;
 			}
 			if (!$options['skip']) {
 				unset($options['skip']);
