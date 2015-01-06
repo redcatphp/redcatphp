@@ -36,6 +36,14 @@ class I18n extends Faceted {
 		$ctrl->getView()->onCompile(function($TML)use($lang,$path,$langMap){
 			View_Toolbox::i18nGettext($TML);
 			View_Toolbox::i18nRel($TML,$lang,$path,$langMap);
+			if($langMap){
+				foreach($TML('a[href]') as $a){
+					if(strpos($a->href,'://')===false&&strpos($a->href,'javascript:')!==0&&strpos($a->href,'#')!==0){
+						if(($k=array_search($a->href,$langMap))!==false)
+							$a->href = $k;
+					}
+				}
+			}
 		});
 		return $templatePath;
 	}
