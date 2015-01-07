@@ -1,88 +1,118 @@
 <?php namespace Surikat\Tool\GitDeploy;
 use Surikat\Core\ConfigINI;
-abstract class GitDeploy{
-	static $writeToLog;
-	static function main($config=null,$parent=null,$child=null){
+use Surikat\Core\Arrays;
+class GitDeploy{
+	static function factory($repoPath=null){
+		return new self($repoPath);
+	}
+	protected $origin;
+	protected $repoPath;
+	protected $config = [
+		'target_commit' => 'HEAD',
+		'list_only' => false,
+	];
+	protected $iniServers;
+	protected $maintenance;
+	protected $servers = [];
+	protected $options = [
+		'skip' => false,
+		'scheme' => 'ftp',
+		'host' => '',
+		'user' => '',
+		'branch' => null,
+		'pass' => '',
+		'port' => 21,
+		'path' => '/',
+		'passive' => true,
+		'clean_directories' => [],
+		'ignore_files' => [],
+		'upload_untracked' => []
+	];
+	function __construct($repoPath=null,$config=null){
 		ini_set('memory_limit', '256M');
-		$argv = (array)@$_SERVER['argv'];
-        $commands = ['-l', '-r', '-c', '-d', '--revert', '--repo'];
-        $opts = getopt("lr:d:c:", ["revert", "log::", "repo:"]);
-        if (isset($opts['c']))
-            $opts['r'] = $opts['c'];
-        if (isset($opts['repo']))
-            $repo_path = $opts['repo'];
-        else
-            $repo_path = SURIKAT_PATH;
-        $args = [
-            'target_commit' => isset($opts['r']) ? $opts['r'] : 'HEAD',
-            'list_only' => isset($opts['l']),
-            'revert' => isset($opts['revert']),
-            'repo_path' => $repo_path
-        ];
-		if(isset($config))
-			$args = array_merge($args,$config);
-		if($parent)
-			$parent = pathinfo($args['repo_path'],PATHINFO_FILENAME);
-		if($child)
-			$child = pathinfo($args['repo_path'],PATHINFO_FILENAME);
-		$iniServers = ConfigINI::deploy();
-        if(!$iniServers)
-            return GitDeploy::error("Invalid deploy configuration");
-        $servers = [];
-		foreach ($iniServers as $uri => $options){
-			if(!is_array($options))
+        $this->repoPath = $repoPath;
+        $this->options = Arrays::merge_recursive($this->options,ConfigINI::deploy(':shared:'));
+		$this->iniServers = $config?$config:ConfigINI::deploy();
+        if(!$this->iniServers)
+            return self::error("Invalid deploy configuration");
+		foreach($this->iniServers as $uri=>$options){
+			if(!is_array($options)||$uri==':shared:')
 				continue;
-			if (stristr($uri, "://") !== false)
-				$options = array_merge($options, parse_url($uri));
-			$options = array_merge([
-				'skip' => false,
-				'scheme' => 'ftp',
-				'host' => '',
-				'user' => '',
-				'branch' => null,
-				'pass' => '',
-				'port' => 21,
-				'path' => '/',
-				'passive' => true,
-				'maintenance' => true,
-				'clean_directories' => [],
-				'ignore_files' => [],
-				'upload_untracked' => []
-			], $options);
-			if($parent){
-				$options['path'] = dirname(rtrim($options['path'],'/')).'/'.$parent;
-				$options['clean_directories'] = [];
-				$options['maintenance'] = false;
-			}
-			if($child){
-				$options['path'] = rtrim($options['path'],'/').'/'.$child;
-				$options['clean_directories'] = [];
-				$options['maintenance'] = false;
-			}
-			if (!$options['skip']) {
+			if(strpos($uri, ":/")!==false)
+				$options = parse_url($uri);
+			$options = array_merge($this->options, $options);
+			if(!$options['skip']){
 				unset($options['skip']);
 				$type = __NAMESPACE__.'\\'.strtoupper($options['scheme']);
-				$servers[$uri] = new $type($options);
+				$this->servers[$uri] = new $type($options);
 			}
 		}
-		
-		$git = new Git($args['repo_path']);
-		foreach ($servers as $server) {
-			if ($args['revert'])
-				$server->revert($git, $args['list_only']);
-			else
-				$server->deploy($git, $git->interpret_target_commit($args['target_commit'], $server->server['branch']), false, $args['list_only']);
-		}
 	}
-	static function logmessage($message) {
-		static $log_handle = null;
-		$log = "[" . @date("Y-m-d H:i:s O") . "] " . $message . PHP_EOL;
-		if (self::$writeToLog){
-			if ($log_handle===null) 
-				$log_handle = fopen(self::$writeToLog, 'a');
-			fwrite($log_handle, $log);
+	function maintenanceOn(){
+		$this->maintenance = true;
+		return $this;
+	}
+	function maintenanceOff(){
+		$this->maintenance = false;
+		return $this;
+	}
+	function getOrigin(){
+		return $this->origin?$this->origin:$this;
+	}
+	function getParent($path=null){
+		$c = clone $this;
+		$c->origin = $this;
+		if(!isset($path))
+			$path = $c->repoPath;
+		else
+			$c->repoPath = $path;
+		$path = pathinfo($path,PATHINFO_FILENAME);
+		foreach($c->servers as $server){
+			$server->setPath(dirname(rtrim($server->server['path'],'/')).'/'.$path);
+			$server->server['clean_directories'] = [];
 		}
-		echo $log;
+		return $c;
+	}
+	function getChild($path=null){
+		$c = clone $this;
+		$c->origin = $this;
+		if(!isset($path))
+			$path = $c->repoPath;
+		else
+			$c->repoPath = $path;
+		$path = pathinfo($path,PATHINFO_FILENAME);
+		foreach($c->servers as $server){
+			$server->setPath(rtrim($server->server['path'],'/').'/'.$path);
+			$server->server['clean_directories'] = [];
+		}
+		return $c;
+	}
+	function revert($path=null){
+		if(!isset($path))
+			$path = $this->repoPath;
+		$git = new Git($path);
+		foreach($this->servers as $server)
+			$server->revert($git, $this->config['list_only'],$this->maintenance);
+		return $this;
+	}
+	function deploy($path=null){
+		if(!isset($path))
+			$path = $this->repoPath;
+		$git = new Git($path);
+		foreach($this->servers as $server)
+			$server->deploy($git, $git->interpret_target_commit($this->config['target_commit'], $server->server['branch']), false, $this->config['list_only'], $this->maintenance);
+		return $this;
+	}
+	function autocommit($path=null){ //need the .git have recursively full permission (www-data have to be able to write)
+		if(!isset($path))
+			$path = $this->repoPath;
+		$git = new Git($path);
+		$git->autocommit();
+		return $this;
+	}
+	
+	static function logmessage($message) {
+		echo '['.@date("Y-m-d H:i:s O")."] $message\n";
 	}
 	static function error($message){
 		self::logmessage("ERROR: $message");
