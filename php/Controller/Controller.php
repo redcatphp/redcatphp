@@ -21,7 +21,14 @@ class Controller{
 				SURIKAT_SPATH.$hook.'/',
 			]);
 		}
-		$this->View->set('URI',$Router);
+		$v = $this->getView();
+		$v->set('URI',$Router);
+		$v->onCompile(function($TML){
+			ViewToolbox::registerPresenter($TML);
+			ViewToolbox::JsIs($TML);
+			if(!Dev::has(Dev::VIEW))
+				ViewToolbox::autoMIN($TML);
+		});
 		$this->display($path.'.tml');
 	}
 	function setRouter($Router){
@@ -34,18 +41,21 @@ class Controller{
 		$this->View = $View;
 	}
 	function getView(){
-		if(!isset($this->View))
+		if(!isset($this->View)){
 			$this->setView(new View());
+			$this->View->setController($this);
+		}
 		return $this->View;
 	}
 	function addPrefixTmlCompile($prefix){
 		$this->prefixTmlCompile .= $prefix;
 	}
 	function display($file){
-		$this->View->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
-		$this->View->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
+		$v = $this->getView();
+		$v->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
+		$v->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
 		try{
-			$this->View->display($file);
+			$v->display($file);
 		}
 		catch(\Surikat\View\Exception $e){
 			$this->error($e->getMessage());
@@ -53,7 +63,7 @@ class Controller{
 	}
 	function error($c){
 		try{
-			$this->View->display($c.'.tml');
+			$this->getView()->display($c.'.tml');
 		}
 		catch(\Surikat\View\Exception $e){
 			HTTP::code($e->getMessage());

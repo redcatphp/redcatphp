@@ -1,13 +1,10 @@
 <?php namespace Surikat\Dispatcher;
 use Surikat\Core\Dev;
-use Surikat\Core\HTTP;
 use Surikat\Core\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;
-use Surikat\View\Toolbox as ViewToolbox;
 use Route\ByTml;
 use Controller\Controller;
-
 class Index extends Dispatcher{
 	protected $Controller;
 	protected $View;
@@ -29,12 +26,6 @@ class Index extends Dispatcher{
 			->prepend('service/',['Service\\Service','method'])
 			->append(new ByTml(),$this)
 		;
-		$this->getView()->onCompile(function($TML){
-			ViewToolbox::registerPresenter($TML);
-			ViewToolbox::JsIs($TML);
-			if(!Dev::has(Dev::VIEW))
-				ViewToolbox::autoMIN($TML);
-		});
 	}
 	function run($path){
 		if(! parent::run($path) ){
