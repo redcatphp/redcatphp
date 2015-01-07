@@ -11,11 +11,11 @@ class Service_Deploy{
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
 			->maintenanceOn()
-			->autocommit()
-			->deploy()
 			->getChild(SURIKAT_SPATH)
 				->deploy()
 			->getOrigin()
+				->autocommit()
+				->deploy()
 				->maintenanceOff()
 		;
 	}
