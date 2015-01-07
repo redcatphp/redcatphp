@@ -105,10 +105,7 @@ class Query {
 								$binds = $sql->getParams();
 							$sql = $sql->getQuery();
 						}
-						//if(is_array($binds))
-							//$args = self::nestBinding($sql,$binds);
-						//else
-							$args = [$sql,$binds];
+						$args = [$sql,$binds];
 						if($un){
 							if(is_array($args[1])&&empty($args[1]))
 								$args[1] = null;
