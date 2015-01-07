@@ -56,6 +56,10 @@ class GitDeploy{
 		$this->maintenance = false;
 		return $this;
 	}
+	function __clone(){
+		foreach(array_keys($this->servers) as $k)
+			$this->servers[$k] = clone $this->servers[$k];
+	}
 	function getOrigin(){
 		return $this->origin?$this->origin:$this;
 	}

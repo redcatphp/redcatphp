@@ -1,8 +1,10 @@
 <?php namespace Surikat\Service;
 use Surikat\Tool\GitDeploy\GitDeploy;
+use Surikat\Core\HTTP;
 class Service_Deploy{
 	protected static function directOutput(){
 		set_time_limit(0);
+		HTTP::nocacheHeaders();
 		ob_implicit_flush(true);
 		@ob_end_flush();
 		echo '<pre>';
