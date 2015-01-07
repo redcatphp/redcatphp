@@ -24,7 +24,8 @@ class Controller{
 		$v = $this->getView();
 		$v->set('URI',$Router);
 		$v->onCompile(function($TML){
-			ViewToolbox::registerPresenter($TML);
+			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
+				$TML->prepend('<Presenter:Basic uri="static" />');
 			ViewToolbox::JsIs($TML);
 			if(!Dev::has(Dev::VIEW))
 				ViewToolbox::autoMIN($TML);

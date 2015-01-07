@@ -60,10 +60,6 @@ class Toolbox{
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
 	}
-	static function registerPresenter($TML){
-		if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
-			$TML->prepend('<Presenter:Basic uri="static" />');
-	}
 	static function i18nGettext($TML,$cache=true){
 		$TML('html')->attr('lang',Lang::currentLangCode());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
