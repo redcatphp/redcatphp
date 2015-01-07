@@ -69,7 +69,7 @@ class Git {
 			},substr($file,1,-1));
 		return $file;
 	}
-    protected function get_file_contents($path) {
+    function get_file_contents($path) {
     	$temp = tempnam(sys_get_temp_dir(), "git-deploy-");
     	$this->exec("show $path", "> \"$temp\"");
     	return file_get_contents($temp);
