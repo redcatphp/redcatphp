@@ -108,7 +108,10 @@ namespace Surikat\I18n{
 					foreach(self::$systemLocales as $lc){
 						if(strpos($lc,$this->locale.'_')===0){
 							if(!is_dir($this->localesRoot.'/'.$lc)){
-								symlink($this->localesRoot.'/'.$this->locale,$this->localesRoot.'/'.$lc);
+								$cwd = getcwd();
+								chdir($this->localesRoot);
+								symlink($this->locale,$this->localesRoot.'/'.$lc);
+								chdir($cwd);
 							}
 							if(false!==$p=strpos($lc,'.'))
 								$lc = substr($lc,0,$p);
