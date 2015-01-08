@@ -621,7 +621,16 @@ abstract class PARSER{
 			return $c;
 		return 'View\\TML';
 	}
-
+	function evalue($v,$vars=null){
+		if(isset($vars))
+			extract($vars);
+		ob_start();
+		eval('?>'.$v);
+		return ob_get_clean();
+	}
+	function evaluate(){
+		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
+	}
 	protected function parse($arg,$params=null,$noload=null){
 		$this->clean();
 		if(!is_string($arg))
@@ -632,7 +641,7 @@ abstract class PARSER{
 		$pos = 0;
 		if(preg_match_all('/\\{\\{::(.*?)::\\}\\}/', $arg, $matches))
 			foreach($matches[1] as $i=>$eve)
-				$arg = substr($arg,0,$pos=strpos($arg,$matches[0][$i],$pos)).eval('return '.$eve.';').substr($arg,$pos+strlen($matches[0][$i]));
+				$arg = substr($arg,0,$pos=strpos($arg,$matches[0][$i],$pos)).$this->evalue($eve).substr($arg,$pos+strlen($matches[0][$i]));
 		$this->parseML($arg);
 		if(!$noload)
 			$this->triggerLoaded();

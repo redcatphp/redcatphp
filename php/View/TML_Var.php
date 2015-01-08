@@ -9,7 +9,7 @@ class TML_Var extends TML{
 		if(!$var)
 			return;
 		if(isset($this->cache)){
-			$val = eval('?>'.$this->getInnerTml());
+			$val = $this->evalue($this->getInnerTml());
 			$this->innerHead('<?php $'.$var.'='.var_export($val,true).';?>');
 		}
 		else{

@@ -5,10 +5,8 @@ abstract class CALL_APL extends CORE{
 	function callback(){
 		$this->remapAttr('selector');
 		if($this->__isset('compile')){
-			ob_start();
-			eval('?>'.$this->__get('compile'));
+			$this->__set('selector',$this->evalue($this->__get('compile')));
 			$this->__unset('compile');
-			$this->__set('selector',ob_get_clean());
 		}
 		if(!isset($this->callback))
 			$this->callback = lcfirst(substr($c=get_class($this),(strrpos($c,'_')+1)));
@@ -41,16 +39,12 @@ abstract class CALL_APL extends CORE{
 			$eve = substr($eve,1);
 			$plus++;
 		}
-		ob_start();
-		eval('?>'.$prefix.$eve.$sufix);
-		$eve = ob_get_clean();
+		$eve = $this->evalue($prefix.$eve.$sufix,['__this'=>$__this]);
 		if($plus){
 			for($i=0;$i<$plus;$i++){
 				if(strpos($eve,'<?')===false)
 					break;
-				ob_start();
-				eval('?>'.$eve);
-				$eve = ob_get_clean();
+				$eve = $this->evalue($eve,['__this'=>$__this]);
 			}
 		}
 		return $eve;

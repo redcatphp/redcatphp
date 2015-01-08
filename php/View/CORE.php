@@ -32,9 +32,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	
 	private $selectorService;
 	
-	function evalue(){
-		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
-	}
 	function recursiveMethod($callback,$node=null,$args=null){
 		if(func_num_args()<2)
 			$node = &$this;
@@ -114,7 +111,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if($php)
 			$this->View->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
 		if($ev)
-			$this->View->cacheV($h,$this->evalue());
+			$this->View->cacheV($h,$this->evaluate());
 		$this->clear();
 		$this->head('<?php if($__including=$this->cacheInc(\''.$h.'\''.($extra!==null?(','.(is_string($extra)?"'".str_replace("'","\'",$extra)."'":'unserialize('.serialize($extra).')')):'').'))include $__including;?>');
 	}
@@ -811,9 +808,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function presentProperty(){
 		if(strpos(func_get_arg(0),'<?')!==false){
 			extract((array)$this->View->present);
-			ob_start();
-			eval('?>'.func_get_arg(0));
-			return ob_get_clean();
+			return $this->evalue(func_get_arg(0));
 		}
 		return func_get_arg(0);
 	}

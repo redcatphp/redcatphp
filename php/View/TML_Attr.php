@@ -10,11 +10,8 @@ class TML_Attr extends CALL_APL {
 			if($ev = $this->__get('eval'))
 				$this->__unset('eval');
 			foreach($this->attributes as $k=>$v){
-				if($ev){
-					ob_start();
-					eval('?>'.$v);
-					$v = ob_get_clean();
-				}
+				if($ev)
+					$v = $this->evalue($v);
 				if($k=='selector')
 					continue;
 				elseif($k=="removeAttr"){
