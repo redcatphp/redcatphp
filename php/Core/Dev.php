@@ -21,16 +21,11 @@ abstract class Dev{
 	static function has($d){
 		return !!($d&self::$level);
 	}
-	static function toogle($d){
-		return self::level($d^self::$level);
-	}
 	static function on($d){
-		if(!self::has($d))
-			return self::toogle($d);
+		return self::level($d|self::$level);
 	}
 	static function off($d){
-		if(self::has($d))
-		return self::toogle($d);
+		return self::level($d^self::$level);
 	}
 	static function level($l=null){
 		$oldLevel = self::$level;
