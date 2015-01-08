@@ -30,7 +30,7 @@ class Toolbox{
 	}
 	static function autoMIN($TML){
 		if(!Dev::has(Dev::CSS)){
-			foreach($TML('link[href]') as $l)
+			foreach($TML('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
 				if(strpos($l,'://')===false)
 					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 		}
