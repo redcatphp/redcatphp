@@ -187,18 +187,18 @@ class CssParser extends TextParser{
 		if (!$this->match("/^\:/"))
 			return false;
 		if (!list($name) = $this->is("identifier"))
-			throw new TextParserException("Invalid identifier", $this);
+			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
 		$filter = array_key_exists($name, $this->_pseudoFilters)? $this->_pseudoFilters[$name] : null;
 		if ($filter === null)
-			throw new TextParserException("Unknown pseudo-filter", $this);
+			throw new TextParserException("Unknown pseudo-filter".$this->_node->exceptionContext(), $this);
 		$input = "";
 		if ($this->eq("(")){
 			if (!$input = $this->is($filter["entity"]))
-				throw new TextParserException("Invalid input", $this);
+				throw new TextParserException("Invalid input".$this->_node->exceptionContext(), $this);
 			if (is_array($input))
 				$input = $input[0];
 			if (!$this->eq(")"))
-				throw new TextParserException("Invalid expression", $this);
+				throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
 		}
 		$pseudoFilter = CssParserFilterPseudoFactory::getInstance(
 			$filter["classname"], $input, $filter["user_def_function"]
@@ -212,13 +212,13 @@ class CssParser extends TextParser{
 		if (!$this->match("/^\[/"))
 			return false;
 		if (!list($attrName) = $this->is("identifier"))
-			throw new TextParserException("Invalid identifier", $this);
+			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
 		if (list($op) = $this->is("attrOperator")) {
 			if (!list($value) = $this->is("value"))
-				throw new TextParserException("Invalid attribute operator", $this);
+				throw new TextParserException("Invalid attribute operator".$this->_node->exceptionContext(), $this);
 		}
 		if (!$this->eq("]"))
-			throw new TextParserException("Invalid expression", $this);
+			throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
 		return new CssParserFilterAttr($attrName, $op, $value);
 	}
 	protected function idFilter(){
@@ -226,7 +226,7 @@ class CssParser extends TextParser{
 		if (!$this->match("/^\#/"))
 			return false;
 		if (!list($id) = $this->is("identifier"))
-			throw new TextParserException("Invalid identifier", $this);
+			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
 		return new CssParserFilterId($id);
 	}
 	protected function classFilter(){
@@ -234,7 +234,7 @@ class CssParser extends TextParser{
 		if (!$this->match("/^\./"))
 			return false;
 		if (!list($className) = $this->is("identifier"))
-			throw new TextParserException("Invalid identifier", $this);
+			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
 		return new CssParserFilterClass($className);
 	}
 	protected function filter(){
@@ -269,7 +269,7 @@ class CssParser extends TextParser{
 		$combinator = null;
 		if ($combinator = $this->is("combinator")) {
 			if (!$element = $this->is("element"))
-				throw new TextParserException("Invalid expression", $this);
+				throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
 		}
 		elseif ($element = $this->is("element"))
 			$combinator = CssParserCombinatorFactory::getInstance("CssParserCombinatorDescendant");

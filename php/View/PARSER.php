@@ -661,8 +661,11 @@ abstract class PARSER{
 	}
 	protected function throwException($msg){
 		if($this->View)
-			$msg .= ' on "'.$this->View->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+			$msg .= $this->exceptionContext();
 		throw new Exception_TML($msg);
+	}
+	function exceptionContext(){
+		return ' on "'.$this->View->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 	}
 }
 PARSER::initialize();
