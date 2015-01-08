@@ -31,7 +31,7 @@ abstract class Dev{
 		$oldLevel = self::$level;
 		if(isset($l)){
 			self::$level = $l;
-			if((self::has(self::PHP)&&!self::$phpDev)||(!self::has(self::PHP)&&self::$phpDev))
+			if(!isset(self::$phpDev)||(self::has(self::PHP)&&!self::$phpDev)||(!self::has(self::PHP)&&self::$phpDev))
 				self::errorReport(self::$level);
 		}
 		return $oldLevel;
