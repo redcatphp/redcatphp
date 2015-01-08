@@ -18,6 +18,7 @@ header('Retry-After: 3600');
 			<div class="error-details">
 				Sorry for the inconvenience but we're performing some maintenance at the moment. We'll be back online shortly!
 			</div>
+			<input action="action" type="button" value="Retry" onclick="history.go(-1);" />
 		</div>
 	</article>
 </body>
