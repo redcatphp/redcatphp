@@ -3,6 +3,7 @@ use Surikat\Core\Dev;
 use Surikat\Core\SCSSCServer;
 use Surikat\Core\SCSSC;
 use Surikat\Core\HTTP;
+use Surikat\Core\FS;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
 class Service_Synaptic {
