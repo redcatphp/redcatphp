@@ -22,7 +22,6 @@ class Controller{
 			]);
 		}
 		$v = $this->getView();
-		$v->set('URI',$Router);
 		$v->onCompile(function($TML){
 			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 				$TML->prepend('<Presenter:Basic uri="static" />');
@@ -53,6 +52,7 @@ class Controller{
 	}
 	function display($file){
 		$v = $this->getView();
+		$v->set('URI',$this->getRouter());
 		$v->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
 		$v->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
 		try{
@@ -64,7 +64,9 @@ class Controller{
 	}
 	function error($c){
 		try{
-			$this->getView()->display($c.'.tml');
+			$v = $this->getView();
+			$v->set('URI',$this->getRouter());
+			$v->display($c.'.tml');
 		}
 		catch(\Surikat\View\Exception $e){
 			HTTP::code($e->getMessage());
