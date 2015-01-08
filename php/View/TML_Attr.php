@@ -18,7 +18,7 @@ class TML_Attr extends CALL_APL {
 				elseif(strpos($k,'add')===0&&ctype_upper(substr($k,3,1))){
 					$key = lcfirst(substr($k,3));
 					$apply->children($this->selector,true)->each(function($o)use($key,$v){
-						if(!isset($o->attributes[$key])||strpos($o->attributes[$key],$v)===false)
+						if(!isset($o->attributes[$key])||strpos($o->attributes[$key],"$v")===false)
 							$o->attr($key,trim($o->$key.' '.$v));
 					});
 				}
