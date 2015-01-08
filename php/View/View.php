@@ -19,6 +19,7 @@ class View {
 	var $isXhtml;
 	var $present;
 	protected $devCompileFile;
+	protected $vars = [];
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
 		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
@@ -245,8 +246,6 @@ class View {
 			$this->_cacheV($cache[0],$cache[1]);
 		return $this->compileStore($file,$str);
 	}
-	
-	protected $vars = [];
     function get($key=null){
 		if(!func_num_args())
 			return $this->vars;
@@ -270,6 +269,9 @@ class View {
             unset($this->vars[$key]);
     }
     
+    function getVars(){
+		return $this->vars;
+	}
     function __set($k,$v){
 		$this->vars[$k] = $v;
 	}

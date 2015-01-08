@@ -1,7 +1,8 @@
 <?php namespace Surikat\View;
 class TML_Eval extends CALL_APL {
 	function load(){
-		$this->replaceWith($this->evalue($this));
+		$vars = isset($this->View)?$this->View->getVars():null;
+		$this->replaceWith($this->evalue($this,$vars));
 	}
 	function applyLoad($apply = null){
 		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended)){
