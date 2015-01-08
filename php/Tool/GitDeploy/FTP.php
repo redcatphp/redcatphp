@@ -81,7 +81,7 @@ class FTP extends Server{
             $filelist = ftp_nlist($this->connection, $file_or_directory);
             foreach ($filelist as $file) 
                 if ($file != '.' and $file != '..')
-                    $this->recursive_remove($file);
+                    $this->recursive_remove($file_or_directory.'/'.$file);
             $this->recursive_remove($file_or_directory, true);
         }
     }
@@ -90,7 +90,7 @@ class FTP extends Server{
 			GitDeploy::logmessage("Created directory: $file");
     }
     function unset_file($file) {
-        $this->recursive_remove($file);
+        $this->recursive_remove($this->server['path'].'/'.$file);
         GitDeploy::logmessage("Deleted: $file");
     }
 }

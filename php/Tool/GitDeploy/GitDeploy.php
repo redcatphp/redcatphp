@@ -73,7 +73,7 @@ class GitDeploy{
 		$path = pathinfo($path,PATHINFO_FILENAME);
 		foreach($c->servers as $server){
 			$server->setPath(dirname(rtrim($server->server['path'],'/')).'/'.$path);
-			$server->server['clean_directories'] = [];
+			$server->clean_directories = [];
 		}
 		return $c;
 	}
@@ -87,7 +87,7 @@ class GitDeploy{
 		$path = pathinfo($path,PATHINFO_FILENAME);
 		foreach($c->servers as $server){
 			$server->setPath(rtrim($server->server['path'],'/').'/'.$path);
-			$server->server['clean_directories'] = [];
+			$server->server->clean_directories = [];
 		}
 		return $c;
 	}
