@@ -1,0 +1,38 @@
+<eval>
+	<?
+		$langDir = 'langs/';
+		$lgC = I18n\Lang::get();
+		$lgD = Core\Config::langs('default');
+		$langs = [$lgD];
+		foreach(glob($langDir.'*.ini') as $langFile)
+			$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
+	?>
+	<foreach "$langs as $lg">
+		<?
+			$language = Tool\Punic\Language::getName($lg,$lg);
+			$language = Core\STR::ucfirst($language);
+			$lcPath = $URI[0];
+			if($lg!=$lgC){
+				if($lg==$lgD){
+					$langMap = parse_ini_file($langDir.$lgC.'.ini');
+					if(isset($langMap[$lcPath]))
+						$lcPath = $langMap[$lcPath];
+				}
+				else{
+					$langMap = parse_ini_file($langDir.$lg.'.ini');
+					if(($k=array_search($lcPath,$langMap)))
+						$lcPath = $k;
+				}
+			}
+			$lcLink = Core\Domain::getSubdomainHref($lg!=$lgD?$lg:null);
+			$lcLink .= $lcPath;
+		?>
+		<li>
+			<if "$lg==$lgC">
+				<span><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></span>
+			<else>
+				<a href="<?=$lcLink?>" rel="alternate" hreflang="<?=$lg?>" lang="<?=$lg?>"><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></a>
+			</if>
+		</li>
+	</foreach>
+</eval>
