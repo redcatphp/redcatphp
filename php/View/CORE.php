@@ -1,6 +1,5 @@
 <?php namespace Surikat\View;
 use Surikat\Core\Dev;
-use Surikat\View;
 use Surikat\View\TML;
 use Surikat\View\TML_Apply;
 use Surikat\View\CssSelector;
