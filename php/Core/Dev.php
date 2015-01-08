@@ -16,33 +16,41 @@ abstract class Dev{
 	const SERVER = 382; //PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
 	const NAV = 3712; //URI+JS+CSS+IMG
 	const ALL = 4094;
+	private static $phpDev;
 	private static $level = 0;
 	static function has($d){
 		return !!($d&self::$level);
 	}
-	static function on($d){
+	static function toogle($d){
 		return self::level($d^self::$level);
 	}
+	static function on($d){
+		if(!self::has($d))
+			return self::toogle($d);
+	}
 	static function off($d){
-		return self::level($d&self::$level);
+		if(self::has($d))
+		return self::toogle($d);
 	}
 	static function level($l=null){
 		$oldLevel = self::$level;
 		if(isset($l)){
 			self::$level = $l;
-			if(self::has(self::PHP))
+			if((self::has(self::PHP)&&!self::$phpDev)||(!self::has(self::PHP)&&self::$phpDev))
 				self::errorReport(self::$level);
 		}
 		return $oldLevel;
 	}
 	static function errorReport($e=true){
 		if($e){
+			self::$phpDev = false;
 			error_reporting(-1);
 			ini_set('display_startup_errors',true);
 			ini_set('display_errors','stdout');
 			ini_set('html_errors',false);
 		}
 		else{
+			self::$phpDev = true;
 			error_reporting(0);
 			ini_set('display_startup_errors',false);
 			ini_set('display_errors',false);
