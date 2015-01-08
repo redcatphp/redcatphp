@@ -7,7 +7,14 @@ class TML_Attr extends CALL_APL {
 	}
 	function applyLoad($apply = null){
 		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended)){
+			if($ev = $this->__get('eval'))
+				$this->__unset('eval');
 			foreach($this->attributes as $k=>$v){
+				if($ev){
+					ob_start();
+					eval('?>'.$v);
+					$v = ob_get_clean();
+				}
 				if($k=='selector')
 					continue;
 				elseif($k=="removeAttr"){
