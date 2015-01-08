@@ -47,6 +47,9 @@ namespace Surikat\I18n{
 				$o = self::current();
 			return $o->gettext($msgid);
 		}
+		static function get(){
+			return self::currentLangCode();
+		}
 		static function currentLangCode(){
 			return self::current()->getLangCode();
 		}
