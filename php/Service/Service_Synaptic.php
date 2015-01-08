@@ -93,8 +93,10 @@ class Service_Synaptic {
 			return false;
 		set_time_limit(0);
 		$c = JS::minify(file_get_contents($f));
-		if(!Dev::has(Dev::JS))
+		if(!Dev::has(Dev::JS)){
+			FS::mkdir($min,true);
 			file_put_contents($min,$c,LOCK_EX);
+		}
 		if(!headers_sent())
 			header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
@@ -115,8 +117,11 @@ class Service_Synaptic {
 		else
 			$c = file_get_contents($f);
 		$c = CSS::minify($c);
-		if(!Dev::has(Dev::CSS))
-			file_put_contents(dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css',$c,LOCK_EX);
+		if(!Dev::has(Dev::CSS)){
+			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
+			FS::mkdir($min,true);
+			file_put_contents($min,$c,LOCK_EX);
+		}
 		if(!headers_sent())
 			header('Content-Type:text/css; charset=utf-8');
 		echo $c;
