@@ -89,6 +89,27 @@ class Service_Synaptic {
 			break;
 		}
 	}
+	static function cleanMini($ext=null){
+		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
+		if(!is_file($f))
+			return;
+		foreach(file($f) as $file){
+			$file = trim($file);
+			if(empty($file))
+				continue;
+			if($ext&&$ext!=pathinfo($file,PATHINFO_EXTENSION))
+				continue;
+			$file = realpath($file);
+			if($file)
+				unlink($file);
+		}
+		unlink($f);
+	}
+	protected static function registerMini($min){
+		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
+		FS::mkdir($f,true);
+		file_put_contents($f,$min."\n",FILE_APPEND|LOCK_EX);
+	}
 	protected static function minifyJS($f,$min){
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
@@ -96,6 +117,7 @@ class Service_Synaptic {
 		$c = JS::minify(file_get_contents($f));
 		if(!Dev::has(Dev::JS)){
 			FS::mkdir($min,true);
+			self::registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}
 		if(!headers_sent())
@@ -121,6 +143,7 @@ class Service_Synaptic {
 		if(!Dev::has(Dev::CSS)){
 			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
 			FS::mkdir($min,true);
+			self::registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}
 		if(!headers_sent())
