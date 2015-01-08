@@ -1,10 +1,10 @@
 <?php namespace Surikat\Core;
 abstract class STR{
 	static function ucfirst($str){
-		return self::toupper(substr($str,0,1)).substr($str,1);
+		return self::toupper(mb_substr($str,0,1,mb_detect_encoding($str))).mb_substr($str,1,null,mb_detect_encoding($str));
 	}
 	static function lcfirst($str){
-		return self::tolower(substr($str,0,1)).substr($str,1);
+		return self::tolower(mb_substr($str,0,1,mb_detect_encoding($str))).mb_substr($str,1,null,mb_detect_encoding($str));
 	}
 	static function toupper($str){
 		return mb_strtoupper($str,mb_detect_encoding($str));
