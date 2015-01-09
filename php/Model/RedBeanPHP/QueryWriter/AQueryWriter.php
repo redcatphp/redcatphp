@@ -1136,7 +1136,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		return $this->esc( $column, $noQuotes );
 	}
 	public function safeTable( $table, $noQuotes = FALSE ){
-		return $this->safeColumn( $this->prefix.$table, $noQuotes );
+		return $this->esc( $this->prefix.$table, $noQuotes );
 	}
 	public function esc( $dbStructure, $dontQuote = FALSE ){
 		$this->check( $dbStructure );
@@ -1164,5 +1164,15 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 			}
 		}
 		return [$type,$alias?$alias:$type];
+	}
+	
+	/**
+	* @see QueryWriter::inferFetchType
+	*
+	* Default implementation, makes sure it does not affect
+	* any QueryWriters not overriding this method.
+	*/
+	public function inferFetchType( $type, $property ){
+		return NULL;
 	}
 }

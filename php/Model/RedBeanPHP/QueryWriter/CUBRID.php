@@ -37,12 +37,17 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 	/**
 	 * Obtains the keys of a table using the\PDO schema function.
+	 * Gets the exported keys from $table1 and the imported keys from $table2.
+	 * I dont know why CUBRID uses this approach but alas.
+	 * If you want both exports and imports from the same table just pass the
+	 * same table twice.
 	 *
-	 * @param string $table
+	 * @param string $table table 1 (exported keys)
+	 * @param string $table2 table 2 (imported keys)
 	 *
 	 * @return array
 	 */
-	protected function getKeys( $table, $table2 = NULL )
+	protected function getExportImportKeys( $table, $table2 = NULL )
 	{
 		$pdo  = $this->adapter->getDatabase()->getPDO();
 
@@ -102,7 +107,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 
 		$targetColumn    = $this->safeColumn( $targetField );
 
-		$keys            = $this->getKeys( $targetTableNoQ, $tableNoQ );
+		$keys            = $this->getExportImportKeys( $targetTableNoQ, $tableNoQ );
 
 		$needsToDropFK   = FALSE;
 
@@ -345,9 +350,23 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	}
 
 	public function _drop($t){
-		foreach ( $this->getKeys( $t ) as $k ) {
+		foreach ( $this->getExportImportKeys( $t ) as $k ) {
 			$this->adapter->exec( "ALTER TABLE \"{$k['FKTABLE_NAME']}\" DROP FOREIGN KEY \"{$k['FK_NAME']}\"" );
 		}
 		$this->adapter->exec( "DROP TABLE \"$t\"" );
+	}
+	
+	/**
+	* @see QueryWriter::inferFetchType
+	*/
+	public function inferFetchType( $type, $property ){
+		$type = $this->safeTable( $type, TRUE );
+		$field = $this->safeColumn( $property, TRUE ) . '_id';
+		$keys = $this->getExportImportKeys($type, $type);
+		foreach( $keys as $key ) {
+			if ( $key['FKTABLE_NAME'] === $type && $key['FKCOLUMN_NAME'] === $field )
+				return $key['PKTABLE_NAME'];
+		}
+		return NULL;
 	}
 }

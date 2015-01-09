@@ -61,7 +61,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$tableName = $this->safeTable( $type, TRUE );
 		$columns   = $this->getColumns( $type );
 		$indexes   = $this->getIndexes( $type );
-		$keys      = $this->getKeys( $type );
+		$keys      = $this->getKeyMapForTable( $type );
 
 		return [
 			'columns' => $columns,
@@ -154,7 +154,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 *
 	 * @return array $keysInfo keys information
 	 */
-	protected function getKeys( $type )
+	protected function getKeyMapForTable( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys  = $this->adapter->get( "PRAGMA foreign_key_list('$table')" );
@@ -454,5 +454,21 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		} catch (\Exception $e ) {
 		}
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
+	}
+	
+	/**
+	* @see QueryWriter::inferFetchType
+	*/
+	public function inferFetchType( $type, $property )
+	{
+		$type = $this->safeTable( $type, TRUE );
+		$field = $this->safeColumn( $property, TRUE ) . '_id';
+		$keys = $this->getKeyMapForTable( $type );
+		foreach( $keys as $key ) {
+			if ( 
+				$key['from'] === $field
+			) return $key['table'];
+		}
+		return NULL;
 	}
 }
