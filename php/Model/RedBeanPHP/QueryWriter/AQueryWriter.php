@@ -179,10 +179,10 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $str ));
 	}
 	static function camelCase($str){
-		$snake = ucwords(str_replace('_', ' ', $snake));
-        $snake = str_replace(' ', '', $snake);
-        $snake = lcfirst($str);
-		return $snake;
+		$str = ucwords(str_replace('_', ' ', $str));
+        $str = str_replace(' ', '', $str);
+        $str = lcfirst($str);
+		return $str;
 	}
 	static function camelsSnakeCase(){
 		if(func_num_args())
