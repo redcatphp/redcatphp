@@ -1,7 +1,7 @@
 <?php namespace Surikat\Service; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
 use Surikat\Tool;
 use Surikat\Tool\PhpGit\Git;
-class Service_Gitview{
+class ServiceGitview{
 	static function surikat(){
 		self::main(SURIKAT_SPATH);
 	}

@@ -13,7 +13,12 @@ abstract class Service {
 			return true;
 		}
 	}
-	static function __funcToCm($func){
+	protected static function StudlyCaps($str){
+		$str = ucwords(str_replace('_', ' ', $str));
+        $str = str_replace(' ', '', $str);
+		return $str;
+	}
+	protected static function __funcToCm($func){
 		$pos = strpos($func,'_');
 		$c = 'Service\\Service';
 		if($pos){
@@ -24,6 +29,8 @@ abstract class Service {
 			$c = $c.'_'.ucfirst($func);
 			$m = 'method';
 		}
+		$c = self::StudlyCaps($c);
+		$m = self::StudlyCaps($m);
 		return [$c,$m];
 	}
 }

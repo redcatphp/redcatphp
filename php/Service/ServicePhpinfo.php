@@ -1,5 +1,5 @@
 <?php namespace Surikat\Service;
-class Service_Phpinfo{
+class ServicePhpinfo{
 	static function method(){
 		phpinfo();
 	}

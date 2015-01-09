@@ -6,7 +6,7 @@ use Surikat\Core\HTTP;
 use Surikat\Core\FS;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
-class Service_Synaptic {
+class ServiceSynaptic {
 	static function method(){
 		if(isset($_GET['file']))
 			self::load($_GET['file']);

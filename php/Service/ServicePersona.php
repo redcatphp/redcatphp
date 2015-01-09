@@ -1,6 +1,6 @@
 <?php namespace Surikat\Service;
 use Surikat\Core\Session;
-class Service_Persona {
+class ServicePersona {
     protected $audience; //Scheme, hostname and port
 	static function email(){
 		header('Content-Type: application/json; charset=UTF-8');

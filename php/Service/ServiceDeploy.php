@@ -1,7 +1,7 @@
 <?php namespace Surikat\Service;
 use Surikat\Tool\GitDeploy\GitDeploy;
 use Surikat\Core\HTTP;
-class Service_Deploy{
+class ServiceDeploy{
 	protected static function directOutput(){
 		set_time_limit(0);
 		HTTP::nocacheHeaders();

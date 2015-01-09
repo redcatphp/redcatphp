@@ -18,7 +18,7 @@ foreach([
 	'JSON'
 ] as $inc)
 	require dirname(__FILE__).'/../control/'.$inc.'.php';
-abstract class Service_Kompiler{
+abstract class ServiceKompiler{
 	static $httpCache = 4000; //in second
 	static $PATH = 'Surikat';
 	static $surikat = 'index.php';

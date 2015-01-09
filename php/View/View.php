@@ -6,7 +6,7 @@ use Surikat\Core\FS;
 use Surikat\Tool\PHP;
 use Surikat\Tool\Min\HTML as minHTML;
 use Surikat\Tool\Min\PHP as minPHP;
-use Surikat\Service\Service_Synaptic;
+use Surikat\Service\ServiceSynaptic;
 class View {
 	var $forceCompile;
 	var $path;
@@ -118,7 +118,7 @@ class View {
 			unlink($this->devCompileFile);
 			FS::rmdir($this->dirCompile);
 			FS::rmdir($this->dirCache);
-			Service_Synaptic::cleanMini();
+			ServiceSynaptic::cleanMini();
 		}
 		else{
 			if(Dev::has(Dev::VIEW)){
@@ -126,9 +126,9 @@ class View {
 				file_put_contents($this->devCompileFile,'');
 			}
 			if(Dev::has(Dev::CSS))
-				Service_Synaptic::cleanMini('css');
+				ServiceSynaptic::cleanMini('css');
 			if(Dev::has(Dev::CSS))
-				Service_Synaptic::cleanMini('js');
+				ServiceSynaptic::cleanMini('js');
 		}
 	}
 	function display($file=null,$vars=[]){
