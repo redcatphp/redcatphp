@@ -2,7 +2,7 @@
 use Surikat\Core\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
-use Surikat\Dispatcher\Index;
+use Dispatcher\Index;
 use Surikat\Core\Domain;
 class Basic extends ArrayObject{
 	static function load(TML $tml){

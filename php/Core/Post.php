@@ -3,10 +3,10 @@ use Surikat\Core\ArrayObject;
 class Post extends ArrayObject{
 	private static $postObject;
 	function offsetGet($k){
-		return ($v=parent::offsetGet($k))==''?null:$v;
+		return ($v=parent::offsetGet($k))===''?null:$v;
 	}
 	function __get($k){
-		return ($v=parent::__get($k))==''?null:$v;
+		return ($v=parent::__get($k))===''?null:$v;
 	}
 	static function getObject(){
 		if(!isset(self::$postObject))

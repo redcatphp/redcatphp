@@ -155,6 +155,8 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	function __toString(){
 		if(Dev::has(Dev::CONTROL))
 			return $this->__debug();
+		else
+			return '';
 	}
 	function __debug(){
 		return '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
