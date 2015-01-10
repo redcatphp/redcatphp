@@ -42,7 +42,7 @@ $js([
 		};
 		var out;
 		var init;
-		var initPersona = function(){
+		var initPersona = function(launch){
 			$js('https://login.persona.org/include.js',function(){
 				navigator.id.watch({
 					onlogin: function(as){
@@ -71,6 +71,8 @@ $js([
 						});
 						if(out)
 							navigator.id.logout();
+						if(launch)
+							loginBTN.click();
 						init = false;
 					}
 				});
@@ -85,7 +87,9 @@ $js([
 		}
 		else{
 			init = true;
-			initPersona();
+			loginBTN.on('click',function(){
+				initPersona(true);
+			}).show();
 		}
 	});
 	$js('md5');
