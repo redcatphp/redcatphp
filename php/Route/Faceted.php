@@ -4,6 +4,8 @@ class Faceted implements ArrayAccess{
 	protected $separatorAnd = '+';
 	protected $separatorEq = ':';
 	protected $separatorOr = '&';
+	protected $path;
+	protected $uriParams = [];
 	function buildPath(){
 		$uriParams = $this->uriParams;
 		$path = array_shift($uriParams);
@@ -44,11 +46,8 @@ class Faceted implements ArrayAccess{
 		$this->uriParams = $uriParams;
 		return $uriParams;
 	}
-	
-	protected $path;
-	protected $uriParams = [];
 	function __toString(){
-		return (string)$this->getPath();
+		return (string)$this->buildPath();
 	}
 	function getPath(){
 		return $this->path;
