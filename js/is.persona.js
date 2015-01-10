@@ -55,9 +55,11 @@ $js([
 					},
 					onlogout: function(){
 						if(out||!init){
-							$.get('service/persona/logout',function(){
-								logoffCALL();
-								out = false;
+							$.get('service/persona/logout',function(res){
+								if(res=='ok'){
+									logoffCALL();
+									out = false;
+								}
 							});
 						}
 					},
