@@ -10,12 +10,13 @@ class Faceted implements ArrayAccess{
 		$uriParams = $this->uriParams;
 		$path = array_shift($uriParams);
 		foreach($uriParams as $k=>$param){
-			if(is_integer($k))
-				$path .= $this->separatorsAnd;
-			else
-				$path .= $this->separatorsEq;
+			$path .= $this->separatorAnd;
+			if(!is_integer($k)){
+				$path .= $k;
+				$path .= $this->separatorEq;
+			}
 			if(is_array($param))
-				$param = implode($this->separatorsOr,$param);
+				$param = implode($this->separatorOr,$param);
 			$path .= $param;
 		}
 		return $path;
