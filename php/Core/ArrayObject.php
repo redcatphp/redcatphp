@@ -186,4 +186,10 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 			array_push($args,$this->getArray());
 		return call_user_func_array($f,$args);
 	}
+	function getClone(){
+		foreach($this as $k=>$v){
+			if($v instanceof ArrayObject)
+				$this[$k] = $v->getClone();
+		}
+	}
 }
