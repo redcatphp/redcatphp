@@ -26,8 +26,15 @@ abstract class Domain {
 	}
 	static function getSuffixHref(){
 		if(!isset(static::$suffixHref)){
-			if($_SERVER['DOCUMENT_ROOT'].'/'!=SURIKAT_PATH)
-				static::$suffixHref = substr(SURIKAT_PATH,strlen($_SERVER['DOCUMENT_ROOT'])+1);
+			if(isset($_SERVER['CWD'])){
+				static::$suffixHref = ltrim($_SERVER['CWD'],'/');				
+			}
+			else{
+				$docRoot = $_SERVER['DOCUMENT_ROOT'].'/';
+				//$docRoot = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+				if($docRoot!=SURIKAT_PATH&&strpos(SURIKAT_PATH,$docRoot)===0)
+					static::$suffixHref = substr(SURIKAT_PATH,strlen($docRoot));
+			}
 		}
 		return static::$suffixHref;
 	}
