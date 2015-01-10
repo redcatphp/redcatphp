@@ -2,9 +2,9 @@
 class TML_If extends TML {
 	protected $hiddenWrap = true;
 	function load(){
-		array_unshift($this->head,'<?php if('.$this->evalSource().'){?>');
+		array_unshift($this->head,'<?php if('.$this->evalSource()."){?>\n");
 		if(!$this->selfClosed)
-			array_push($this->foot,'<?php }?>');
+			array_push($this->foot,"<?php }?>\n");
 	}
 	
 	function evalSource($justCode=null){
