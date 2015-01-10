@@ -1,6 +1,6 @@
 <?php namespace Surikat\View;
 use I18n\Lang;
-use Surikat\Core\Domain;
+use Core\Domain;
 use Surikat\Core\Dev;
 class Toolbox{
 	static function JsIs($TML,$href='css/is.'){
