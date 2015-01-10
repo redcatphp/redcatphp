@@ -26,15 +26,20 @@ abstract class Base {
 			$params = null;
 			$once = true;
 		}
-		foreach(array_keys($this->$k) as $i)
+		$r = null;
+		foreach(array_keys($this->$k) as $i){
 			if(!isset($v)||$this->{$k}[$i]==$v){
 				$found = $this->_remove_params($k,$i,$params);
 				if(!isset($params)||$found)
 					unset($this->{$k}[$i]);
-				$this->{$k} = array_values($this->{$k}); //reindex
-				if((isset($params)&&$found)||(!isset($params)&&$once))
-					return $i;
+				if((isset($params)&&$found)||(!isset($params)&&$once)){
+					$r = $i;
+					break;
+				}
 			}
+		}
+		$this->{$k} = array_values($this->{$k}); //reindex
+		return $r;
 	}
 	function unTableJoin($table=null,$join=null,$params=null){
 		$this->remove_property('tables',[$table,$join],$params);
