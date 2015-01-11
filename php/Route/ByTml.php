@@ -11,7 +11,7 @@ class ByTml extends Faceted{
 		}
 	}
 	function __invoke(&$uri){
-		if($this->dirHook&&strpos($uri,'/'.$this->dirHook.'/')!==0)
+		if($this->dirHook&&strpos($uri,$this->dirHook.'/')!==0)
 			return;
 		$params = parent::__invoke($uri);
 		if($this->dirHook)
