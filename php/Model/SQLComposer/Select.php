@@ -172,11 +172,10 @@ class Select extends Where {
 		return Base::_render_bool_expr($having);
 	}
 	function render($removeUnbinded=true) {
-		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific
-		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
+		$with = empty($this->with) ? '' : 'WITH \n\t'.implode(", \n\t", $this->with); //Postgresql specific
+		$columns = empty($this->columns) ? '*' : "\n\t".implode(", \n\t", $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
 		$from = '';
-			
 		$tables = [];
 		$joins = [];
 		$mt = $this->getMainTable();
@@ -191,14 +190,14 @@ class Select extends Where {
 				$joins[] = $t[0];
 		}
 		foreach($tables as $t){
-			$from .= "\n";
+			$from .= "\n\t";
 			if(strpos($t,'(')===false&&strpos($t,')')===false&&strpos($t,' ')===false&&strpos($t,$this->writer->quoteCharacter)===false)
 				$from .= $this->Query->quote($this->writer->prefix.$t);
 			else
 				$from .= $t;
 			if(isset($joins[$t])){
 				foreach($joins[$t] as $j){
-					$from .= "\n\t".$j;
+					$from .= "\n\t\t".$j;
 				}
 				unset($joins[$t]);
 			}
