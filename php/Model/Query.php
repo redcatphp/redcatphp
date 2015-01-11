@@ -617,27 +617,27 @@ class Query {
 		extract($this->heuristic($reload));
 		foreach($parents as $parent){
 			foreach($this->listOfColumns($parent,null,$reload) as $col){
-				$this->select($this->writer->autoWrapCol($q.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
+				$this->select($this->writer->autoWrapCol($q.$this->prefix.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 				$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.$col.$q);
 			}
-			$this->join("LEFT OUTER JOIN {$q}{$parent}{$q} ON {$q}{$parent}{$q}.{$q}id{$q}={$q}{$this->table}{$q}.{$q}{$parent}_id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$parent}{$q} ON {$q}{$this->prefix}{$parent}{$q}.{$q}id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
 			foreach($fieldsShareds[$share] as $col)
-				$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
+				$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
 			$rel = [$this->table,$share];
 			sort($rel);
 			$rel = implode('_',$rel);
-			$this->join("LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
-			$this->join("LEFT OUTER JOIN {$q}{$share}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$share}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$rel}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$share}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$this->prefix}{$share}{$q}.{$q}id{$q}");
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col){
 				if(strrpos($col,'_id')!==strlen($col)-3)
-					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
+					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			}
-			$this->join("LEFT OUTER JOIN {$q}{$own}{$q} ON {$q}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$own}{$q} ON {$q}{$this->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns))){
 			$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
