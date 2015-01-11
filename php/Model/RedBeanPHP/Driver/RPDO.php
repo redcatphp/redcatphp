@@ -3,6 +3,7 @@
 namespace Surikat\Model\RedBeanPHP\Driver;
 
 use Surikat\Core\Dev;
+use Surikat\Core\Chrono;
 use Surikat\Model\RedBeanPHP\Driver as Driver;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
@@ -147,8 +148,9 @@ class RPDO implements Driver
 
 			$this->bindParams( $statement, $bindings );
 
+			if(Dev::has(Dev::DBSPEED))
+				Chrono::start($suid=uniqid());
 			$statement->execute();
-			
 			if(Dev::has(Dev::DBSPEED)){
 				if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
 					$explain = $this->pdo->prepare( 'EXPLAIN '.$sql, [\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ] );
@@ -158,6 +160,7 @@ class RPDO implements Driver
 				$this->bindParams( $explain, $bindings );
 				$explain->execute();
 				$explain = $explain->fetchAll();
+				$this->debugger()->log(Chrono::display($suid));
 				$this->debugger()->log(implode("\n",array_map(function($entry){
 					return implode("\n",$entry);
 				}, $explain)));
