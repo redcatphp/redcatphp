@@ -194,8 +194,10 @@ class RPDO implements Driver
 			if ( $this->debug && $this->logger )
 				$this->logger->log( 'An error occurred: ' . $err );
 			
-			if(Dev::has(Dev::MODEL))
+			if(Dev::has(Dev::MODEL)){
 				$this->debugger()->log('An error occurred: '.$err);
+				$this->debugger()->log($sql, $bindings);
+			}
 				
 			$exception = new SQL( $err, 0 );
 			$exception->setSQLState( $e->getCode() );
