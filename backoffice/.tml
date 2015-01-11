@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>BackOffice</title>
+		<link href="/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+		<link href="/css/jquery-ui/themes/base.css" rel="stylesheet" />
+		<link href="/backoffice/jdesktop/jdesktop.css" rel="stylesheet" />
+		<link href="/backoffice/jdesktop/forms.css" rel="stylesheet" />
+		<link href="/backoffice/jdesktop/text.css" rel="stylesheet" />
+		<link href="/backoffice/jdesktop/app.css" rel="stylesheet" />
+		<!--[if IE]>
+		<link href="/backoffice/jdesktop/ie-all.css" rel="stylesheet" type="text/css" />  
+		<![endif]-->
+		<!--[if lte IE 8]>
+		<link href="/backoffice/jdesktop/ie.css" rel="stylesheet" type="text/css" />  
+		<![endif]-->
+	</head>
+	<body>
+		<?
+			$db=(object)@include('model/config.php');
+			$config=(object)[];
+		?>
+		<div id="wrapper">
+			<div id="desktop">
+				<div id="desktop_iconarea"></div>
+			</div>
+			<div id="widgets"></div>
+			<div id="topmenu">
+				<ul></ul>
+			</div>
+			<div id="taskbar">
+				<a id="showdesktop" href="#" title="Show desktop">Menu</a>
+				<div class="separator"></div>
+				<div class="taskbarbuttons" id="taskbarbuttons"></div>
+				<div class="separator"></div>
+			</div>
+		</div>
+		<script src="/js/jquery.js"></script>
+		<script src="/js/scrollTo.js"></script>
+		<script src="/js/jquery-ui/jquery-ui.js"></script>
+		<script src="/backoffice/jdesktop/jdesktop.js"></script>
+		<script src="/backoffice/jdesktop/widgets.js"></script>
+		<style>
+		.backoffice-window{
+			width:99%;
+			height:99%;
+			padding:0;
+			margin:0 auto;
+			border:0;
+		}
+		.contentarea h1{
+			color:#FF0000;
+		}
+		.surikat-bo-updater, .surikat-bo-updater a{
+			color:#FF0000;
+			text-decoration:none;
+			font-size:11px;
+			font-weight:bold;
+			text-transform:uppercase;
+		}
+		.surikat-bo-updater{
+			margin-right: 5px;
+			padding: 5px;
+			position: absolute;
+			right: 0;
+		}
+		.surikat-bo-updater a{
+			padding-left:5px;
+		}
+		</style>
+		<script type="application/javascript">$(document).ready(function(){	
+			var handleF5 = function(e){
+				if((!e.ctrlKey&&!e.metaKey&&e.which===116) || ((e.ctrlKey||e.metaKey)&&e.which===82)){ 
+					var zIndex = 0;
+					var select = false;
+					$('#desktop div.window:visible').each(function(){
+						var z = $(this).css('z-index');
+						if(z>zIndex){
+							zIndex = z;
+							select = $(this).attr('id');
+						}
+					});
+					if(select){
+						e.preventDefault();
+						var o = $('#'+select).find('iframe.backoffice-window');
+						o.attr('src',o.contents().get(0).location.href);
+						return false;
+					}
+				}
+			};	
+			$(document).on('keydown', handleF5);
+			
+			$.ajaxSetup({
+				cache:false
+			});
+			nJDSK.init();	
+			/*addMenu params: parent, id, title, href, icon, function(optional)*/
+			// nJDSK.menuHelper.addMenu('','externals','Externals','#','');
+			// nJDSK.menuHelper.addMenu('externals','adminer','AdminerDB','../adminer/','../images/icon-link.png');
+			nJDSK.menuHelper.addMenu('','help','?','#','');
+			nJDSK.menuHelper.addMenu('help','about','&Agrave; propos de Surikat','#','/img/surikat-ico.png',function(){
+				$.get('./about.txt',function(about){
+					nJDSK.customHeaderDialog(
+							'Surikat - OpenSource-Web-FrameWork',
+							'SurikatFramework',
+							about,
+							[
+								{
+									type:'ok_yes',
+									value:'OK',
+									callback:function(win)
+									{
+										win.close();
+									}
+								}
+							],
+							false,
+							750,
+							525
+					);
+				});
+				return false;
+			});
+			var BackofficeAddIcon = function(k,v){
+				nJDSK.iconHelper.addIcon(k,(typeof(v)!='undefined'&&typeof(v.label)!='undefined'?v.label:k),'/backoffice/jdesktop/images/'+(typeof(v)!='undefined'&&typeof(v.icon)!='undefined'?v.icon:k+'.png'),function(e){
+					e.preventDefault();
+					var id = 'backoffice_window_'+k;
+					var msg = '<iframe id="'+id+'" class="backoffice-window" src="'+(typeof(v)!='undefined'&&typeof(v.url)!='undefined'?v.url:'./'+k)+'"></iframe>';
+					var newWindow = new nJDSK.Window($(document).width()-40,$(document).height()-80,(typeof(v)!='undefined'&&typeof(v.label)!='undefined'?v.label:k),'',msg, nJDSK.uniqid());
+					var iframe_window = $('#'+id).get(0).contentWindow.window;
+					iframe_window.jQuery = jQuery;
+					iframe_window.$ = $;
+					$(document).ready(function(){
+						$('#'+id).load(function(){
+							var o = $(this);
+							$(o.get(0).contentWindow.document).on('keydown', handleF5);
+							var title = o.contents().find('head title');
+							if(title.length&&title.html()){
+								o.closest('div.window').find('div.titlebar span:nth-child(1)').text(title.html());
+							}
+							if(typeof(v.callback)=='function'){
+								v.callback(o);
+							}				
+						});
+					});
+					return false;
+				});
+			};
+			
+			BackofficeAddIcon('Translator',{
+				url:'/backoffice/translator/',
+				icon:'icon_simplepo.png'
+			});
+			
+			BackofficeAddIcon('Adminer',{
+				icon:'icon_adminer.png',
+				url:'./adminer/',
+				callback:function(o){
+					var iframe = o.contents();
+					$('input[name="'+$.jqSelector('auth[server]')+'"]',iframe).val('<?=@$db->host?>');
+					$('input[name="'+$.jqSelector('auth[username]')+'"]',iframe).val('<?=@$db->user?>');
+					$('input[name="'+$.jqSelector('auth[password]')+'"]',iframe).val('<?=@$db->password?>');
+					$('input[name="'+$.jqSelector('auth[db]')+'"]',iframe).val('<?=@$db->host?>');
+					$('input[name="'+$.jqSelector('auth[permanent]')+'"]',iframe)
+						.prop('checked',true)
+						.closest('form').submit();
+				}
+			});
+			
+			BackofficeAddIcon('TimeZone',{
+				url:'./timezonepicker/',
+				icon:'icon_timezone.png'
+			});
+			
+			BackofficeAddIcon('PhpInfo',{
+				url:'../service/phpinfo',
+				icon:'icon_phpinfo.png'
+			});
+			/*
+			var show_surikat_update = function(msg){
+				if(!$('.surikat-bo-updating').length){
+					$('body').append('<div class="surikat-bo-updating"></div>');
+					$('.surikat-bo-updating').dialog({
+						title:"Mise à jour - Surikat",
+						autoOpen:false,
+						width:'70%',
+						buttons: [{
+							text: "OK",
+							click: function(){
+								$( this ).dialog( "close" );
+							}
+						}],
+						open:function(){
+							$('.surikat-bo-updater').html('Votre version est à jour');
+						}
+					});
+				}
+				$('.surikat-bo-updating').html(msg).dialog('open');
+			};
+			
+			$('body').append('<div class="surikat-bo-updater"></div>');
+			<?if(0){ ?>
+				$('.surikat-bo-updater').append('Serveur Central wildsurikat.com');
+			<?}elseif(0>time()){ ?>
+			$.get('/updater/?action=check',function(msg){
+				if(msg=='no-changes'){
+					$('.surikat-bo-updater').append('Votre version est à jour');
+				}
+				else if(msg=='no-connection'){
+					$('.surikat-bo-updater').append('Impossible de se connecter au serveur de mises à jour');
+				}
+				else if(msg=='no-response'){
+					$('.surikat-bo-updater').append('Pas de réponse du serveur de mises à jour');
+				}
+				else{
+					$('.surikat-bo-updater').append('<a href="#" class="surikat-bo-update">Mise à jour vers '+msg+'</a>');
+					$('a.surikat-bo-update').click(function(e){
+						e.preventDefault();
+						$.get('/updater/?action=upgrade',function(msg){
+							show_surikat_update(msg);
+						});
+						return false;
+					});
+				}
+			});
+			<?}else{ ?>
+				$('.surikat-bo-updater').append('<a href="#" class="surikat-bo-force-update">Vérifier les mise à jour');
+				$('a.surikat-bo-force-update').click(function(e){
+					e.preventDefault();
+					$.get('/updater/?action=upgrade&force=1',function(msg){
+						show_surikat_update(msg);
+					});
+					return false;
+				});
+			<?} ?>
+			*/
+		});</script>
+	</body>
+</html>

@@ -1,0 +1,40 @@
+/**
+ * nJDesktop Virtual Desktop stylesheet for Internet Explorer all versions
+ * Copyright (C) 2012 Nagy Ervin
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by    
+ * the Free Software Foundation, either version 3 of the License, or    
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * -----------------------------------------------------------------------
+ * Nagy Ervin
+ * nagyervin.bws@gmail.com
+ * 
+ * License: GPL v.3, see COPYING
+ * 
+ * If you wish to fork this, please let me know: nagyervin.bws@gmail.com.
+ * 
+ * Please leave this header intact
+ * 
+ * -----------------------------------------------------------------------
+ * Insert your name below, if you have modified this project. If you wish 
+ * that change become part of this project (aka i will endorse it), please 
+ * send it to me.
+ * 
+ * I must remind you, that your changes will be subject to the GPL v.3.
+ * 
+ */
+
+.minimizebtn, .maximizebtn, .closebtn{box-shadow:0 0 5px #000}
+.icon:hover, .icon.activeIcon{background-color:#f0f0f0}
+.icon:hover span, .icon.activeIcon span{text-shadow: 2px 2px 3px rgba(64,64,64,0.5)}
+a.toolbar:hover{background-color:#f9f9f9}
