@@ -64,6 +64,9 @@ class Database{
 		$this->tagManager         = new TagManager( $this->toolbox );
 		
 	}
+	function getType(){
+		return $this->dbType;
+	}
 	function getName(){
 		return $this->name;
 	}

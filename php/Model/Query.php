@@ -15,6 +15,11 @@ class Query {
 	protected $composer;
 	protected $_ignore = [];
 	protected $_DataBase;
+	protected static $listOfTables;
+	protected static $heuristic;
+	function getDB(){
+		return $this->_DataBase;
+	}
 	function tableExists($table=null){
 		if(!isset($table))
 			$table = $this->table;
@@ -182,12 +187,6 @@ class Query {
 		}
 		return $args;
 	}
-	//protected function composerFrom(){
-		//$args = func_get_args();
-		//if(isset($args[0])&&strpos($args[0],'(')===false&&strpos($args[0],')')===false)
-			//$args[0] = $this->quote($this->writer->prefix.$args[0]);
-		//return $args;
-	//}
 	protected function composerWhere(){
 		$args = func_get_args();
 		if(isset($args[0])&&is_array($args[0]))
@@ -556,8 +555,6 @@ class Query {
 		if(!$this->ignoring('join',func_get_arg(0)))
 			return $this->__call(__FUNCTION__,func_get_args());
 	}
-	protected static $listOfTables;
-	protected static $heuristic;
 	function heuristic($reload=null){ //todo mode frozen
 		if(!$this->table)
 			return;

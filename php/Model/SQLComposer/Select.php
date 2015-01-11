@@ -192,7 +192,7 @@ class Select extends Where {
 		}
 		foreach($tables as $t){
 			$from .= "\n";
-			if(strpos($t,'(')===false&&strpos($t,')')===false&&strpos($t,' ')===false)
+			if(strpos($t,'(')===false&&strpos($t,')')===false&&strpos($t,' ')===false&&strpos($t,$this->writer->quoteCharacter)===false)
 				$from .= $this->Query->quote($this->writer->prefix.$t);
 			else
 				$from .= $t;
