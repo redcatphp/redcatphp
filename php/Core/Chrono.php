@@ -13,7 +13,14 @@ class Chrono {
 		return self::formatTime($v,$dec)." | ".self::sizeFromBytes(memory_get_peak_usage(),$dec);
 	}
 	static function formatTime($v,$dec=2){
-		return sprintf("%.{$dec}f", $v*(float)1000)." ms";
+		if($v>=1){
+			$u = 's';
+		}
+		else{
+			$v = $v*(float)1000;
+			$u = 'ms';
+		}
+		return sprintf("%.{$dec}f", $v).' '.$u;
 	}
 
 	private static $__times = [];
