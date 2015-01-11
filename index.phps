@@ -16,7 +16,7 @@ use Core\Dev;
 //Dev::on(Dev::I18N);
 //Dev::on(Dev::IMG);
 //Dev::on(Dev::SERVER);	//PHP+CONTROL+VIEW+PRESENT+MODEL+MODEL_SCHEMA+I18N
-//Dev::on(Dev::NAV);	//URI+JS+CSS+IMG
+//Dev::on(Dev::NAV);	//ROUTE+JS+CSS+IMG
 Dev::on(Dev::STD);	//PHP+CONTROL+VIEW+PRESENT+MODEL_SCHEMA+I18N
 Dev::on(Dev::CSS);
 Dev::on(Dev::JS);
