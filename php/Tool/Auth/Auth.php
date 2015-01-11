@@ -1,4 +1,19 @@
 <?php namespace Surikat\Tool\Auth;
+/*
+	API
+	checkSession($hash)
+	login($username, $password, $remember = 0)
+	register($email, $username, $password, $repeatpassword)
+	activate($key)
+	resendActivation($email)
+	resetPass($key, $password, $repeatpassword)
+	changePassword($uid, $currpass, $newpass, $repeatnewpass)
+	changeEmail($uid, $email, $password)
+	deleteUser($uid, $password)
+	logout($hash)
+*/
+use Surikat\Core\Config;
+			
 if (version_compare(phpversion(), '5.5.0', '<')) {
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
 }
@@ -13,7 +28,7 @@ class Auth{
 	public function __construct(\PDO $dbh, $config)
 	{
 		$this->dbh = $dbh;
-		$this->config = $config;
+		$this->config = (object)Config::auth();
 	}
 
 	/*
@@ -70,6 +85,17 @@ class Auth{
 
 			$return['message'] = "username_password_incorrect";
 			return $return;
+		}
+		else{
+			$options = ['salt' => $user['salt'], 'cost' => $this->config->bcrypt_cost];
+			if (password_needs_rehash($user['password'], PASSWORD_BCRYPT, $options)){
+				$password = password_hash($password, PASSWORD_BCRYPT, $options);
+				$query = $this->dbh->prepare("UPDATE {$this->config->table_users} SET password = ? WHERE id = ?");
+				if(!$query->execute([$password, $user['uid']])){
+					$return['message'] = "system_error";
+					return $return;
+				}
+			}
 		}
 		
 		if ($user['isactive'] != 1) {
