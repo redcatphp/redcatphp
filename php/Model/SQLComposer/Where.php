@@ -74,7 +74,10 @@ abstract class Where extends Base {
 		return $this;
 	}
 	function closeWhere() {
-		$this->where[] = [ ')' ];
+		if(is_array($e=end($this->where))&&count($e)>1)
+			array_pop($this->where);
+		else
+			$this->where[] = [ ')' ];
 		return $this;
 	}
 	function with($with,  array $params = null, $mysqli_types = "") {
