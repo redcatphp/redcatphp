@@ -2,8 +2,8 @@
 use ArrayAccess;
 use BadMethodCallException;
 use Surikat\Core\Dev;
-use Surikat\Core\STR;
 use Surikat\Model;
+use Surikat\Model\R;
 use Surikat\Model\RedBeanPHP\Database;
 use Surikat\Model\RedBeanPHP\QueryWriter;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
@@ -80,7 +80,7 @@ class Query {
 				if(is_array($paramsX=array_shift($args)))
 					$params = array_merge($params,$args);
 				$sql = $this->composer->getQuery();
-				list($sql,$params) = self::nestBinding($sql,$params);
+				list($sql,$params) = R::nestBinding($sql,$params);
 				return $this->_DataBase->$f($sql,$params);
 			}
 			return;
@@ -459,72 +459,6 @@ class Query {
 			return true;
 		return false;
 	}
-	static function nestBinding($sql,$binds){
-		do{
-			list($sql,$binds) = self::pointBindingLoop($sql,(array)$binds);
-			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
-			$containA = false;
-			foreach($binds as $v)
-				if($containA=is_array($v))
-					break;
-		}
-		while($containA);
-		return [$sql,$binds];
-	}
-	private static function pointBindingLoop($sql,$binds){
-		$nBinds = [];
-		foreach($binds as $k=>$v){
-			if(is_integer($k))
-				$nBinds[] = $v;
-		}
-		$i = 0;
-		foreach($binds as $k=>$v){
-			if(!is_integer($k)){
-				$find = ':'.ltrim($k,':');
-				while(false!==$p=strpos($sql,$find)){
-					$preSql = substr($sql,0,$p);
-					$sql = $preSql.'?'.substr($sql,$p+strlen($find));
-					$c = count(explode('?',$preSql))-1;
-					array_splice($nBinds,$c,0,[$v]);
-				}
-			}
-			$i++;
-		}
-		return [$sql,$nBinds];
-	}
-	private static function nestBindingLoop($sql,$binds){
-		$nBinds = [];
-		foreach($binds as $k=>$v){
-			if(is_array($v)){
-				$find = '?';
-				$c = count($v);
-				$av = array_values($v);
-				$i = 0;
-				$ln = 0;
-				do{
-					if($ln)
-						$p = strpos($sql,$find,$ln);
-					else
-						$p = STR::posnth($sql,$find,is_integer($k)?$k:0,$ln);
-					if($p!==false){
-						$nSql = substr($sql,0,$p);
-						$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
-						$ln = strlen($nSql);
-						$nSql .= substr($sql,$p+strlen($find));
-						$sql = $nSql;
-						for($y=0;$y<$c;$y++)
-							$nBinds[] = $av[$y];
-					}
-					$i++;
-				}
-				while(!is_integer($k)&&strpos($sql,$find)!==false);
-			}
-			else{
-				$nBinds[] = $v;
-			}
-		}
-		return [$sql,$nBinds];
-	}	
 	function ignoring($k,$ignore){
 		return isset($this->_ignore[$k])&&in_array($ignore,$this->_ignore[$k]);
 	}
