@@ -4,11 +4,14 @@ use Surikat\Core\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;
 use Route\ByTml;
+use Route\I18n;
 use Controller\Controller;
 class Index extends Dispatcher{
 	protected $Controller;
 	protected $View;
 	protected $useConvention = true;
+	protected $i18nConvention;
+	protected $backoffice = true;
 	function __construct(){
 		if($this->useConvention)
 			$this->convention();
@@ -26,6 +29,13 @@ class Index extends Dispatcher{
 			->prepend('service/',['Service\\Service','method'])
 			->append(new ByTml(),$this)
 		;
+		if($this->i18nConvention)
+			$this->prepend(new I18n($this),$this);
+		if($this->backoffice){
+			if($this->backoffice===true)
+				$this->backoffice = 'backoffice';
+			$this->append(new ByTml($this->backoffice,'backoffice'),$this);
+		}
 	}
 	function run($path){
 		if(! parent::run($path) ){
