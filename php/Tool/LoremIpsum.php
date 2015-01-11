@@ -27,7 +27,7 @@ class LoremIpsum {
 	*	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	*/
 	static function get($count=100,$wordsPerParagraph=100,$format=null,$loremipsum=null,$html=null,$mini=null){ //by surikat
-		$g = new LoremIpsum(uniqid(),$wordsPerParagraph);
+		$g = new LoremIpsum($wordsPerParagraph);
 		$str = $g->getContent($count,$format,$loremipsum);
 		if($html===false)
 			$str = strip_tags($str);
@@ -37,8 +37,10 @@ class LoremIpsum {
 	}
 	
 	private $words, $wordsPerParagraph, $wordsPerSentence;
-	// function __construct($wordsPer = 100)
-	function __construct($instance=0,$wordsPer = 100) //surikat modification for factory
+	function setWords($words){
+		$this->words = $words;
+	}
+	function __construct($wordsPer = 100)
 	{
 		$this->wordsPerParagraph = $wordsPer;
 		$this->wordsPerSentence = 24.460;
@@ -223,7 +225,7 @@ class LoremIpsum {
 		'cras' ];
 	}
 		
-	function getContent($count, $format = 'html', $loremipsum = true)
+	function getContent($count, $format = 'html', $loremipsum = false)
 	{
 		$format = strtolower($format);
 		
@@ -304,7 +306,7 @@ class LoremIpsum {
 			return $sentences;
 	}
 	
-	private function getText($count, $loremipsum)
+	function getText($count, $loremipsum=false)
 	{
 		$sentences = $this->getPlain($count, $loremipsum, false);
 		$paragraphs = $this->getParagraphArr($sentences);
@@ -348,7 +350,7 @@ class LoremIpsum {
 		return $paragraphs;
 	}
 	
-	private function getHTML($count, $loremipsum)
+	function getHTML($count, $loremipsum=false)
 	{
 		$sentences = $this->getPlain($count, $loremipsum, false);
 		$paragraphs = $this->getParagraphArr($sentences);
