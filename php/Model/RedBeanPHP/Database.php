@@ -191,7 +191,7 @@ class Database{
 	}
 
 	function inspect( $type = NULL ){
-		return ($type === NULL) ? $this->writer->_getTables() : $this->writer->getColumns( $this->writer->adaptCase($type) );
+		return ($type === NULL) ? $this->writer->getTables() : $this->writer->getColumns( $this->writer->adaptCase($type) );
 	}
 
 	function store( $bean ){

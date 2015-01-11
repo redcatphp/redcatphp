@@ -135,7 +135,7 @@ class RPDO implements Driver
 		if ( $this->debug && $this->logger ) {
 			$this->logger->log( $sql, $bindings );
 		}
-		if(Dev::has(Dev::MODEL))
+		if(Dev::has(Dev::SQL))
 			$this->debugger()->log($sql, $bindings);
 
 		try {
@@ -148,7 +148,21 @@ class RPDO implements Driver
 			$this->bindParams( $statement, $bindings );
 
 			$statement->execute();
-
+			
+			if(Dev::has(Dev::DBSPEED)){
+				if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
+					$explain = $this->pdo->prepare( 'EXPLAIN '.$sql, [\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ] );
+				} else {
+					$explain = $this->pdo->prepare( 'EXPLAIN '.$sql );
+				}
+				$this->bindParams( $explain, $bindings );
+				$explain->execute();
+				$explain = $explain->fetchAll();
+				$this->debugger()->log(implode("\n",array_map(function($entry){
+					return implode("\n",$entry);
+				}, $explain)));
+			}
+			
 			$this->affectedRows = $statement->rowCount();
 
 			if ( $statement->columnCount() ) {
@@ -162,7 +176,7 @@ class RPDO implements Driver
 						$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
 					}
 					
-					if(Dev::has(Dev::MODEL))
+					if(Dev::has(Dev::SQL))
 						$this->debugger()->log('resultset: ' . count( $this->resultArray ) . ' rows');
 				}
 				else{

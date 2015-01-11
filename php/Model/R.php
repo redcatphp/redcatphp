@@ -31,7 +31,7 @@ class R extends RedBeanPHP\Facade{
 		if($name)
 			$name = ';dbname='.$name;
 		if(!isset($frozen))
-			$frozen = !Dev::has(Dev::MODEL_SCHEMA);		
+			$frozen = !Dev::has(Dev::DB);		
 		if(!isset($case))
 			$case = true;
 		$dsn = $type.':'.$host.$port.$name;
