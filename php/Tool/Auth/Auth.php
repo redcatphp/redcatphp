@@ -6,7 +6,6 @@
 	Auth::lock($right)		COOKIE OR 403
 	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
 	
-	checkSession($hash)
 	login($username, $password, $remember = 0)
 	register($email, $username, $password, $repeatpassword)
 	activate($key)
@@ -20,6 +19,7 @@
 use Surikat\Core\Config;
 use Surikat\Core\Session;
 use Surikat\Core\FS;
+use Surikat\Model\R;
 			
 if (version_compare(phpversion(), '5.5.0', '<')) {
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
@@ -34,7 +34,7 @@ class Auth{
 	
 	private $dbh;
 	public $config;
-	public function __construct(\PDO $dbh){
+	public function __construct(){
 		$this->db = R::getDatabase();
 		$this->config = (object)Config::auth();
 	}
@@ -76,7 +76,7 @@ class Auth{
 			$options = ['salt' => $user['salt'], 'cost' => $this->config->bcrypt_cost];
 			if (password_needs_rehash($user['password'], PASSWORD_BCRYPT, $options)){
 				$password = password_hash($password, PASSWORD_BCRYPT, $options);
-				$row = R::load($this->config->table_users,$user['uid']);
+				$row = R::load($this->config->table_users,$user['id']);
 				$row->password = $password;
 				if(!$row->store()){
 					$return['message'] = "system_error";
@@ -89,7 +89,7 @@ class Auth{
 			$return['message'] = "account_inactive";
 			return $return;
 		}
-		$sessiondata = $this->addSession($user['uid'], $remember);
+		$sessiondata = $this->addSession($user['id'], $remember);
 		if($sessiondata == false) {
 			$return['message'] = "system_error";
 			return $return;
@@ -158,13 +158,13 @@ class Auth{
 			$return['message'] = $getRequest['message'];
 			return $return;
 		}
-		if($this->getUser($getRequest['uid'])['isactive'] == 1) {
+		if($this->getUser($getRequest[$this->config->table_users.'_id'])['isactive'] == 1) {
 			$this->addAttempt();
 			$this->deleteRequest($getRequest['id']);
 			$return['message'] = "system_error";
 			return $return;
 		}
-		$row = R::load($this->config->table_users,$getRequest['uid']);
+		$row = R::load($this->config->table_users,$getRequest[$this->config->table_users.'_id']);
 		$row->isactive = 1;
 		$row->store();
 		$this->deleteRequest($getRequest['id']);
@@ -242,7 +242,7 @@ class Auth{
 		return !!$this->db->getCell("SELECT id FROM {$this->config->table_users} WHERE email = ?",[$email]);
 	}
 	private function isUsernameTaken($username){
-		return !!$this->getUID($username))
+		return !!$this->getUID($username);
 	}
 	private function addUser($email, $username, $password){
 		$return['error'] = 1;
@@ -266,7 +266,7 @@ class Auth{
 		$row->password = $password;
 		$row->email = $email;
 		$row->salt = $salt;
-		if(!$row->store()(array())) {
+		if(!$row->store()){
 			$row->trash();
 			$return['message'] = "system_error";
 			return $return;
@@ -323,7 +323,7 @@ class Auth{
 			$return['message'] = "system_error";
 			return $return;
 		}
-		$row = $this->db->findOne($this->config->table_requests,' WHERE uid = ? AND type = ?',[$uid, $type]);
+		$row = $this->db->findOne($this->config->table_requests,' WHERE {$this->config->table_users}_id = ? AND type = ?',[$uid, $type]);
 		if(!$row->id){
 			$expiredate = strtotime($row['expire']);
 			$currentdate = strtotime(date("Y-m-d H:i:s"));
@@ -339,7 +339,7 @@ class Auth{
 		}
 		$key = $this->getRandomKey(20);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$request = $this->db->create($this->config->table_requests,['uid'=>$uid, 'rkey'=>$rkey, 'expire'=>$expire, 'type'=>$type]);
+		$request = $this->db->create($this->config->table_requests,[$this->config->table_users.'_id'=>$uid, 'rkey'=>$rkey, 'expire'=>$expire, 'type'=>$type]);
 		if(!$request->store()) {
 			$return['message'] = "system_error";
 			return $return;
@@ -379,11 +379,11 @@ class Auth{
 		}
 		$return['error'] = 0;
 		$return['id'] = $row['id'];
-		$return['uid'] = $row['uid'];
+		$return[$this->config->table_users.'_id'] = $row[$this->config->table_users]['id'];
 		return $return;
 	}
 	private function deleteRequest($id){
-		return $this->db->exec("DELETE FROM {$this->config->table_requests} WHERE id = ?");
+		return $this->db->exec("DELETE FROM {$this->config->table_requests} WHERE id = ?",[$id]);
 	}
 	public function validateUsername($username) {
 		$return['error'] = 1;
@@ -461,7 +461,7 @@ class Auth{
 			$return['message'] = $data['message'];
 			return $return;
 		}
-		$user = $this->getUser($data['uid']);
+		$user = $this->getUser($data[$this->config->table_users.'_id']);
 		if(!$user) {
 			$this->addAttempt();
 			$this->deleteRequest($data['id']);
@@ -475,7 +475,7 @@ class Auth{
 			return $return;
 		}
 		$password = $this->getHash($password, $user['salt']);
-		$row = R::load($this->config->table_users,$data['uid']);
+		$row = R::load($this->config->table_users,$data[$this->config->table_users.'_id']);
 		$row->password = $password;
 		if (!$row->store()) {
 			$return['message'] = "system_error";
