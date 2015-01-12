@@ -220,8 +220,11 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('read');
 	}
 	
+	function trash(){
+		return $this->Database->trash($this);
+	}
 	function store(){
-		$this->Database->store($this);
+		return $this->Database->store($this);
 	}
 	function storing(){
 		$this->_filterConvention();
