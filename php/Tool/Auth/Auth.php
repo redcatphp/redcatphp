@@ -36,6 +36,42 @@ class Auth{
 		
 	}
 	
+	const ERROR_USER_BLOCKED = 1;
+	const ERROR_NAME_SHORT = 2;
+	const ERROR_NAME_LONG = 3;
+	const ERROR_NAME_INCORRECT = 4;
+	const ERROR_NAME_INVALID = 5;
+	const ERROR_PASSWORD_SHORT = 6;
+	const ERROR_PASSWORD_LONG = 7;
+	const ERROR_PASSWORD_INVALID = 8;
+	const ERROR_PASSWORD_NOMATCH = 9;
+	const ERROR_PASSWORD_INCORRECT = 10;
+	const ERROR_PASSWORD_NOTVALID = 11;
+	const ERROR_NEWPASSWORD_SHORT = 12;
+	const ERROR_NEWPASSWORD_LONG = 13;
+	const ERROR_NEWPASSWORD_INVALID = 14;
+	const ERROR_NEWPASSWORD_NOMATCH = 15;
+	const ERROR_NAME_PASSWORD_INVALID = 16;
+	const ERROR_NAME_PASSWORD_INCORRECT = 17;
+	const ERROR_EMAIL_INVALID = 18;
+	const ERROR_EMAIL_INCORRECT = 19;
+	const ERROR_NEWEMAIL_MATCH = 20;
+	const ERROR_ACCOUNT_INACTIVE = 21;
+	const ERROR_SYSTEM_ERROR = 22;
+	const ERROR_NAME_TAKEN = 23;
+	const ERROR_EMAIL_TAKEN = 24;
+	const ERROR_AUTHENTICATION_REQUIRED = 25;
+	const ERROR_ALREADY_AUTHENTICATED = 26;
+	const ERROR_RESETKEY_INVALID = 27;
+	const ERROR_RESETKEY_INCORRECT = 28;
+	const ERROR_RESETKEY_EXPIRED = 29;
+	const ERROR_ACTIVEKEY_INVALID = 30;
+	const ERROR_ACTIVEKEY_INCORRECT = 31;
+	const ERROR_ACTIVEKEY_EXPIRED = 32;
+	const ERROR_RESET_EXISTS = 33;
+	const ERROR_ALREADY_ACTIVATED = 34;
+	const ERROR_ACTIVATION_EXISTS = 35;
+	
 	private $db;
 	public $config;
 	protected $tableRequests = 'requests';
@@ -49,167 +85,83 @@ class Auth{
 		if($this->config->tableUsers)
 			$this->tableUsers = $this->config->tableUsers;
 		$this->messages = (object)[
-			'user_blocked' => __("You are currently locked out of the system.",null,'auth'),
-
-			'name_short' => __("Username is too short.",null,'auth'),
-			'name_long' => __("Username is too long.",null,'auth'),
-			'name_incorrect' => __("Username is incorrect.",null,'auth'),
-			'name_invalid' => __("Username is invalid.",null,'auth'),
-			'name_banned' => __("This name is not allowed.",null,'auth'),
-
-			'password_short' => __("Password is too short.",null,'auth'),
-			'password_long' => __("Password is too long.",null,'auth'),
-			'password_invalid' => __("Password must contain at least one uppercase and lowercase character, and at least one digit.",null,'auth'),
-			'password_nomatch' => __("Passwords do not match.",null,'auth'),
-			'password_changed' => __("Password changed successfully.",null,'auth'),
-			'password_incorrect' => __("Current password is incorrect.",null,'auth'),
-			'password_notvalid' => __("Password is invalid.",null,'auth'),
-
-			'newpassword_short' => __("New password is too short.",null,'auth'),
-			'newpassword_long' => __("New password is too long.",null,'auth'),
-			'newpassword_invalid' => __("New password must contain at least one uppercase and lowercase character, and at least one digit.",null,'auth'),
-			'newpassword_nomatch' => __("New passwords do not match.",null,'auth'),
-			'newpassword_match' => __("New password matches previous password.",null,'auth'),
-
-			'name_password_invalid' => __("Username / Password are invalid.",null,'auth'),
-			'name_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
-			'remember_me_invalid' => __("The remember me field is invalid.",null,'auth'),
-
-			'email_short' => __("Email address is too short.",null,'auth'),
-			'email_long' => __("Email address is too long.",null,'auth'),
-			'email_invalid' => __("Email address is invalid.",null,'auth'),
-			'email_incorrect' => __("Email address is incorrect.",null,'auth'),
-			'email_banned' => __("This email address is not allowed.",null,'auth'),
-			'email_changed' => __("Email address changed successfully.",null,'auth'),
-
-			'newemail_match' => __("New email matches previous email.",null,'auth'),
-
-			'account_inactive' => __("Account has not yet been activated.",null,'auth'),
-			'account_activated' => __("Account activated.",null,'auth'),
-
-			'logged_in' => __("You are now logged in.",null,'auth'),
-			'logged_out' => __("You are now logged out.",null,'auth'),
-
-			'system_error' => __("A system error has been encountered. Please try again.",null,'auth'),
-
-			'register_success' => __("Account created. Activation email sent to email.",null,'auth'),
-			'name_taken' => __("The name is already taken.",null,'auth'),
-			'email_taken' => __("The email address is already in use.",null,'auth'),
-
-			'authentication_required' => __("Authentication required.",null,'auth'),
-			'already_authenticated' => __("You are already authenticated.",null,'auth'),
-
-			'resetkey_invalid' => __("Reset key is invalid.",null,'auth'),
-			'resetkey_incorrect' => __("Reset key is incorrect.",null,'auth'),
-			'resetkey_expired' => __("Reset key has expired.",null,'auth'),
-			'password_reset' => __("Password reset successfully.",null,'auth'),
-
-			'activekey_invalid' => __("Activation key is invalid.",null,'auth'),
-			'activekey_incorrect' => __("Activation key is incorrect.",null,'auth'),
-			'activekey_expired' => __("Activation key has expired.",null,'auth'),
-			'account_activated' => __("Account has been activated. You can now log in.",null,'auth'),
-
-			'reset_requested' => __("Password reset request sent to email address.",null,'auth'),
-			'reset_exists' => __("A reset request already exists.",null,'auth'),
-
-			'already_activated' => __("Account is already activated.",null,'auth'),
-			'activation_sent' => __("Activation email has been sent.",null,'auth'),
-			'activation_exists' => __("An activation email has already been sent.",null,'auth'),'user_blocked' => __("You are currently locked out of the system.",null,'auth'),
-
-			'name_short' => __("Username is too short.",null,'auth'),
-			'name_long' => __("Username is too long.",null,'auth'),
-			'name_incorrect' => __("Username is incorrect.",null,'auth'),
-			'name_invalid' => __("Username is invalid.",null,'auth'),
-			'name_banned' => __("This name is not allowed.",null,'auth'),
-
-			'password_short' => __("Password is too short.",null,'auth'),
-			'password_long' => __("Password is too long.",null,'auth'),
-			'password_invalid' => __("Password must contain at least one uppercase and lowercase character, and at least one digit.",null,'auth'),
-			'password_nomatch' => __("Passwords do not match.",null,'auth'),
-			'password_changed' => __("Password changed successfully.",null,'auth'),
-			'password_incorrect' => __("Current password is incorrect.",null,'auth'),
-			'password_notvalid' => __("Password is invalid.",null,'auth'),
-
-			'newpassword_short' => __("New password is too short.",null,'auth'),
-			'newpassword_long' => __("New password is too long.",null,'auth'),
-			'newpassword_invalid' => __("New password must contain at least one uppercase and lowercase character, and at least one digit.",null,'auth'),
-			'newpassword_nomatch' => __("New passwords do not match.",null,'auth'),
-			'newpassword_match' => __("New password matches previous password.",null,'auth'),
-
-			'name_password_invalid' => __("Username / Password are invalid.",null,'auth'),
-			'name_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
-			'remember_me_invalid' => __("The remember me field is invalid.",null,'auth'),
-
-			'email_short' => __("Email address is too short.",null,'auth'),
-			'email_long' => __("Email address is too long.",null,'auth'),
-			'email_invalid' => __("Email address is invalid.",null,'auth'),
-			'email_incorrect' => __("Email address is incorrect.",null,'auth'),
-			'email_banned' => __("This email address is not allowed.",null,'auth'),
-			'email_changed' => __("Email address changed successfully.",null,'auth'),
-
-			'newemail_match' => __("New email matches previous email.",null,'auth'),
-
-			'account_inactive' => __("Account has not yet been activated.",null,'auth'),
-			'account_activated' => __("Account activated.",null,'auth'),
-
-			'logged_in' => __("You are now logged in.",null,'auth'),
-			'logged_out' => __("You are now logged out.",null,'auth'),
-
-			'system_error' => __("A system error has been encountered. Please try again.",null,'auth'),
-
-			'register_success' => __("Account created. Activation email sent to email.",null,'auth'),
-			'name_taken' => __("The name is already taken.",null,'auth'),
-			'email_taken' => __("The email address is already in use.",null,'auth'),
-
-			'authentication_required' => __("Authentication required.",null,'auth'),
-			'already_authenticated' => __("You are already authenticated.",null,'auth'),
-
-			'resetkey_invalid' => __("Reset key is invalid.",null,'auth'),
-			'resetkey_incorrect' => __("Reset key is incorrect.",null,'auth'),
-			'resetkey_expired' => __("Reset key has expired.",null,'auth'),
-			'password_reset' => __("Password reset successfully.",null,'auth'),
-
-			'activekey_invalid' => __("Activation key is invalid.",null,'auth'),
-			'activekey_incorrect' => __("Activation key is incorrect.",null,'auth'),
-			'activekey_expired' => __("Activation key has expired.",null,'auth'),
-			'account_activated' => __("Account has been activated. You can now log in.",null,'auth'),
-
-			'reset_requested' => __("Password reset request sent to email address.",null,'auth'),
-			'reset_exists' => __("A reset request already exists.",null,'auth'),
-
-			'already_activated' => __("Account is already activated.",null,'auth'),
-			'activation_sent' => __("Activation email has been sent.",null,'auth'),
-			'activation_exists' => __("An activation email has already been sent.",null,'auth'),
+		
+			self::ERROR_USER_BLOCKED => __("You are currently locked out of the system",null,'auth'),
+			self::ERROR_NAME_SHORT => __("Username is too short",null,'auth'),
+			self::ERROR_NAME_LONG => __("Username is too long",null,'auth'),
+			self::ERROR_NAME_INCORRECT => __("Username is incorrect",null,'auth'),
+			self::ERROR_NAME_INVALID => __("Username is invalid",null,'auth'),
+			self::ERROR_PASSWORD_SHORT => __("Password is too short",null,'auth'),
+			self::ERROR_PASSWORD_LONG => __("Password is too long",null,'auth'),
+			self::ERROR_PASSWORD_INVALID => __("Password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
+			self::ERROR_PASSWORD_NOMATCH => __("Passwords do not match",null,'auth'),
+			self::ERROR_PASSWORD_INCORRECT => __("Current password is incorrect",null,'auth'),
+			self::ERROR_PASSWORD_NOTVALID => __("Password is invalid",null,'auth'),
+			self::ERROR_NEWPASSWORD_SHORT => __("New password is too short",null,'auth'),
+			self::ERROR_NEWPASSWORD_LONG => __("New password is too long",null,'auth'),
+			self::ERROR_NEWPASSWORD_INVALID => __("New password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
+			self::ERROR_NEWPASSWORD_NOMATCH => __("New passwords do not match",null,'auth'),
+			self::ERROR_NAME_PASSWORD_INVALID => __("Username / Password are invalid",null,'auth'),
+			self::ERROR_NAME_PASSWORD_INCORRECT => __("Username / Password are incorrect",null,'auth'),
+			self::ERROR_EMAIL_INVALID => __("Email address is invalid",null,'auth'),
+			self::ERROR_EMAIL_INCORRECT => __("Email address is incorrect",null,'auth'),
+			self::ERROR_NEWEMAIL_MATCH => __("New email matches previous email",null,'auth'),
+			self::ERROR_ACCOUNT_INACTIVE => __("Account has not yet been activated",null,'auth'),
+			self::ERROR_SYSTEM_ERROR => __("A system error has been encountered. Please try again",null,'auth'),
+			self::ERROR_NAME_TAKEN => __("The name is already taken",null,'auth'),
+			self::ERROR_EMAIL_TAKEN => __("The email address is already in use",null,'auth'),
+			self::ERROR_AUTHENTICATION_REQUIRED => __("Authentication required",null,'auth'),
+			self::ERROR_ALREADY_AUTHENTICATED => __("You are already authenticated",null,'auth'),
+			self::ERROR_RESETKEY_INVALID => __("Reset key is invalid",null,'auth'),
+			self::ERROR_RESETKEY_INCORRECT => __("Reset key is incorrect",null,'auth'),
+			self::ERROR_RESETKEY_EXPIRED => __("Reset key has expired",null,'auth'),
+			self::ERROR_ACTIVEKEY_INVALID => __("Activation key is invalid",null,'auth'),
+			self::ERROR_ACTIVEKEY_INCORRECT => __("Activation key is incorrect",null,'auth'),
+			self::ERROR_ACTIVEKEY_EXPIRED => __("Activation key has expired",null,'auth'),
+			self::ERROR_RESET_EXISTS => __("A reset request already exists",null,'auth'),
+			self::ERROR_ALREADY_ACTIVATED => __("Account is already activated",null,'auth'),
+			self::ERROR_ACTIVATION_EXISTS => __("An activation email has already been sent",null,'auth'),
+			
+			self::OK_PASSWORD_CHANGED => __("Password changed successfully",null,'auth'),
+			self::OK_EMAIL_CHANGED => __("Email address changed successfully",null,'auth'),
+			self::OK_ACCOUNT_ACTIVATED => __("Account has been activated. You can now log in",null,'auth'),
+			self::OK_ACCOUNT_DELETED => __("Account has been deleted",null,'auth'),
+			self::OK_LOGGED_IN => __("You are now logged in",null,'auth'),
+			self::OK_LOGGED_OUT => __("You are now logged out",null,'auth'),
+			self::OK_REGISTER_SUCCESS => __("Account created. Activation email sent to email",null,'auth'),
+			self::OK_PASSWORD_RESET => __("Password reset successfully",null,'auth'),
+			self::OK_RESET_REQUESTED => __("Password reset request sent to email address",null,'auth'),
+			self::OK_ACTIVATION_SENT => __("Activation email has been sent",null,'auth'),
 		];
 	}
 	
 	public function login($name, $password){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validateUsername = $this->validateUsername($name);
 		$validatePassword = $this->validatePassword($password);
 		if ($validateUsername['error'] == 1) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->name_password_invalid;
+			$return['message'] = self::ERROR_NAME_PASSWORD_INVALID;
 			return $return;
 		} elseif($validatePassword['error'] == 1) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->name_password_invalid;
+			$return['message'] = self::ERROR_NAME_PASSWORD_INVALID;
 			return $return;
 		}
 		$uid = $this->getUID(strtolower($name));
 		if(!$uid) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->name_password_incorrect;
+			$return['message'] = self::ERROR_NAME_PASSWORD_INCORRECT;
 			return $return;
 		}
 		$user = $this->getUser($uid);
 		if (!password_verify($password, $user['password'])) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->name_password_incorrect;
+			$return['message'] = self::ERROR_NAME_PASSWORD_INCORRECT;
 			return $return;
 		}
 		else{
@@ -219,23 +171,23 @@ class Auth{
 				$row = $this->db->load($this->tableUsers,(int)$user['id']);
 				$row->password = $password;
 				if(!$row->store()){
-					$return['message'] = $this->messages->system_error;
+					$return['message'] = self::ERROR_SYSTEM_ERROR;
 					return $return;
 				}
 			}
 		}
-		if (!isset($user['isactive'])||$user['isactive'] != 1) {
+		if (!isset($user['active'])||$user['active'] != 1) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->account_inactive;
+			$return['message'] = self::ERROR_ACCOUNT_INACTIVE;
 			return $return;
 		}
 		$sessiondata = $this->addSession($user['id']);
 		if($sessiondata == false) {
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->logged_in;
+		$return['message'] = self::OK_LOGGED_IN;
 		Session::setKey($user['id']);
 		return $return;
 	}
@@ -243,7 +195,7 @@ class Auth{
 	public function register($email, $name, $password, $repeatpassword){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validateEmail = $this->validateEmail($email);
@@ -259,17 +211,17 @@ class Auth{
 			$return['message'] = $validatePassword['message'];
 			return $return;
 		} elseif($password !== $repeatpassword) {
-			$return['message'] = $this->messages->password_nomatch;
+			$return['message'] = self::ERROR_PASSWORD_NOMATCH;
 			return $return;
 		}
 		if ($this->isEmailTaken($email)) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->email_taken;
+			$return['message'] = self::ERROR_EMAIL_TAKEN;
 			return $return;
 		}
 		if ($this->isUsernameTaken($name)) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->name_taken;
+			$return['message'] = self::ERROR_NAME_TAKEN;
 			return $return;
 		}
 		$addUser = $this->addUser($email, $name, $password);
@@ -278,18 +230,18 @@ class Auth{
 			return $return;
 		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->register_success;
+		$return['message'] = self::OK_REGISTER_SUCCESS;
 		return $return;
 	}
 	public function activate($key){
 		$return['error'] = 1;
 		if($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		if(strlen($key) !== 20) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->key_invalid;
+			$return['message'] = self::ERROR_ACTIVEKEY_INVALID;
 			return $return;
 		}
 		$getRequest = $this->getRequest($key, "activation");
@@ -298,35 +250,35 @@ class Auth{
 			return $return;
 		}
 		$user = $this->getUser($getRequest[$this->tableUsers.'_id']);
-		if(isset($user['isactive'])&&$user['isactive']==1) {
+		if(isset($user['active'])&&$user['active']==1) {
 			$this->addAttempt();
 			$this->deleteRequest($getRequest['id']);
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$row = $this->db->load($this->tableUsers,(int)$getRequest[$this->tableUsers.'_id']);
-		$row->isactive = 1;
+		$row->active = 1;
 		$row->store();
 		$this->deleteRequest($getRequest['id']);
 		$return['error'] = 0;
-		$return['message'] = $this->messages->account_activated;
+		$return['message'] = self::OK_ACCOUNT_ACTIVATED;
 		return $return;
 	}
 	public function requestReset($email){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validateEmail = $this->validateEmail($email);
 		if ($validateEmail['error'] == 1) {
-			$return['message'] = $this->messages->email_invalid;
+			$return['message'] = self::ERROR_EMAIL_INVALID;
 			return $return;
 		}
 		$id = $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
 		if(!$id){
 			$this->addAttempt();
-			$return['message'] = $this->messages->email_incorrect;
+			$return['message'] = self::ERROR_EMAIL_INCORRECT;
 			return $return;
 		}
 		if($this->addRequest($id, $email, "reset")['error'] == 1){
@@ -335,11 +287,16 @@ class Auth{
 			return $return;
 		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->reset_requested;
+		$return['message'] = self::OK_RESET_REQUESTED;
 		return $return;
 	}
 	public function logout(){
-		return Session::destroy();
+		$return = [];
+		if(Session::destroy()){
+			$return['error'] = 0;
+			$return['message'] = self::OK_LOGGED_OUT;
+			return $return;
+		}
 	}
 	public function getHash($string, $salt){
 		return password_hash($string, PASSWORD_BCRYPT, ['salt' => $salt, 'cost' => $this->config->bcrypt_cost]);
@@ -375,7 +332,7 @@ class Auth{
 		$return['error'] = 1;
 		$row = $this->db->create($this->tableUsers);
 		if(!$row->store()){
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$uid = $row->id;
@@ -395,7 +352,7 @@ class Auth{
 		$row->salt = $salt;
 		if(!$row->store()){
 			$row->trash();
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 
@@ -413,7 +370,7 @@ class Auth{
 	public function deleteUser($uid, $password) {
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validatePassword = $this->validatePassword($password);
@@ -425,51 +382,50 @@ class Auth{
 		$getUser = $this->getUser($uid);
 		if(!password_verify($password, $getUser['password'])) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->password_incorrect;
+			$return['message'] = self::ERROR_PASSWORD_INCORRECT;
 			return $return;
 		}
 		$row = $this->db->load($this->tableUsers,(int)$uid);
 		if(!$row->trash()){
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		Session::destroyKey($uid);
 		foreach($row->own($this->tableRequests) as $request){
 			if(!$request->trash()) {
-				$return['message'] = $this->messages->system_error;
+				$return['message'] = self::ERROR_SYSTEM_ERROR;
 				return $return;
 			}
 		}		
 		$return['error'] = 0;
-		$return['message'] = $this->messages->account_deleted;
+		$return['message'] = self::OK_ACCOUNT_DELETED;
 		return $return;
 	}
 	private function addRequest($uid, $email, $type){
 		$return['error'] = 1;
 		if($type != "activation" && $type != "reset") {
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$row = $this->db->findOne($this->tableRequests," WHERE {$this->tableUsers}_id = ? AND type = ?",[$uid, $type]);
 		if(!$row){
 			$expiredate = strtotime($row['expire']);
 			$currentdate = strtotime(date("Y-m-d H:i:s"));
-			if ($currentdate < $expiredate) {
-				$return['message'] = $this->messages->request_exists;
-				return $return;
+			if($currentdate < $expiredate){ //allready-exists
+				return;
 			}
 			$this->deleteRequest($row['id']);
 		}
 		$user = $this->getUser($uid);
-		if($type == "activation" && isset($user['isactive']) && $user['isactive'] == 1) {
-			$return['message'] = $this->messages->already_activated;
+		if($type == "activation" && isset($user['active']) && $user['active'] == 1) {
+			$return['message'] = self::ERROR_ALREADY_ACTIVATED;
 			return $return;
 		}
 		$key = $this->getRandomKey(20);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
 		$request = $this->db->create($this->tableRequests,[$this->tableUsers.'_id'=>$uid, 'rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$request->store()) {
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		if($type == "activation") {
@@ -483,8 +439,7 @@ class Auth{
 		//$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		//$headers .= "From: {$this->config->site_email}" . "\r\n";
 		//if(!mail($email, $subject, $message, $headers)) {
-			//$return['message'] = $this->messages->system_error;
-			//throw new Exception();
+			//$return['message'] = self::ERROR_SYSTEM_ERROR;
 			//return $return;
 		//}
 		$return['error'] = 0;
@@ -495,7 +450,10 @@ class Auth{
 		$row = $this->db->findOne($this->tableRequests,' WHERE rkey = ? AND type = ?',[$key, $type]);
 		if(!$row) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->key_incorrect;
+			if($type=='activation')
+				$return['message'] = self::ERROR_ACTIVEKEY_INCORRECT;
+			elseif($type=='reset')
+				$return['message'] = self::ERROR_RESETKEY_INCORRECT;
 			return $return;
 		}
 		$expiredate = strtotime($row['expire']);
@@ -503,7 +461,10 @@ class Auth{
 		if ($currentdate > $expiredate) {
 			$this->addAttempt();
 			$this->deleteRequest($row['id']);
-			$return['message'] = $this->messages->key_expired;
+			if($type=='activation')
+				$return['message'] = self::ERROR_ACTIVEKEY_EXPIRED;
+			elseif($type=='reset')
+				$return['message'] = self::ERROR_ACTIVEKEY_EXPIRED;
 			return $return;
 		}
 		$return['error'] = 0;
@@ -517,13 +478,13 @@ class Auth{
 	public function validateUsername($name) {
 		$return['error'] = 1;
 		if (strlen($name) < 3) {
-			$return['message'] = $this->messages->name_short;
+			$return['message'] = self::ERROR_NAME_SHORT;
 			return $return;
 		} elseif (strlen($name) > 30) {
-			$return['message'] = $this->messages->name_long;
+			$return['message'] = self::ERROR_NAME_LONG;
 			return $return;
 		} elseif (!ctype_alnum($name)) {
-			$return['message'] = $this->messages->name_invalid;
+			$return['message'] = self::ERROR_NAME_INVALID;
 			return $return;
 		}
 		$return['error'] = 0;
@@ -532,13 +493,13 @@ class Auth{
 	private function validatePassword($password) {
 		$return['error'] = 1;
 		if (strlen($password) < 6) {
-			$return['message'] = $this->messages->password_short;
+			$return['message'] = self::ERROR_PASSWORD_SHORT;
 			return $return;
 		} elseif (strlen($password) > 72) {
-			$return['message'] = $this->messages->password_long;
+			$return['message'] = self::ERROR_PASSWORD_LONG;
 			return $return;
 		} elseif ((!preg_match('@[A-Z]@', $password) && !preg_match('@[a-z]@', $password)) || !preg_match('@[0-9]@', $password)) {
-			$return['message'] = $this->messages->password_invalid;
+			$return['message'] = self::ERROR_PASSWORD_INVALID;
 			return $return;
 		}
 		$return['error'] = 0;
@@ -546,34 +507,21 @@ class Auth{
 	}
 	private function validateEmail($email) {
 		$return['error'] = 1;
-		if (strlen($email) < 5) {
-			$return['message'] = $this->messages->email_short;
-			return $return;
-		} elseif (strlen($email) > 100) {
-			$return['message'] = $this->messages->email_long;
-			return $return;
-		} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$return['message'] = $this->messages->email_invalid;
-			return $return;
-		}
-		if($this->isBannedEmail($email)){
-			$return['message'] = $this->messages->email_banned;
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			$return['message'] = self::ERROR_EMAIL_INVALID;
 			return $return;
 		}
 		$return['error'] = 0;
 		return $return;
 	}
-	function isBannedEmail($email){
-		return false;
-	}
 	public function resetPass($key, $password, $repeatpassword){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		if(strlen($key) != 20) {
-			$return['message'] = $this->messages->key_invalid;
+			$return['message'] = self::ERROR_RESETKEY_INVALID;
 			return $return;
 		}
 		$validatePassword = $this->validatePassword($password);
@@ -582,7 +530,7 @@ class Auth{
 			return $return;
 		}
 		if($password !== $repeatpassword) { // Passwords don't match
-			$return['message'] = $this->messages->newpassword_nomatch;
+			$return['message'] = self::ERROR_NEWPASSWORD_NOMATCH;
 			return $return;
 		}
 		$data = $this->getRequest($key, "reset");
@@ -594,31 +542,27 @@ class Auth{
 		if(!$user) {
 			$this->addAttempt();
 			$this->deleteRequest($data['id']);
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
-		if(password_verify($password, $user['password'])) {
-			$this->addAttempt();
-			$this->deleteRequest($data['id']);
-			$return['message'] = $this->messages->newpassword_match;
-			return $return;
-		}
-		$password = $this->getHash($password, $user['salt']);
-		$row = $this->db->load($this->tableUsers,$data[$this->tableUsers.'_id']);
-		$row->password = $password;
-		if (!$row->store()) {
-			$return['message'] = $this->messages->system_error;
-			return $return;
+		if(!password_verify($password, $user['password'])) {			
+			$password = $this->getHash($password, $user['salt']);
+			$row = $this->db->load($this->tableUsers,$data[$this->tableUsers.'_id']);
+			$row->password = $password;
+			if (!$row->store()) {
+				$return['message'] = self::ERROR_SYSTEM_ERROR;
+				return $return;
+			}
 		}
 		$this->deleteRequest($data['id']);
 		$return['error'] = 0;
-		$return['message'] = $this->messages->password_reset;
+		$return['message'] = self::OK_PASSWORD_RESET;
 		return $return;
 	}
 	public function resendActivation($email){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validateEmail = $this->validateEmail($email);
@@ -629,12 +573,12 @@ class Auth{
 		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
 		if(!$row){
 			$this->addAttempt();
-			$return['message'] = $this->messages->email_incorrect;
+			$return['message'] = self::ERROR_EMAIL_INCORRECT;
 			return $return;
 		}
-		if(isset($row['isactive'])&&$row['isactive'] == 1){
+		if(isset($row['active'])&&$row['active'] == 1){
 			$this->addAttempt();
-			$return['message'] = $this->messages->already_activated;
+			$return['message'] = self::ERROR_ALREADY_ACTIVATED;
 			return $return;
 		}
 		$addRequest = $this->addRequest($row['id'], $email, "activation");
@@ -644,13 +588,13 @@ class Auth{
 			return $return;
 		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->activation_sent;
+		$return['message'] = self::OK_ACTIVATION_SENT;
 		return $return;
 	}
 	public function changePassword($uid, $currpass, $newpass, $repeatnewpass){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validatePassword = $this->validatePassword($currpass);
@@ -664,30 +608,28 @@ class Auth{
 			$return['message'] = $validatePassword['message'];
 			return $return;
 		} elseif($newpass !== $repeatnewpass) {
-			$return['message'] = $this->messages->newpassword_nomatch;
+			$return['message'] = self::ERROR_NEWPASSWORD_NOMATCH;
 			return $return;
 		}
 		$user = $this->getUser($uid);
 		if(!$user) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$newpass = $this->getHash($newpass, $user['salt']);
-		if($currpass == $newpass) {
-			$return['message'] = $this->messages->newpassword_match;
-			return $return;
-		}
 		if(!password_verify($currpass, $user['password'])) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->password_incorrect;
+			$return['message'] = self::ERROR_PASSWORD_INCORRECT;
 			return $return;
 		}
-		$row = $this->db->load($this->tableUsers,(int)$uid);
-		$row->password = $newpass;
-		$row->store();
+		if($currpass != $newpass) {			
+			$row = $this->db->load($this->tableUsers,(int)$uid);
+			$row->password = $newpass;
+			$row->store();
+		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->password_changed;
+		$return['message'] = self::OK_PASSWORD_CHANGED;
 		return $return;
 	}
 	public function getEmail($uid){
@@ -700,7 +642,7 @@ class Auth{
 	public function changeEmail($uid, $email, $password){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
-			$return['message'] = $this->messages->user_blocked;
+			$return['message'] = self::ERROR_USER_BLOCKED;
 			return $return;
 		}
 		$validateEmail = $this->validateEmail($email);
@@ -710,33 +652,33 @@ class Auth{
 		}
 		$validatePassword = $this->validatePassword($password);
 		if ($validatePassword['error'] == 1) {
-			$return['message'] = $this->messages->password_notvalid;
+			$return['message'] = self::ERROR_PASSWORD_NOTVALID;
 			return $return;
 		}
 		$user = $this->getUser($uid);
 		if(!$user) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		if(!password_verify($password, $user['password'])) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->password_incorrect;
+			$return['message'] = self::ERROR_PASSWORD_INCORRECT;
 			return $return;
 		}
 		if ($email == $user['email']) {
 			$this->addAttempt();
-			$return['message'] = $this->messages->newemail_match;
+			$return['message'] = self::ERROR_NEWEMAIL_MATCH;
 			return $return;
 		}
 		$row = $this->db->load($this->tableUsers,(int)$uid);
 		$row->email = $email;
 		if(!$row->store()){
-			$return['message'] = $this->messages->system_error;
+			$return['message'] = self::ERROR_SYSTEM_ERROR;
 			return $return;
 		}
 		$return['error'] = 0;
-		$return['message'] = $this->messages->email_changed;
+		$return['message'] = self::OK_EMAIL_CHANGED;
 		return $return;
 	}
 	private function isBlocked(){
