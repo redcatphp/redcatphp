@@ -5,15 +5,15 @@
 		<title>BackOffice</title>
 		<link href="/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
 		<link href="/css/jquery-ui/themes/base.css" rel="stylesheet" />
-		<link href="/backoffice/jdesktop/jdesktop.css" rel="stylesheet" />
-		<link href="/backoffice/jdesktop/forms.css" rel="stylesheet" />
-		<link href="/backoffice/jdesktop/text.css" rel="stylesheet" />
-		<link href="/backoffice/jdesktop/app.css" rel="stylesheet" />
+		<link href="./jdesktop/jdesktop.css" rel="stylesheet" />
+		<link href="./jdesktop/forms.css" rel="stylesheet" />
+		<link href="./jdesktop/text.css" rel="stylesheet" />
+		<link href="./jdesktop/app.css" rel="stylesheet" />
 		<!--[if IE]>
-		<link href="/backoffice/jdesktop/ie-all.css" rel="stylesheet" type="text/css" />  
+		<link href="./jdesktop/ie-all.css" rel="stylesheet" type="text/css" />  
 		<![endif]-->
 		<!--[if lte IE 8]>
-		<link href="/backoffice/jdesktop/ie.css" rel="stylesheet" type="text/css" />  
+		<link href="./jdesktop/ie.css" rel="stylesheet" type="text/css" />  
 		<![endif]-->
 	</head>
 	<body>
@@ -39,8 +39,8 @@
 		<script src="/js/jquery.js"></script>
 		<script src="/js/scrollTo.js"></script>
 		<script src="/js/jquery-ui/jquery-ui.js"></script>
-		<script src="/backoffice/jdesktop/jdesktop.js"></script>
-		<script src="/backoffice/jdesktop/widgets.js"></script>
+		<script src="./jdesktop/jdesktop.js"></script>
+		<script src="./jdesktop/widgets.js"></script>
 		<style>
 		.backoffice-window{
 			width:99%;
@@ -97,7 +97,7 @@
 			nJDSK.init();	
 			/*addMenu params: parent, id, title, href, icon, function(optional)*/
 			// nJDSK.menuHelper.addMenu('','externals','Externals','#','');
-			// nJDSK.menuHelper.addMenu('externals','adminer','AdminerDB','../adminer/','../images/icon-link.png');
+			// nJDSK.menuHelper.addMenu('externals','adminer','AdminerDB','/adminer/','/images/icon-link.png');
 			nJDSK.menuHelper.addMenu('','help','?','#','');
 			nJDSK.menuHelper.addMenu('help','about','&Agrave; propos de Surikat','#','/img/surikat-ico.png',function(){
 				$.get('./about.txt',function(about){
@@ -123,7 +123,7 @@
 				return false;
 			});
 			var BackofficeAddIcon = function(k,v){
-				nJDSK.iconHelper.addIcon(k,(typeof(v)!='undefined'&&typeof(v.label)!='undefined'?v.label:k),'/backoffice/jdesktop/images/'+(typeof(v)!='undefined'&&typeof(v.icon)!='undefined'?v.icon:k+'.png'),function(e){
+				nJDSK.iconHelper.addIcon(k,(typeof(v)!='undefined'&&typeof(v.label)!='undefined'?v.label:k),'./jdesktop/images/'+(typeof(v)!='undefined'&&typeof(v.icon)!='undefined'?v.icon:k+'.png'),function(e){
 					e.preventDefault();
 					var id = 'backoffice_window_'+k;
 					var msg = '<iframe id="'+id+'" class="backoffice-window" src="'+(typeof(v)!='undefined'&&typeof(v.url)!='undefined'?v.url:'./'+k)+'"></iframe>';
@@ -149,13 +149,13 @@
 			};
 			
 			BackofficeAddIcon('Translator',{
-				url:'/backoffice/translator/',
+				url:'./translator/',
 				icon:'icon_simplepo.png'
 			});
 			
 			BackofficeAddIcon('Adminer',{
 				icon:'icon_adminer.png',
-				url:'./adminer/',
+				url:'/backoffice/adminer/',
 				callback:function(o){
 					var iframe = o.contents();
 					$('input[name="'+$.jqSelector('auth[server]')+'"]',iframe).val('<?=@$db->host?>');
@@ -174,7 +174,7 @@
 			});
 			
 			BackofficeAddIcon('PhpInfo',{
-				url:'../service/phpinfo',
+				url:'/service/phpinfo',
 				icon:'icon_phpinfo.png'
 			});
 			/*
