@@ -220,6 +220,18 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		$this->trigger('read');
 	}
 	
+	function xown($key){
+		$k = 'xown'.ucfirst($key);
+		return $this->bean->$k;
+	}
+	function own($key){
+		$k = 'own'.ucfirst($key);
+		return $this->bean->$k;
+	}
+	function shared($key){
+		$k = 'shared'.ucfirst($key);
+		return $this->bean->$k;
+	}
 	function trash(){
 		return $this->Database->trash($this);
 	}
