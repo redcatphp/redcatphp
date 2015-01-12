@@ -222,7 +222,6 @@ class Auth{
 			return false;
 		}
 		$data['hash'] = sha1($user['salt'] . microtime());
-		$agent = $_SERVER['HTTP_USER_AGENT'];
 		Session::destroyKey($uid);
 		if($remember == true) {
 			$data['expire'] = date("Y-m-d H:i:s", strtotime($this->config->cookie_remember));
@@ -231,7 +230,6 @@ class Auth{
 			$data['expire'] = date("Y-m-d H:i:s", strtotime($this->config->cookie_remember));
 			$data['expiretime'] = 0;
 		}
-		$data['cookie_crc'] = sha1($data['hash'] . $this->config->site_key);
 		if(!Session::start()){
 			return false;
 		}
@@ -240,8 +238,6 @@ class Auth{
 			'hash'=>$data['hash'],
 			'expiredate'=>$data['expire'],
 			'ip'=>$ip,
-			'agent'=>$agent,
-			'cookie_crc'=>$data['cookie_crc']
 		]);
 		$data['expire'] = strtotime($data['expire']);
 		return $data;

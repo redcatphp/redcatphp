@@ -9,7 +9,6 @@ return [
 	'cookie_domain'=> NULL,
 	'cookie_secure'=> '0',
 	'cookie_http'=> '0',
-	'site_key'=> 'fghuior.)/%dgdhjUyhdbv7867HVHG7777ghg',
 	'cookie_remember'=> '+1 month',
 	'bcrypt_cost'=> '10',
 	'tableRequests'=> 'requests',
