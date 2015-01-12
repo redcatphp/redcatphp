@@ -2,7 +2,8 @@
 use Surikat\Core\FS;
 use Surikat\Core\SessionHandler;
 class Session{
-	static $id;
+	private static $id;
+	private static $key;
 	static function &set(){
 		self::start();
 		$args = func_get_args();
@@ -33,28 +34,56 @@ class Session{
 			}
 		return $ref;
 	}
-	static function start($name='project'){
-		if(self::$id)
-			return;
-		self::handle();
-		session_name("surikat_".$name);
-		session_start();
-		self::regenerate();
-		self::$id = session_id();
+	static function destroyKey($skey=null,$name='projet'){
+		self::sessionHandler()->destroyKey($skey);
 	}
-	static function destroy($name='project'){
-		self::start($name);
+	static function setKey($skey=null,$name='projet'){
+		if(!self::$id)
+			self::start($name);
+		$tmp = [];
+		foreach($_SESSION as $k=>$v)
+			$tmp[$k] = $v;
 		$_SESSION = [];
 		session_destroy();
-		session_write_close();
+		session_id($skey.'.'.self::$id);
+		session_start();
+		foreach($tmp as $k=>$v)
+			$_SESSION[$k] = $v;
+		self::$key = $skey;
+	}
+	static function start($name='project'){
+		if(!self::$id){
+			self::handle();
+			session_name("surikat_".$name);
+			if(session_start()){
+				self::regenerate();
+				self::$id = session_id();
+			}
+		}
+		return self::$id;
+	}
+	static function destroy($name='project'){
+		if(self::start($name)){
+			$_SESSION = [];
+			session_destroy();
+			session_write_close();
+			return true;
+		}
+	}
+	private static function sessionHandler(){
+		if(!isset(self::$handler)){
+			$d = SURIKAT_TMP.'sessions/';
+			@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
+			@ini_set('session.gc_divisor',1000);			// Idem
+			@ini_set('session.gc_maxlifetime',3600);
+			ini_set("session.save_path",$d);
+			FS::mkdir($d);
+			self::$handler = new SessionHandler();
+		}
+		return self::$handler;
 	}
 	private static function handle(){
-		@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
-		@ini_set('session.gc_divisor',1000);			// Idem
-		@ini_set('session.gc_maxlifetime',3600);
-		ini_set("session.save_path",$d=SURIKAT_TMP.'sessions/');
-		FS::mkdir($d);
-		$handler = new SessionHandler();
+		$handler = self::sessionHandler();
 		session_set_save_handler(
 			[$handler, 'open'],
 			[$handler, 'close'],
@@ -67,21 +96,22 @@ class Session{
 	}
 	private static function regenerate(){
 		$now = time();
-		$hash = sha1($_SERVER['REMOTE_ADDR']);
 		if(!isset($_SESSION['expire'])){
 			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
-			$_SESSION['hash'] = $hash;
+			$_SESSION['_IP_'] = $_SERVER['REMOTE_ADDR'];
+			$_SESSION['_AGENT_'] = $_SERVER['HTTP_USER_AGENT'];
 		}
 		if(
-			!isset($_SESSION['hash'])
-			||($_SESSION['hash']!=$hash)
+			!isset($_SESSION['_IP_'])
+			||!isset($_SESSION['_AGENT_'])
+			||($_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']&&$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT'])
 			||($_SESSION['expire']<=$now-SessionHandler::$maxNoConnectionTime)
 		){
 			session_destroy();
 			session_write_close();
 			session_start();
 		}
-		elseif($now>=$_SESSION['expire']){
+		elseif($now>=$_SESSION['expire']||$_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']||$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT']){
 			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
 			session_regenerate_id(true);
 			$sid = session_id();
