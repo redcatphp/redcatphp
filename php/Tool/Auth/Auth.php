@@ -20,7 +20,8 @@ use Surikat\Core\Config;
 use Surikat\Core\Session;
 use Surikat\Core\FS;
 use Surikat\Model\R;
-			
+use Exception;
+
 if (version_compare(phpversion(), '5.5.0', '<')) {
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
 }
@@ -32,11 +33,17 @@ class Auth{
 		
 	}
 	
-	private $dbh;
+	private $db;
 	public $config;
+	protected $tableRequests = 'requests';
+	protected $tableUsers = 'users';
 	public function __construct(){
 		$this->db = R::getDatabase();
 		$this->config = (object)Config::auth();
+		if($this->config->tableRequests)
+			$this->tableRequests = $this->config->tableRequests;
+		if($this->config->tableUsers)
+			$this->tableUsers = $this->config->tableUsers;
 	}
 	
 	public function login($username, $password, $remember = 0){
@@ -76,7 +83,7 @@ class Auth{
 			$options = ['salt' => $user['salt'], 'cost' => $this->config->bcrypt_cost];
 			if (password_needs_rehash($user['password'], PASSWORD_BCRYPT, $options)){
 				$password = password_hash($password, PASSWORD_BCRYPT, $options);
-				$row = R::load($this->config->table_users,$user['id']);
+				$row = $this->db->load($this->tableUsers,(int)$user['id']);
 				$row->password = $password;
 				if(!$row->store()){
 					$return['message'] = "system_error";
@@ -84,7 +91,7 @@ class Auth{
 				}
 			}
 		}
-		if ($user['isactive'] != 1) {
+		if (!isset($user['isactive'])||$user['isactive'] != 1) {
 			$this->addAttempt();
 			$return['message'] = "account_inactive";
 			return $return;
@@ -158,13 +165,14 @@ class Auth{
 			$return['message'] = $getRequest['message'];
 			return $return;
 		}
-		if($this->getUser($getRequest[$this->config->table_users.'_id'])['isactive'] == 1) {
+		$user = $this->getUser($getRequest[$this->tableUsers.'_id']);
+		if(isset($user['isactive'])&&$user['isactive']==1) {
 			$this->addAttempt();
 			$this->deleteRequest($getRequest['id']);
 			$return['message'] = "system_error";
 			return $return;
 		}
-		$row = R::load($this->config->table_users,$getRequest[$this->config->table_users.'_id']);
+		$row = $this->db->load($this->tableUsers,(int)$getRequest[$this->tableUsers.'_id']);
 		$row->isactive = 1;
 		$row->store();
 		$this->deleteRequest($getRequest['id']);
@@ -183,7 +191,7 @@ class Auth{
 			$return['message'] = "email_invalid";
 			return $return;
 		}
-		$id = $this->db->getCell("SELECT id FROM {$this->config->table_users} WHERE email = ?",[$email]);
+		$id = $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
 		if(!$id){
 			$this->addAttempt();
 			$return['message'] = "email_incorrect";
@@ -205,7 +213,7 @@ class Auth{
 		return password_hash($string, PASSWORD_BCRYPT, ['salt' => $salt, 'cost' => $this->config->bcrypt_cost]);
 	}
 	public function getUID($username){
-		return $this->db->getCell("SELECT id FROM {$this->config->table_users} WHERE username = ?",[$username]);
+		return $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE username = ?",[$username]);
 	}
 	private function addSession($uid, $remember){
 		$ip = $this->getIp();
@@ -215,7 +223,7 @@ class Auth{
 		}
 		$data['hash'] = sha1($user['salt'] . microtime());
 		$agent = $_SERVER['HTTP_USER_AGENT'];
-		$this->deleteExistingSessions($uid);
+		Session::destroyKey($uid);
 		if($remember == true) {
 			$data['expire'] = date("Y-m-d H:i:s", strtotime($this->config->cookie_remember));
 			$data['expiretime'] = strtotime($data['expire']);
@@ -239,14 +247,14 @@ class Auth{
 		return $data;
 	}
 	private function isEmailTaken($email){
-		return !!$this->db->getCell("SELECT id FROM {$this->config->table_users} WHERE email = ?",[$email]);
+		return !!$this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
 	}
 	private function isUsernameTaken($username){
 		return !!$this->getUID($username);
 	}
 	private function addUser($email, $username, $password){
 		$return['error'] = 1;
-		$row = $this->db->create($this->config->table_users);
+		$row = $this->db->create($this->tableUsers);
 		if(!$row->store()){
 			$return['message'] = "system_error";
 			return $return;
@@ -259,7 +267,7 @@ class Auth{
 			$return['message'] = $addRequest['message'];
 			return $return;
 		}
-		$salt = substr(strtr(base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
+		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
 		$username = htmlentities(strtolower($username));
 		$password = $this->getHash($password, $salt);
 		$row->username = $username;
@@ -277,8 +285,8 @@ class Auth{
 	}
 
 	public function getUser($uid){
-		$row = $this->db->load($this->config->table_users,$uid);
-		if (!$row->id)
+		$row = $this->db->load($this->tableUsers,(int)$uid);
+		if(!$row)
 			return false;
 		return $row->getProperties();
 	}
@@ -301,13 +309,13 @@ class Auth{
 			$return['message'] = "password_incorrect";
 			return $return;
 		}
-		$row = $this->db->load($this->config->table_users,$uid);
+		$row = $this->db->load($this->tableUsers,(int)$uid);
 		if(!$row->trash()){
 			$return['message'] = "system_error";
 			return $return;
 		}
 		Session::destroyKey($uid);
-		foreach($row->own($this->config->table_requests) as $request){
+		foreach($row->own($this->tableRequests) as $request){
 			if(!$request->trash()) {
 				$return['message'] = "system_error";
 				return $return;
@@ -323,8 +331,8 @@ class Auth{
 			$return['message'] = "system_error";
 			return $return;
 		}
-		$row = $this->db->findOne($this->config->table_requests,' WHERE {$this->config->table_users}_id = ? AND type = ?',[$uid, $type]);
-		if(!$row->id){
+		$row = $this->db->findOne($this->tableRequests," WHERE {$this->tableUsers}_id = ? AND type = ?",[$uid, $type]);
+		if(!$row){
 			$expiredate = strtotime($row['expire']);
 			$currentdate = strtotime(date("Y-m-d H:i:s"));
 			if ($currentdate < $expiredate) {
@@ -333,13 +341,14 @@ class Auth{
 			}
 			$this->deleteRequest($row['id']);
 		}
-		if($type == "activation" && $this->getUser($uid)['isactive'] == 1) {
+		$user = $this->getUser($uid);
+		if($type == "activation" && isset($user['isactive']) && $user['isactive'] == 1) {
 			$return['message'] = "already_activated";
 			return $return;
 		}
 		$key = $this->getRandomKey(20);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$request = $this->db->create($this->config->table_requests,[$this->config->table_users.'_id'=>$uid, 'rkey'=>$rkey, 'expire'=>$expire, 'type'=>$type]);
+		$request = $this->db->create($this->tableRequests,[$this->tableUsers.'_id'=>$uid, 'rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$request->store()) {
 			$return['message'] = "system_error";
 			return $return;
@@ -351,20 +360,21 @@ class Auth{
 			$message = "Password reset request : <strong><a href=\"{$this->config->site_url}/reset/{$key}\">Reset my password</a></strong>";		
 			$subject = "{$this->config->site_name} - Password reset request";
 		}
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		$headers .= "From: {$this->config->site_email}" . "\r\n";
-		if(!mail($email, $subject, $message, $headers)) {
-			$return['message'] = "system_error";
-			return $return;
-		}
+		//$headers  = 'MIME-Version: 1.0' . "\r\n";
+		//$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+		//$headers .= "From: {$this->config->site_email}" . "\r\n";
+		//if(!mail($email, $subject, $message, $headers)) {
+			//$return['message'] = "system_error";
+			//throw new Exception();
+			//return $return;
+		//}
 		$return['error'] = 0;
 		return $return;
 	}
 	private function getRequest($key, $type){
 		$return['error'] = 1;
-		$query = $this->db->findOne($this->config->table_requests,' WHERE rkey = ? AND type = ?',[$key, $type]);
-		if(!$row->id) {
+		$row = $this->db->findOne($this->tableRequests,' WHERE rkey = ? AND type = ?',[$key, $type]);
+		if(!$row) {
 			$this->addAttempt();
 			$return['message'] = "key_incorrect";
 			return $return;
@@ -379,11 +389,11 @@ class Auth{
 		}
 		$return['error'] = 0;
 		$return['id'] = $row['id'];
-		$return[$this->config->table_users.'_id'] = $row[$this->config->table_users]['id'];
+		$return[$this->tableUsers.'_id'] = $row[$this->tableUsers]['id'];
 		return $return;
 	}
 	private function deleteRequest($id){
-		return $this->db->exec("DELETE FROM {$this->config->table_requests} WHERE id = ?",[$id]);
+		return $this->db->exec("DELETE FROM {$this->tableRequests} WHERE id = ?",[$id]);
 	}
 	public function validateUsername($username) {
 		$return['error'] = 1;
@@ -408,7 +418,7 @@ class Auth{
 		} elseif (strlen($password) > 72) {
 			$return['message'] = "password_long";
 			return $return;
-		} elseif (!preg_match('@[A-Z]@', $password) || !preg_match('@[a-z]@', $password) || !preg_match('@[0-9]@', $password)) {
+		} elseif ((!preg_match('@[A-Z]@', $password) && !preg_match('@[a-z]@', $password)) || !preg_match('@[0-9]@', $password)) {
 			$return['message'] = "password_invalid";
 			return $return;
 		}
@@ -461,7 +471,7 @@ class Auth{
 			$return['message'] = $data['message'];
 			return $return;
 		}
-		$user = $this->getUser($data[$this->config->table_users.'_id']);
+		$user = $this->getUser($data[$this->tableUsers.'_id']);
 		if(!$user) {
 			$this->addAttempt();
 			$this->deleteRequest($data['id']);
@@ -475,7 +485,7 @@ class Auth{
 			return $return;
 		}
 		$password = $this->getHash($password, $user['salt']);
-		$row = R::load($this->config->table_users,$data[$this->config->table_users.'_id']);
+		$row = $this->db->load($this->tableUsers,$data[$this->tableUsers.'_id']);
 		$row->password = $password;
 		if (!$row->store()) {
 			$return['message'] = "system_error";
@@ -497,13 +507,13 @@ class Auth{
 			$return['message'] = $validateEmail['message'];
 			return $return;
 		}
-		$row = $this->db->findOne($this->config->table_users,' WHERE email = ?',[$email]);
-		if(!$row->id){
+		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
+		if(!$row){
 			$this->addAttempt();
 			$return['message'] = "email_incorrect";
 			return $return;
 		}
-		if($row['isactive'] == 1){
+		if(isset($row['isactive'])&&$row['isactive'] == 1){
 			$this->addAttempt();
 			$return['message'] = "already_activated";
 			return $return;
@@ -554,7 +564,7 @@ class Auth{
 			$return['message'] = "password_incorrect";
 			return $return;
 		}
-		$row = $this->db->load($this->config->table_users,$uid);
+		$row = $this->db->load($this->tableUsers,(int)$uid);
 		$row->password = $newpass;
 		$row->store();
 		$return['error'] = 0;
@@ -562,7 +572,7 @@ class Auth{
 		return $return;
 	}
 	public function getEmail($uid){
-		$row = $this->db->load($this->config->table_users,$uid);
+		$row = $this->db->load($this->tableUsers,(int)$uid);
 		if (!$row->id){
 			return false;
 		}
@@ -600,7 +610,7 @@ class Auth{
 			$return['message'] = "newemail_match";
 			return $return;
 		}
-		$row = $this->db->load($this->config->table_users,$uid);
+		$row = $this->db->load($this->tableUsers,(int)$uid);
 		$row->email = $email;
 		if(!$row->store()){
 			$return['message'] = "system_error";
@@ -617,13 +627,14 @@ class Auth{
 		else
 			return false;
 		$expiredate = filemtime(self::$attemptsPath.$ip)+1800;
-		if ($count == 5){
-			if (time()<$expiredate)
+		$currentdate = time();
+		if($count==5){
+			if($currentdate<$expiredate)
 				return true;
 			$this->deleteAttempts();
 			return false;
 		}
-		if ($currentdate > $expiredate)
+		if($currentdate>$expiredate)
 			$this->deleteAttempts();
 		return false;
 	}

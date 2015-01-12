@@ -12,8 +12,6 @@ return [
 	'site_key'=> 'fghuior.)/%dgdhjUyhdbv7867HVHG7777ghg',
 	'cookie_remember'=> '+1 month',
 	'bcrypt_cost'=> '10',
-	'table_attempts'=> 'attempts',
-	'table_requests'=> 'requests',
-	'table_sessions'=> 'sessions',
-	'table_users'=> 'users',
+	'tableRequests'=> 'requests',
+	'tableUsers'=> 'users',
 ];

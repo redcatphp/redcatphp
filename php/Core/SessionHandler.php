@@ -14,6 +14,7 @@ class SessionHandler{
         return true;
     }
     function read($id){
+		/* if(!is_file()) addAttempt*/
         return (string)@file_get_contents($this->savePath.'/sess_'.$id);
     }
     function write($id, $data){

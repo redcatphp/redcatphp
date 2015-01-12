@@ -4,6 +4,7 @@ use Surikat\Core\SessionHandler;
 class Session{
 	private static $id;
 	private static $key;
+	private static $handler;
 	static function &set(){
 		self::start();
 		$args = func_get_args();
