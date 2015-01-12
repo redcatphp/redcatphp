@@ -132,7 +132,9 @@ class RPDO implements Driver
 	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
-
+		
+		$sql = str_replace('{$prefix}',$this->DB->getPrefix(),$sql);
+		
 		if ( $this->debug && $this->logger ) {
 			$this->logger->log( $sql, $bindings );
 		}
@@ -591,9 +593,13 @@ class RPDO implements Driver
 	}
 	
 	private $debugger;
+	private $DB;
 	function debugger(){
 		if(!isset($this->debugger))
 			$this->debugger = new Debug;
 		return $this->debugger;
+	}
+	function setDB($DB){
+		$this->DB = $DB;
 	}
 }

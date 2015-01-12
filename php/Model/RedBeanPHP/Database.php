@@ -47,10 +47,12 @@ class Database{
 	
 	private $dbType;
 	private $dsn;
+	private $prefix;
 	
 	function __construct( $name = 'default', $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
 		
 		$this->name = $name;
+		$this->prefix = $prefix
 		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
 		
 		$this->finder             = new Finder( $this->toolbox );
@@ -70,6 +72,9 @@ class Database{
 	function getName(){
 		return $this->name;
 	}
+	function getPrefix(){
+		return $this->prefix;
+	}
 	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		$this->dsn = $dsn;
 		if ( is_object($dsn) ) {
@@ -81,6 +86,7 @@ class Database{
 				$dsn = substr($dsn,0,($l=strlen($this->dbType))-1).substr($dsn,$l);
 			$db = new RPDO( $dsn, $user, $pass, TRUE );
 		}
+		$db->setDB($this);
 		$this->adapter = new DBAdapter( $db );
 		$writers     = [
 			'mysql'  => 'MySQL',
@@ -595,7 +601,7 @@ class Database{
 			$model->$k = $v;
 		return $model;
 	}
-	function remove($type){
+	function removeTable($type){
 		$type = $this->writer->adaptCase($type);
 		$this->exec('DELETE FROM '.$type);
 		$tables = $this->writer->getTables();
@@ -604,7 +610,7 @@ class Database{
 				$x = explode('_',$table);
 				if($x[0]==$type||$x[1]==$type){
 					$this->wipe($table);
-					$this->drop($table);
+					$this->dropTable($table);
 					continue;
 				}
 			}
@@ -614,13 +620,13 @@ class Database{
 				$this->exec('ALTER TABLE '.$table.' DROP COLUMN '.$col);
 			}
 		}
-		$this->drop($type);
+		$this->dropTable($type);
 		
 	}
 	function delete($mix){
 		return $this->trash($this->read($mix));
 	}
-	function drop($type){
+	function dropTable($type){
 		return $this->getWriter()->drop($this->writer->adaptCase($type));
 	}
 	function execMulti($sql,$bindings=[]){
