@@ -6,8 +6,8 @@
 	Auth::lock($right)		COOKIE OR 403
 	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
 	
-	login($username, $password, $remember = 0)
-	register($email, $username, $password, $repeatpassword)
+	login($name, $password)
+	register($email, $name, $password, $repeatpassword)
 	activate($key)
 	resendActivation($email)
 	resetPass($key, $password, $repeatpassword)
@@ -46,37 +46,33 @@ class Auth{
 			$this->tableUsers = $this->config->tableUsers;
 	}
 	
-	public function login($username, $password, $remember = 0){
+	public function login($name, $password){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
 			$return['message'] = "user_blocked";
 			return $return;
 		}
-		$validateUsername = $this->validateUsername($username);
+		$validateUsername = $this->validateUsername($name);
 		$validatePassword = $this->validatePassword($password);
 		if ($validateUsername['error'] == 1) {
 			$this->addAttempt();
-			$return['message'] = "username_password_invalid";
+			$return['message'] = "name_password_invalid";
 			return $return;
 		} elseif($validatePassword['error'] == 1) {
 			$this->addAttempt();
-			$return['message'] = "username_password_invalid";
-			return $return;
-		} elseif($remember != 0 && $remember != 1) {
-			$this->addAttempt();
-			$return['message'] = "remember_me_invalid";
+			$return['message'] = "name_password_invalid";
 			return $return;
 		}
-		$uid = $this->getUID(strtolower($username));
+		$uid = $this->getUID(strtolower($name));
 		if(!$uid) {
 			$this->addAttempt();
-			$return['message'] = "username_password_incorrect";
+			$return['message'] = "name_password_incorrect";
 			return $return;
 		}
 		$user = $this->getUser($uid);
 		if (!password_verify($password, $user['password'])) {
 			$this->addAttempt();
-			$return['message'] = "username_password_incorrect";
+			$return['message'] = "name_password_incorrect";
 			return $return;
 		}
 		else{
@@ -96,26 +92,25 @@ class Auth{
 			$return['message'] = "account_inactive";
 			return $return;
 		}
-		$sessiondata = $this->addSession($user['id'], $remember);
+		$sessiondata = $this->addSession($user['id']);
 		if($sessiondata == false) {
 			$return['message'] = "system_error";
 			return $return;
 		}
 		$return['error'] = 0;
 		$return['message'] = "logged_in";
-		$return['hash'] = $sessiondata['hash'];
-		$return['expire'] = $sessiondata['expiretime'];
+		Session::setKey($user['id']);
 		return $return;
 	}
 
-	public function register($email, $username, $password, $repeatpassword){
+	public function register($email, $name, $password, $repeatpassword){
 		$return['error'] = 1;
 		if ($this->isBlocked()) {
 			$return['message'] = "user_blocked";
 			return $return;
 		}
 		$validateEmail = $this->validateEmail($email);
-		$validateUsername = $this->validateUsername($username);
+		$validateUsername = $this->validateUsername($name);
 		$validatePassword = $this->validatePassword($password);
 		if ($validateEmail['error'] == 1) {
 			$return['message'] = $validateEmail['message'];
@@ -135,12 +130,12 @@ class Auth{
 			$return['message'] = "email_taken";
 			return $return;
 		}
-		if ($this->isUsernameTaken($username)) {
+		if ($this->isUsernameTaken($name)) {
 			$this->addAttempt();
-			$return['message'] = "username_taken";
+			$return['message'] = "name_taken";
 			return $return;
 		}
-		$addUser = $this->addUser($email, $username, $password);
+		$addUser = $this->addUser($email, $name, $password);
 		if($addUser['error'] != 0) {
 			$return['message'] = $addUser['message'];
 			return $return;
@@ -212,43 +207,34 @@ class Auth{
 	public function getHash($string, $salt){
 		return password_hash($string, PASSWORD_BCRYPT, ['salt' => $salt, 'cost' => $this->config->bcrypt_cost]);
 	}
-	public function getUID($username){
-		return $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE username = ?",[$username]);
+	public function getUID($name){
+		return $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE name = ?",[$name]);
 	}
-	private function addSession($uid, $remember){
+	private function addSession($uid){
 		$ip = $this->getIp();
 		$user = $this->getUser($uid);
 		if(!$user) {
 			return false;
 		}
-		$data['hash'] = sha1($user['salt'] . microtime());
 		Session::destroyKey($uid);
-		if($remember == true) {
-			$data['expire'] = date("Y-m-d H:i:s", strtotime($this->config->cookie_remember));
-			$data['expiretime'] = strtotime($data['expire']);
-		} else {
-			$data['expire'] = date("Y-m-d H:i:s", strtotime($this->config->cookie_remember));
-			$data['expiretime'] = 0;
-		}
 		if(!Session::start()){
 			return false;
 		}
-		Session::set('_AUTH_',[
+		$data = [
 			'id'=>$uid,
-			'hash'=>$data['hash'],
-			'expiredate'=>$data['expire'],
-			'ip'=>$ip,
-		]);
-		$data['expire'] = strtotime($data['expire']);
+			'email'=>$user['email'],
+			'name'=>$user['name'],
+		];
+		Session::set('_AUTH_',$data);
 		return $data;
 	}
 	private function isEmailTaken($email){
 		return !!$this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
 	}
-	private function isUsernameTaken($username){
-		return !!$this->getUID($username);
+	private function isUsernameTaken($name){
+		return !!$this->getUID($name);
 	}
-	private function addUser($email, $username, $password){
+	private function addUser($email, $name, $password){
 		$return['error'] = 1;
 		$row = $this->db->create($this->tableUsers);
 		if(!$row->store()){
@@ -264,9 +250,9 @@ class Auth{
 			return $return;
 		}
 		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
-		$username = htmlentities(strtolower($username));
+		$name = htmlentities(strtolower($name));
 		$password = $this->getHash($password, $salt);
-		$row->username = $username;
+		$row->name = $name;
 		$row->password = $password;
 		$row->email = $email;
 		$row->salt = $salt;
@@ -391,16 +377,16 @@ class Auth{
 	private function deleteRequest($id){
 		return $this->db->exec("DELETE FROM {$this->tableRequests} WHERE id = ?",[$id]);
 	}
-	public function validateUsername($username) {
+	public function validateUsername($name) {
 		$return['error'] = 1;
-		if (strlen($username) < 3) {
-			$return['message'] = "username_short";
+		if (strlen($name) < 3) {
+			$return['message'] = "name_short";
 			return $return;
-		} elseif (strlen($username) > 30) {
-			$return['message'] = "username_long";
+		} elseif (strlen($name) > 30) {
+			$return['message'] = "name_long";
 			return $return;
-		} elseif (!ctype_alnum($username)) {
-			$return['message'] = "username_invalid";
+		} elseif (!ctype_alnum($name)) {
+			$return['message'] = "name_invalid";
 			return $return;
 		}
 		$return['error'] = 0;
