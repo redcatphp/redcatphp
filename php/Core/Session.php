@@ -97,8 +97,8 @@ class Session{
 	}
 	private static function regenerate(){
 		$now = time();
-		if(!isset($_SESSION['expire'])){
-			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
+		if(!isset($_SESSION['_EXPIRE_'])){
+			$_SESSION['_EXPIRE_'] = $now+ini_get('session.gc_maxlifetime');
 			$_SESSION['_IP_'] = $_SERVER['REMOTE_ADDR'];
 			$_SESSION['_AGENT_'] = $_SERVER['HTTP_USER_AGENT'];
 		}
@@ -106,14 +106,14 @@ class Session{
 			!isset($_SESSION['_IP_'])
 			||!isset($_SESSION['_AGENT_'])
 			||($_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']&&$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT'])
-			||($_SESSION['expire']<=$now-SessionHandler::$maxNoConnectionTime)
+			||($_SESSION['_EXPIRE_']<=$now-SessionHandler::$maxNoConnectionTime)
 		){
 			session_destroy();
 			session_write_close();
 			session_start();
 		}
-		elseif($now>=$_SESSION['expire']||$_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']||$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT']){
-			$_SESSION['expire'] = $now+ini_get('session.gc_maxlifetime');
+		elseif($now>=$_SESSION['_EXPIRE_']||$_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']||$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT']){
+			$_SESSION['_EXPIRE_'] = $now+ini_get('session.gc_maxlifetime');
 			session_regenerate_id(true);
 			$sid = session_id();
 			session_write_close();
