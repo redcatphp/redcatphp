@@ -17,7 +17,7 @@ class Controller{
 		if(method_exists($Router,'getDirHook')
 			&&$hook = $Router->getDirHook()){
 			$this->prefixTmlCompile .= '.'.$hook.'/';
-			$this->View->setDirCwd([
+			$this->getView()->setDirCwd([
 				SURIKAT_PATH.$hook.'/',
 				SURIKAT_SPATH.$hook.'/',
 			]);
