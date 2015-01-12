@@ -6,10 +6,10 @@
 	Auth::lock($right)		COOKIE OR 403
 	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
 	
-	$auth->register($email, $username, $password, $repeatpassword)
+	$auth->register($email, $name, $password, $repeatpassword)
 	$auth->activate($key)
 	$auth->resendActivation($email)
-	$auth->login($username, $password)
+	$auth->login($name, $password)
 	$auth->requestReset($email)
 	$auth->resetPass($key, $password, $repeatpassword)
 	$auth->changePassword($uid, $currpass, $newpass, $repeatnewpass)
@@ -27,7 +27,7 @@ use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')) {
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
 }
-Lang::initialize;
+Lang::initialize();
 class Auth{
 	static function lock(){
 		
@@ -51,11 +51,11 @@ class Auth{
 		$this->messages = (object)[
 			'user_blocked' => __("You are currently locked out of the system.",null,'auth'),
 
-			'username_short' => __("Username is too short.",null,'auth'),
-			'username_long' => __("Username is too long.",null,'auth'),
-			'username_incorrect' => __("Username is incorrect.",null,'auth'),
-			'username_invalid' => __("Username is invalid.",null,'auth'),
-			'username_banned' => __("This username is not allowed.",null,'auth'),
+			'name_short' => __("Username is too short.",null,'auth'),
+			'name_long' => __("Username is too long.",null,'auth'),
+			'name_incorrect' => __("Username is incorrect.",null,'auth'),
+			'name_invalid' => __("Username is invalid.",null,'auth'),
+			'name_banned' => __("This name is not allowed.",null,'auth'),
 
 			'password_short' => __("Password is too short.",null,'auth'),
 			'password_long' => __("Password is too long.",null,'auth'),
@@ -71,8 +71,8 @@ class Auth{
 			'newpassword_nomatch' => __("New passwords do not match.",null,'auth'),
 			'newpassword_match' => __("New password matches previous password.",null,'auth'),
 
-			'username_password_invalid' => __("Username / Password are invalid.",null,'auth'),
-			'username_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
+			'name_password_invalid' => __("Username / Password are invalid.",null,'auth'),
+			'name_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
 			'remember_me_invalid' => __("The remember me field is invalid.",null,'auth'),
 
 			'email_short' => __("Email address is too short.",null,'auth'),
@@ -93,7 +93,7 @@ class Auth{
 			'system_error' => __("A system error has been encountered. Please try again.",null,'auth'),
 
 			'register_success' => __("Account created. Activation email sent to email.",null,'auth'),
-			'username_taken' => __("The username is already taken.",null,'auth'),
+			'name_taken' => __("The name is already taken.",null,'auth'),
 			'email_taken' => __("The email address is already in use.",null,'auth'),
 
 			'authentication_required' => __("Authentication required.",null,'auth'),
@@ -116,11 +116,11 @@ class Auth{
 			'activation_sent' => __("Activation email has been sent.",null,'auth'),
 			'activation_exists' => __("An activation email has already been sent.",null,'auth'),'user_blocked' => __("You are currently locked out of the system.",null,'auth'),
 
-			'username_short' => __("Username is too short.",null,'auth'),
-			'username_long' => __("Username is too long.",null,'auth'),
-			'username_incorrect' => __("Username is incorrect.",null,'auth'),
-			'username_invalid' => __("Username is invalid.",null,'auth'),
-			'username_banned' => __("This username is not allowed.",null,'auth'),
+			'name_short' => __("Username is too short.",null,'auth'),
+			'name_long' => __("Username is too long.",null,'auth'),
+			'name_incorrect' => __("Username is incorrect.",null,'auth'),
+			'name_invalid' => __("Username is invalid.",null,'auth'),
+			'name_banned' => __("This name is not allowed.",null,'auth'),
 
 			'password_short' => __("Password is too short.",null,'auth'),
 			'password_long' => __("Password is too long.",null,'auth'),
@@ -136,8 +136,8 @@ class Auth{
 			'newpassword_nomatch' => __("New passwords do not match.",null,'auth'),
 			'newpassword_match' => __("New password matches previous password.",null,'auth'),
 
-			'username_password_invalid' => __("Username / Password are invalid.",null,'auth'),
-			'username_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
+			'name_password_invalid' => __("Username / Password are invalid.",null,'auth'),
+			'name_password_incorrect' => __("Username / Password are incorrect.",null,'auth'),
 			'remember_me_invalid' => __("The remember me field is invalid.",null,'auth'),
 
 			'email_short' => __("Email address is too short.",null,'auth'),
@@ -158,7 +158,7 @@ class Auth{
 			'system_error' => __("A system error has been encountered. Please try again.",null,'auth'),
 
 			'register_success' => __("Account created. Activation email sent to email.",null,'auth'),
-			'username_taken' => __("The username is already taken.",null,'auth'),
+			'name_taken' => __("The name is already taken.",null,'auth'),
 			'email_taken' => __("The email address is already in use.",null,'auth'),
 
 			'authentication_required' => __("Authentication required.",null,'auth'),
