@@ -6,15 +6,16 @@
 	Auth::lock($right)		COOKIE OR 403
 	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
 	
-	login($name, $password)
-	register($email, $name, $password, $repeatpassword)
-	activate($key)
-	resendActivation($email)
-	resetPass($key, $password, $repeatpassword)
-	changePassword($uid, $currpass, $newpass, $repeatnewpass)
-	changeEmail($uid, $email, $password)
-	deleteUser($uid, $password)
-	logout()
+	$auth->register($email, $username, $password, $repeatpassword)
+	$auth->activate($key)
+	$auth->resendActivation($email)
+	$auth->login($username, $password)
+	$auth->requestReset($email)
+	$auth->resetPass($key, $password, $repeatpassword)
+	$auth->changePassword($uid, $currpass, $newpass, $repeatnewpass)
+	$auth->changeEmail($uid, $email, $password)
+	$auth->deleteUser($uid, $password)
+	$auth->logout()
 */
 use Surikat\Core\Config;
 use Surikat\Core\Session;
