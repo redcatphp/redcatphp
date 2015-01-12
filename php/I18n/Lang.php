@@ -73,7 +73,11 @@ namespace Surikat\I18n{
 			}
 			return self::$registry[$locale];
 		}
+		private static $initialized;
 		static function initialize(){
+			if(self::$initialized)
+				return;
+			self::$initialized = true;
 			static::$defaultLocalesRoot = SURIKAT_PATH.'langs';
 			$tz = Config::langs('timezone');
 			if(!$tz)
