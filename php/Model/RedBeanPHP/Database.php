@@ -52,7 +52,7 @@ class Database{
 	function __construct( $name = 'default', $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
 		
 		$this->name = $name;
-		$this->prefix = $prefix
+		$this->prefix = $prefix;
 		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
 		
 		$this->finder             = new Finder( $this->toolbox );
