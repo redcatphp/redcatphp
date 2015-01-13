@@ -22,13 +22,14 @@ $js([
 			$(document).data('persona.email',currentUser);
 			$(document).trigger('persona.login');
 			loginBTN.data('origin',loginBTN.html());
-			loginBTN.html(currentUser);
+			loginBTN.addClass('persona-connected');
+			loginBTN.html('<span>'+currentUser+'</span>');
 			loginBTN.show();
 			loginBTN.off('click',loginCALL);
 			loginBTN.next('ul').removeClass('disabled');
 			$js('md5',function(){
 				var s = 24;
-				loginBTN.append('<img src="http://www.gravatar.com/avatar/'+md5(currentUser)+'?s='+s+'" width="'+s+'" height="'+s+'" />');
+				loginBTN.prepend('<img src="http://www.gravatar.com/avatar/'+md5(currentUser)+'?s='+s+'" width="'+s+'" height="'+s+'" />');
 			});
 		};
 		var logoffCALL = function(){
@@ -36,8 +37,9 @@ $js([
 			localStorage.removeItem('email');
 			$(document).data('persona.email',false);
 			$(document).trigger('persona.logout');
-			loginBTN.html(loginBTN.data('origin'));
+			loginBTN.html('<span>'+loginBTN.data('origin')+'</span>');
 			loginBTN.next('ul').addClass('disabled');
+			loginBTN.removeClass('persona-connected');
 			loginBTN.on('click',loginCALL);
 		};
 		var out;
