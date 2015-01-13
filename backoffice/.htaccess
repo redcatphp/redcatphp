@@ -1,0 +1,1 @@
+RewriteRule ^(.*)\.(php)$ ../../index.php/backoffice/$1\.php [L,QSA]
