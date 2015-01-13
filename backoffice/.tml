@@ -155,7 +155,7 @@
 			
 			BackofficeAddIcon('Adminer',{
 				icon:'icon_adminer.png',
-				url:'/backoffice/adminer/',
+				url:'./adminer/',
 				callback:function(o){
 					var iframe = o.contents();
 					$('input[name="'+$.jqSelector('auth[server]')+'"]',iframe).val('<?=@$db->host?>');
