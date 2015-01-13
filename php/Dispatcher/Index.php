@@ -4,6 +4,7 @@ use Surikat\Core\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;
 use Route\ByTml;
+use Route\ByPhp;
 use Route\I18n;
 use Controller\Controller;
 class Index extends Dispatcher{
@@ -34,7 +35,14 @@ class Index extends Dispatcher{
 		if($this->backoffice){
 			if($this->backoffice===true)
 				$this->backoffice = 'backoffice';
-			$this->append(new ByTml($this->backoffice,'backoffice'),$this);
+			$this
+				->append(new ByTml($this->backoffice,'backoffice'),$this)
+				->append(new ByPhp($this->backoffice,'backoffice'),function($paths){
+					list($dir,$file,$adir,$afile) = $paths;
+					chdir($adir);
+					include $file;
+				})
+			;
 		}
 	}
 	function run($path){
