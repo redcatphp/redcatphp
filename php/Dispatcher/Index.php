@@ -2,6 +2,8 @@
 use Route\ByTml;
 use Route\ByPhp;
 use Route\I18n;
+use Route\Extension;
+use Dispatcher\Synaptic;
 class Index extends ViewController{
 	protected $useConvention = true;
 	protected $i18nConvention;
@@ -20,8 +22,9 @@ class Index extends ViewController{
 	}
 	function convention(){
 		$this
-			->prepend(new ByTml('plugin'),$this)
-			->prepend('service/',['Service\\Service','method'])
+			->append(new Extension('css|js|png|jpg|jpeg|gif'), [new Synaptic(),'load'])
+			->append(new ByTml('plugin'),$this)
+			->append('service/',['Service\\Service','method'])
 			->append(new ByTml(),$this)
 		;
 		if($this->i18nConvention)

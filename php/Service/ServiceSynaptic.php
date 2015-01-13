@@ -13,7 +13,7 @@ class ServiceSynaptic {
 	}
 	protected static $expires = 2592000;
 	protected static $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
-	protected static function load($k,$from=null){
+	static function load($k,$from=null){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
 		if(!in_array($extension,self::$allowedExtensions)){
 			HTTP::code(403);
@@ -29,6 +29,10 @@ class ServiceSynaptic {
 				elseif(substr($k,-7,-3)=='.min'){
 					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
 					self::minifyJS($kv,$k);
+				}
+				elseif(is_file($f=SURIKAT_SPATH.$k)){
+					header('Content-Type: application/javascript;');
+					readfile($f);
 				}
 				else{
 					HTTP::code(404);
@@ -60,12 +64,16 @@ class ServiceSynaptic {
 					self::minifyCSS(substr($k,0,-8).'.css');
 				elseif(
 					is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss')
-					||(($k=basename(SURIKAT_SPATH).'/'.$k)&&is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss'))
+					||(($key=basename(SURIKAT_SPATH).'/'.$k)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
 				){
 					if(self::scss($k)===false){
 						HTTP::code(404);
 						throw new Exception('404');
 					}
+				}
+				elseif(is_file($f=SURIKAT_SPATH.$k)){
+					header('Content-Type: text/css;');
+					readfile($f);
 				}
 				else{
 					HTTP::code(404);
@@ -76,16 +84,20 @@ class ServiceSynaptic {
 			case 'jpg':
 			case 'jpeg':
 			case 'gif':
+				//var_dump(SURIKAT_SPATH.$k,is_file($file=SURIKAT_SPATH.$k));exit;
 				if(isset($_GET['code'])&&($_GET['code']=='404'||$_GET['code']=='403'))
 					HTTP::code((int)$_GET['code']);
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
-				if(is_file(SURIKAT_PATH.$k))
-					$file = SURIKAT_PATH.$k;
-				elseif(is_file(SURIKAT_SPATH.$k))
-					$file = SURIKAT_SPATH.$k;
-				else
+				if(is_file($file=SURIKAT_PATH.$k)||is_file($file=SURIKAT_SPATH.$k)){
+					readfile($file);
+				}
+				elseif(is_file($file=SURIKAT_PATH.'img/404.png')||is_file($file=SURIKAT_SPATH.'img/404.png')){
 					HTTP::code(404);
-				readfile($file);
+					readfile($file);
+				}
+				else{
+					HTTP::code(404);
+				}
 			break;
 		}
 	}

@@ -1,6 +1,7 @@
 <?php namespace Surikat\Route;
 class Extension{
 	private $match;
+	private $extension;
 	function __construct($match){
 		$this->match = $match;
 		if(is_string($this->match))
@@ -8,8 +9,12 @@ class Extension{
 	}
 	function __invoke($uri){
 		$e = pathinfo($uri,PATHINFO_EXTENSION);
-		if($e&&in_array(strtolower($e),$this->match)){
+		$this->extension = strtolower($e);
+		if($e&&in_array($this->extension,$this->match)){
 			return substr($uri,0,-1*(strlen($e)+1));
 		}
+	}
+	function extension(){
+		return $this->extension;
 	}
 }
