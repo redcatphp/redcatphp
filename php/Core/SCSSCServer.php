@@ -1,6 +1,7 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\FS;
 use Surikat\Core\HTTP;
+use Surikat\Core\SCSSC;
 use Exception;
 class SCSSCServer{
 	static function joinPath($left, $right) {
@@ -31,7 +32,7 @@ class SCSSCServer{
 		else
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
-		$v = scssc::$VERSION;
+		$v = SCSSC::$VERSION;
 		$t = @date('r');
 		$css = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
 		file_put_contents($out, $css, LOCK_EX);
@@ -79,7 +80,7 @@ class SCSSCServer{
 		$this->dir = $dir;
 		$this->cacheDir = $cacheDir?$cacheDir:SURIKAT_TMP.'scss/';
 		FS::mkdir($this->cacheDir);
-		$this->scss = new scssc();
+		$this->scss = new SCSSC();
 		$this->scss->setImportPaths($this->dir);
 		if(is_dir('css'))
 			$this->scss->addImportPath('css');

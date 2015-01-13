@@ -66,7 +66,7 @@ class ServiceSynaptic {
 					is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss')
 					||(($key=basename(SURIKAT_SPATH).'/'.$k)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
 				){
-					if(self::scss($k)===false){
+					if(self::scss($key)===false){
 						HTTP::code(404);
 						throw new Exception('404');
 					}
