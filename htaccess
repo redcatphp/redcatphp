@@ -199,14 +199,6 @@ RewriteCond %{REQUEST_URI} !^/Surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}Surikat/%{REQUEST_URI}/index.php -f
 RewriteRule ^(.*)$ %{ENV:CWD}Surikat/$1/index.php [L,QSA]
 
-#Custom 404 image
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.(png|gif|jpg|jpeg|bmp|tiff)$ service/synaptic?file=img/404.png&code=404 [L,QSA]
-
-#SCSS + Synaptic
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.(css|js)$ service/synaptic?file=$1.$2 [L]
-
 #Avoid Duplicate Content on by removing index.php access
 RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
 RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
