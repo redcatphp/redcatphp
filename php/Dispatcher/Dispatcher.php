@@ -2,6 +2,7 @@
 use Surikat\Route\Prefix;
 use Surikat\Route\Regex;
 use Surikat\Route\ByTml;
+use ReflectionClass;
 class Dispatcher {
 	protected $routes = [];
 	static function runner($uri){
@@ -38,11 +39,13 @@ class Dispatcher {
 		foreach($this->routes as $group){
 			foreach($group as $router){
 				list($route,$callback) = $router;
+				self::objectify($route);
 				$params = call_user_func_array($route,[&$uri]);
 				if($params===true){
 					return true;
 				}
 				elseif($params!==null&&$params!==false){
+					self::objectify($callback);
 					while(is_callable($callback)){
 						$callback =	call_user_func($callback,$params,$uri,$route);
 					}
@@ -51,5 +54,18 @@ class Dispatcher {
 			}
 		}
 		return false;
+	}
+	private static $reflectionRegistry = [];
+	private static function reflectionRegistry($c){
+		if(!isset(self::$reflectionRegistry[$c]))
+			self::$reflectionRegistry[$c] = new ReflectionClass($c);
+		return self::$reflectionRegistry[$c];
+	}
+	private static function objectify(&$a){
+		if(is_array($a)&&isset($a[0])){
+			if(($a[0]=='new'&&array_shift($a))||(strpos($a[0],'new::')===0&&($a[0]=substr($a[0],5)))){
+				$a = self::reflectionRegistry(array_shift($a))->newInstanceArgs($a);
+			}
+		}
 	}
 }
