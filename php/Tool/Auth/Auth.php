@@ -22,6 +22,7 @@ use Surikat\Core\Session;
 use Surikat\Core\FS;
 use Surikat\Model\R;
 use Surikat\I18n\Lang;
+use Core\Domain;
 use Exception;
 
 if (version_compare(phpversion(), '5.5.0', '<')) {
@@ -76,8 +77,8 @@ class Auth{
 	const OK_RESET_REQUESTED = 44;
 	const OK_ACTIVATION_SENT = 45;
 	
+	static $One;
 	private $db;
-	public $config;
 	protected $tableRequests = 'requests';
 	protected $tableUsers = 'users';
 	protected $site_name = 'The Lab';
@@ -85,9 +86,8 @@ class Auth{
 	protected $site_email = 'no-reply@lab.cuonic.com';
 	protected $bcrypt_cost = '10';
 	protected $messages;
-	static $attemptsPath;
-	static $One;
-	
+	protected $attemptsPath;
+		
 	static function lock(){
 		
 	}
@@ -102,7 +102,7 @@ class Auth{
 	
 	public function __construct(){
 		$this->db = R::getDatabase();
-		$thhis->site_url = rtrim(Domain::getBaseHref(),'/')
+		$this->site_url = rtrim(Domain::getBaseHref(),'/');
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 	}
 	
