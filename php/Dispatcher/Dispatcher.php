@@ -4,6 +4,10 @@ use Surikat\Route\Regex;
 use Surikat\Route\ByTml;
 class Dispatcher {
 	protected $routes = [];
+	static function runner($uri){
+		$dispatcher = new static();
+		return $dispatcher->run($uri);
+	}
 	function append($pattern,$callback,$index=0){
 		return $this->route($pattern,$callback,$index);
 	}
@@ -34,7 +38,11 @@ class Dispatcher {
 		foreach($this->routes as $group){
 			foreach($group as $router){
 				list($route,$callback) = $router;
-				if(null !== $params = call_user_func_array($route,[&$uri])){
+				$params = call_user_func_array($route,[&$uri]);
+				if($params===true){
+					return true;
+				}
+				elseif($params!==null&&$params!==false){
 					while(is_callable($callback)){
 						$callback =	call_user_func($callback,$params,$uri,$route);
 					}

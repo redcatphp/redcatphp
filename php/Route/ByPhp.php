@@ -12,11 +12,11 @@ class ByPhp {
 		}
 	}
 	function __invoke($uri){
-		if(($p=strpos($uri,$this->dir))!==0)
+		if($this->dir&&strpos($uri,$this->dir)!==0)
 			return;
 		$path = ltrim(substr($uri,strlen($this->dir)),'/');
 		if(!$path||substr($path,-1)=='/')
-			$path .= 'index';
+			$path .= 'index.php';
 		$file = $this->dirFS.'/'.$path;
 		if(	is_file($f=($adir=SURIKAT_PATH).$file)
 			||is_file($f=($adir=SURIKAT_SPATH).$file))
