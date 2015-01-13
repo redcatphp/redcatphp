@@ -63,8 +63,8 @@ class ServiceSynaptic {
 				elseif(substr($k,-8,-4)=='.min')
 					self::minifyCSS(substr($k,0,-8).'.css');
 				elseif(
-					is_file(dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss')
-					||(($key=basename(SURIKAT_SPATH).'/'.$k)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
+					is_file(dirname($key=$k).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss')
+					||(($key=basename(SURIKAT_SPATH).'/'.$key)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
 				){
 					if(self::scss($key)===false){
 						HTTP::code(404);
