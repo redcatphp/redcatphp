@@ -7,7 +7,7 @@ class Synaptic extends Dispatcher{
 		if(!empty($this->pathFS))
 			$this->pathFS .= '/';
 	}
-	function load($filename,$file){
+	function __invoke($filename,$file){
 		CoreSynaptic::load($this->pathFS.$file);
 	}
 }

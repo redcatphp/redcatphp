@@ -6,7 +6,7 @@ class Suffix{
 	}
 	function __invoke($uri){
 		if(strrpos($uri,$this->match)===strlen($uri)-strlen($this->match)){
-			return substr($uri,strlen($this->match));
+			return (string)substr($uri,strlen($this->match));
 		}
 	}
 }

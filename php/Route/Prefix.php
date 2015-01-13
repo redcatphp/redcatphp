@@ -6,7 +6,7 @@ class Prefix{
 	}
 	function __invoke($uri){
 		if(strpos($uri,$this->match)===0){
-			return substr($uri,strlen($this->match));
+			return (string)substr($uri,strlen($this->match));
 		}
 	}
 }

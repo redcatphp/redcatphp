@@ -11,7 +11,7 @@ class Extension{
 		$e = pathinfo($uri,PATHINFO_EXTENSION);
 		$this->extension = strtolower($e);
 		if($e&&in_array($this->extension,$this->match)){
-			return substr($uri,0,-1*(strlen($e)+1));
+			return (string)substr($uri,0,-1*(strlen($e)+1));
 		}
 	}
 	function extension(){

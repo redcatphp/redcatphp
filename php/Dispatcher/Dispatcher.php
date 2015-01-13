@@ -1,7 +1,4 @@
 <?php namespace Surikat\Dispatcher;
-use Surikat\Route\Prefix;
-use Surikat\Route\Regex;
-use Surikat\Route\ByTml;
 use ReflectionClass;
 class Dispatcher {
 	protected $routes = [];
@@ -18,10 +15,10 @@ class Dispatcher {
 	function route($route,$callback,$index=0,$prepend=false){
 		if(is_string($route)){
 			if(strpos($route,'/^')===0&&strrpos($route,'$/')-strlen($route)===-2){
-				$route = new Regex($route);
+				$route = ['new','Surikat\Route\Regex',$route];
 			}
 			else{
-				$route = new Prefix($route);
+				$route = ['new','Surikat\Route\Prefix',$route];
 			}
 		}
 		$route = [$route,$callback];
@@ -62,10 +59,21 @@ class Dispatcher {
 		return self::$reflectionRegistry[$c];
 	}
 	private static function objectify(&$a){
+		$c = null;
 		if(is_array($a)&&isset($a[0])){
-			if(($a[0]=='new'&&array_shift($a))||(strpos($a[0],'new::')===0&&($a[0]=substr($a[0],5)))){
-				$a = self::reflectionRegistry(array_shift($a))->newInstanceArgs($a);
+			if($a[0]=='new'){
+				array_shift($a);
+				$c = array_shift($a);
 			}
+			elseif(strpos($a[0],'new::')===0){
+				$c = substr(array_shift($a),5);
+			}
+		}
+		if($c){
+			if(empty($a))
+				$a = new $c();
+			else
+				$a = self::reflectionRegistry($c)->newInstanceArgs($a);
 		}
 	}
 }
