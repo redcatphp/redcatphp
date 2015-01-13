@@ -6,7 +6,7 @@ class Index extends ViewController{
 	protected $useConvention = true;
 	protected $i18nConvention;
 	//protected $backoffice = true;
-	protected $backoffice = 'backofficez';
+	protected $backoffice = 'backend';
 	function __construct(){
 		if($this->useConvention)
 			$this->convention();
