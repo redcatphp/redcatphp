@@ -1,4 +1,5 @@
-<?php namespace Surikat\Core; 
+<?php namespace Surikat\Core;
+use Closure;
 abstract class HTTP{
 	static function getallheaders(){ //for ngix compatibility
 		if(function_exists('getallheaders')){
@@ -23,7 +24,7 @@ abstract class HTTP{
 		}
 	}
 	static function isModified($mtime,$etag){
-		return !((isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$mtime)
+		return !((isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$mtime)
 			||(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH'] == $etag));
 	}
 	static function getRealIpAddr(){
@@ -298,9 +299,7 @@ abstract class HTTP{
 		}
 		return self::$canGzip;
 	}
-	static function basic_authentication(\Closure $authenticate,$realm='Authenticate'){
-		// echo '<pre>';var_dump(getenv('HTTP_AUTHORIZATION'));exit;
-		
+	static function basic_authentication(Closure $authenticate,$realm='Authenticate'){
 		//set http auth headers for apache+php-cgi work around
 		if(isset($_SERVER['HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
 			list($name, $password) = explode(':', base64_decode($matches[1]));
@@ -323,8 +322,7 @@ abstract class HTTP{
 		return true;
 	}
 	static function setup_php_http_auth() {
-		// attempt to support PHP_AUTH_USER & PHP_AUTH_PW if they aren't supported in this SAPI
-		//   known SAPIs that do support them:  apache, litespeed
+		// attempt to support PHP_AUTH_USER & PHP_AUTH_PW if they aren't supported in this SAPI known SAPIs that do support them:  apache, litespeed
 		if ((PHP_SAPI === 'apache') || (PHP_SAPI === 'litespeed') || isset($_SERVER['PHP_AUTH_USER'])) {
 			return;
 		}
