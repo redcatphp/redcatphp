@@ -1,0 +1,11 @@
+%surikat-powered {
+	float:right;
+	clear:both;
+	font-size:10px;
+	>a{
+		color:#000;
+		&:hover{
+			text-decoration:none;
+		}
+	}
+}

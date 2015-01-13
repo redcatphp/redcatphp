@@ -1,5 +1,7 @@
 <div>
-	surikat
-	<img src="img/surikat-ico.png" alt="powered by surikat-framework" title="powered by surikat-framework" /> 
-	powered
+	<a href="http://wildsurikat.com" target="_blank">
+		surikat
+		<img src="img/surikat-ico.png" alt="powered by surikat-framework" title="powered by surikat-framework" /> 
+		powered
+	</a>
 </div>
