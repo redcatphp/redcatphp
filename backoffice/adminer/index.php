@@ -1,13 +1,12 @@
 <?php
 function adminer_object() {
-    // autoloader
-    include_once "./plugins/plugin.php";
-    foreach (glob("plugins/*.php") as $filename) {
-        include_once "./$filename";
+    include_once __DIR__.'/plugins/plugin.php';
+    foreach (glob(__DIR__.'/plugins/*.php') as $filename) {
+        include_once $filename;
     }
     class AdminerSurikat extends AdminerPlugin {   
 		function permanentLogin() {
-		  return "c01993cf7c861ff2c8a43421840bee10"; // key used for permanent login
+		  return 'c01993cf7c861ff2c8a43421840bee10'; // key used for permanent login
 		}   
 		/*
 		function name() {
@@ -31,18 +30,19 @@ function adminer_object() {
 		*/
 	}
     $plugins = array(
-        // specify enabled plugins here
         new AdminerFrames,
         new AdminerVersionNoverify,
         //new AdminerDumpXml,
         //new AdminerTinymce,
-        //new AdminerFileUpload("data/"),
+        //new AdminerFileUpload('data/'),
         //new AdminerSlugify,
         //new AdminerTranslation,
         //new AdminerForeignSystem,
     );  
     return new AdminerSurikat($plugins);
 }
-
-// include original Adminer or Adminer Editor
-include "./adminer.php";
+//$_SERVER['SCRIPT_FILENAME'] = __FILE__;
+//Core\Session::start();
+//include __DIR__.'/adminer.inc';
+chdir(__DIR__.'/adminer');
+include 'index.php';
