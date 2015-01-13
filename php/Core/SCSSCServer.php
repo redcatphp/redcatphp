@@ -69,12 +69,7 @@ class SCSSCServer{
 	function cachingHeader($output){
 		if(!is_file($output))
 			return;
-		if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == filemtime($fn))) {
-			header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($output)).' GMT', true, 304);
-			exit;
-		}
-		header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($output)).' GMT', true, 200);
-		header("Etag: " . HTTP::FileEtag($output));
+		HTTP::fileCache($output);
 	}
 	function __construct($dir, $cacheDir=null){
 		$this->dir = $dir;

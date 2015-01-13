@@ -1,6 +1,6 @@
 <?php namespace Surikat\Core; 
 abstract class HTTP{
-public static function getallheaders(){ //for ngix compatibility
+static function getallheaders(){ //for ngix compatibility
 	if(function_exists('getallheaders')){
 		return call_user_func_array('getallheaders',func_get_args());
 	}
@@ -12,10 +12,24 @@ public static function getallheaders(){ //for ngix compatibility
 	}
 	return $headers;
 }
-public static function getRealIpAddr(){
+static function fileCache($output){
+	$mtime = filemtime($output);
+	$etag = HTTP::FileEtag($output);
+	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mtime).' GMT', true);
+	header('Etag: '.$etag);
+	if(!HTTP::isModified($mtime,$etag)){
+		HTTP::code(304);
+		exit;
+	}
+}
+static function isModified($mtime,$etag){
+	return !((isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$mtime)
+		||(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH'] == $etag));
+}
+static function getRealIpAddr(){
     return !empty($_SERVER['HTTP_CLIENT_IP'])?$_SERVER['HTTP_CLIENT_IP']:(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])?$_SERVER['HTTP_X_FORWARDED_FOR']:$_SERVER['REMOTE_ADDR']);
 }
-public static function nocacheHeaders(){
+static function nocacheHeaders(){
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); 
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s" ) . " GMT" );
 	header("Pragma: no-cache");
@@ -77,14 +91,14 @@ static $codes = [
 	101=>'Switching Protocols',
 	100=>'Continue',
 ];
-public static function code($n=505){
+static function code($n=505){
 	if(headers_sent()) return false;
 	if(!isset(self::$codes[$n])) $n = 500;
 	header($_SERVER['SERVER_PROTOCOL'].' '.$n.' '.self::$codes[$n]);
 	return true;
 
 }
-public static function verifPlageIP($IP,$PlageIP){
+static function verifPlageIP($IP,$PlageIP){
 	//$ip=$_SERVER['REMOTE_ADDR'];
 	//$plage_ip=array('deb'=>'192.168.120.1','fin'=>'192.168.120.253');
 	//echo var_dump(verifPlageIP($ip,$plage_ip));
@@ -125,14 +139,14 @@ public static function verifPlageIP($IP,$PlageIP){
 // * This ends the default header and starts a new one.
 // * This new one can be ended at any time using endHTTPHeader.
 
-public static function startNewHTTPHeader(){
+static function startNewHTTPHeader(){
 	ob_end_clean();
 	header( "Connection: close \r\n");
 	header("Content-Encoding: none\r\n");
 	ignore_user_abort( true ); // optional
 	ob_start();
 }
-public static function streamer_flv($file,$seekat=0){
+static function streamer_flv($file,$seekat=0){
 	//Effacement du cache
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -161,14 +175,14 @@ public static function streamer_flv($file,$seekat=0){
  // * Ends the header (and so the connection) setup with the user.
  // * All HTTP and echo'd text will not be sent after calling this.
  // * This allows you to continue performing processing on server side.
-public static function endHTTPHeader(){
+static function endHTTPHeader(){
 	// now end connection
 	header( "Content-Length: " . ob_get_length() );
 	ob_end_flush();
 	flush();
 	ob_end_clean();
 }
-public static function endOutput($endMessage){
+static function endOutput($endMessage){
     ignore_user_abort(true);
     set_time_limit(0);
     header("Connection: close");
@@ -178,14 +192,14 @@ public static function endOutput($endMessage){
     flush();
 }
 
-public static function stripWWW(){
+static function stripWWW(){
 	if(preg_match('/^www.(.+)$/i', $_SERVER['HTTP_HOST'], $matches)){
 		header("Status: 301 Move permanently", false, 301);
 		header('Location: http://'.$matches[1].$_SERVER['REQUEST_URI']);
 		exit;
 	}
 }
-public static function forceSSL($ssl=true){
+static function forceSSL($ssl=true){
 	if($ssl){
 		if(!isset($_SERVER['HTTPS'])||$_SERVER['HTTPS']!='on'){
 			header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
@@ -199,14 +213,14 @@ public static function forceSSL($ssl=true){
 		}
 	}
 }
-public static function requestheader($key){
+static function requestheader($key){
 	$headers = self::getallheaders();
 	if(func_num_args()>1)
 		return isset($headers[$key])&&$headers[$key]==func_get_arg(1);
 	else
 		return isset($headers[$key])?$headers[$key]:false;
 }
-public static function apache_request_headers(){
+static function apache_request_headers(){
 	if(function_exists('apache_request_headers')){
 		return call_user_func_array('apache_request_headers',func_get_args());
 	}
@@ -218,11 +232,11 @@ public static function apache_request_headers(){
 	}
 	return $headers;
 }
-public static function FileEtag($file){
+static function FileEtag($file){
 	$s = stat($file);
 	return sprintf('%x-%s', $s['size'], base_convert(str_pad($s['mtime'], 16, "0"),10,16));
 }
-public static function reArrange(&$arr){
+static function reArrange(&$arr){
     $new = [];
 	if(
 		isset($arr['name'])
@@ -284,7 +298,7 @@ static function checkCanGzip(){
 	}
 	return self::$canGzip;
 }
-public static function basic_authentication(\Closure $authenticate,$realm='Authenticate'){
+static function basic_authentication(\Closure $authenticate,$realm='Authenticate'){
 	// echo '<pre>';var_dump(getenv('HTTP_AUTHORIZATION'));exit;
 	
 	//set http auth headers for apache+php-cgi work around
@@ -308,7 +322,7 @@ public static function basic_authentication(\Closure $authenticate,$realm='Authe
 	}
 	return true;
 }
-public static function setup_php_http_auth() {
+static function setup_php_http_auth() {
 	// attempt to support PHP_AUTH_USER & PHP_AUTH_PW if they aren't supported in this SAPI
 	//   known SAPIs that do support them:  apache, litespeed
     if ((PHP_SAPI === 'apache') || (PHP_SAPI === 'litespeed') || isset($_SERVER['PHP_AUTH_USER'])) {

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Service;
+<?php namespace Surikat\Core;
 use Surikat\Core\Dev;
 use Surikat\Core\SCSSCServer;
 use Surikat\Core\SCSSC;
@@ -6,14 +6,10 @@ use Surikat\Core\HTTP;
 use Surikat\Core\FS;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
-class ServiceSynaptic {
-	static function method(){
-		if(isset($_GET['file']))
-			self::load($_GET['file']);
-	}
+class Synaptic {
 	protected static $expires = 2592000;
 	protected static $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
-	static function load($k,$from=null){
+	static function load($k){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
 		if(!in_array($extension,self::$allowedExtensions)){
 			HTTP::code(403);
@@ -21,44 +17,26 @@ class ServiceSynaptic {
 		}
 		switch($extension){
 			case 'js':
-				if(is_file($k)){
+				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
 					header('Content-Type: application/javascript; charset:utf-8');
-					readfile($k);
+					HTTP::fileCache($f);
+					readfile($f);
 				}
 				elseif(substr($k,-7,-3)=='.min'){
 					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
 					self::minifyJS($kv,$k);
 				}
-				elseif(is_file($f=SURIKAT_SPATH.$k)){
-					header('Content-Type: application/javascript;');
-					readfile($f);
-				}
 				else{
 					HTTP::code(404);
-					throw new Exception('404');
 				}
 			break;
 			case 'css':
-				if(is_file($k)){
+				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
 					header('Content-Type: text/css; charset:utf-8');
-					if(!$from||strpos($k,'://')!==false||($dir1=dirname($k))==($dir2=dirname($from)))
-						readfile($k);
-					else{
-						$xd1 = explode('/',$dir1);
-						$xd2 = explode('/',$dir2);
-						$c = count($xd1);
-						for($i=0;$i<$c;$i++)
-							if(!(isset($xd2[$i])&&$xd1[$i]==$xd2[$i]))
-								break;
-						$dir1 = '';
-						for($i=$i;$i<$c;$i++)
-							$dir1 .= $xd1[$i];
-						$relativity = rtrim(str_repeat('../',substr_count($k,'/')-$i).$dir1,'/').'/';
-						echo "/* SynapticURI $k => $from: $relativity\r\n */";
-						echo preg_replace('#url\((?!\s*[\'"]?(?:https?:)?//)\s*([\'"])?#',"url($1{$relativity}",file_get_contents($k));
-					}
+					HTTP::fileCache($f);
+					readfile($f);
 				}
 				elseif(substr($k,-8,-4)=='.min')
 					self::minifyCSS(substr($k,0,-8).'.css');
@@ -68,32 +46,25 @@ class ServiceSynaptic {
 				){
 					if(self::scss($key)===false){
 						HTTP::code(404);
-						throw new Exception('404');
 					}
-				}
-				elseif(is_file($f=SURIKAT_SPATH.$k)){
-					header('Content-Type: text/css;');
-					readfile($f);
 				}
 				else{
 					HTTP::code(404);
-					throw new Exception('404');
 				}
 			break;
 			case 'png':
 			case 'jpg':
 			case 'jpeg':
 			case 'gif':
-				//var_dump(SURIKAT_SPATH.$k,is_file($file=SURIKAT_SPATH.$k));exit;
-				if(isset($_GET['code'])&&($_GET['code']=='404'||$_GET['code']=='403'))
-					HTTP::code((int)$_GET['code']);
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
-				if(is_file($file=SURIKAT_PATH.$k)||is_file($file=SURIKAT_SPATH.$k)){
-					readfile($file);
+				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
+					HTTP::fileCache($f);
+					readfile($f);
 				}
-				elseif(is_file($file=SURIKAT_PATH.'img/404.png')||is_file($file=SURIKAT_SPATH.'img/404.png')){
+				elseif(is_file($f=SURIKAT_PATH.'img/404.png')||is_file($f=SURIKAT_SPATH.'img/404.png')){
 					HTTP::code(404);
-					readfile($file);
+					HTTP::fileCache($f);
+					readfile($f);
 				}
 				else{
 					HTTP::code(404);
