@@ -1,4 +1,4 @@
-<Presenter:Basic />
+<Presenter:Presenter />
 <?
 use Core\HTTP;
 HTTP::code(500);

@@ -4,7 +4,7 @@ use Surikat\View\FILE;
 use Surikat\View\TML;
 use Dispatcher\Index;
 use Core\Domain;
-class Basic extends ArrayObject{
+class Presenter extends ArrayObject{
 	static function load(TML $tml){
 		if(!$tml->View)
 			return;
