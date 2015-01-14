@@ -172,7 +172,7 @@ class Select extends Where {
 		return Base::_render_bool_expr($having);
 	}
 	function render($removeUnbinded=true) {
-		$with = empty($this->with) ? '' : 'WITH \n\t'.implode(", \n\t", $this->with); //Postgresql specific
+		$with = empty($this->with) ? '' : "WITH \n\t".implode(", \n\t", $this->with); //Postgresql specific
 		$columns = empty($this->columns) ? '*' : "\n\t".implode(", \n\t", $this->columns);
 		$distinct = $this->distinct ? "DISTINCT" : "";
 		$from = '';
