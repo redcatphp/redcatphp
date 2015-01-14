@@ -65,7 +65,7 @@ class Dispatcher {
 				array_shift($a);
 				$c = array_shift($a);
 			}
-			elseif(strpos($a[0],'new::')===0){
+			elseif(is_string($a[0])&&strpos($a[0],'new::')===0){
 				$c = substr(array_shift($a),5);
 			}
 		}
