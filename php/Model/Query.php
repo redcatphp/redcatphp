@@ -129,12 +129,20 @@ class Query {
 	function getParams(){
 		return $this->composer->getParams();
 	}
-	function joinOn($on){
-		$this->join(implode((array)$this->joinOnSQL($on)));
+	function joinOwn($on){
+		$this->join(implode((array)$this->joinOwnSQL($on)));
 		return $this;
 	}
-	function unJoinOn($on){
-		$this->unJoin(implode((array)$this->joinOnSQL($on)));
+	function unJoinOwn($on){
+		$this->unJoin(implode((array)$this->joinOwnSQL($on)));
+		return $this;
+	}
+	function joinShared($on){
+		$this->join(implode((array)$this->joinSharedSQL($on)));
+		return $this;
+	}
+	function unJoinShared($on){
+		$this->unJoin(implode((array)$this->joinSharedSQL($on)));
 		return $this;
 	}
 	function joinWhere($w,$params=null){
@@ -212,37 +220,59 @@ class Query {
 			$this->listOfColumns[$t] = $this->_DataBase->inspect($t);
 		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
 	}
-	function joinOnSQL($share){
+	function joinSharedSQL($share){
 		if(is_array($share)){
 			$r = [];
 			foreach($share as $k=>$v)
-				$r[$k] = $this->joinOnSQL($this->table,$v);
+				$r[$k] = $this->joinSharedSQL($this->table,$v);
 			return $r;
 		}
 		$rel = [$this->table,$share];
 		sort($rel);
 		$rel = $this->writer->prefix.implode('_',$rel);
 		$q = $this->writer->quoteCharacter;
-		$sql = "LEFT OUTER JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
+		$sql = "JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
 		if($this->table!=$share){
 			$shareTable = $this->writer->prefix.$share;
-			$sql .= "LEFT OUTER JOIN {$q}{$shareTable}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$shareTable}{$q}.{$q}id{$q}";
+			$sql .= "JOIN {$q}{$shareTable}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$shareTable}{$q}.{$q}id{$q}";
 		}
 		return $sql;
 	}
-	function selectRelationnal($select,$colAlias=null){
-		$this->getRelationnal($select,$colAlias,true);
-		return $this;
+	function joinOwnSQL($own){
+		if(is_array($own)){
+			$r = [];
+			foreach($own as $k=>$v)
+				$r[$k] = $this->joinOwnSQL($this->table,$v);
+			return $r;
+		}
+		$q = $this->writer->quoteCharacter;
+		return "JOIN {$q}{$this->writer->prefix}{$own}{$q} ON {$q}{$this->writer->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
 	}
-	function getRelationnal($select,$colAlias=null,$autoSelectId=false){
+	function selectRelationnal($select,$colAlias=null,$joinType='LEFT'){
 		if(is_array($select)){
+			if($colAlias)
+				$joinType = $colAlias;
 			foreach($select as $k=>$s)
 				if(is_integer($k))
-					$this->selectRelationnal($s);
+					$this->selectRelationnal($s,null,$joinType);
 				else
-					$this->selectRelationnal($k,$s);
-			return;
+					$this->selectRelationnal($k,$s,$joinType);
+			return $this;
 		}
+		$this->getRelationnal($select,$joinType,$colAlias,true);
+		return $this;
+	}
+	function getRelationnal($select,$joinType='',$colAlias=null,$autoSelectId=false){
+		$this->joinOn($select,$joinType,$vars);
+		if($vars[1]){
+			$vars[] = $colAlias;
+			$vars[] = $autoSelectId;
+			call_user_func_array([$this,'_selectRelationnal'],$vars);
+		}
+	}
+	function joinOn($select,$joinType='',&$vars=[]){
+		if($joinType)
+			$joinType .= ' ';
 		$l = strlen($select);
 		$type = '';
 		$typeParent = $this->table;
@@ -257,7 +287,7 @@ class Query {
 						$alias = $superalias.'__'.$alias;
 					$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}{$this->prefix}$alias{$q}":$q.$this->prefix.$alias.$q;
 					if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
-						$this->join("LEFT OUTER JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}");
+						$this->join("{$joinType}JOIN $joint ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}");
 					$typeParent = $type;
 					$aliasParent = $this->prefix.$alias;
 					$type = '';
@@ -285,9 +315,9 @@ class Query {
 						if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
 							if($superalias)
 								$imp = $superalias.'__'.$imp;
-							$this->join("LEFT OUTER JOIN $impt ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_id{$q}");
+							$this->join("{$joinType}JOIN $impt ON {$q}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_id{$q}");
 							$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}{$this->prefix}$alias{$q}":$q.$this->prefix.$alias.$q;
-							$this->join("LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_id{$q}");
+							$this->join("{$joinType}JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_id{$q}");
 							if(!$two)
 								$shareds[] = $type;
 						}
@@ -300,7 +330,7 @@ class Query {
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}{$this->prefix}$alias{$q}":$q.$this->prefix.$alias.$q;
 						if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_id')))
-							$this->join("LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$typeParent{$q}.{$q}{$type}_id{$q}");
+							$this->join("{$joinType}JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$typeParent{$q}.{$q}{$type}_id{$q}");
 						$typeParent = $type;
 						$relation = '<';
 					}
@@ -311,13 +341,17 @@ class Query {
 				break;
 			}
 		}
-		$table = $typeParent;
-		$col = trim($type);
-		
+		$type = trim($type);
+		$vars = [$typeParent,$type,$superalias,$alias,$exist,$relation];
+		$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
+		return $this;
+	}
+	function _selectRelationnal($table,$col,$superalias,$alias,$exist,$relation,$colAlias=null,$autoSelectId=false){
 		$agg = $this->writer->agg;
 		$aggc = $this->writer->aggCaster;
 		$sep = $this->writer->separator;
 		$cc = $this->writer->concatenator;
+		$q = $this->writer->quoteCharacter;
 		if(!$colAlias)
 			$colAlias = ($superalias?$superalias:$alias).$relation.$col;
 		if($colAlias)
@@ -343,9 +377,9 @@ class Query {
 						$this->select("{$agg}({$q}{$this->prefix}{$alias}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})".$idAlias);
 				break;
 			}
-			$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
 		}
 	}
+	
 	function selectNeed($n='id'){
 		if(!count($this->composer->select))
 			$this->select('*');
@@ -554,7 +588,7 @@ class Query {
 				$this->select($this->writer->autoWrapCol($q.$this->prefix.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
 				$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.$col.$q);
 			}
-			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$parent}{$q} ON {$q}{$this->prefix}{$parent}{$q}.{$q}id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}{$parent}_id{$q}");
+			$this->join("LEFT JOIN {$q}{$this->prefix}{$parent}{$q} ON {$q}{$this->prefix}{$parent}{$q}.{$q}id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}{$parent}_id{$q}");
 			$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.'id'.$q);
 		}
 		foreach($shareds as $share){
@@ -563,15 +597,15 @@ class Query {
 			$rel = [$this->table,$share];
 			sort($rel);
 			$rel = implode('_',$rel);
-			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$rel}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
-			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$share}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$this->prefix}{$share}{$q}.{$q}id{$q}");
+			$this->join("LEFT JOIN {$q}{$this->prefix}{$rel}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT JOIN {$q}{$this->prefix}{$share}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$this->prefix}{$share}{$q}.{$q}id{$q}");
 		}
 		foreach($owns as $own){
 			foreach($fieldsOwn[$own] as $col){
 				if(strrpos($col,'_id')!==strlen($col)-3)
 					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
 			}
-			$this->join("LEFT OUTER JOIN {$q}{$this->prefix}{$own}{$q} ON {$q}{$this->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
+			$this->join("LEFT JOIN {$q}{$this->prefix}{$own}{$q} ON {$q}{$this->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
 		}
 		if(!(empty($parents)&&empty($shareds)&&empty($owns))){
 			$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);

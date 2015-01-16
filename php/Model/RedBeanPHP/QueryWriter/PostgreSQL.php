@@ -91,9 +91,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				n2.nspname, c2.relname, cons.conname
 				FROM pg_class c
 				JOIN pg_namespace n ON n.oid = c.relnamespace
-				LEFT OUTER JOIN pg_constraint cons ON cons.conrelid = c.oid
-				LEFT OUTER JOIN pg_class c2 ON cons.confrelid = c2.oid
-				LEFT OUTER JOIN pg_namespace n2 ON n2.oid = c2.relnamespace
+				LEFT JOIN pg_constraint cons ON cons.conrelid = c.oid
+				LEFT JOIN pg_class c2 ON cons.confrelid = c2.oid
+				LEFT JOIN pg_namespace n2 ON n2.oid = c2.relnamespace
 				WHERE c.relkind = 'r'
 					AND n.nspname = ANY( current_schemas( FALSE ) )
 					AND (cons.contype = 'f' OR cons.contype IS NULL)
@@ -448,7 +448,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
 						if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_id')))
-							$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}";
+							$tablesJoin[] = "LEFT JOIN $joint ON {$q}{$this->prefix}$aliasParent{$q}.{$q}id{$q}={$q}{$this->prefix}$alias{$q}.{$q}{$typeParent}_id{$q}";
 						$typeParent = $type;
 						$aliasParent = $alias;
 						$type = '';
@@ -465,9 +465,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$imp = implode('_',$rels);
 							$join[$imp][] = $alias;
 							if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
-								$tablesJoin[] = "LEFT OUTER JOIN $q{$this->prefix}$imp$q ON {$q}{$this->prefix}$typeParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}_id{$q}";
+								$tablesJoin[] = "LEFT JOIN $q{$this->prefix}$imp$q ON {$q}{$this->prefix}$typeParent{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$typeParent}_id{$q}";
 								$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
-								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
+								$tablesJoin[] = "LEFT JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$imp{$q}.{$q}{$type}".(in_array($type,$shareds)?2:'')."_id{$q}";
 							}
 							$shareds[] = $type;
 							$typeParent = $type;
@@ -479,7 +479,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
 							$joint = $type!=$alias?"{$q}{$this->prefix}$type{$q} as {$q}$alias{$q}":$q.$this->prefix.$alias.$q;
 							if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_id')))
-								$tablesJoin[] = "LEFT OUTER JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$typeParent{$q}.{$q}{$type}_id{$q}";
+								$tablesJoin[] = "LEFT JOIN $joint ON {$q}{$this->prefix}$alias{$q}.{$q}id{$q}={$q}{$this->prefix}$typeParent{$q}.{$q}{$type}_id{$q}";
 							$typeParent = $type;
 							$relation = '<';
 						}
