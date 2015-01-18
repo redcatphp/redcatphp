@@ -342,11 +342,11 @@ class Query {
 			}
 		}
 		$type = trim($type);
-		$vars = [$typeParent,$type,$superalias,$alias,$exist,$relation];
+		$vars = [$typeParent,$type,$alias,$superalias,$exist,$relation];
 		$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
 		return $this;
 	}
-	function _selectRelationnal($table,$col,$superalias,$alias,$exist,$relation,$colAlias=null,$autoSelectId=false){
+	function _selectRelationnal($table,$col,$alias,$superalias,$exist,$relation,$colAlias=null,$autoSelectId=false){
 		$agg = $this->writer->agg;
 		$aggc = $this->writer->aggCaster;
 		$sep = $this->writer->separator;
@@ -357,7 +357,7 @@ class Query {
 		if($colAlias)
 			$colAlias = ' as '.$q.$colAlias.$q;
 		if($autoSelectId)
-			$idAlias = ' as '.$q.$alias.$relation.'id'.$q;
+			$idAlias = ' as '.$q.($superalias?$superalias:$alias).$relation.'id'.$q;
 		if($exist){
 			switch($relation){
 				case '<':
