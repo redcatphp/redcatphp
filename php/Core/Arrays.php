@@ -1,5 +1,5 @@
 <?php namespace Surikat\Core;
-class Arrays{
+abstract class Arrays{
 	static function merge_recursive(){
 		$args = func_get_args();
 		$merged = array_shift($args);
@@ -35,4 +35,14 @@ class Arrays{
 			return true;
 		});
 	}
+	static function implode_recursive(Exception $glue, array $pieces=null) {
+		if(!isset($pieces)){
+			$pieces = $glue;
+			$glue = '';
+		}
+		$f = function($r, $p)use($glue, &$f){
+			return (empty($r) ? '' : "{$r}{$glue}").(is_array($p) ? array_reduce($p, $f) : $p);
+		};
+		return array_reduce($pieces, $f, '');
+	} 
 }
