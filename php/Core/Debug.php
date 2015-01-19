@@ -9,9 +9,7 @@ class Debug{
 		if($set){
 			error_reporting(-1);
 			ini_set('display_startup_errors',true);
-			//ini_set('html_errors',false);
-			//ini_set('display_errors','stdout');
-			ini_set('display_errors',false);
+			ini_set('display_errors','stdout');
 			if(!self::$registeredErrorHandler){
 				self::$registeredErrorHandler = true;
 				set_error_handler(['Surikat\Core\Debug','errorHandle']);
@@ -22,7 +20,7 @@ class Debug{
 		else{
 			error_reporting(0);
 			ini_set('display_startup_errors',false);
-			//ini_set('display_errors',false);
+			ini_set('display_errors',false);
 		}
 	}
 	static function catchException($e){
