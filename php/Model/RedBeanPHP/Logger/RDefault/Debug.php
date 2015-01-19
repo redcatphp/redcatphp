@@ -79,10 +79,9 @@ class Debug extends RDefault implements Logger
 	 */
 	protected function output( $str )
 	{
-		if(!headers_sent())
-			header('Content-Type: text/html; charset=utf-8');
 		$this->logs[] = $str;
-		if ( !$this->mode ) echo '<pre>'.htmlentities($str).'</pre>';
+		if ( !$this->mode )
+			echo '<pre class="debug-model">'.$str.'</pre>';
 	}
 
 	/**
@@ -160,5 +159,14 @@ class Debug extends RDefault implements Logger
 		$newBindings = $this->normalizeBindings( $bindings );
 		$newStr = $this->writeQuery( $newSql, $newBindings );
 		$this->output( $newStr );
+	}
+	public function logOpen(){
+		if(!headers_sent())
+			header('Content-Type: text/html; charset=utf-8');
+		echo '<div style="margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;">';
+		
+	}
+	public function logClose(){
+		echo '</div>';
 	}
 }

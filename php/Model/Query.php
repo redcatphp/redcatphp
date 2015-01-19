@@ -145,27 +145,6 @@ class Query {
 		$this->unJoin(implode((array)$this->joinSharedSQL($on)));
 		return $this;
 	}
-	function joinWhere($w,$params=null){
-		if(empty($w))
-			return;
-		$this->having($this->joinWhereSQL($w),$params);
-		return $this;
-	}
-	function unJoinWhere($w){
-		if(empty($w))
-			return;
-		$this->unHaving($this->joinWhereSQL($w));
-		return $this;
-	}
-	protected function joinWhereSQL($w){
-		if(empty($w))
-			return;
-		$hc = $this->writer->sumCaster;
-		$hs = implode(' AND ',(array)$w);
-		if($hc)
-			$hs = '('.$hs.')'.$hc;
-		return 'SUM('.$hs.')>0';
-	}
 	function selectTruncation($col,$truncation=369,$getl=true){
 		$c = $this->formatColumnName($col);
 		$this->composer->select("SUBSTRING($c,1,$truncation) as $col");

@@ -172,9 +172,9 @@ class Select extends Where {
 		return Base::_render_bool_expr($having);
 	}
 	function render($removeUnbinded=true) {
-		$with = empty($this->with) ? '' : "WITH \n\t".implode(", \n\t", $this->with); //Postgresql specific
-		$columns = empty($this->columns) ? '*' : "\n\t".implode(", \n\t", $this->columns);
-		$distinct = $this->distinct ? "DISTINCT" : "";
+		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific
+		$columns = empty($this->columns) ? '*' : implode(', ', $this->columns);
+		$distinct = $this->distinct ? 'DISTINCT' : "";
 		$from = '';
 		$tables = [];
 		$joins = [];
@@ -190,14 +190,14 @@ class Select extends Where {
 				$joins[] = $t[0];
 		}
 		foreach($tables as $t){
-			$from .= "\n\t";
+			$from .= '';
 			if(strpos($t,'(')===false&&strpos($t,')')===false&&strpos($t,' ')===false&&strpos($t,$this->writer->quoteCharacter)===false)
 				$from .= $this->Query->quote($this->writer->prefix.$t);
 			else
 				$from .= $t;
 			if(isset($joins[$t])){
 				foreach($joins[$t] as $j){
-					$from .= "\n\t\t".$j;
+					$from .= ' '.$j;
 				}
 				unset($joins[$t]);
 			}
@@ -207,14 +207,14 @@ class Select extends Where {
 		foreach($joins as $j)
 			$from .= $j;
 		
-		$from = "\nFROM ".$from;
+		$from = "FROM ".$from;
 		$where = $this->_render_where($removeUnbinded);
 		if(!empty($where))
-			$where =  "\nWHERE $where";
-		$group_by = empty($this->group_by) ? "" : "\nGROUP BY " . implode(", ", $this->group_by);
+			$where =  "WHERE $where";
+		$group_by = empty($this->group_by) ? "" : "GROUP BY " . implode(", ", $this->group_by);
 		$order_by = '';
 		if(!empty($this->order_by)){
-			$order_by .= "\nORDER BY ";
+			$order_by .= "ORDER BY ";
 			foreach($this->order_by as $i=>$gb){
 				$order_by .= $gb;
 				if(isset($this->sort[$i]))
@@ -224,12 +224,12 @@ class Select extends Where {
 			$order_by = rtrim($order_by,',');
 		}
 		$with_rollup = $this->with_rollup ? "WITH ROLLUP" : "";
-		$having = empty($this->having) ? "" : "\nHAVING " . $this->_render_having($removeUnbinded);
+		$having = empty($this->having) ? "" : "HAVING " . $this->_render_having($removeUnbinded);
 		$limit = "";
 		if ($this->limit) {
-			$limit = "\nLIMIT {$this->limit}";
+			$limit = 'LIMIT '.$this->limit;
 			if ($this->offset) {
-				$limit .= "\nOFFSET {$this->offset}";
+				$limit .= ' OFFSET '.$this->offset;
 			}
 		}
 		return "{$with} SELECT {$distinct} {$columns} {$from} {$where} {$group_by} {$with_rollup} {$having} {$order_by} {$limit}";

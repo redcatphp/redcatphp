@@ -3,7 +3,7 @@ class Debug{
 	private static $errorHandler;
 	private static $registeredErrorHandler;
 	private static $debugLines = 5;
-	private static $debugStyle = '<style>code br{line-height:0.1em;}pre.error{color:#F00;display:block;position:relative;z-index:99999;}</style>';
+	private static $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
 	static function errorHandler($set=true){
 		self::$errorHandler = $set;
 		if($set){
@@ -29,7 +29,7 @@ class Debug{
 		if(!headers_sent())
 			header("Content-Type: text/html; charset=utf-8");
 		echo self::$debugStyle;
-		echo '<pre class=\"error\">Exception: '.$e->getMessage()."\nStackTrace:\n";
+		echo '<pre class="error"><span>Exception: '.$e->getMessage()."</span>\nStackTrace:\n";
 		echo '#'.get_class($e);
 		if(method_exists($e,'getData')){
 			echo ':';
@@ -43,7 +43,7 @@ class Debug{
 		if(!self::$errorHandler||!ini_get('error_reporting'))
 			return;
 		echo self::$debugStyle;
-		echo "<pre class=\"error\">Error\t$message\nFile\t$file\nLine\t$line\nContext:\n";
+		echo "<pre class=\"error\"><span>Error\t$message\nFile\t$file\nLine\t$line</span>\nContext:\n";
 		$f = file($file);
 		$c = count($f);
 		$start = $line-self::$debugLines;
@@ -61,7 +61,7 @@ class Debug{
 		$e = array_shift($x);
 		for($i=0;$i<count($x);$i++){
 			$y = $start+$i+2;
-			$e .= '<span style="color:#'.($y==$line?'DD0000':'007700').';">'.$y."\t</span>";
+			$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
 			$e .= $x[$i].'<br />';
 		}
 		$p = strpos($e,'&lt;?php');

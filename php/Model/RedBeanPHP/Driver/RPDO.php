@@ -4,6 +4,7 @@ namespace Surikat\Model\RedBeanPHP\Driver;
 
 use Surikat\Core\Dev;
 use Surikat\Core\Chrono;
+use Surikat\Core\SqlFormatter;
 use Surikat\Model\RedBeanPHP\Driver as Driver;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
@@ -132,6 +133,8 @@ class RPDO implements Driver
 	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
+		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED)||Dev::has(Dev::MODEL))
+			$this->debugger()->logOpen();
 		
 		$sql = str_replace('{$prefix}',$this->DB->getPrefix(),$sql);
 		
@@ -139,7 +142,7 @@ class RPDO implements Driver
 			$this->logger->log( $sql, $bindings );
 		}
 		if(Dev::has(Dev::SQL))
-			$this->debugger()->log($sql, $bindings);
+			$this->debugger()->log(SqlFormatter::format($sql), $bindings);
 
 		try {
 			if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
@@ -162,10 +165,10 @@ class RPDO implements Driver
 				$this->bindParams( $explain, $bindings );
 				$explain->execute();
 				$explain = $explain->fetchAll();
-				$this->debugger()->log(Chrono::display($suid));
-				$this->debugger()->log(implode("\n",array_map(function($entry){
+				$this->debugger()->log('<span style="color:#d00;">'.Chrono::display($suid).'</span>');
+				$this->debugger()->log('<span style="color:#333;">'.implode("\n",array_map(function($entry){
 					return implode("\n",$entry);
-				}, $explain)));
+				}, $explain)).'</span>');
 			}
 			
 			$this->affectedRows = $statement->rowCount();
@@ -182,7 +185,7 @@ class RPDO implements Driver
 					}
 					
 					if(Dev::has(Dev::SQL))
-						$this->debugger()->log('resultset: ' . count( $this->resultArray ) . ' rows');
+						$this->debugger()->log('resultset: <span style="color:#d00;">' . count( $this->resultArray ) . ' rows</span>');
 				}
 				else{
 					return $statement;
@@ -200,8 +203,10 @@ class RPDO implements Driver
 				$this->logger->log( 'An error occurred: ' . $err );
 			
 			if(Dev::has(Dev::MODEL)){
-				$this->debugger()->log('An error occurred: '.$err);
-				$this->debugger()->log($sql, $bindings);
+				if(!Dev::has(Dev::PHP))
+					$this->debugger()->log('An error occurred: '.$err);
+				if(!Dev::has(Dev::SQL))
+					$this->debugger()->log(SqlFormatter::format($sql), $bindings);
 			}
 				
 			$exception = new SQL( $err, 0 );
@@ -209,6 +214,9 @@ class RPDO implements Driver
 
 			throw $exception;
 		}
+		
+		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED)||Dev::has(Dev::MODEL))
+			$this->debugger()->logClose();
 	}
 
 	/**
