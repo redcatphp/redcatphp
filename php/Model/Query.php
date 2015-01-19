@@ -3,6 +3,7 @@ use ArrayAccess;
 use BadMethodCallException;
 use Surikat\Core\Dev;
 use Surikat\Core\ArrayObject;
+use Surikat\Core\Arrays;
 use Surikat\Model;
 use Surikat\Model\R;
 use Surikat\Model\RedBeanPHP\Database;
@@ -130,19 +131,23 @@ class Query {
 		return $this->composer->getParams();
 	}
 	function joinOwn($on){
-		$this->join(implode((array)$this->joinOwnSQL($on)));
+		foreach((array)$this->joinOwnSQL($on) as $join)
+			$this->join($join);
 		return $this;
 	}
 	function unJoinOwn($on){
-		$this->unJoin(implode((array)$this->joinOwnSQL($on)));
+		foreach((array)$this->joinOwnSQL($on) as $join)
+			$this->unJoin($join);
 		return $this;
 	}
 	function joinShared($on){
-		$this->join(implode((array)$this->joinSharedSQL($on)));
+		foreach((array)$this->joinSharedSQL($on) as $join)
+			$this->join($join);
 		return $this;
 	}
 	function unJoinShared($on){
-		$this->unJoin(implode((array)$this->joinSharedSQL($on)));
+		foreach((array)$this->joinSahredSQL($on) as $join)
+			$this->unJoin($join);
 		return $this;
 	}
 	function selectTruncation($col,$truncation=369,$getl=true){
@@ -210,10 +215,11 @@ class Query {
 		sort($rel);
 		$rel = $this->writer->prefix.implode('_',$rel);
 		$q = $this->writer->quoteCharacter;
-		$sql = "JOIN {$q}{$rel}{$q} ON {$q}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
+		$sql = [];
+		$sql[] = "JOIN {$q}{$rel}{$q} ON {$q}{$this->pxTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$this->table}_id{$q}";
 		if($this->table!=$share){
 			$shareTable = $this->writer->prefix.$share;
-			$sql .= "JOIN {$q}{$shareTable}{$q} ON {$q}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$shareTable}{$q}.{$q}id{$q}";
+			$sql[] = "JOIN {$q}{$shareTable}{$q} ON {$q}{$shareTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$share}_id{$q}";
 		}
 		return $sql;
 	}
@@ -227,7 +233,7 @@ class Query {
 		$q = $this->writer->quoteCharacter;
 		return "JOIN {$q}{$this->writer->prefix}{$own}{$q} ON {$q}{$this->writer->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
 	}
-	function selectRelationnal($select,$colAlias=null,$joinType='LEFT'){
+	function selectRelationnal($select,$colAlias=null,$joinType=''){
 		if(is_array($select)){
 			if($colAlias)
 				$joinType = $colAlias;
