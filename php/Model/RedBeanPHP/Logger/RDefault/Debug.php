@@ -2,11 +2,11 @@
 
 namespace Surikat\Model\RedBeanPHP\Logger\RDefault;
 
+use Surikat\Core\Debug as CoreDebug;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-
 /**
  * Debug logger.
  * A special logger for debugging purposes.
@@ -163,7 +163,7 @@ class Debug extends RDefault implements Logger
 	public function logOpen(){
 		if(!headers_sent())
 			header('Content-Type: text/html; charset=utf-8');
-		echo '<div style="margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;">';
+		echo '<div style="'.CoreDebug::$debugWrapInlineCSS.'">';
 		
 	}
 	public function logClose(){
