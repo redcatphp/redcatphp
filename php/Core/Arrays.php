@@ -35,7 +35,7 @@ abstract class Arrays{
 			return true;
 		});
 	}
-	static function implode_recursive(Exception $glue, array $pieces=null) {
+	static function implode_recursive($glue, array $pieces=null) {
 		if(!isset($pieces)){
 			$pieces = $glue;
 			$glue = '';
