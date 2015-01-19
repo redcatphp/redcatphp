@@ -2,6 +2,7 @@
 use ArrayAccess;
 use BadMethodCallException;
 use Surikat\Core\Dev;
+use Surikat\Core\ArrayObject;
 use Surikat\Model;
 use Surikat\Model\R;
 use Surikat\Model\RedBeanPHP\Database;
@@ -16,7 +17,6 @@ class Query {
 	protected $_ignore = [];
 	protected $_DataBase;
 	protected static $listOfTables;
-	protected static $heuristic;
 	function getDB(){
 		return $this->_DataBase;
 	}
@@ -343,7 +343,7 @@ class Query {
 		}
 		$type = trim($type);
 		$vars = [$typeParent,$type,$alias,$superalias,$exist,$relation];
-		$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
+		//$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
 		return $this;
 	}
 	function _selectRelationnal($table,$col,$alias,$superalias,$exist,$relation,$colAlias=null,$autoSelectId=false){
@@ -364,7 +364,7 @@ class Query {
 					$this->select($this->writer->autoWrapCol($q.$this->prefix.$alias.$q.'.'.$q.$col.$q,$table,$col).$colAlias);
 					if($autoSelectId)
 						$this->select($q.$this->prefix.$alias.$q.'.'.$q.'id'.$q.$idAlias);
-					$this->groupBy($q.$this->prefix.$alias.$q.'.'.$q.'id'.$q);
+					//$this->groupBy($q.$this->prefix.$alias.$q.'.'.$q.'id'.$q);
 				break;
 				case '>':
 					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$alias}{$q}.{$q}{$col}{$q}",$table,$col)."{$aggc},''{$aggc}) {$sep} {$cc})".$colAlias);
@@ -387,14 +387,29 @@ class Query {
 			$this->select($n);
 		return $this;
 	}
-	function rowMD(){
-		return Query::explodeAgg($this->table());
-	}
-	function tableMD(){
-		return Query::explodeAggTable($this->table());
+	function row(){
+		return self::explodeAgg($this->getAll());
 	}
 	function table(){
-		return $this->getAll();
+		return self::explodeAggTable($this->getAll());
+	}
+	function tableRw(){
+		return R::convertToBeans($this->table,$this->table());
+	}
+	function rowRw(){
+		return R::convertToBeans($this->table,$this->row());
+	}
+	function tableObject(){
+		return new ArrayObject($this->table());
+	}
+	function rowObject(){
+		return new ArrayObject($this->row());
+	}
+	function tableRwObject(){
+		return new ArrayObject($this->tableRw());
+	}
+	function rowRwObject(){
+		return new ArrayObject($this->rowRw());
 	}
 	function getClone(){
 		return clone $this;
@@ -522,113 +537,5 @@ class Query {
 	function join(){
 		if(!$this->ignoring('join',func_get_arg(0)))
 			return $this->__call(__FUNCTION__,func_get_args());
-	}
-	function heuristic($reload=null){ //todo mode frozen
-		if(!$this->table)
-			return;
-		if(!isset(self::$heuristic[$this->table])||$reload){
-			if(!isset(self::$listOfTables))
-				self::$listOfTables = $this->_DataBase->inspect();
-			$tableL = strlen($this->table);
-			$h = [];
-			$h['fields'] = in_array($this->table,self::$listOfTables)?$this->listOfColumns($this->table,null,$reload):[];
-			$h['shareds'] = [];
-			$h['parents'] = [];
-			$h['fieldsOwn'] = [];
-			$h['owns'] = [];
-			foreach(self::$listOfTables as $table) //shared
-				if((strpos($table,'_')!==false&&((strpos($table,$this->table)===0&&$table=substr($table,$tableL+1))
-					||((strrpos($table,$this->table)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1)))))
-				&&!$this->ignoring('table',$table)){
-						$h['shareds'][] = $table;
-						$h['fieldsShareds'][$table] = $this->listOfColumns($table,null,$reload);
-				}
-			foreach($h['fields'] as $field) //parent
-				if(strrpos($field,'_id')===strlen($field)-3){
-					$table = substr($field,0,-3);
-					if(!$this->ignoring('table',$table))
-						$h['parents'][] = $table;
-				}
-			foreach(self::$listOfTables as $table){ //own
-				if(strpos($table,'_')===false&&$table!=$this->table){
-					$h['fieldsOwn'][$table] = $this->listOfColumns($table,null,$reload);
-					if(in_array($this->table.'_id',$h['fieldsOwn'][$table])&&!$this->ignoring('table',$table))
-						$h['owns'][] = $table;
-				}
-			}
-			
-			if(isset($h['fields']))
-				foreach(array_keys($h['fields']) as $i)
-					if($this->ignoring('column',$h['fields'][$i]))
-						unset($h['fields'][$i]);
-			if(isset($h['fieldsOwn']))
-				foreach(array_keys($h['fieldsOwn']) as $table)
-					foreach(array_keys($h['fieldsOwn'][$table]) as $i)
-						if($this->ignoring('column',$table.'.'.$h['fieldsOwn'][$table][$i]))
-							unset($h['fieldsOwn'][$table][$i]);
-			if(isset($h['fieldsShareds']))
-				foreach(array_keys($h['fieldsShareds']) as $table)
-					foreach(array_keys($h['fieldsShareds'][$table]) as $i)
-						if($this->ignoring('column',$table.'.'.$h['fieldsShareds'][$table][$i]))
-							unset($h['fieldsShareds'][$table][$i]);
-						
-			self::$heuristic[$this->table] = $h;
-		}
-		return self::$heuristic[$this->table];
-	}
-	function autoSelectJoin($reload=null){
-		$q = $this->writer->quoteCharacter;
-		$agg = $this->writer->agg;
-		$aggc = $this->writer->aggCaster;
-		$sep = $this->writer->separator;
-		$cc = $this->writer->concatenator;
-		extract($this->heuristic($reload));
-		foreach($parents as $parent){
-			foreach($this->listOfColumns($parent,null,$reload) as $col){
-				$this->select($this->writer->autoWrapCol($q.$this->prefix.$parent.$q.'.'.$q.$col.$q,$parent,$col).' as '.$q.$parent.'<'.$col.$q);
-				$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.$col.$q);
-			}
-			$this->join("LEFT JOIN {$q}{$this->prefix}{$parent}{$q} ON {$q}{$this->prefix}{$parent}{$q}.{$q}id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}{$parent}_id{$q}");
-			$this->groupBy($q.$this->prefix.$parent.$q.'.'.$q.'id'.$q);
-		}
-		foreach($shareds as $share){
-			foreach($fieldsShareds[$share] as $col)
-				$this->select("{$agg}(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$share}{$q}.{$q}{$col}{$q}",$share,$col)."{$aggc} {$sep} {$cc}) as {$q}{$share}<>{$col}{$q}");
-			$rel = [$this->table,$share];
-			sort($rel);
-			$rel = implode('_',$rel);
-			$this->join("LEFT JOIN {$q}{$this->prefix}{$rel}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
-			$this->join("LEFT JOIN {$q}{$this->prefix}{$share}{$q} ON {$q}{$this->prefix}{$rel}{$q}.{$q}{$share}_id{$q}={$q}{$this->prefix}{$share}{$q}.{$q}id{$q}");
-		}
-		foreach($owns as $own){
-			foreach($fieldsOwn[$own] as $col){
-				if(strrpos($col,'_id')!==strlen($col)-3)
-					$this->select("{$agg}(COALESCE(".$this->writer->autoWrapCol("{$q}{$this->prefix}{$own}{$q}.{$q}{$col}{$q}",$own,$col)."{$aggc},''{$aggc}) {$sep} {$cc}) as {$q}{$own}>{$col}{$q}");
-			}
-			$this->join("LEFT JOIN {$q}{$this->prefix}{$own}{$q} ON {$q}{$this->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->prefix}{$this->table}{$q}.{$q}id{$q}");
-		}
-		if(!(empty($parents)&&empty($shareds)&&empty($owns))){
-			$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.'id'.$q);
-			foreach($fields as $field)
-				$this->groupBy($q.$this->prefix.$this->table.$q.'.'.$q.$field.$q);
-		}
-	}
-	function count4D(){
-		$queryCount = clone $this;
-		$queryCount->autoSelectJoin();
-		$queryCount->unSelect();
-		$queryCount->select('id');
-		return (int)(new Query())->select('COUNT(*)')->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())->getCell();
-	}
-	function table4D(){
-		$this->selectNeed();
-		$this->autoSelectJoin();
-		return $this->getAll4D();
-	}
-	function row4D($compo=[],$params=[]){
-		$this->selectNeed();
-		$this->autoSelectJoin();
-		$this->limit(1);
-		return $this->getRow4D();
 	}
 }
