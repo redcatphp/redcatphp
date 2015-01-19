@@ -100,4 +100,3 @@ Loader::addNamespace('',SURIKAT_PATH.'php');
 Loader::addSuperNamespace('Surikat',SURIKAT_SPATH.'php');
 set_include_path('.');
 spl_autoload_register(['Surikat\\Loader','classLoad']);
-set_exception_handler(['Surikat\\Core\\Dev','catchException']);
