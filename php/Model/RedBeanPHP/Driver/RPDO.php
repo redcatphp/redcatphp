@@ -157,18 +157,21 @@ class RPDO implements Driver
 				Chrono::start($suid=uniqid());
 			$statement->execute();
 			if(Dev::has(Dev::DBSPEED)){
-				if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
-					$explain = $this->pdo->prepare( 'EXPLAIN '.$sql, [\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ] );
-				} else {
-					$explain = $this->pdo->prepare( 'EXPLAIN '.$sql );
-				}
-				$this->bindParams( $explain, $bindings );
-				$explain->execute();
-				$explain = $explain->fetchAll();
 				$this->debugger()->log('<span style="color:#d00;">'.Chrono::display($suid).'</span>');
-				$this->debugger()->log('<span style="color:#333;">'.implode("\n",array_map(function($entry){
-					return implode("\n",$entry);
-				}, $explain)).'</span>');
+				if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+					if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
+						$explain = $this->pdo->prepare( 'EXPLAIN '.$sql, [\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT => TRUE ] );
+					}
+					else {
+						$explain = $this->pdo->prepare( 'EXPLAIN '.$sql );
+					}
+					$this->bindParams( $explain, $bindings );
+					$explain->execute();
+					$explain = $explain->fetchAll();
+					$this->debugger()->log('<span style="color:#333;">'.implode("\n",array_map(function($entry){
+						return implode("\n",$entry);
+					}, $explain)).'</span>');
+				}
 			}
 			
 			$this->affectedRows = $statement->rowCount();

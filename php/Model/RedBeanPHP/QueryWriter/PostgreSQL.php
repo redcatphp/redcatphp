@@ -177,7 +177,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	{
 		$table = $this->safeTable( $table );
 
-		$this->adapter->exec( " CREATE TABLE $table (id SERIAL PRIMARY KEY); " );
+		$this->adapter->exec( "CREATE TABLE $table (id SERIAL PRIMARY KEY); " );
 	}
 
 	/**
