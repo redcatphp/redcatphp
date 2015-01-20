@@ -119,9 +119,9 @@ $.fn.tagsInput = function(options) {
 		if ($(data.real_input).val()!='') 
 			$.fn.tagsInput.importTags($(data.real_input),$(data.real_input).val());
 		$(data.fake_input).attr('placeholder',$(data.fake_input).attr('placeholder'));
-		$(data.holder).on('click',data,function(event) {
-			$(event.data.fake_input).focus();
-		});
+		//$(data.holder).on('click',data,function(event) {
+			//$(event.data.fake_input).focus();
+		//});
 		$(data.fake_input).autocomplete(settings.autocomplete);
 		$(data.fake_input).on('autocompleteselect',data,function(event,ui) {
 			$(event.data.real_input).addTag(ui.item.value,{focus:true,unique:settings.unique,max:settings.max});

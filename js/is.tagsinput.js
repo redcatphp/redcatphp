@@ -14,6 +14,9 @@ $js(true,[
 ],function(){
 	$('[is=tagsinput]').each(function(){
 		var THIS = $(this);
+		var minq = THIS.attr('data-minq')||0;
+		if(minq)
+			minq = parseInt(minq);
 		var splitter = THIS.attr('data-splitter')||' ';
 		var suggest = THIS.parent().find('.tags-suggests');
 		var suggestion = [];
@@ -35,7 +38,7 @@ $js(true,[
 		data_minchar = parseInt(data_minchar);
 		THIS.tagsInput({
 			defaultText:THIS.attr('placeholder')?THIS.attr('placeholder'):'',
-			defaultTextRemove:'Supprimer ce tag',
+			defaultTextRemove:'Remove this tag',
 			minChars:data_minchar,
 			maxChars:data_maxchar,
 			max:data_max,
@@ -50,8 +53,10 @@ $js(true,[
 					for(var k in suggestion)
 						if(stripAccents(suggestion[k]).indexOf(termSa)===0)
 							suggesting.push(suggestion[k]);
-					response(suggesting);
-					if(term.length>=1&&data_url){
+					if(minq){
+						response(suggesting);
+					}
+					if(term.length>=minq&&data_url){
 						$.ajax({
 							type:'GET',
 							dataType:'json',
@@ -67,6 +72,7 @@ $js(true,[
 							}
 						});
 					}
+					return true;
 				},
 				appendTo: THIS.parent(),
 				position: {
