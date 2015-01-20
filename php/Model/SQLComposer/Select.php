@@ -205,7 +205,7 @@ class Select extends Where {
 		}
 		$from = rtrim($from,',');
 		foreach($joins as $j)
-			$from .= $j;
+			$from .= ' '.$j;
 		
 		$from = "FROM ".$from;
 		$where = $this->_render_where($removeUnbinded);
