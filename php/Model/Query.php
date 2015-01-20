@@ -131,23 +131,55 @@ class Query {
 		return $this->composer->getParams();
 	}
 	function joinOwn($on){
-		foreach((array)$this->joinOwnSQL($on) as $join)
-			$this->join($join);
+		foreach((array)$this->joinOwnSQL($on) as $join){
+			if(is_array($join)){
+				foreach($join as $j){
+					$this->join($j);
+				}
+			}
+			else{
+				$this->join($join);
+			}
+		}
 		return $this;
 	}
 	function unJoinOwn($on){
-		foreach((array)$this->joinOwnSQL($on) as $join)
-			$this->unJoin($join);
+		foreach((array)$this->joinOwnSQL($on) as $join){
+			if(is_array($join)){
+				foreach($join as $j){
+					$this->unJoin($j);
+				}
+			}
+			else{
+				$this->unJoin($join);
+			}
+		}
 		return $this;
 	}
 	function joinShared($on){
-		foreach((array)$this->joinSharedSQL($on) as $join)
-			$this->join($join);
+		foreach((array)$this->joinSharedSQL($on) as $join){
+			if(is_array($join)){
+				foreach($join as $j){
+					$this->join($j);
+				}
+			}
+			else{
+				$this->join($join);
+			}
+		}
 		return $this;
 	}
 	function unJoinShared($on){
-		foreach((array)$this->joinSahredSQL($on) as $join)
-			$this->unJoin($join);
+		foreach((array)$this->joinSharedSQL($on) as $join){
+			if(is_array($join)){
+				foreach($join as $j){
+					$this->unJoin($j);
+				}
+			}
+			else{
+				$this->unJoin($join);
+			}
+		}
 		return $this;
 	}
 	function selectTruncation($col,$truncation=369,$getl=true){
@@ -156,6 +188,11 @@ class Query {
 		if($getl)
 			$this->composer->select("LENGTH($c) as {$col}_length");
 		return $this;
+	}
+	function relationShared($rel){
+		$a = [$this->table,$rel];
+		sort($a);
+		return implode('_',$a);
 	}
 	protected function composerSelect(){
 		$args = func_get_args();

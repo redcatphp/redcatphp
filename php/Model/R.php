@@ -91,30 +91,29 @@ class R extends RedBeanPHP\Facade{
 	}
 	private static function nestBindingLoop($sql,$binds){
 		$nBinds = [];
+		$ln = 0;
 		foreach($binds as $k=>$v){
 			if(is_array($v)){
-				$find = '?';
 				$c = count($v);
 				$av = array_values($v);
 				$i = 0;
-				$ln = 0;
 				do{
 					if($ln)
-						$p = strpos($sql,$find,$ln);
+						$p = strpos($sql,'?',$ln);
 					else
-						$p = STR::posnth($sql,$find,is_integer($k)?$k:0,$ln);
+						$p = STR::posnth($sql,'?',is_integer($k)?$k:0,$ln);
 					if($p!==false){
 						$nSql = substr($sql,0,$p);
 						$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
 						$ln = strlen($nSql);
-						$nSql .= substr($sql,$p+strlen($find));
+						$nSql .= substr($sql,$p+1);
 						$sql = $nSql;
 						for($y=0;$y<$c;$y++)
 							$nBinds[] = $av[$y];
 					}
 					$i++;
 				}
-				while(!is_integer($k)&&strpos($sql,$find)!==false);
+				while(!is_integer($k)&&strpos($sql,'?')!==false);
 			}
 			else{
 				$nBinds[] = $v;
