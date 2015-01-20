@@ -16,7 +16,6 @@ abstract class Base {
 				if(isset($this->mysqli_types[$clause]))
 					$this->mysqli_types[$clause] = substr($this->mysqli_types[$clause],count($this->params[$clause][$i])*-1);
 				unset($this->params[$clause][$i]);
-				$this->params[$clause] = array_values($this->params[$clause]); //reindex
 				return true;
 			}
 		}
@@ -38,6 +37,8 @@ abstract class Base {
 				}
 			}
 		}
+		if(isset($this->params[$k]))
+			$this->params[$k] = array_values($this->params[$k]); //reindex
 		$this->{$k} = array_values($this->{$k}); //reindex
 		return $r;
 	}

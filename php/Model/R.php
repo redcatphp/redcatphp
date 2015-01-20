@@ -96,26 +96,26 @@ class R extends RedBeanPHP\Facade{
 			if(is_array($v)){
 				$c = count($v);
 				$av = array_values($v);
-				$i = 0;
-				do{
-					if($ln)
-						$p = strpos($sql,'?',$ln);
-					else
-						$p = STR::posnth($sql,'?',is_integer($k)?$k:0,$ln);
-					if($p!==false){
-						$nSql = substr($sql,0,$p);
-						$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
-						$ln = strlen($nSql);
-						$nSql .= substr($sql,$p+1);
-						$sql = $nSql;
-						for($y=0;$y<$c;$y++)
-							$nBinds[] = $av[$y];
-					}
-					$i++;
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = STR::posnth($sql,'?',$k);
+				if($p!==false){
+					$nSql = substr($sql,0,$p);
+					$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
+					$ln = strlen($nSql);
+					$nSql .= substr($sql,$p+1);
+					$sql = $nSql;
+					for($y=0;$y<$c;$y++)
+						$nBinds[] = $av[$y];
 				}
-				while(!is_integer($k)&&strpos($sql,'?')!==false);
 			}
 			else{
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = STR::posnth($sql,'?',$k);
+				$ln = $p+1;
 				$nBinds[] = $v;
 			}
 		}
