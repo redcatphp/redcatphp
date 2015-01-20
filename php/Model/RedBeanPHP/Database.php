@@ -734,12 +734,6 @@ class Database{
 		}
 		return $this->store($dataO);
 	}
-	function getAll4D(){
-		return Query::explodeAggTable(call_user_func_array(['self','getAll'],func_get_args()));
-	}
-	function getRow4D(){
-		return Query::explodeAgg(call_user_func_array(['self','getRow'],func_get_args()));
-	}
 	function loadUniq($table,$id,$column=null){
 		if(is_array($table)){
 			foreach($table as $tb)

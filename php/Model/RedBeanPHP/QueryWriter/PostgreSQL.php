@@ -496,14 +496,21 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				$localCol = trim($type);
 				switch($relation){
 					default:
-					case '<':
 						$c = 'COALESCE('.$writer->autoWrapCol($q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
 						$gb = $q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q;
 						if(!in_array($gb,$groupBy))
 							$groupBy[] = $gb;
-						$gb = $q.$this->prefix.$localTable.$q.'.'.$q.'id'.$q;
-						if(!in_array($gb,$groupBy))
-							$groupBy[] = $gb;
+					break;
+					case '<':
+						$c = 'COALESCE('.$writer->autoWrapCol($q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q,$localTable,$localCol).",''{$aggc})";
+						$gb = $q.$this->prefix.$localTable.$q.'.'.$q.$localCol.$q;
+						if($this->columnExists($localTable,$localCol.'_id')){
+							if(!in_array($gb,$groupBy))
+								$groupBy[] = $gb;
+							$gb = $q.$this->prefix.$localTable.$q.'.'.$q.'id'.$q;
+							if(!in_array($gb,$groupBy))
+								$groupBy[] = $gb;
+						}
 					break;
 					case '>':
 						$c = "{$agg}(COALESCE(".$writer->autoWrapCol("{$q}{$this->prefix}{$localTable}{$q}.{$q}{$localCol}{$q}",$localTable,$localCol)."{$aggc},''{$aggc}) {$sep} {$cc})";
