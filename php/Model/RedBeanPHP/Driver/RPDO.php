@@ -133,7 +133,7 @@ class RPDO implements Driver
 	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
-		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED)||Dev::has(Dev::MODEL))
+		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED))
 			$this->debugger()->logOpen();
 		
 		$sql = str_replace('{$prefix}',$this->DB->getPrefix(),$sql);
@@ -203,10 +203,13 @@ class RPDO implements Driver
 				$this->logger->log( 'An error occurred: ' . $err );
 			
 			if(Dev::has(Dev::MODEL)){
-				if(!Dev::has(Dev::PHP))
+				if(!(Dev::has(Dev::DBSPEED)||Dev::has(Dev::SQL)))
+					$this->debugger()->logOpen();
 					$this->debugger()->log('An error occurred: '.$err);
 				if(!Dev::has(Dev::SQL))
 					$this->debugger()->log(SqlFormatter::format($sql), $bindings);
+				if(!(Dev::has(Dev::DBSPEED)||Dev::has(Dev::SQL)))
+					$this->debugger()->logClose();
 			}
 				
 			$exception = new SQL( $err, 0 );
@@ -215,7 +218,7 @@ class RPDO implements Driver
 			throw $exception;
 		}
 		
-		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED)||Dev::has(Dev::MODEL))
+		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED))
 			$this->debugger()->logClose();
 	}
 
