@@ -4,6 +4,7 @@ use BadMethodCallException;
 use Surikat\Core\Dev;
 use Surikat\Core\ArrayObject;
 use Surikat\Core\Arrays;
+use Surikat\Model\SqlFormatter;
 use Surikat\Model;
 use Surikat\Model\R;
 use Surikat\Model\RedBeanPHP\Database;
@@ -370,7 +371,9 @@ class Query {
 			else{
 				$Qt->from(array_shift($_sql));
 				if(!empty($_sql)){
-					$Qt->where(implode(' AND ',$_sql));
+					$Qt->join('JOIN '.$q.'{$prefix}'.$this->table.$q);
+					$Qt->join('ON '.implode(' AND ',$_sql));
+					//$Qt->where(implode(' AND ',$_sql));
 				}
 			}
 			$i++;
@@ -575,5 +578,8 @@ class Query {
 	function join(){
 		if(!$this->ignoring('join',func_get_arg(0)))
 			return $this->__call(__FUNCTION__,func_get_args());
+	}
+	function debug(){
+		return SqlFormatter::format($this->__toString());
 	}
 }

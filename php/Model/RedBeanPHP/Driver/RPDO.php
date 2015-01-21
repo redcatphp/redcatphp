@@ -4,7 +4,7 @@ namespace Surikat\Model\RedBeanPHP\Driver;
 
 use Surikat\Core\Dev;
 use Surikat\Core\Chrono;
-use Surikat\Core\SqlFormatter;
+use Surikat\Model\SqlFormatter;
 use Surikat\Model\RedBeanPHP\Driver as Driver;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
