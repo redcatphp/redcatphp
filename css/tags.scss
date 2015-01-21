@@ -42,6 +42,8 @@
 		margin: 0 5px 5px 0;
 		display:block;
 		position:relative;
+		word-break: break-all;
+		max-width:100%;
 		>a,
 		>span{
 			float:left;
