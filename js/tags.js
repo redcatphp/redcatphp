@@ -2,7 +2,7 @@ var delimiter = new Array();
 var tags_callbacks = new Array();
 $.fn.addTag = function(value,options) {
 	options = $.extend({focus:false,callback:true},options);
-	this.each(function() { 
+	this.each(function() {
 		var id = $(this).attr('id');
 		var tagslist = $(this).val().split(delimiter[id]);
 		if (tagslist[0]=='')
@@ -78,6 +78,7 @@ $.fn.importTags = function(str){ // clear all existing tags and import new ones 
 	$.fn.tagsInput.importTags(this,str);
 };
 $.fn.tagsInput = function(options) { 
+	var focused = false;
 	var settings = $.extend({
 	  defaultText:'add a tag',
 	  defaultTextRemove:'Removing tag',
@@ -119,9 +120,18 @@ $.fn.tagsInput = function(options) {
 		if ($(data.real_input).val()!='') 
 			$.fn.tagsInput.importTags($(data.real_input),$(data.real_input).val());
 		$(data.fake_input).attr('placeholder',$(data.fake_input).attr('placeholder'));
-		//$(data.holder).on('click',data,function(event) {
-			//$(event.data.fake_input).focus();
-		//});
+		$(data.fake_input).on('blur',function(){
+				focused = false;
+			}).on('focus',function(){
+				setTimeout(function(){
+					focused = true
+				},500);
+			});
+		$(data.holder).on('click',data,function(event) {
+			if(focused){
+				$(event.data.fake_input).focus();
+			}
+		});
 		$(data.fake_input).autocomplete(settings.autocomplete);
 		$(data.fake_input).on('autocompleteselect',data,function(event,ui) {
 			$(event.data.real_input).addTag(ui.item.value,{focus:true,unique:settings.unique,max:settings.max});
