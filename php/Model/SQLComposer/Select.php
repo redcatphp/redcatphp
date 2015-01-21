@@ -9,16 +9,16 @@ class Select extends Where {
 	protected $order_by = [];
 	protected $sort = [];
 	protected $limit = null;
-	function __construct($select = null,  array $params = null, $mysqli_types = "") {
+	function __construct($select = null,  array $params = null) {
 		if (isset($select))
-			$this->select($select, $params, $mysqli_types);
+			$this->select($select, $params);
 	}
-	function select($select,  array $params = null, $mysqli_types = "") {
+	function select($select,  array $params = null) {
 		foreach((array)$select as $s){
 			if(!empty($params)||!in_array($s,$this->columns))
 				$this->columns[] = $s;
 		}
-		$this->_add_params('select', $params, $mysqli_types);
+		$this->_add_params('select', $params);
 		return $this;
 	}
 	function distinct($distinct = true) {
@@ -26,20 +26,20 @@ class Select extends Where {
 		return $this;
 	}
 	
-	function groupBy($group_by,  array $params = null, $mysqli_types = "") {
+	function groupBy($group_by,  array $params = null) {
 		if(!empty($params)||!in_array($group_by,$this->group_by))
 			$this->group_by[] = $group_by;
-		$this->_add_params('group_by', $params, $mysqli_types);
+		$this->_add_params('group_by', $params);
 		return $this;
 	}
 	function withRollup($with_rollup = true) {
 		$this->with_rollup = $with_rollup;
 		return $this;
 	}
-	function orderBy($order_by,  array $params = null, $mysqli_types = "") {
+	function orderBy($order_by,  array $params = null) {
 		if(!empty($params)||!in_array($order_by,$this->order_by))
 			$this->order_by[] = $order_by;
-		$this->_add_params('order_by', $params, $mysqli_types);
+		$this->_add_params('order_by', $params);
 		return $this;
 	}
 	function sort($desc=false) {
@@ -57,19 +57,19 @@ class Select extends Where {
 		$this->offset = (int)$offset;
 		return $this;
 	}
-	function having($having,  array $params = null, $mysqli_types = "") {
+	function having($having,  array $params = null) {
 		$this->having = array_merge($this->having, (array)$having);
-		$this->_add_params('having', $params, $mysqli_types);
+		$this->_add_params('having', $params);
 		return $this;
 	}
-	function havingIn($having,  array $params, $mysqli_types = "") {
+	function havingIn($having,  array $params) {
 		if (!is_string($having)) throw new SQLComposerException("Method having_in must be called with a string as first argument.");
-		list($having, $params, $mysqli_types) = SQLComposer::in($having, $params, $mysqli_types);
-		return $this->having($having, $params, $mysqli_types);
+		list($having, $params) = SQLComposer::in($having, $params);
+		return $this->having($having, $params);
 	}
-	function havingOp($column, $op,  array $params=null, $mysqli_types="") {
-		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params, $mysqli_types);
-		return $this->having($where, $params, $mysqli_types);
+	function havingOp($column, $op,  array $params=null) {
+		list($where, $params) = SQLComposer::applyOperator($column, $op, $params);
+		return $this->having($where, $params);
 	}
 	function openHavingAnd() {
 		$this->having[] = [ '(', 'AND' ];
@@ -140,7 +140,7 @@ class Select extends Where {
 		return $this->unHaving($having, $params);
 	}
 	function unHavingOp($column, $op,  array $params=null){
-		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params);
+		list($where, $params) = SQLComposer::applyOperator($column, $op, $params);
 		return $this->unHaving($where, $params);
 	}
 	function unOpenHavingAnd() {

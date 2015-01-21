@@ -87,10 +87,9 @@ class Update extends Where {
 	 *
 	 * @param string|array $set
 	 * @param array $params
-	 * @param null $mysqli_types
 	 * @return SQLComposerUpdate
 	 */
-	public function set($set,  array $params = null, $mysqli_types = null) {
+	public function set($set,  array $params = null = null) {
 		$set = (array)$set;
 
 		if (SQLComposer::is_assoc($set)) {
@@ -100,7 +99,7 @@ class Update extends Where {
 			$this->set = array_merge($this->set, $set);
 		}
 
-		$this->_add_params('set', $params, $mysqli_types);
+		$this->_add_params('set', $params);
 		return $this;
 	}
 

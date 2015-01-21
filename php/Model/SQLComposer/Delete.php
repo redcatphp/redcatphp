@@ -67,11 +67,10 @@ class SQLComposerDelete extends SQLComposerWhere {
 	 *
 	 * @param string|array $table
 	 * @param array $params
-	 * @param string $mysqli_types
 	 * @return SQLComposerDelete
 	 */
-	public function using($table,  array $params = null, $mysqli_types = "") {
-		return $this->add_table($table, $params, $mysqli_types);
+	public function using($table,  array $params = null) {
+		return $this->add_table($table, $params);
 	}
 
 	/**

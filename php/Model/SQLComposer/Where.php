@@ -42,18 +42,18 @@ abstract class Where extends Base {
 	
 	protected $where = [];
 	protected $with = [];
-	function where($where,  array $params = null, $mysqli_types = "") {
+	function where($where,  array $params = null) {
 		$this->where[] = $where;
-		$this->_add_params('where', $params, $mysqli_types);
+		$this->_add_params('where', $params);
 		return $this;
 	}
-	function whereIn($where,  array $params, $mysqli_types = "") {
-		list($where, $params, $mysqli_types) = SQLComposer::in($where, $params, $mysqli_types);
-		return $this->where($where, $params, $mysqli_types);
+	function whereIn($where,  array $params) {
+		list($where, $params) = SQLComposer::in($where, $params);
+		return $this->where($where, $params);
 	}
-	function whereOp($column, $op,  array $params=null, $mysqli_types="") {
-		list($where, $params, $mysqli_types) = SQLComposer::applyOperator($column, $op, $params, $mysqli_types);
-		return $this->where($where, $params, $mysqli_types);
+	function whereOp($column, $op,  array $params=null) {
+		list($where, $params) = SQLComposer::applyOperator($column, $op, $params);
+		return $this->where($where, $params);
 	}
 	function openWhereAnd() {
 		$this->where[] = [ '(', 'AND' ];
@@ -80,9 +80,9 @@ abstract class Where extends Base {
 			$this->where[] = [ ')' ];
 		return $this;
 	}
-	function with($with,  array $params = null, $mysqli_types = "") {
+	function with($with,  array $params = null) {
 		$this->with[] = $with;
-		$this->_add_params('with', $params, $mysqli_types);
+		$this->_add_params('with', $params);
 		return $this;
 	}
 	protected function _render_where($removeUnbinded=true){

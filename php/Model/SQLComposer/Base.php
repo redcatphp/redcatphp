@@ -13,8 +13,6 @@ abstract class Base {
 			if(!isset($i))
 				$i = count($this->params[$clause])-1;
 			if(isset($this->params[$clause][$i])&&(!isset($params)||$params==$this->params[$clause][$i])){
-				if(isset($this->mysqli_types[$clause]))
-					$this->mysqli_types[$clause] = substr($this->mysqli_types[$clause],count($this->params[$clause][$i])*-1);
 				unset($this->params[$clause][$i]);
 				return true;
 			}
@@ -70,28 +68,37 @@ abstract class Base {
 	protected $tables = [];
 	protected $params = [];
 	protected $paramsAssoc = [];
-	protected $mysqli_types = [ ];
-	function add_table($table,  array $params = null, $mysqli_types = "") {
+	function add_table($table,  array $params = null) {
 		if(!empty($params)||!in_array($table,$this->tables))
 			$this->tables[] = $table;
-		$this->_add_params('tables', $params, $mysqli_types);
+		$this->_add_params('tables', $params);
 		return $this;
 	}
-	function tableJoin($table,$join,array $params = null,$mysqli_types = "") {
-		return $this->add_table([$table,$join], $params, $mysqli_types);
+	function tableJoin($table,$join,array $params = null) {
+		return $this->add_table([$table,$join], $params);
 	}
-	function join($join,array $params = null,$mysqli_types = "") {
-		return $this->add_table((array)$join, $params, $mysqli_types);
+	function joinAdd($join,array $params = null) {
+		return $this->add_table((array)$join, $params);
 	}
-	function from($table,  array $params = null, $mysqli_types = "") {
-		return $this->add_table($table, $params, $mysqli_types);
+	function join($join,array $params = null){
+		return $this->joinAdd('JOIN '.$join,$params);
 	}
-	protected function _add_params($clause,  array $params = null, $mysqli_types = "") {
+	function joinLeft($join,array $params = null){
+		return $this->joinAdd('LEFT JOIN '.$join,$params);
+	}
+	function joinRight($join,array $params = null){
+		return $this->joinAdd('RIGHT JOIN '.$join,$params);
+	}
+	function joinOn($join,array $params = null){
+		return $this->joinAdd('ON '.$join,$params);
+	}
+	function from($table,  array $params = null) {
+		return $this->add_table($table, $params);
+	}
+	protected function _add_params($clause,  array $params = null) {
 		if (isset($params)){
 			if (!isset($this->params[$clause]))
 				$this->params[$clause] = [];
-			if (!empty($mysqli_types))
-				$this->mysqli_types[$clause] .= $mysqli_types;
 			$addParams = [];
 			foreach($params as $k=>$v){
 				if(is_integer($k))
@@ -108,19 +115,14 @@ abstract class Base {
 		if (!is_array($order))
 			$order = func_get_args();
 		$params = [];
-		$mysqli_types = "";
 		foreach ($order as $clause) {
 			if(empty($this->params[$clause]))
 				continue;
 			foreach($this->params[$clause] as $p)
 				$params = array_merge($params, $p);
-			if(isset($this->mysqli_types[$clause]))
-				$mysqli_types .= $this->mysqli_types[$clause];
 		}
 		foreach($this->paramsAssoc as $k=>$v)
 			$params[$k] = $v;
-		if(!empty($this->mysqli_types))
-			array_unshift($params, $mysqli_types);
 		return $params;
 	}
 	function getQuery($removeUnbinded=true){

@@ -79,13 +79,12 @@ class Replace extends Base {
 	 *  REPLACE INTO table (id, name, fav_color) VALUES (25, 'joe', 'green')
 	 *
 	 * @param array $values
-	 * @param string $mysqli_types
 	 * @return SQLComposerReplace
 	 */
-	public function values( array $values, $mysqli_types = "") {
+	public function values( array $values) {
 		if (isset($this->select)) throw new SQLComposerException("Cannot use 'REPLACE INTO ... VALUES' when a SELECT is already set!");
 
-		return $this->_add_params('values', $values, $mysqli_types);
+		return $this->_add_params('values', $values);
 	}
 
 	/**
@@ -93,17 +92,16 @@ class Replace extends Base {
 	 *
 	 * @param string|array $select
 	 * @param array $params
-	 * @param string $mysqli_types
 	 * @return SQLComposerSelect
 	 */
-	public function select($select = null,  array $params = null, $mysqli_types = "") {
+	public function select($select = null,  array $params = null) {
 		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
 			$this->select = SQLComposer::select();
 		}
 
-		return $this->select->select($select, $params, $mysqli_types);
+		return $this->select->select($select, $params);
 	}
 
 
@@ -158,13 +156,7 @@ class Replace extends Base {
 					$params = array_merge($params, array_slice($values, 0, $num_cols));
 				}
 			}
-
-			if (!empty($this->mysqli_types['values'])) {
-				array_unshift($params, $this->mysqli_types['values']);
-			}
-
 		}
-
 		return $params;
 	}
 

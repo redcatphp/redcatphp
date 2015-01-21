@@ -16,11 +16,10 @@ class Query {
 	protected $prefix;
 	protected $writer;
 	protected $composer;
-	protected $_ignore = [];
-	protected $_DataBase;
+	protected $DataBase;
 	protected static $listOfTables;
 	function getDB(){
-		return $this->_DataBase;
+		return $this->DataBase;
 	}
 	function tableExists($table=null){
 		if(!isset($table))
@@ -41,9 +40,9 @@ class Query {
 		}
 		if(!$db)
 			$db = R::getInstance();
-		$this->_DataBase = $db;
+		$this->DataBase = $db;
 		if(!$writer)
-			$writer = $this->_DataBase->getWriter();
+			$writer = $this->DataBase->getWriter();
 		$this->writer = $writer;
 		if(is_string($composer))
 			$composer = SQLComposer::$composer();
@@ -83,9 +82,12 @@ class Query {
 					$params = array_merge($params,$args);
 				$sql = $this->composer->getQuery();
 				list($sql,$params) = R::nestBinding($sql,$params);
-				return $this->_DataBase->$f($sql,$params);
+				return $this->DataBase->$f($sql,$params);
 			}
 			return;
+		}
+		elseif(substr($f,-5)=='Array'){
+			return call_user_func_array($f,[array_shift($args),$args]);
 		}
 		else{
 			switch($f){
@@ -239,7 +241,7 @@ class Query {
 	protected $listOfColumns = [];
 	function listOfColumns($t,$details=null,$reload=null){
 		if(!isset($this->listOfColumns[$t])||$reload)
-			$this->listOfColumns[$t] = $this->_DataBase->inspect($t);
+			$this->listOfColumns[$t] = $this->DataBase->inspect($t);
 		return $details?$this->listOfColumns[$t]:array_keys($this->listOfColumns[$t]);
 	}
 	function joinSharedSQL($share){
@@ -254,10 +256,10 @@ class Query {
 		$rel = $this->writer->prefix.implode('_',$rel);
 		$q = $this->writer->quoteCharacter;
 		$sql = [];
-		$sql[] = "JOIN {$q}{$rel}{$q} ON {$q}{$this->pxTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$this->table}_id{$q}";
+		$sql[] = "{$q}{$rel}{$q} ON {$q}{$this->pxTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$this->table}_id{$q}";
 		if($this->table!=$share){
 			$shareTable = $this->writer->prefix.$share;
-			$sql[] = "JOIN {$q}{$shareTable}{$q} ON {$q}{$shareTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$share}_id{$q}";
+			$sql[] = "{$q}{$shareTable}{$q} ON {$q}{$shareTable}{$q}.{$q}id{$q}={$q}{$rel}{$q}.{$q}{$share}_id{$q}";
 		}
 		return $sql;
 	}
@@ -269,7 +271,7 @@ class Query {
 			return $r;
 		}
 		$q = $this->writer->quoteCharacter;
-		return "JOIN {$q}{$this->writer->prefix}{$own}{$q} ON {$q}{$this->writer->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
+		return "{$q}{$this->writer->prefix}{$own}{$q} ON {$q}{$this->writer->prefix}{$own}{$q}.{$q}{$this->table}_id{$q}={$q}{$this->pxTable}{$q}.{$q}id{$q}";
 	}
 	function selectRelationnal($select,$colAlias=null){
 		if(is_array($select)){
@@ -363,9 +365,9 @@ class Query {
 		$i = 0;
 		foreach($sql as $_sql){
 			if($i){
-				$Qt->join('JOIN '.array_shift($_sql));
+				$Qt->join(array_shift($_sql));
 				if(!empty($_sql)){
-					$Qt->join('ON '.implode(' AND ',$_sql));
+					$Qt->joinOn(implode(' AND ',$_sql));
 				}
 			}
 			else{
@@ -546,36 +548,6 @@ class Query {
 		if(in_array($this->formatColumnName($in),$select))
 			return true;
 		return false;
-	}
-	function ignoring($k,$ignore){
-		return isset($this->_ignore[$k])&&in_array($ignore,$this->_ignore[$k]);
-	}
-	function ignoreTable(){
-		foreach(func_get_args() as $ignore)
-			$this->_ignore['table'] = $ignore;
-	}
-	function ignoreColumn(){
-		foreach(func_get_args() as $ignore)
-			$this->_ignore['column'] = $ignore;
-	}
-	function ignoreFrom(){
-		foreach(func_get_args() as $ignore)
-			$this->_ignore['from'] = $ignore;
-	}
-	function ignoreSelect(){
-		foreach(func_get_args() as $ignore)
-			$this->_ignore['select'] = $ignore;
-	}
-	function ignoreJoin(){
-		return call_user_func_array([$this,'ignoreFrom'],func_get_args());
-	}
-	function select(){
-		if(!$this->ignoring('select',func_get_arg(0)))
-			return $this->__call(__FUNCTION__,func_get_args());
-	}
-	function join(){
-		if(!$this->ignoring('join',func_get_arg(0)))
-			return $this->__call(__FUNCTION__,func_get_args());
 	}
 	function debug(){
 		return SqlFormatter::format($this->__toString());

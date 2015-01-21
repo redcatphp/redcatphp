@@ -110,13 +110,12 @@ class Insert extends Base {
 	 *  INSERT INTO table (id, name, fav_color) VALUES (25, 'joe', 'green')
 	 *
 	 * @param array $values
-	 * @param string $mysqli_types
 	 * @return SQLComposerInsert
 	 */
-	public function values( array $values, $mysqli_types = "") {
+	public function values( array $values) {
 		if (isset($this->select)) throw new SQLComposerException("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
 
-		return $this->_add_params('values', $values, $mysqli_types);
+		return $this->_add_params('values', $values);
 	}
 
 	/**
@@ -124,10 +123,9 @@ class Insert extends Base {
 	 *
 	 * @param string|array $select
 	 * @param array $params
-	 * @param string $mysqli_types
 	 * @return SQLComposerSelect
 	 */
-	public function select($select = null,  array $params = null, $mysqli_types = "") {
+	public function select($select = null,  array $params = null) {
 		if (isset($this->params['values'])) throw new SQLComposerException("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
@@ -135,7 +133,7 @@ class Insert extends Base {
 		}
 
 		if (isset($select)) {
-			$this->select->select($select, $params, $mysqli_types);
+			$this->select->select($select, $params);
 		}
 
 		return $this->select;
@@ -146,12 +144,11 @@ class Insert extends Base {
 	 *
 	 * @param string|array $update
 	 * @param array $params
-	 * @param string $mysqli_types
 	 * @return SQLComposerInsert
 	 */
-	public function onDuplicate($update,  array $params = null, $mysqli_types = "") {
+	public function onDuplicate($update,  array $params = null) {
 		$this->on_duplicate = array_merge($this->on_duplicate, (array)$update);
-		$this->_add_params('on_duplicate', $params, $mysqli_types);
+		$this->_add_params('on_duplicate', $params);
 		return $this;
 	}
 
@@ -213,21 +210,7 @@ class Insert extends Base {
 			}
 
 		}
-
-		$params = array_merge($params, (array)$this->params['on_duplicate']);
-
-		if (!empty($this->mysqli_types)) {
-
-			if (isset($this->select)) {
-				$params[0] .= $this->mysqli_types['on_duplicate'];
-			} else {
-				$types = $this->mysqli_types['values'] . $this->mysqli_types['on_duplicate'];
-				array_unshift($params, $types);
-			}
-
-		}
-
-		return $params;
+		return array_merge($params, (array)$this->params['on_duplicate']);
 	}
 
 	/**
