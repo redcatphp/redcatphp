@@ -550,13 +550,13 @@
 		'youtube-play'=>'16a',
 		'youtube-square'=>'166',
 	];?>
-	font-family: FontAwesome;
-	font-style: normal;
-	font-weight: normal;
-	line-height: normal;
-	-webkit-font-smoothing: antialiased;
 	<?@list($icon,$after) = $args;?>
 	&::<?=$after?'after':'before'?>{
+		font-family: FontAwesome;
+		font-style: normal;
+		font-weight: normal;
+		line-height: normal;
+		-webkit-font-smoothing: antialiased;
 		speak: none;
 		content: "<?=($after?'\\ ':'').'\f'.@$icons[$icon].($after?'':'\\ ')?>";
 	}
