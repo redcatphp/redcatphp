@@ -371,9 +371,7 @@ class Query {
 			else{
 				$Qt->from(array_shift($_sql));
 				if(!empty($_sql)){
-					$Qt->join('JOIN '.$q.'{$prefix}'.$this->table.$q);
-					$Qt->join('ON '.implode(' AND ',$_sql));
-					//$Qt->where(implode(' AND ',$_sql));
+					$Qt->where(implode(' AND ',$_sql));
 				}
 			}
 			$i++;
