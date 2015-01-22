@@ -303,21 +303,28 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addFK
 	 */
-	public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
+	public function addFK( $type, $targetType, $property, $targetProperty, $isDependent = FALSE )
 	{
-
-		$cfks = $this->getKeyMapForTable( $type );
-		foreach( $cfks as $cfk ) {
-			if ( $cfk['from'] === $field ) return; //already has a key this field..
-		}
+		$table = $this->safeTable( $type );
+		$targetTable = $this->safeTable( $targetType );
+		$targetTableNoQ = $this->safeTable( $targetType, TRUE );
+		$field = $this->safeColumn( $property );
+		$fieldNoQ = $this->safeColumn( $property, TRUE );
+		$targetField = $this->safeColumn( $targetProperty );
+		$targetFieldNoQ = $this->safeColumn( $targetProperty, TRUE );
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		$fieldNoQ = $this->safeColumn( $property, TRUE );
+		if ( !is_null( $this->getForeignKeyForTableColumn( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		$fkName = 'fk_'.($tableNoQ.'_'.$fieldNoQ);
+		$cName = 'c_'.$fkName;
 		try {
 			$fkName = 'fk_'.($type.'_'.$field);
 			$cName = 'c_'.$fkName;
 			$this->adapter->exec( "
-				ALTER TABLE  {$this->safeTable($type)}
+				ALTER TABLE {$table}
 				ADD CONSTRAINT $cName
-				FOREIGN KEY $fkName ( {$this->safeColumn($field)} ) REFERENCES {$this->safeTable($targetType)} (
-				{$this->safeColumn($targetField)}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
+				FOREIGN KEY $fkName ( {$fieldNoQ} ) REFERENCES {$targetTableNoQ}
+				({$targetFieldNoQ}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
 
 		} catch (\Exception $e ) {
 			// Failure of fk-constraints is not a problem
