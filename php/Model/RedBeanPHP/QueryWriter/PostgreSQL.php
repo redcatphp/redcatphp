@@ -13,8 +13,6 @@ use Surikat\Model\Table;
 use Surikat\Model\Query;
 use Surikat\Core\Dev;
 
-use Surikat\Tools\str;
-
 /**
  * RedBean PostgreSQL Query Writer
  *
