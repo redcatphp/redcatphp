@@ -90,6 +90,7 @@
 		<br>
 		<a id="makepot" class="top_btns" href="#">Reap text from Templates to messages.pot <span id="counter" class="top_btns"></span></a>
 		<div class="flags"></div>
+		<a href="http://en.wikipedia.org/wiki/Help:Multilingual_support" target="_blank" style="float:right;">Multilingual Support Help</a>
 		<div id="foot">
 			<a href="http://wildsurikat.com" target="_blank">Surikat-Translator</a> inspired by <a href="http://code.google.com/p/simplepo/" target="_blank">SimplePo</a>
 		</div>
