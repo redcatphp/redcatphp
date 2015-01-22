@@ -36,28 +36,29 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	protected $quoteCharacter = '`';
 
 	/**
-	 * Obtains the keys of a table using the\PDO schema function.
-	 * Gets the exported keys from $table1 and the imported keys from $table2.
-	 * I dont know why CUBRID uses this approach but alas.
-	 * If you want both exports and imports from the same table just pass the
-	 * same table twice.
-	 *
-	 * @param string $table table 1 (exported keys)
-	 * @param string $table2 table 2 (imported keys)
-	 *
-	 * @return array
+	 * @see QueryWriter::getKeyMapForTable
 	 */
-	protected function getExportImportKeys( $table, $table2 = NULL )
+	public function getKeyMapForTable( $table)
 	{
-		$pdo  = $this->adapter->getDatabase()->getPDO();
-
-		$keys = $pdo->cubrid_schema(\PDO::CUBRID_SCH_EXPORTED_KEYS, $table );
-
-		if ( $table2 ) {
-			$keys = array_merge( $keys, $pdo->cubrid_schema(\PDO::CUBRID_SCH_IMPORTED_KEYS, $table2 ) );
+		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
+		if (!isset($sqlCode[0])) return array();
+		$matches = array();
+		preg_match_all( '/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\]/', $sqlCode[0]['CREATE TABLE'], $matches );
+		$list = array();
+		if (!isset($matches[0])) return $list;
+		$max = count($matches[0]);
+		for($i = 0; $i < $max; $i++) {
+			$label = $this->makeFKLabel( $matches[2][$i], $matches[3][$i], 'id' );
+			$list[ $label ] = array(
+				'name' => $matches[1][$i],
+				'from' => $matches[2][$i],
+				'table' => $matches[3][$i],
+				'to' => 'id',
+				'on_update' => '?',
+				'on_delete' => '?'
+			);
 		}
-
-		return $keys;
+		return $list;
 	}
 
 	/**
@@ -73,8 +74,10 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	protected function constrain( $table, $table1, $table2, $property1, $property2 )
 	{
-		$this->buildFK( $table, $table1, $property1, 'id', TRUE );
-		$this->buildFK( $table, $table2, $property2, 'id', TRUE );
+		if ( !is_null( $this->getForeignKeyForTableColumn( $table, $property1 ) ) ) return FALSE;
+		$firstState  = $this->buildFK( $table, $table1, $property1, 'id', TRUE );
+		$secondState = $this->buildFK( $table, $table2, $property2, 'id', TRUE );
+		return ( $firstState && $secondState );
 	}
 
 	/**
@@ -96,29 +99,16 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	protected function buildFK( $type, $targetType, $field, $targetField, $isDep = FALSE )
 	{
+		if ( !is_null( $this->getForeignKeyForTableColumn( $type, $field ) ) ) return FALSE;
 		$table           = $this->safeTable( $type );
 		$tableNoQ        = $this->safeTable( $type, TRUE );
-
 		$targetTable     = $this->safeTable( $targetType );
 		$targetTableNoQ  = $this->safeTable( $targetType, TRUE );
-
 		$column          = $this->safeColumn( $field );
 		$columnNoQ       = $this->safeColumn( $field, TRUE );
-
 		$targetColumn    = $this->safeColumn( $targetField );
-
-		$keys            = $this->getExportImportKeys( $targetTableNoQ, $tableNoQ );
-
+		$keys            = $this->getKeyMapForTable( $tableNoQ );
 		$needsToDropFK   = FALSE;
-
-		foreach ( $keys as $key ) {
-			if ( $key['FKTABLE_NAME'] == $tableNoQ && $key['FKCOLUMN_NAME'] == $columnNoQ ) {
-				// Already has an FK
-				return FALSE;
-			}
-		}
-
-
 		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
 		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ";
 		$this->adapter->exec( $sql );
@@ -344,6 +334,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function _wipeAll()
 	{
+		foreach( $this->getTables() as $t ){
+			foreach ( $this->getKeyMapForTable( $t ) as $k ) {
+				$this->adapter->exec( "ALTER TABLE \"$t\" DROP FOREIGN KEY \"{$k['name']}\"" );
+			}
+		}
 		foreach ( $this->getTables() as $t ) {
 			$this->drop($t);
 		}
@@ -360,12 +355,12 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	* @see QueryWriter::inferFetchType
 	*/
 	public function inferFetchType( $type, $property ){
-		$type = $this->safeTable( $type, TRUE );
+		$table = $this->safeTable( $type, TRUE );
 		$field = $this->safeColumn( $property, TRUE ) . '_id';
-		$keys = $this->getExportImportKeys($type, $type);
+		$keys = $this->getKeyMapForTable( $table );
 		foreach( $keys as $key ) {
-			if ( $key['FKTABLE_NAME'] === $type && $key['FKCOLUMN_NAME'] === $field )
-				return $key['PKTABLE_NAME'];
+			if($key['from'] === $field)
+				return $key['table'];
 		}
 		return NULL;
 	}

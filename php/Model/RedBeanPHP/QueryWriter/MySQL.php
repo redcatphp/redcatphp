@@ -64,47 +64,26 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 */
 	protected function constrain( $table, $table1, $table2, $property1, $property2 )
 	{
+		if ( !is_null( $this->getForeignKeyForTableColumn( $table, $property1 ) ) ) return FALSE;
 		try {
-			$db  = $this->adapter->getCell( 'SELECT database()' );
-
-			$fks = $this->adapter->getCell(
-				"SELECT count(*)
-				FROM information_schema.KEY_COLUMN_USAGE
-				WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND
-				CONSTRAINT_NAME <>'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL",
-				[ $db, $table ]
-			);
-
-			// already foreign keys added in this association table
-			if ( $fks > 0 ) {
-				return FALSE;
-			}
-
 			$columns = $this->getColumns( $table );
-
 			$idType = $this->getTypeForID();
 			if ( $this->code( $columns[$property1] ) !== $idType ) {
 				$this->widenColumn( $table, $property1, $idType );
 			}
-
 			if ( $this->code( $columns[$property2] ) !== $idType ) {
 				$this->widenColumn( $table, $property2, $idType );
 			}
-
 			$sql = "
 				ALTER TABLE " . $this->safeTable( $table ) . "
 				ADD FOREIGN KEY($property1) references `$table1`(id) ON DELETE CASCADE ON UPDATE CASCADE;
 			";
-
 			$this->adapter->exec( $sql );
-
 			$sql = "
 				ALTER TABLE " . $this->safeTable( $table ) . "
 				ADD FOREIGN KEY($property2) references `$table2`(id) ON DELETE CASCADE ON UPDATE CASCADE
 			";
-
 			$this->adapter->exec( $sql );
-
 			return TRUE;
 		} catch ( \Exception $e ) {
 			return FALSE;
@@ -327,10 +306,10 @@ class MySQL extends AQueryWriter implements QueryWriter
 	public function addFK( $type, $targetType, $field, $targetField, $isDependent = FALSE )
 	{
 
-		$cfks = $this->getKeys($type, $field);
-
-		if ($cfks) return;
-
+		$cfks = $this->getKeyMapForTable( $type );
+		foreach( $cfks as $cfk ) {
+			if ( $cfk['from'] === $field ) return; //already has a key this field..
+		}
 		try {
 			$fkName = 'fk_'.($type.'_'.$field);
 			$cName = 'c_'.$fkName;
@@ -402,45 +381,46 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 * and field.
 	 *
 	 * @param string $table  table name
-	 * @param string $field field name
 	 *
 	 * @return array
+	 * @see QueryWriter::getKeyMapForTable
 	 */
-	protected function getKeys($table, $field)
+	public function getKeyMapForTable( $type )
 	{
-		$cfks = $this->adapter->get('
+		$table = $this->safeTable( $type, TRUE );
+		$keys = $this->adapter->get('
 			SELECT 
-				CONSTRAINT_NAME,
-				REFERENCED_TABLE_NAME,
-				TABLE_NAME,
-				COLUMN_NAME
-				FROM information_schema.KEY_COLUMN_USAGE
+				information_schema.key_column_usage.constraint_name AS `name`,
+				information_schema.key_column_usage.referenced_table_name AS `table`,
+				information_schema.key_column_usage.column_name AS `from`,
+				information_schema.key_column_usage.referenced_column_name AS `to`,
+				information_schema.referential_constraints.update_rule AS `on_update`,
+				information_schema.referential_constraints.delete_rule AS `on_delete`
+				FROM information_schema.key_column_usage
+				INNER JOIN information_schema.referential_constraints
+					ON (
+						information_schema.referential_constraints.constraint_name = information_schema.key_column_usage.constraint_name
+						AND information_schema.referential_constraints.constraint_schema = information_schema.key_column_usage.constraint_schema
+						AND information_schema.referential_constraints.constraint_catalog = information_schema.key_column_usage.constraint_catalog
+					)
 			WHERE
-				TABLE_SCHEMA IN ( SELECT DATABASE() )
-				AND TABLE_NAME = ?
-				AND COLUMN_NAME = ? AND
-				CONSTRAINT_NAME != \'PRIMARY\'
-				AND REFERENCED_TABLE_NAME IS NOT NULL
-		', array($table, $field));
-		
-		return $cfks;
-	}
-	
-	/**
-	* @see QueryWriter::inferFetchType
-	*/
-	public function inferFetchType( $type, $property )
-	{
-		$type = $this->safeTable( $type, TRUE );
-		$field = $this->safeColumn( $property, TRUE ) . '_id';
-		$keys = $this->getKeys($type, $field);
-		foreach( $keys as $key ) {
-			if ( 
-				$key['TABLE_NAME'] === $type
-				&& $key['COLUMN_NAME'] === $field
-			) return $key['REFERENCED_TABLE_NAME'];
+				information_schema.key_column_usage.table_schema IN ( SELECT DATABASE() )
+				AND information_schema.key_column_usage.table_name = ?
+				AND information_schema.key_column_usage.constraint_name != \'PRIMARY\'
+				AND information_schema.key_column_usage.referenced_table_name IS NOT NULL
+		', array($table));
+		$keyInfoList = array();
+		foreach ( $keys as $k ) {
+			$label = $this->makeFKLabel( $k['from'], $k['table'], $k['to'] );
+			$keyInfoList[$label] = array(
+				'name'          => $k['name'],
+				'from'          => $k['from'],
+				'table'         => $k['table'],
+				'to'            => $k['to'],
+				'on_update'     => $k['on_update'],
+				'on_delete'     => $k['on_delete']
+			);
 		}
-		return NULL;
-	}
-	
+		return $keyInfoList;
+	}	
 }

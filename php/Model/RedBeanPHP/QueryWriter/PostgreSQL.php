@@ -83,40 +83,19 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	protected function constrain( $table, $table1, $table2, $property1, $property2 )
 	{
+		if ( !is_null( $this->getForeignKeyForTableColumn( $table, $property1 ) ) ) return FALSE;
+		$adapter = $this->adapter;
+		$fkCode  = 'fk' . md5( $table . $property1 . $property2 );
+		$sql1 = "ALTER TABLE \"$table\" ADD CONSTRAINT
+			{$fkCode}a FOREIGN KEY ($property1)
+			REFERENCES \"$table1\" (id) ON DELETE CASCADE ON UPDATE CASCADE ";
+		$sql2 = "ALTER TABLE \"$table\" ADD CONSTRAINT
+			{$fkCode}b FOREIGN KEY ($property2)
+			REFERENCES \"$table2\" (id) ON DELETE CASCADE ON UPDATE CASCADE ";
 		try {
-			$adapter = $this->adapter;
-			$fkCode  = 'fk' . md5( $table . $property1 . $property2 );
-
-			$sql = "SELECT c.oid, n.nspname, c.relname,
-				n2.nspname, c2.relname, cons.conname
-				FROM pg_class c
-				JOIN pg_namespace n ON n.oid = c.relnamespace
-				LEFT JOIN pg_constraint cons ON cons.conrelid = c.oid
-				LEFT JOIN pg_class c2 ON cons.confrelid = c2.oid
-				LEFT JOIN pg_namespace n2 ON n2.oid = c2.relnamespace
-				WHERE c.relkind = 'r'
-					AND n.nspname = ANY( current_schemas( FALSE ) )
-					AND (cons.contype = 'f' OR cons.contype IS NULL)
-					AND (  cons.conname = '{$fkCode}a'	OR  cons.conname = '{$fkCode}b' )
-			";
-
-			$rows    = $adapter->get( $sql );
-			if ( !count( $rows ) ) {
-				$sql1 = "ALTER TABLE \"$table\" ADD CONSTRAINT
-					{$fkCode}a FOREIGN KEY ($property1)
-					REFERENCES \"$table1\" (id) ON DELETE CASCADE ON UPDATE CASCADE ";
-
-				$sql2 = "ALTER TABLE \"$table\" ADD CONSTRAINT
-					{$fkCode}b FOREIGN KEY ($property2)
-					REFERENCES \"$table2\" (id) ON DELETE CASCADE ON UPDATE CASCADE ";
-
-				$adapter->exec( $sql1 );
-
-				$adapter->exec( $sql2 );
-				return TRUE;
-			}
-
-			return FALSE;
+			$adapter->exec( $sql1 );
+			$adapter->exec( $sql2 );
+			return TRUE;
 		} catch (\Exception $e ) {
 			return FALSE;
 		}
@@ -332,8 +311,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $column )
 	{
-		$table  = $type;
-		$table  = $this->safeTable( $table );
+		$table  = $this->safeTable( $type );
 
 		$name   = preg_replace( '/\W/', '', $name );
 		$column = $this->safeColumn( $column );
@@ -360,16 +338,16 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$field = $this->safeColumn( $field, TRUE );
 		$targetTable = $this->safeTable( $targetTable, TRUE );
 		$targetField = $this->safeColumn( $targetField, TRUE );
-		
-		$cfks = $this->getKeys( $table, $field );
-
+		$foreignKeys = $this->getKeyMapForTable( $table );
+		foreach( $foreignKeys as $foreignKey ) {
+			if ( $foreignKey['from'] === $field ) return FALSE; //return, field has already fk
+		}
 		try{
-			if ( !count( $cfks ) ) {
-				$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
-				$this->adapter->exec( "ALTER TABLE  {$this->esc($table)}
-					ADD FOREIGN KEY ( {$this->esc($field)} ) REFERENCES  {$this->esc($targetTable)} (
-					{$this->esc($targetField)}) ON DELETE $delRule ON UPDATE $delRule DEFERRABLE ;" );
-			}
+			$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
+			$this->adapter->exec( "ALTER TABLE  {$this->esc($table)}
+				ADD FOREIGN KEY ( {$this->esc($field)} ) REFERENCES  {$this->esc($targetTable)} (
+				{$this->esc($targetField)}) ON DELETE $delRule ON UPDATE $delRule DEFERRABLE ;" );
+			return TRUE;
 		} catch (\Exception $e ) {
 			return FALSE;
 		}
@@ -641,48 +619,55 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * Internal method, returns a map of foreign key constraints for
-	 * the current database (and schema) and the specified table
-	 * and field.
-	 *
-	 * @param string $table  table name
-	 * @param string $field field name
-	 *
-	 * @return array
+	 * @see QueryWriter::getKeyMapForTable
 	 */
-	protected function getKeys($type, $field)
+	public function getKeyMapForTable( $type )
 	{
-		return $this->adapter->get('
+		$table = $this->safeTable( $type, TRUE );
+		$keys = $this->adapter->get( '
 			SELECT 
-			information_schema.key_column_usage.constraint_name,
-			information_schema.key_column_usage.table_name as sourcetable,
-			information_schema.key_column_usage.column_name as sourcecolumn,
-			information_schema.constraint_table_usage.table_name as targettable
+			information_schema.key_column_usage.constraint_name AS "name",
+			information_schema.key_column_usage.column_name AS "from",
+			information_schema.constraint_table_usage.table_name AS "table",
+			information_schema.constraint_column_usage.column_name AS "to",
+			information_schema.referential_constraints.update_rule AS "on_update",
+			information_schema.referential_constraints.delete_rule AS "on_delete"
 				FROM information_schema.key_column_usage
 			INNER JOIN information_schema.constraint_table_usage
-				ON information_schema.key_column_usage.constraint_name = information_schema.constraint_table_usage.constraint_name
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.constraint_table_usage.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_table_usage.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_table_usage.constraint_catalog 
+				)
+			INNER JOIN information_schema.constraint_column_usage
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.constraint_column_usage.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_column_usage.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_column_usage.constraint_catalog 
+				)
+			INNER JOIN information_schema.referential_constraints
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.referential_constraints.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.referential_constraints.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.referential_constraints.constraint_catalog 
+				)
 			WHERE
 				information_schema.key_column_usage.table_catalog = current_database()
 				AND information_schema.key_column_usage.table_schema = ANY( current_schemas( FALSE ) )
 				AND information_schema.key_column_usage.table_name = ?
-				AND information_schema.key_column_usage.column_name = ?
-		', array($type, $field));
-	}
-	
-	/**
-	* @see QueryWriter::inferFetchType
-	*/
-	public function inferFetchType( $type, $property )
-	{
-		$type = $this->safeTable( $type, TRUE );
-		$field = $this->safeColumn( $property, TRUE ) . '_id';
-		$keys = $this->getKeys($type, $field);
-		foreach( $keys as $key ) {
-			if ( 
-				$key['sourcetable'] === $type
-				&& $key['sourcecolumn'] === $field
-			) return $key['targettable'];
+		', [$table] );
+		$keyInfoList = [];
+		foreach ( $keys as $k ) {
+			$label = $this->makeFKLabel( $k['from'], $k['table'], $k['to'] );
+			$keyInfoList[$label] = [
+				'name'          => $k['name'],
+				'from'          => $k['from'],
+				'table'         => $k['table'],
+				'to'            => $k['to'],
+				'on_update'     => $k['on_update'],
+				'on_delete'     => $k['on_delete']
+			];
 		}
-		return NULL;
+		return $keyInfoList;
 	}
 }
