@@ -78,16 +78,13 @@ class Query {
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
 			if(!$this->table||$this->tableExists($this->table)){
 				$params = $this->composer->getParams();
-				if(is_array($paramsX=array_shift($args)))
+				if(!empty($args))
 					$params = array_merge($params,$args);
 				$sql = $this->composer->getQuery();
 				list($sql,$params) = R::nestBinding($sql,$params);
 				return $this->DataBase->$f($sql,$params);
 			}
 			return;
-		}
-		elseif(substr($f,-5)=='Array'){
-			return call_user_func_array($f,[array_shift($args),$args]);
 		}
 		else{
 			switch($f){
@@ -100,19 +97,33 @@ class Query {
 					call_user_func_array([$this->writer,$f],$args);
 					return $this;
 				break;
-				default:					
+				case 'limit':
+					call_user_func_array([$this->composer,'limit'],$args);
+					return $this;
+				break;
+				default:
+					if(substr($f,-5)=='Array'){
+						$array = true;
+						$f = substr($f,0,-5);
+					}
+					else{
+						$array = false;
+					}
 					if(method_exists($this->composer,$f)){
 						$un = strpos($f,'un')===0&&ctype_upper(substr($f,2,1));
-						if(method_exists($this,$m='composer'.ucfirst($un?substr($f,2):$f)))
+						if(method_exists($this,$m='composer'.ucfirst($f)))
 							$args = call_user_func_array([$this,$m],$args);
 						$sql = array_shift($args);
-						$binds = array_shift($args);
+						if($array)
+							$binds = array_shift($args);
+						else
+							$binds = $args;
 						if($sql instanceof SQLComposerBase){
 							if(is_array($binds))
 								$binds = array_merge($sql->getParams(),$binds);
 							else
 								$binds = $sql->getParams();
-							$sql = $sql->getQuery();
+							$sql = '('.$sql->getQuery().')';
 						}
 						$args = [$sql,$binds];
 						if($un){
@@ -473,12 +484,11 @@ class Query {
 		if(!$this->table||$this->tableExists())
 			return (int)(new static())
 				->select('COUNT(*)')
-				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+				->fromArray('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
 				->getCell()
 			;
 	}
 	
-	//public helpers api
 	static function multiSlots(){
 		$args = func_get_args();
 		$query = array_shift($args);

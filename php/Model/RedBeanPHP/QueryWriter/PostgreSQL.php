@@ -577,7 +577,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$c = $query->formatColumnName($col);
 			if($lang)
 				$lang = "'$lang',";
-			$query->orderBy("ts_rank({$c}, plainto_tsquery({$lang}?))",[$t]);
+			$query->orderBy("ts_rank({$c}, plainto_tsquery({$lang}?))",$t);
 		}
 	}
 	function selectFullTextRank($query,$col,$t,$lang=null,$alias=null){
@@ -587,7 +587,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				$lang = "'$lang',";
 			if(!$alias)
 				$alias = $col.'_rank';
-			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",[$t]);
+			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",$t);
 		}
 	}
 	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=[],$getl=true){
@@ -606,7 +606,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$conf = rtrim($conf,',');
 		$c = $query->formatColumnName($col);
 		$q = $this->quoteCharacter;
-		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",[$t,$conf,$truncation]);
+		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",$t,$conf,$truncation);
 		if($getl)
 			$query->select("LENGTH($c) as $q{$col}_length$q");
 	}
@@ -625,7 +625,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 		$q = $this->quoteCharacter;
 		$conf = rtrim($conf,',');
-		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",[$t,$conf]);
+		$query->select("ts_headline($col,plainto_tsquery($lang?),?) as $q$col$q",$t,$conf);
 	}
 	function whereFullText($query,$cols,$t,$lang=null,$toVector=null){
 		if(!is_array($cols))
@@ -637,7 +637,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		}
 		if($lang)
 			$lang = "'$lang',";
-		$query->where(implode('||',$cols).' @@ plainto_tsquery('.$lang.'?)',[$t]);
+		$query->where(implode('||',$cols).' @@ plainto_tsquery('.$lang.'?)',$t);
 	}
 	
 	/**
