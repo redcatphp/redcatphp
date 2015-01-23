@@ -333,7 +333,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $type, $properties )
+	public function addUniqueConstraint( $type, $properties )
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
@@ -361,24 +361,26 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $column )
 	{
-		$table  = $type;
-		$table  = $this->safeTable( $table );
+		try {
+			if ( $this->isIndexed( $type, $column ) ) return FALSE;
+		} catch ( \Exception $e ) {
+			return FALSE;
+		}
 
+		$columns = $this->getColumns( $type );
+		if ( !isset( $columns[$column] ) ) return FALSE;
+
+		$table  = $this->safeTable( $type );
 		$name   = preg_replace( '/\W/', '', $name );
 		$column = $this->safeColumn( $column, TRUE );
 
 		try {
-			
-			foreach ( $this->adapter->get( "PRAGMA INDEX_LIST($table) " ) as $ind ) {
-				if ( $ind['name'] === $name ) return;
-			}
-
 			$t = $this->getTable( $type );
-			$t['indexes'][$name] = [ 'name' => $column ];
-
+			$t['indexes'][$name] = array( 'name' => $column );
 			$this->putTable( $t );
+			return TRUE;
 		} catch( \Exception $exception ) {
-			//do nothing
+			return FALSE;
 		}
 	}
 
@@ -452,5 +454,24 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			}
 		}
 		return $uniques;
+	}
+	
+	/**
+	 * @see AQueryWriter::getIndexListForType
+	 */
+	protected function getIndexListForType( $type )
+	{
+		$table         = $this->esc( $type, TRUE );
+		$indexes       = $this->adapter->get( "PRAGMA index_list( '{$table}' )" );
+		$indexInfoList = array();
+
+		foreach ( $indexes as $i ) {
+			if ( !isset($indexInfoList[$i['name']]) ) {
+				$indexInfoList[$i['name']] = array();
+			}
+			$info = $this->adapter->get( "PRAGMA index_info('{$i['name']}') " );
+			foreach( $info as $piece ) $indexInfoList[$i['name']][] = $piece['name'];
+		}
+		return $indexInfoList;
 	}
 }

@@ -476,4 +476,11 @@ interface QueryWriter
 	 * @return string|NULL
 	 */
 	public function inferFetchType( $type, $property );
+	
+	/**
+	* @see QueryWriter::addUniqueConstaint
+	*/
+	public function addUniqueConstraint( $type, $columns );
+	
+	
 }

@@ -238,7 +238,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $type, $properties )
+	public function addUniqueConstraint( $type, $properties )
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		$columns = array();
@@ -291,22 +291,20 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $column )
 	{
-		$table  = $type;
-		$table  = $this->safeTable( $table );
-
-		$name   = preg_replace( '/\W/', '', $name );
-
-		$column = $this->safeColumn( $column );
-
-		$index  = $this->adapter->getRow( "SELECT 1 as `exists` FROM db_index WHERE index_name = ? ", [ $name ] );
-
-		if ( $index && $index['exists'] ) {
-			return; // positive number will return, 0 will continue.
+		try {
+			if ( $this->isIndexed( $type, $column ) ) return FALSE;
+		} catch ( \Exception $e ) {
+			return FALSE;
 		}
 
 		try {
+			$table  = $this->safeTable( $type );
+			$name   = preg_replace( '/\W/', '', $name );
+			$column = $this->safeColumn( $column );
 			$this->adapter->exec( "CREATE INDEX $name ON $table ($column) " );
+			return TRUE;
 		} catch (\Exception $e ) {
+			return FALSE;
 		}
 	}
 
@@ -352,5 +350,22 @@ class CUBRID extends AQueryWriter implements QueryWriter
 				return $key['table'];
 		}
 		return NULL;
+	}
+	
+	/**
+	 * @see AQueryWriter::getIndexListForType
+	 */
+	protected function getIndexListForType( $type )
+	{
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		$indexList = $this->adapter->get( "SHOW INDEX FROM `{$type}`" );
+		$indexItems = array();
+		foreach( $indexList as $indexInfo ) {
+			if ( !isset($indexItems[$indexInfo['Key_name']] ) ) {
+				$indexItems[$indexInfo['Key_name']] = array();
+			}
+			$indexItems[$indexInfo['Key_name']][] = $indexInfo['Column_name'];
+		}
+		return $indexItems;
 	}
 }

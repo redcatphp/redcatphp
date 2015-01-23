@@ -223,7 +223,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $type, $properties )
+	public function addUniqueConstraint( $type, $properties )
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
@@ -256,19 +256,21 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $property )
 	{
-		$table  = $this->safeTable( $type );
-
-		$name   = preg_replace( '/\W/', '', $name );
-		$column = $this->safeColumn( $property );
-
-		if ( $this->adapter->getCell( "SELECT COUNT(*) FROM pg_class WHERE relname = '$name'" ) ) {
-			return;
+		try {
+			if ( $this->isIndexed( $type, $property ) ) return FALSE;
+		} catch ( \Exception $e ) {
+			return FALSE;
 		}
 
+		$table  = $this->safeTable( $type );
+		$name   = preg_replace( '/\W/', '', $name );
+		$column = $this->esc( $property );
+
 		try {
-			$this->adapter->exec( "CREATE INDEX $name ON $table ($column) " );
+			$this->adapter->exec( "CREATE INDEX {$name} ON $table ({$column}) " );
+			return TRUE;
 		} catch (\Exception $e ) {
-			//do nothing
+			return FALSE;
 		}
 	}
 
@@ -643,5 +645,46 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$uniques[ $column['constraint_name'] ][] = $column['column_name'];
 		}
 		return $uniques;
+	}
+	
+	/**
+	 * @see AQueryWriter::getIndexListForType
+	 */
+	protected function getIndexListForType( $type )
+	{
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		$indexes = $this->adapter->get("
+			SELECT relname, indkey
+				FROM pg_class, pg_index
+			WHERE pg_class.oid = pg_index.indexrelid
+				AND pg_class.oid IN (
+					SELECT indexrelid
+						FROM pg_index, pg_class
+					WHERE pg_class.relname = '{$tableNoQ}'
+						AND pg_class.oid = pg_index.indrelid
+						AND indisunique != 't'
+						AND indisprimary != 't')");
+
+		$indexList = array();
+
+		foreach($indexes as $index) {
+			if (!isset($indexList[$index['relname']])) {
+				$indexList[$index['relname']] = array();
+			}
+			$keys = implode(',', explode(' ', $index['indkey']));
+			$info = $this->adapter->getCell("
+				SELECT pg_attribute.attname
+				FROM pg_index
+				LEFT JOIN pg_class
+					ON pg_index.indrelid  = pg_class.oid
+				LEFT JOIN pg_attribute
+					ON pg_attribute.attrelid = pg_class.oid
+					AND pg_attribute.attnum = ANY( indkey )
+				WHERE pg_class.relname = '{$tableNoQ}'
+					AND pg_attribute.attnum IN ({$keys})
+			");
+			$indexList[$index['relname']][] = $info;
+		}
+		return $indexList;
 	}
 }
