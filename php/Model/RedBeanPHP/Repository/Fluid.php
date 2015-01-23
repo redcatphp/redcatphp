@@ -162,6 +162,9 @@ class Fluid extends Repository
 		$beanType = $bean->getMeta( 'type' );
 
 		foreach ( $ownAdditions as $addition ) {
+			if ( $addition instanceof SimpleModel ) {
+				$addition = $addition->unbox();
+			}
 			if ( $addition instanceof OODBBean ) {
 
 				$myFieldLink = $beanType . '_id';
@@ -179,6 +182,8 @@ class Fluid extends Repository
 
 				$this->store( $addition );
 			} else {
+				var_dump($addition);
+				var_dump($ownAdditions);
 				throw new RedException( 'Array may only contain OODBBeans' );
 			}
 		}
