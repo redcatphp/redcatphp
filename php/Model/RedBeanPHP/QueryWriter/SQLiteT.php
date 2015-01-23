@@ -189,6 +189,10 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$targetTable = $this->safeTable( $targetType, TRUE );
 		$column = $this->safeColumn( $property, TRUE );
 		$targetColumn = $this->safeColumn( $targetProperty, TRUE );
+		
+		$tables = $this->getTables();
+		if ( !in_array( $targetTable, $tables ) ) return FALSE;
+		
 		if ( !is_null( $this->getForeignKeyForTypeProperty( $table, $column ) ) )
 			return FALSE;
 		$t = $this->getTable( $table );
