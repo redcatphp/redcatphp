@@ -594,7 +594,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getKeyMapForTable
 	 */
-	public function getKeyMapForTable( $type )
+	protected function getKeyMapForTable( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys = $this->adapter->get( '
@@ -647,7 +647,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getUniquesForTable
 	 */
-	public function getUniquesForTable( $type )
+	protected function getUniquesForTable( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$columns = $this->adapter->get('

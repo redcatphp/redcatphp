@@ -68,6 +68,9 @@ interface QueryWriter
 	 * @param string $targetType target type (type to join)
 	 * @param string $leftRight  type of join (possible: 'LEFT', 'RIGHT' or 'INNER').
 	 *
+	 * @note A default implementation is available in AQueryWriter
+	 * unless a database uses very different SQL this should suffice.
+	 *
 	 * @return string $joinSQLSnippet
 	 */
 	public function writeJoin( $type, $targetType, $joinType );
@@ -105,6 +108,9 @@ interface QueryWriter
 	/**
 	 * Determines if there is a LIMIT 1 clause in the SQL.
 	 * If not, it will add a LIMIT 1. (used for findOne).
+	 *
+ 	 * @note A default implementation is available in AQueryWriter
+	 * unless a database uses very different SQL this should suffice.
 	 *
 	 * @param string $sql query to scan and adjust
 	 *
@@ -443,6 +449,9 @@ interface QueryWriter
 	 * name of the link table to be used to store and retrieve
 	 * association records.
 	 *
+	 * @note A default implementation is available in AQueryWriter
+	 * unless a database uses very different SQL this should suffice.
+	 *
 	 * @param  array $types two types array($type1, $type2)
 	 *
 	 * @return string
@@ -459,51 +468,10 @@ interface QueryWriter
 	 * @param $type     the source type to fetch a target type for
 	 * @param $property the property to fetch the type of
 	 *
+	 * @note A default implementation is available in AQueryWriter
+	 * unless a database uses very different SQL this should suffice.
+	 *
 	 * @return string|NULL
 	 */
 	public function inferFetchType( $type, $property );
-
-	/**
-	 * Given a table and a column name this method
-	 * returns the foreign key map section associated with this pair.
-	 *
-	 * @param string $table    name of the table
-	 * @param string $property name of the property
-	 *
-	 * @return array|NULL
-	 */
-	public function getForeignKeyForTableColumn( $type, $property );
-
-	/**
-	 * Returns the foreign key map (FKM) for a table.
-	 * A foreign key map describes the foreign keys in a table.
-	 * A FKM always has the same structure:
-	 *
-	 * array(
-	 * 	'name'      => <name of the foreign key>
-	 *    'from'      => <name of the column on the source table>
-	 *    'table'     => <name of the target table>
-	 *    'to'        => <name of the target column> (most of the time 'id')
-	 *    'on_update' => <update rule: 'SET NULL','CASCADE' or 'RESTRICT'>
-	 *    'on_delete' => <delete rule: 'SET NULL','CASCADE' or 'RESTRICT'>
-	 * )
-	 *
-	 * @note the keys in the result array are FKDLs, i.e. descriptive unique
-	 * keys per source table. Also see: AQueryWriter::makeFKLabel for details.
-	 *
-	 * @param string $type the bean type you wish to obtain a key map of
-	 *
-	 * @return array
-	 */
-	 public function getKeyMapForTable( $type );
-
-	 /**
-	  * Returns an array, listing all column groups (as sub-arrays)
-	  * that have a unique constraint.
-	  *
-	  * @param string $type type name
-	  *
-	  * @return array
-	  */
-	 public function getUniquesForTable( $type );
 }

@@ -378,7 +378,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 * @return array
 	 * @see QueryWriter::getKeyMapForTable
 	 */
-	public function getKeyMapForTable( $type )
+	protected function getKeyMapForTable( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys = $this->adapter->get('
@@ -420,7 +420,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::getUniquesForTable
 	 */
-	public function getUniquesForTable( $type )
+	protected function getUniquesForTable( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$columns = $this->adapter->get('

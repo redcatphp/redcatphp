@@ -1201,7 +1201,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	/**
 	* @see QueryWriter::getKeyMapForTable
 	*/
-	public function getKeyMapForTable( $type ){
+	protected function getKeyMapForTable( $type ){
 		return [];
 	}
 	
@@ -1209,7 +1209,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	* @see QueryWriter::getForeignKeyForTableColumn
 	*/
 	public function getForeignKeyForTableColumn( $table, $column ){
-		$column = $this->esc( $column, TRUE );
+		$column = $this->safeColumn( $column, TRUE );
 		$map = $this->getKeyMapForTable( $table );
 		foreach( $map as $key ) {
 			if ( $key['from'] === $column )
@@ -1221,7 +1221,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		/**
 	 * @see QueryWriter::getUniquesForTable
 	 */
-	public function getUniquesForTable( $table )
+	protected function getUniquesForTable( $table )
 	{
 		return array();
 	}

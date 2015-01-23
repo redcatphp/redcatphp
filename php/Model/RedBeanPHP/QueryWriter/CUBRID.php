@@ -36,9 +36,9 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	protected $quoteCharacter = '`';
 
 	/**
-	 * @see QueryWriter::getKeyMapForTable
+	 * @see AQueryWriter::getKeyMapForTable
 	 */
-	public function getKeyMapForTable( $table)
+	protected function getKeyMapForTable( $table)
 	{
 		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
 		if (!isset($sqlCode[0])) return array();
@@ -272,9 +272,9 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * @see QueryWriter::getUniquesForTable
+	 * @see AQueryWriter::getUniquesForTable
 	 */
-	public function getUniquesForTable( $table )
+	protected function getUniquesForTable( $table )
 	{
 		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
 		if (!isset($sqlCode[0])) return array();
