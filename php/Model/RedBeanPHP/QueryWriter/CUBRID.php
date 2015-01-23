@@ -36,11 +36,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	protected $quoteCharacter = '`';
 
 	/**
-	 * @see AQueryWriter::getKeyMapForTable
+	 * @see AQueryWriter::getKeyMapForType
 	 */
-	protected function getKeyMapForTable( $table)
+	protected function getKeyMapForType( $type)
 	{
-		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
+		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$type}`");
 		if (!isset($sqlCode[0])) return array();
 		$matches = array();
 		preg_match_all( '/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\]/', $sqlCode[0]['CREATE TABLE'], $matches );
@@ -87,7 +87,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 		$column          = $this->safeColumn( $property );
 		$columnNoQ       = $this->safeColumn( $property, TRUE );
 		$targetColumn    = $this->safeColumn( $targetProperty );
-		if ( !is_null( $this->getForeignKeyForTableColumn( $tableNoQ, $columnNoQ ) ) ) return FALSE;
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $columnNoQ ) ) ) return FALSE;
 		$needsToDropFK   = FALSE;
 		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
 		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ";
@@ -253,11 +253,11 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * @see AQueryWriter::getUniquesForTable
+	 * @see AQueryWriter::getUniquesForType
 	 */
-	protected function getUniquesForTable( $table )
+	protected function getUniquesForType( $type )
 	{
-		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
+		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$type}`");
 		if (!isset($sqlCode[0])) return array();
 		$matches = array();
 		preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+UNIQUE\s+KEY\s+\(([^\)]+)\)/', $sqlCode[0]['CREATE TABLE'], $matches);
@@ -324,7 +324,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function _wipeAll()
 	{
 		foreach( $this->getTables() as $t ){
-			foreach ( $this->getKeyMapForTable( $t ) as $k ) {
+			foreach ( $this->getKeyMapForType( $t ) as $k ) {
 				$this->adapter->exec( "ALTER TABLE \"$t\" DROP FOREIGN KEY \"{$k['name']}\"" );
 			}
 		}
@@ -346,7 +346,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	public function inferFetchType( $type, $property ){
 		$table = $this->safeTable( $type, TRUE );
 		$field = $this->safeColumn( $property, TRUE ) . '_id';
-		$keys = $this->getKeyMapForTable( $table );
+		$keys = $this->getKeyMapForType( $table );
 		foreach( $keys as $key ) {
 			if($key['from'] === $field)
 				return $key['table'];

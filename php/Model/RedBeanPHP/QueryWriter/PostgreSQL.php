@@ -283,7 +283,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$targetField = $this->safeColumn( $targetProperty );
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		$fieldNoQ = $this->safeColumn( $property, TRUE );
-		if ( !is_null( $this->getForeignKeyForTableColumn( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
 		try{
 			$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
 			$this->adapter->exec( "ALTER TABLE {$table}
@@ -561,9 +561,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * @see QueryWriter::getKeyMapForTable
+	 * @see QueryWriter::getKeyMapForType
 	 */
-	protected function getKeyMapForTable( $type )
+	protected function getKeyMapForType( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys = $this->adapter->get( '
@@ -614,9 +614,9 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * @see QueryWriter::getUniquesForTable
+	 * @see QueryWriter::getUniquesForType
 	 */
-	protected function getUniquesForTable( $type )
+	protected function getUniquesForType( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$columns = $this->adapter->get('

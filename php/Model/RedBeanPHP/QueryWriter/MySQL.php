@@ -231,14 +231,14 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addIndex
 	 */
-	public function addIndex( $type, $name, $column )
+	public function addIndex( $type, $name, $property )
 	{
 		$table  = $type;
 		$table  = $this->safeTable( $table );
 
 		$name   = preg_replace( '/\W/', '', $name );
 
-		$column = $this->safeColumn( $column );
+		$column = $this->safeColumn( $property );
 
 		try {
 			foreach ( $this->adapter->get( "SHOW INDEX FROM $table " ) as $ind ) if ( $ind['Key_name'] === $name ) return;
@@ -261,7 +261,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 		$targetFieldNoQ = $this->safeColumn( $targetProperty, TRUE );
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		$fieldNoQ = $this->safeColumn( $property, TRUE );
-		if ( !is_null( $this->getForeignKeyForTableColumn( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
 		
 		//Widen the column if it's incapable of representing a foreign key (at least INT).
 		$columns = $this->getColumns( $tableNoQ );
@@ -345,9 +345,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 	 * @param string $table  table name
 	 *
 	 * @return array
-	 * @see QueryWriter::getKeyMapForTable
+	 * @see QueryWriter::getKeyMapForType
 	 */
-	protected function getKeyMapForTable( $type )
+	protected function getKeyMapForType( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys = $this->adapter->get('
@@ -387,9 +387,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 	}
 	
 	/**
-	 * @see QueryWriter::getUniquesForTable
+	 * @see QueryWriter::getUniquesForType
 	 */
-	protected function getUniquesForTable( $type )
+	protected function getUniquesForType( $type )
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$columns = $this->adapter->get('

@@ -1172,7 +1172,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	public function inferFetchType( $type, $property ){
 		$type = $this->safeTable( $type, TRUE );
 		$field = $this->safeColumn( $property, TRUE ) . '_id';
-		$keys = $this->getKeyMapForTable( $type );
+		$keys = $this->getKeyMapForType( $type );
 		foreach( $keys as $key ) {
 			if ($key['from'] === $field)
 				return $key['table'];
@@ -1194,34 +1194,34 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	*
 	* @return string
 	*/
-	protected function makeFKLabel($from, $table, $to){
-		return "from_{$from}_to_table_{$table}_col_{$to}";
+	protected function makeFKLabel($from, $type, $to){
+		return "from_{$from}_to_table_{$type}_col_{$to}";
 	}
 	
 	/**
-	* @see QueryWriter::getKeyMapForTable
+	* @see QueryWriter::getKeyMapForType
 	*/
-	protected function getKeyMapForTable( $type ){
+	protected function getKeyMapForType( $type ){
 		return [];
 	}
 	
 	/**
-	* @see QueryWriter::getForeignKeyForTableColumn
+	* @see QueryWriter::getForeignKeyForTypeProperty
 	*/
-	public function getForeignKeyForTableColumn( $table, $column ){
-		$column = $this->safeColumn( $column, TRUE );
-		$map = $this->getKeyMapForTable( $table );
+	public function getForeignKeyForTypeProperty($type, $property){
+		$property = $this->safeColumn( $property, TRUE );
+		$map = $this->getKeyMapForType( $type );
 		foreach( $map as $key ) {
-			if ( $key['from'] === $column )
+			if ( $key['from'] === $property )
 				return $key;
 		}
 		return NULL;
 	}
 	
 		/**
-	 * @see QueryWriter::getUniquesForTable
+	 * @see QueryWriter::getUniquesForType
 	 */
-	protected function getUniquesForTable( $table )
+	protected function getUniquesForType( $table )
 	{
 		return array();
 	}
@@ -1235,15 +1235,15 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 	 *
 	 * @return boolean
 	 */
-	public function areColumnsInUniqueIndex( $table, $columns )
+	public function areColumnsInUniqueIndex( $type, $properties )
 	{
-		sort( $columns );
-		$columnFootprint = implode( ',', $columns );
-		$uniques = $this->getUniquesForTable( $table );
+		sort( $properties );
+		$propertyFootprint = implode( ',', $properties );
+		$uniques = $this->getUniquesForType( $type );
 		foreach( $uniques as $unique ) {
 				sort( $unique );
 				$uniqueFootprint = implode( ',', $unique );
-				if ( $uniqueFootprint === $columnFootprint ) return TRUE;
+				if ( $uniqueFootprint === $propertyFootprint ) return TRUE;
 		}
 		return FALSE;
 	}
