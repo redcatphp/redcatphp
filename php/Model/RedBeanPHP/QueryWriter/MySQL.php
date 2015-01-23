@@ -52,45 +52,6 @@ class MySQL extends AQueryWriter implements QueryWriter
 	protected $quoteCharacter = '`';
 
 	/**
-	 * Add the constraints for a specific database driver: MySQL.
-	 *
-	 * @param string $table     table     table to add constrains to
-	 * @param string $table1    table1    first reference table
-	 * @param string $table2    table2    second reference table
-	 * @param string $property1 property1 first column
-	 * @param string $property2 property2 second column
-	 *
-	 * @return boolean $succes whether the constraint has been applied
-	 */
-	protected function constrain( $table, $table1, $table2, $property1, $property2 )
-	{
-		if ( !is_null( $this->getForeignKeyForTableColumn( $table, $property1 ) ) ) return FALSE;
-		try {
-			$columns = $this->getColumns( $table );
-			$idType = $this->getTypeForID();
-			if ( $this->code( $columns[$property1] ) !== $idType ) {
-				$this->widenColumn( $table, $property1, $idType );
-			}
-			if ( $this->code( $columns[$property2] ) !== $idType ) {
-				$this->widenColumn( $table, $property2, $idType );
-			}
-			$sql = "
-				ALTER TABLE " . $this->safeTable( $table ) . "
-				ADD FOREIGN KEY($property1) references `$table1`(id) ON DELETE CASCADE ON UPDATE CASCADE;
-			";
-			$this->adapter->exec( $sql );
-			$sql = "
-				ALTER TABLE " . $this->safeTable( $table ) . "
-				ADD FOREIGN KEY($property2) references `$table2`(id) ON DELETE CASCADE ON UPDATE CASCADE
-			";
-			$this->adapter->exec( $sql );
-			return TRUE;
-		} catch ( \Exception $e ) {
-			return FALSE;
-		}
-	}
-
-	/**
 	 * Constructor
 	 *
 	 * @param Adapter $adapter Database Adapter
@@ -301,6 +262,14 @@ class MySQL extends AQueryWriter implements QueryWriter
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		$fieldNoQ = $this->safeColumn( $property, TRUE );
 		if ( !is_null( $this->getForeignKeyForTableColumn( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		
+		//Widen the column if it's incapable of representing a foreign key (at least INT).
+		$columns = $this->getColumns( $tableNoQ );
+		$idType = $this->getTypeForID();
+		if ( $this->code( $columns[$fieldNoQ] ) !== $idType ) {
+			$this->widenColumn( $type, $property, $idType );
+		}
+		
 		$fkName = 'fk_'.($tableNoQ.'_'.$fieldNoQ);
 		$cName = 'c_'.$fkName;
 		try {
