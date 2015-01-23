@@ -242,36 +242,12 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
 		$columns = array();
-		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
-		$columns = array();
 		foreach( $properties as $key => $column ) $columns[$key] = $this->safeColumn( $column );
 		$table = $this->safeTable( $type );
 		sort( $columns ); // else we get multiple indexes due to order-effects
 		$name = 'UQ_' . sha1( implode( ',', $columns ) );
 		$sql = "ALTER TABLE $table ADD CONSTRAINT UNIQUE $name (" . implode( ',', $columns ) . ")";
 		$this->adapter->exec( $sql );
-	}
-	
-	/**
-	 * @see AQueryWriter::getUniquesForType
-	 */
-	protected function getUniquesForType( $type )
-	{
-		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$type}`");
-		if (!isset($sqlCode[0])) return array();
-		$matches = array();
-		preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+UNIQUE\s+KEY\s+\(([^\)]+)\)/', $sqlCode[0]['CREATE TABLE'], $matches);
-		$list = array();
-		if (!isset($matches[0])) return $list;
-		$max = count($matches[0]);
-		for($i = 0; $i < $max; $i++) {
-			$columns = explode(',', $matches[2][$i]);
-			foreach( $columns as $key => $column ) {
-				$columns[$key] = trim( $column, '[] ');
-			}
-			$list[ $matches[1][$i] ] = $columns;
-		}
-		return $list;
 	}
 
 	/**
@@ -291,12 +267,6 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $column )
 	{
-		try {
-			if ( $this->isIndexed( $type, $column ) ) return FALSE;
-		} catch ( \Exception $e ) {
-			return FALSE;
-		}
-
 		try {
 			$table  = $this->safeTable( $type );
 			$name   = preg_replace( '/\W/', '', $name );
@@ -350,22 +320,5 @@ class CUBRID extends AQueryWriter implements QueryWriter
 				return $key['table'];
 		}
 		return NULL;
-	}
-	
-	/**
-	 * @see AQueryWriter::getIndexListForType
-	 */
-	protected function getIndexListForType( $type )
-	{
-		$tableNoQ = $this->safeTable( $type, TRUE );
-		$indexList = $this->adapter->get( "SHOW INDEX FROM `{$type}`" );
-		$indexItems = array();
-		foreach( $indexList as $indexInfo ) {
-			if ( !isset($indexItems[$indexInfo['Key_name']] ) ) {
-				$indexItems[$indexInfo['Key_name']] = array();
-			}
-			$indexItems[$indexInfo['Key_name']][] = $indexInfo['Column_name'];
-		}
-		return $indexItems;
 	}
 }

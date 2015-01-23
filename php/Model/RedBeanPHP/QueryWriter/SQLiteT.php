@@ -336,7 +336,6 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	public function addUniqueConstraint( $type, $properties )
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
-		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
 		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $properties );
 		$t     = $this->getTable( $type );
 		$t['indexes'][$name] = array( 'name' => $name );
@@ -361,12 +360,6 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function addIndex( $type, $name, $column )
 	{
-		try {
-			if ( $this->isIndexed( $type, $column ) ) return FALSE;
-		} catch ( \Exception $e ) {
-			return FALSE;
-		}
-
 		$columns = $this->getColumns( $type );
 		if ( !isset( $columns[$column] ) ) return FALSE;
 
@@ -436,42 +429,4 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
 	}
 	
-	/**
-	 * @see QueryWriter::getUniquesForType
-	 */
-	protected function getUniquesForType( $type )
-	{
-		$uniques = array();
-		$table = $this->safeTable( $type, TRUE );
-		$indexes = $this->adapter->get( "PRAGMA index_list({$table})" );
-		foreach( $indexes as $index ) {
-			if ( $index['unique'] == 1 ) {
-				$info = $this->adapter->get( "PRAGMA index_info({$index['name']})" );
-				if ( !isset( $uniques[$index['name']] ) ) $uniques[$index['name']] = array();
-				foreach( $info as $piece ) {
-					$uniques[$index['name']][] = $piece['name'];
-				}
-			}
-		}
-		return $uniques;
-	}
-	
-	/**
-	 * @see AQueryWriter::getIndexListForType
-	 */
-	protected function getIndexListForType( $type )
-	{
-		$table         = $this->esc( $type, TRUE );
-		$indexes       = $this->adapter->get( "PRAGMA index_list( '{$table}' )" );
-		$indexInfoList = array();
-
-		foreach ( $indexes as $i ) {
-			if ( !isset($indexInfoList[$i['name']]) ) {
-				$indexInfoList[$i['name']] = array();
-			}
-			$info = $this->adapter->get( "PRAGMA index_info('{$i['name']}') " );
-			foreach( $info as $piece ) $indexInfoList[$i['name']][] = $piece['name'];
-		}
-		return $indexInfoList;
-	}
 }

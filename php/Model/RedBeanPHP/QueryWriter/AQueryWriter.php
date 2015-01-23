@@ -1222,36 +1222,6 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		return NULL;
 	}
 	
-		/**
-	 * @see QueryWriter::getUniquesForType
-	 */
-	protected function getUniquesForType( $table )
-	{
-		return array();
-	}
-
-	/**
-	 * Determines whether the specified columns are part
-	 * of a unique index in the specified table.
-	 *
-	 * @param string $table   table
-	 * @param array  $columns a list of columns
-	 *
-	 * @return boolean
-	 */
-	public function areColumnsInUniqueIndex( $type, $properties )
-	{
-		sort( $properties );
-		$propertyFootprint = implode( ',', $properties );
-		$uniques = $this->getUniquesForType( $type );
-		foreach( $uniques as $unique ) {
-				sort( $unique );
-				$uniqueFootprint = implode( ',', $unique );
-				if ( $uniqueFootprint === $propertyFootprint ) return TRUE;
-		}
-		return FALSE;
-	}
-	
 	/**
 	 * Creates a pair of foreign keys so that the specified link table
 	 * gets 'cleaned up' if one of the components of the link gets removed.
@@ -1282,53 +1252,6 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$state1 = $this->addFK( $linkType, $firstType, $firstProperty, 'id', TRUE );
 		$state2 = $this->addFK( $linkType, $secondType, $secondProperty, 'id', TRUE );
 		return ( $state1 && $state2 );
-	}
-	
-	/**
-	 * Returns a list of indexes for the specified type.
-	 * The list contains all index names (as keys) and their
-	 * columns (values, arrays).
-	 *
-	 * @param string $type type name
-	 *
-	 * @return array
-	 */
-	protected function getIndexListForType( $type )
-	{
-		return array();
-	}
-	
-	/**
-	 * Determines whether a property of a type
-	 * is used in an index.
-	 *
-	 * Because databases have varying implementations of
-	 * unique constraints, this method only returns TRUE
-	 * if there is an index solely for this property, indexes
-	 * having multiple properties including the specified one
-	 * will be disgarded because they may not be actually used.
-	 *
-	 * For instance, in MySQL a unique constraint is implemented by
-	 * an index, but the second column in that index cannot be used
-	 * by a query using that column.
-	 *
-	 * This will probably generate some redundant indexes that need
-	 * to be reviewed. There is not much to do about that :/
-	 *
-	 * @param string $type     type name
-	 * @param string $property property name
-	 *
-	 * @return boolean
-	 */
-	protected function isIndexed( $type, $property )
-	{
-		$columnNoQ = $this->esc( $property, TRUE );
-		$indexList = $this->getIndexListForType( $type );
-
-		foreach( $indexList as $index ) {
-			if (count($index) === 1 && $index[0]===$columnNoQ) return TRUE;
-		}
-		return FALSE;
 	}
 	
 	/**
