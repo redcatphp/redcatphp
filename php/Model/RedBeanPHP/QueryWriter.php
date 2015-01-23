@@ -59,17 +59,17 @@ interface QueryWriter
 	 */
 	const C_GLUE_WHERE = 1;
 	const C_GLUE_AND   = 2;
-	
+
 	/**
-	* Writes an SQL Snippet for a JOIN, returns the
-	* SQL snippet string.
-	*
-	* @param string $type source type
-	* @param string $targetType target type (type to join)
-	* @param string $leftRight type of join (possible: 'LEFT', 'RIGHT' or 'INNER').
-	*
-	* @return string $joinSQLSnippet
-	*/
+	 * Writes an SQL Snippet for a JOIN, returns the
+	 * SQL snippet string.
+	 *
+	 * @param string $type       source type
+	 * @param string $targetType target type (type to join)
+	 * @param string $leftRight  type of join (possible: 'LEFT', 'RIGHT' or 'INNER').
+	 *
+	 * @return string $joinSQLSnippet
+	 */
 	public function writeJoin( $type, $targetType, $joinType );
 
 	/**
@@ -101,6 +101,16 @@ interface QueryWriter
 	 * @return string
 	 */
 	public function glueSQLCondition( $sql, $glue = NULL );
+
+	/**
+	 * Determines if there is a LIMIT 1 clause in the SQL.
+	 * If not, it will add a LIMIT 1. (used for findOne).
+	 *
+	 * @param string $sql query to scan and adjust
+	 *
+	 * @return string
+	 */
+	public function glueLimitOne( $sql );
 
 	/**
 	 * Returns the tables that are in the database.
@@ -247,24 +257,24 @@ interface QueryWriter
 	 * @return integer
 	 */
 	public function queryRecordCountRelated( $sourceType, $targetType, $linkID, $addSQL = '', $bindings = [] );
-	
+
 	/**
-	* Returns all rows of specified type that have been tagged with one of the
-	* strings in the specified tag list array.
-	*
-	* Note that the additional SQL snippet can only be used for pagination,
-	* the SQL snippet will be appended to the end of the query.
-	*
-	* @param string $type the bean type you want to query
-	* @param array $tagList an array of strings, each string containing a tag title
-	* @param boolean $all if TRUE only return records that have been associated with ALL the tags in the list
-	* @param string $addSql addition SQL snippet, for pagination
-	* @param array $bindings parameter bindings for additional SQL snippet
-	*
-	* @return array
-	*/
-	public function queryTagged( $type, $tagList, $all = FALSE, $addSql = '', $bindings = array() );
-	
+	 * Returns all rows of specified type that have been tagged with one of the
+	 * strings in the specified tag list array.
+	 *
+	 * Note that the additional SQL snippet can only be used for pagination,
+	 * the SQL snippet will be appended to the end of the query.
+	 *
+	 * @param string  $type     the bean type you want to query
+	 * @param array   $tagList  an array of strings, each string containing a tag title
+	 * @param boolean $all      if TRUE only return records that have been associated with ALL the tags in the list
+	 * @param string  $addSql   addition SQL snippet, for pagination
+	 * @param array   $bindings parameter bindings for additional SQL snippet
+	 *
+	 * @return array
+	 */
+	public function queryTagged( $type, $tagList, $all = FALSE, $addSql = '', $bindings = [] );
+
 	/**
 	 * This method should update (or insert a record), it takes
 	 * a table name, a list of update values ( $field => $value ) and an
@@ -360,38 +370,28 @@ interface QueryWriter
 	 * This methods accepts a type and infers the corresponding table name.
 	 *
 	 *
-	 * @param  string $type        type that will have a foreign key field
-	 * @param  string $targetType  points to this type
-	 * @param  string $field       field that contains the foreign key value
-	 * @param  string $targetField field where the fk points to
-	 * @param  string $isDep       whether target is dependent and should cascade on update/delete
+	 * @param  string $type           type that will have a foreign key field
+	 * @param  string $targetType     points to this type
+	 * @param  string $property       field that contains the foreign key value
+	 * @param  string $targetProperty field where the fk points to
+	 * @param  string $isDep          whether target is dependent and should cascade on update/delete
 	 *
 	 * @return void
 	 */
-	public function addFK( $type, $targetType, $field, $targetField, $isDep = false );
+	public function addFK( $type, $targetType, $property, $targetProperty, $isDep = false );
 
 	/**
 	 * This method will add an index to a type and field with name
 	 * $name.
 	 * This methods accepts a type and infers the corresponding table name.
 	 *
-	 * @param string $type   type to add index to
-	 * @param string $name   name of the new index
-	 * @param string $column field to index
+	 * @param string $type     type to add index to
+	 * @param string $name     name of the new index
+	 * @param string $property field to index
 	 *
 	 * @return void
 	 */
-	public function addIndex( $type, $name, $column );
-	
-	/**
-	* Determines if there is a LIMIT 1 clause in the SQL.
-	* If not, it will add a LIMIT 1. (used for findOne).
-	*
-	* @param string $sql query to scan and adjust
-	*
-	* @return string
-	*/
-	public function glueLimitOne( $sql );
+	public function addIndex( $type, $name, $property );
 
 	/**
 	 * Checks and filters a database structure element like a table of column
@@ -405,8 +405,6 @@ interface QueryWriter
 	 *
 	 * @return string
 	 */
-	public function safeTable( $databaseStructure, $dontQuote = FALSE );
-	public function safeColumn( $databaseStructure, $dontQuote = FALSE );
 	public function esc( $databaseStructure, $dontQuote = FALSE );
 
 	/**
@@ -452,61 +450,60 @@ interface QueryWriter
 	public function getAssocTable( $types );
 
 	/**
-	* Given a bean type and a property, this method
-	* tries to infer the fetch type using the foreign key
-	* definitions in the database.
-	* For instance: project, student -> person.
-	* If no fetchType can be inferred, this method will return NULL.
-	*
-	* @param $type the source type to fetch a target type for
-	* @param $property the property to fetch the type of
-	*
-	* @return string|NULL
-	*/
+	 * Given a bean type and a property, this method
+	 * tries to infer the fetch type using the foreign key
+	 * definitions in the database. 
+	 * For instance: project, student -> person.
+	 * If no fetchType can be inferred, this method will return NULL.
+	 *
+	 * @param $type     the source type to fetch a target type for
+	 * @param $property the property to fetch the type of
+	 *
+	 * @return string|NULL
+	 */
 	public function inferFetchType( $type, $property );
-	
-	/**
-	* Given a table and a column name this method
-	* returns the foreign key map section associated with this pair.
-	*
-	* @param string $table name of the table
-	* @param string $column name of the column
-	*
-	* @return array|NULL
-	*/
-	public function getForeignKeyForTableColumn( $table, $column );
 
 	/**
-	* Returns the foreign key map (FKM) for a table.
-	* A foreign key map describes the foreign keys in a table.
-	* A FKM always has the same structure:
-	*
-	* array(
-	* 'name' => <name of the foreign key>
-	* 'from' => <name of the column on the source table>
-	* 'table' => <name of the target table>
-	* 'to' => <name of the target column> (most of the time 'id')
-	* 'on_update' => <update rule: 'SET NULL','CASCADE' or 'RESTRICT'>
-	* 'on_delete' => <delete rule: 'SET NULL','CASCADE' or 'RESTRICT'>
-	* )
-	*
-	* @note the keys in the result array are FKDLs, i.e. descriptive unique
-	* keys per source table. Also see: AQueryWriter::makeFKLabel for details.
-	*
-	* @param string $type the bean type you wish to obtain a key map of
-	*
-	* @return array
-	*/
-	public function getKeyMapForTable( $table );
-
+	 * Given a table and a column name this method
+	 * returns the foreign key map section associated with this pair.
+	 *
+	 * @param string $table    name of the table
+	 * @param string $property name of the property
+	 *
+	 * @return array|NULL
+	 */
+	public function getForeignKeyForTableColumn( $type, $property );
 
 	/**
-	* Returns an array, listing all column groups (as sub-arrays)
-	* that have a unique constraint.
-	*
-	* @param string $table table name
-	*
-	* @return array
-	*/
-	public function getUniquesForTable( $table );
+	 * Returns the foreign key map (FKM) for a table.
+	 * A foreign key map describes the foreign keys in a table.
+	 * A FKM always has the same structure:
+	 *
+	 * array(
+	 * 	'name'      => <name of the foreign key>
+	 *    'from'      => <name of the column on the source table>
+	 *    'table'     => <name of the target table>
+	 *    'to'        => <name of the target column> (most of the time 'id')
+	 *    'on_update' => <update rule: 'SET NULL','CASCADE' or 'RESTRICT'>
+	 *    'on_delete' => <delete rule: 'SET NULL','CASCADE' or 'RESTRICT'>
+	 * )
+	 *
+	 * @note the keys in the result array are FKDLs, i.e. descriptive unique
+	 * keys per source table. Also see: AQueryWriter::makeFKLabel for details.
+	 *
+	 * @param string $type the bean type you wish to obtain a key map of
+	 *
+	 * @return array
+	 */
+	 public function getKeyMapForTable( $type );
+
+	 /**
+	  * Returns an array, listing all column groups (as sub-arrays)
+	  * that have a unique constraint.
+	  *
+	  * @param string $type type name
+	  *
+	  * @return array
+	  */
+	 public function getUniquesForTable( $type );
 }

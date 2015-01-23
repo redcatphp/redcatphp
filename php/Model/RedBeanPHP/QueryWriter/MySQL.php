@@ -249,12 +249,13 @@ class MySQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $table, $columns )
+	public function addUniqueIndex( $type, $properties )
 	{
-		$tableNoQ = $this->safeTable( $table, TRUE );
-		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $columns ) ) return FALSE;
-		foreach( $columns as $key => $column ) $columns[$key] = $this->safeColumn( $column );
-		$table = $this->safeTable( $table );
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
+		$columns = array();
+		foreach( $properties as $key => $column ) $columns[$key] = $this->safeColumn( $column );
+		$table = $this->safeTable( $type );
 		sort( $columns ); // Else we get multiple indexes due to order-effects
 		$name = 'UQ_' . sha1( implode( ',', $columns ) );
 		try {
@@ -263,7 +264,6 @@ class MySQL extends AQueryWriter implements QueryWriter
 		} catch ( \Exception $e ) {
 			//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
 		}
-
 		$this->adapter->exec( $sql );
 	}
 

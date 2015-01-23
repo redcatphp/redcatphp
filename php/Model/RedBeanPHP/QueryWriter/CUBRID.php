@@ -257,12 +257,14 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $table, $columns )
+	public function addUniqueIndex( $type, $properties )
 	{
-		$tableNoQ = $this->safeTable( $table, TRUE );
-		if ( $this->areColumnsInUniqueIndex( $table, $columns ) ) return FALSE;
-		foreach( $columns as $key => $column ) $columns[$key] = $this->safeColumn( $column );
-		$table = $this->safeTable( $table );
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		$columns = array();
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
+		$columns = array();
+		foreach( $properties as $key => $column ) $columns[$key] = $this->safeColumn( $column );
+		$table = $this->safeTable( $type );
 		sort( $columns ); // else we get multiple indexes due to order-effects
 		$name = 'UQ_' . sha1( implode( ',', $columns ) );
 		$sql = "ALTER TABLE $table ADD CONSTRAINT UNIQUE $name (" . implode( ',', $columns ) . ")";

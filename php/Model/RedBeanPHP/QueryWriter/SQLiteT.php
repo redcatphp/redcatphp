@@ -351,11 +351,11 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $type, $columns )
+	public function addUniqueIndex( $type, $properties )
 	{
 		$tableNoQ = $this->safeTable( $type, TRUE );
-		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $columns ) ) return FALSE;
-		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $columns );
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
+		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $properties );
 		$t     = $this->getTable( $type );
 		$t['indexes'][$name] = array( 'name' => $name );
 		$this->putTable( $t );

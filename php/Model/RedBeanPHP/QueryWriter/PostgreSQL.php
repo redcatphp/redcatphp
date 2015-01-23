@@ -254,12 +254,13 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addUniqueIndex
 	 */
-	public function addUniqueIndex( $table, $columns )
+	public function addUniqueIndex( $type, $properties )
 	{
-		$tableNoQ = $this->safeTable( $table, TRUE );
-		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $columns ) ) return FALSE;
-		foreach( $columns as $key => $column ) $columns[$key] = $this->safeColumn( $column );
-		$table = $this->safeTable( $table );
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $properties ) ) return FALSE;
+		$columns = array();
+		foreach( $properties as $key => $column ) $columns[$key] = $this->safeColumn( $column );
+		$table = $this->safeTable( $type );
 		sort( $columns ); //else we get multiple indexes due to order-effects
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
 		$sql = "ALTER TABLE {$table}
@@ -284,12 +285,12 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	/**
 	 * @see QueryWriter::addIndex
 	 */
-	public function addIndex( $type, $name, $column )
+	public function addIndex( $type, $name, $property )
 	{
 		$table  = $this->safeTable( $type );
 
 		$name   = preg_replace( '/\W/', '', $name );
-		$column = $this->safeColumn( $column );
+		$column = $this->safeColumn( $property );
 
 		if ( $this->adapter->getCell( "SELECT COUNT(*) FROM pg_class WHERE relname = '$name'" ) ) {
 			return;
