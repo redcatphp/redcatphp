@@ -256,37 +256,14 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
-		$table = $this->safeTable( $table, TRUE );
-
+		$tableNoQ = $this->safeTable( $table, TRUE );
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $columns ) ) return FALSE;
+		foreach( $columns as $key => $column ) $columns[$key] = $this->safeColumn( $column );
+		$table = $this->safeTable( $table );
 		sort( $columns ); //else we get multiple indexes due to order-effects
-
-		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->safeColumn( $v );
-		}
-
-		$r = $this->adapter->get( "SELECT i.relname AS index_name
-			FROM pg_class t,pg_class i,pg_index ix,pg_attribute a
-			WHERE t.oid = ix.indrelid
-				AND i.oid = ix.indexrelid
-				AND a.attrelid = t.oid
-				AND a.attnum = ANY(ix.indkey)
-				AND t.relkind = 'r'
-				AND t.relname = '$table'
-			ORDER BY t.relname, i.relname;" );
-
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
-
-		if ( $r ) {
-			foreach ( $r as $i ) {
-				if ( strtolower( $i['index_name'] ) == strtolower( $name ) ) {
-					return;
-				}
-			}
-		}
-
-		$sql = "ALTER TABLE \"$table\"
+		$sql = "ALTER TABLE {$table}
                 ADD CONSTRAINT $name UNIQUE (" . implode( ',', $columns ) . ")";
-
 		$this->adapter->exec( $sql );
 	}
 
@@ -620,7 +597,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	{
 		$table = $this->safeTable( $type, TRUE );
 		$keys = $this->adapter->get( '
-			SELECT 
+			SELECT
 			information_schema.key_column_usage.constraint_name AS "name",
 			information_schema.key_column_usage.column_name AS "from",
 			information_schema.constraint_table_usage.table_name AS "table",
@@ -632,37 +609,69 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 				ON (
 					information_schema.key_column_usage.constraint_name = information_schema.constraint_table_usage.constraint_name
 					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_table_usage.constraint_schema
-					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_table_usage.constraint_catalog 
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_table_usage.constraint_catalog
 				)
 			INNER JOIN information_schema.constraint_column_usage
 				ON (
 					information_schema.key_column_usage.constraint_name = information_schema.constraint_column_usage.constraint_name
 					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_column_usage.constraint_schema
-					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_column_usage.constraint_catalog 
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_column_usage.constraint_catalog
 				)
 			INNER JOIN information_schema.referential_constraints
 				ON (
 					information_schema.key_column_usage.constraint_name = information_schema.referential_constraints.constraint_name
 					AND information_schema.key_column_usage.constraint_schema = information_schema.referential_constraints.constraint_schema
-					AND information_schema.key_column_usage.constraint_catalog = information_schema.referential_constraints.constraint_catalog 
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.referential_constraints.constraint_catalog
 				)
 			WHERE
 				information_schema.key_column_usage.table_catalog = current_database()
 				AND information_schema.key_column_usage.table_schema = ANY( current_schemas( FALSE ) )
 				AND information_schema.key_column_usage.table_name = ?
-		', [$table] );
-		$keyInfoList = [];
+		', array( $type ) );
+		$keyInfoList = array();
 		foreach ( $keys as $k ) {
 			$label = $this->makeFKLabel( $k['from'], $k['table'], $k['to'] );
-			$keyInfoList[$label] = [
+			$keyInfoList[$label] = array(
 				'name'          => $k['name'],
 				'from'          => $k['from'],
 				'table'         => $k['table'],
 				'to'            => $k['to'],
 				'on_update'     => $k['on_update'],
 				'on_delete'     => $k['on_delete']
-			];
+			);
 		}
 		return $keyInfoList;
+	}
+	
+	/**
+	 * @see QueryWriter::getUniquesForTable
+	 */
+	public function getUniquesForTable( $type )
+	{
+		$table = $this->safeTable( $type, TRUE );
+		$columns = $this->adapter->get('
+			SELECT
+				information_schema.key_column_usage.constraint_name,
+				information_schema.key_column_usage.column_name
+			FROM
+				information_schema.table_constraints
+			INNER JOIN information_schema.key_column_usage
+				ON (
+					information_schema.table_constraints.constraint_name = information_schema.key_column_usage.constraint_name
+					AND information_schema.table_constraints.constraint_schema = information_schema.key_column_usage.constraint_schema
+					AND information_schema.table_constraints.constraint_catalog = information_schema.key_column_usage.constraint_catalog
+				)
+			WHERE
+				information_schema.table_constraints.table_catalog = current_database()
+				AND information_schema.key_column_usage.table_schema = ANY( current_schemas( FALSE ) )
+				AND information_schema.table_constraints.table_name = ?
+				AND information_schema.table_constraints.constraint_type = \'UNIQUE\'
+		', array( $table ) );
+		$uniques = array();
+		foreach( $columns as $column ) {
+			if ( !isset( $uniques[ $column['constraint_name'] ] ) ) $uniques[ $column['constraint_name'] ] = array();
+			$uniques[ $column['constraint_name'] ][] = $column['column_name'];
+		}
+		return $uniques;
 	}
 }

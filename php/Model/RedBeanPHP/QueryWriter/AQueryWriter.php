@@ -1217,4 +1217,34 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		}
 		return NULL;
 	}
+	
+		/**
+	 * @see QueryWriter::getUniquesForTable
+	 */
+	public function getUniquesForTable( $table )
+	{
+		return array();
+	}
+
+	/**
+	 * Determines whether the specified columns are part
+	 * of a unique index in the specified table.
+	 *
+	 * @param string $table   table
+	 * @param array  $columns a list of columns
+	 *
+	 * @return boolean
+	 */
+	public function areColumnsInUniqueIndex( $table, $columns )
+	{
+		sort( $columns );
+		$columnFootprint = implode( ',', $columns );
+		$uniques = $this->getUniquesForTable( $table );
+		foreach( $uniques as $unique ) {
+				sort( $unique );
+				$uniqueFootprint = implode( ',', $unique );
+				if ( $uniqueFootprint === $columnFootprint ) return TRUE;
+		}
+		return FALSE;
+	}
 }

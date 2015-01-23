@@ -259,29 +259,36 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $table, $columns )
 	{
+		$tableNoQ = $this->safeTable( $table, TRUE );
+		if ( $this->areColumnsInUniqueIndex( $table, $columns ) ) return FALSE;
+		foreach( $columns as $key => $column ) $columns[$key] = $this->safeColumn( $column );
 		$table = $this->safeTable( $table );
-
 		sort( $columns ); // else we get multiple indexes due to order-effects
-
-		foreach ( $columns as $k => $v ) {
-			$columns[$k] = $this->safeColumn( $v );
-		}
-
-		$r = $this->adapter->get( "SHOW INDEX FROM $table" );
-
 		$name = 'UQ_' . sha1( implode( ',', $columns ) );
-
-		if ( $r ) {
-			foreach ( $r as $i ) {
-				if ( strtoupper( $i['Key_name'] ) == strtoupper( $name ) ) {
-					return;
-				}
-			}
-		}
-
 		$sql = "ALTER TABLE $table ADD CONSTRAINT UNIQUE $name (" . implode( ',', $columns ) . ")";
-
 		$this->adapter->exec( $sql );
+	}
+	
+	/**
+	 * @see QueryWriter::getUniquesForTable
+	 */
+	public function getUniquesForTable( $table )
+	{
+		$sqlCode = $this->adapter->get("SHOW CREATE TABLE `{$table}`");
+		if (!isset($sqlCode[0])) return array();
+		$matches = array();
+		preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+UNIQUE\s+KEY\s+\(([^\)]+)\)/', $sqlCode[0]['CREATE TABLE'], $matches);
+		$list = array();
+		if (!isset($matches[0])) return $list;
+		$max = count($matches[0]);
+		for($i = 0; $i < $max; $i++) {
+			$columns = explode(',', $matches[2][$i]);
+			foreach( $columns as $key => $column ) {
+				$columns[$key] = trim( $column, '[] ');
+			}
+			$list[ $matches[1][$i] ] = $columns;
+		}
+		return $list;
 	}
 
 	/**

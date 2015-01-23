@@ -353,14 +353,11 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 	 */
 	public function addUniqueIndex( $type, $columns )
 	{
+		$tableNoQ = $this->safeTable( $type, TRUE );
+		if ( $this->areColumnsInUniqueIndex( $tableNoQ, $columns ) ) return FALSE;
 		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $columns );
-
 		$t     = $this->getTable( $type );
-
-		if ( isset( $t['indexes'][$name] ) ) return;
-
-		$t['indexes'][$name] = [ 'name' => $name ];
-
+		$t['indexes'][$name] = array( 'name' => $name );
 		$this->putTable( $t );
 	}
 
@@ -453,5 +450,25 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		} catch (\Exception $e ) {
 		}
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
+	}
+	
+	/**
+	 * @see QueryWriter::getUniquesForTable
+	 */
+	public function getUniquesForTable( $table )
+	{
+		$uniques = array();
+		$table = $this->safeTable( $table, TRUE );
+		$indexes = $this->adapter->get( "PRAGMA index_list({$table})" );
+		foreach( $indexes as $index ) {
+			if ( $index['unique'] == 1 ) {
+				$info = $this->adapter->get( "PRAGMA index_info({$index['name']})" );
+				if ( !isset( $uniques[$index['name']] ) ) $uniques[$index['name']] = array();
+				foreach( $info as $piece ) {
+					$uniques[$index['name']][] = $piece['name'];
+				}
+			}
+		}
+		return $uniques;
 	}
 }
