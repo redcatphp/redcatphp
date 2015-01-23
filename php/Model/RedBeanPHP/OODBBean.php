@@ -1676,4 +1676,20 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		return $old;
 	}
 	
+	/**
+	 * Gets and unsets a meta property.
+	 *
+	 * @param string $path    path
+	 * @param mixed  $default default value
+	 *
+	 * @return mixed
+	 */
+	public function moveMeta( $path, $value = NULL )
+	{
+		if ( isset( $this->__info[$path] ) ) {
+			$value = $this->__info[ $path ];
+			unset( $this->__info[ $path ] );
+		}
+		return $value;
+	}
 }
