@@ -2,7 +2,7 @@
 abstract class FS {
 	static function recurse($dir,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
 		$dir = rtrim($dir,'/').'/';
-		if(is_dir($dh)){
+		if(is_dir($dir)){
 			$dh = opendir($dir);
 			if($dh){
 				while($file=readdir($dh)){
