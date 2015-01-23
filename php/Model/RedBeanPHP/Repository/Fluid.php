@@ -80,7 +80,7 @@ class Fluid extends Repository
 	}
 
 	/**
-	 * Molds the table to fit the bean data.
+	 * Modifies the table to fit the bean data.
 	 * Given a property and a value and the bean, this method will
 	 * adjust the table structure to fit the requirements of the property and value.
 	 * This may include adding a new column or widening an existing column to hold a larger
@@ -88,12 +88,12 @@ class Fluid extends Repository
 	 * structure in the database. Schema updates are recorded in meta properties of the bean.
 	 *
 	 * @param OODBBean $bean     bean to get cast data from and store meta in
-	 * @param string           $property property to store
-	 * @param mixed            $value    value to store
+	 * @param string   $property property to store
+	 * @param mixed    $value    value to store
 	 *
 	 * @return void
 	 */
-	private function moldTable( OODBBean $bean, $property, $value )
+	private function modifySchema( OODBBean $bean, $property, $value )
 	{
 		$doFKStuff = FALSE;
 		$table   = $bean->getMeta( 'type' );
@@ -222,7 +222,7 @@ class Fluid extends Repository
 		$updateValues = [];
 		foreach ( $bean as $property => $value ) {
 			if ( $property !== 'id' ) {
-				$this->moldTable( $bean, $property, $value );
+				$this->modifySchema( $bean, $property, $value );
 			}
 			if ( $property !== 'id' ) {
 				$updateValues[] = [ 'property' => $property, 'value' => $value ];
