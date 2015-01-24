@@ -71,7 +71,7 @@ $js(true,[
 			select:function(e,ui){
 				inputLat.val(ui.item.lat);
 				inputLng.val(ui.item.lon);
-				inputRadius.val(ui.item.radius);
+				inputRadius.val((Math.ceil(Number(ui.item.radius)*1000)/1000));
 			},
 			appendTo: inputGeoname.parent(),
 			position: {
@@ -89,7 +89,7 @@ $js(true,[
 				inputGeoname.val(inputGG.val());
 				inputLat.val(inputLatH.val());
 				inputLng.val(inputLngH.val());
-				inputRadius.val(inputRadiusH.val());
+				inputRadius.val((Math.ceil(Number(inputRadiusH.val())*1000)/1000));
 			});
 			
 			var geocoder = new google.maps.Geocoder();
