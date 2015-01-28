@@ -1,9 +1,49 @@
-@import 'remodal';
 geo-completer{
 	>fieldset{
-		@?include grid(*,100);
-		@?include grid(100,100,100,960px);
-		@?include grid(0-40-2,0-26-0,2-28-2,1639px);
+		@?include grid(*,100,100);
+		>div{
+			height:2em;
+			border-radius: 5px;
+			background: #fff;
+			>div{
+				box-sizing: border-box;
+				height:100%;
+				width:100%;
+				float:left;
+				position: relative;
+			}
+			input[type="text"]{
+				box-sizing: border-box;
+				height:100%;
+				border-radius: 5px;
+				background: #fff;
+				padding-left:0.5em;
+				padding-right: 1.4em;
+			}
+			>button{
+				float:left;
+				cursor:pointer;
+				height:100%;
+				position: absolute;
+				right:0;
+				font-size: 1.5em;
+				background: transparent;
+				color: #000;
+				opacity: 0.8;
+				@?include icon(globe);
+				border:0;
+				box-shadow: none;
+				&:hover,
+				&:focus,
+				&:active
+				{
+					text-decoration:none;
+					color: #000;
+					opacity: 1;
+				}
+			}
+		}
+		
 		label{
 			cursor: pointer;
 			color: $color-main;
@@ -14,20 +54,14 @@ geo-completer{
 			font-size: 0.9em;
 			margin-bottom:0.3em;
 		}
-		a{
-			&.show_button{
-				color:black;
-				border: 1px solid #ccc;
-				border-radius: 4px;
-				text-align:center;
-			}
+		ul li a{
 			margin-top: 0.25em;
 			vertical-align: top;
 		}
 		>fieldset{
-			@?include grid(*,100);
-			@?include grid(50,50,50,50,50,50,960px);
-			@?include grid(50,50,50,50,50,50,1639px);
+			margin-top: 0.3em;
+			@?include grid(*,50);
+			@?include grid(14,1-18-3, 14,1-18-3, 14,1-13-0, 480px);
 			label,
 			input{
 				padding-top:0.5em;

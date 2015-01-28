@@ -4,6 +4,9 @@ $css('jquery-ui/core');
 $css('jquery-ui/menu');
 $css('jquery-ui/autocomplete');
 
+$css('jquery-ui/button');
+$css('jquery-ui/dialog');
+
 $js(true,[
 	'jquery',
 
@@ -12,6 +15,9 @@ $js(true,[
 	'jquery-ui/menu',
 	'jquery-ui/position',
 	'jquery-ui/autocomplete',
+
+	'jquery-ui/button',
+	'jquery-ui/dialog',
 	
 	'string',
 	'geocoding',
@@ -21,20 +27,19 @@ $js(true,[
 	var geocallbacks = [];
 	$('geo-completer').each(function(){
 		var THIS = $(this);
-		var geolocal = $('.remodal',THIS);
 		var inputLat = $('input.in-latitude',THIS);
 		var inputLng = $('input.in-longitude',THIS);
 		var inputRadius = $('input.in-radius',THIS);
 		var inputGG = $('input.gg-maps',THIS);
 			inputGG.after('<div class="map-wrapper"><div class="map-canvas"></div></div>');
-		var confirmGG = $('.remodal-confirm',THIS);
 		var theMAP = $('.map-canvas',THIS);
 		var inputGeoname = $('input.geoname',THIS);
 
-		var modal = $('[data-remodal-id=map]',THIS);
+		var modal = $('.map-dialog',THIS);
 		var inputRadiusH = $('<input type="hidden">');
 		var inputLatH = $('<input type="hidden">');
 		var inputLngH = $('<input type="hidden">');
+		var dialog;
 		inputLatH.appendTo(modal);
 		inputLngH.appendTo(modal);
 		inputRadiusH.appendTo(modal);
@@ -83,15 +88,7 @@ $js(true,[
 		inputGeoname.on('focus',function(){
 			inputGeoname.autocomplete('search',inputGeoname.val());
 		});
-		geocallbacks.push(function(){
-
-			$(document).on("confirm","[data-remodal-id=map]",function(){
-				inputGeoname.val(inputGG.val());
-				inputLat.val(inputLatH.val());
-				inputLng.val(inputLngH.val());
-				inputRadius.val((Math.ceil(Number(inputRadiusH.val())*1000)/1000));
-			});
-			
+		geocallbacks.push(function(){			
 			var geocoder = new google.maps.Geocoder();
 			var autocompleteService = new google.maps.places.AutocompleteService();
 			
@@ -263,19 +260,44 @@ $js(true,[
 				theMAP.updatePlace(place,true);
 				
 			});
-			updatingGeocode(inputGeoname.val());
-			$(document).on("open","[data-remodal-id=map]",function(){
-				updatingGeocode(inputGeoname.val());
+			updatingGeocode(inputGeoname.val());			
+			dialog = modal.dialog({
+				//autoOpen: false,
+				//height: 300,
+				width: '90%',
+				modal: true,
+				buttons: {
+					"OK": function(){
+						inputGeoname.val(inputGG.val());
+						inputLat.val(inputLatH.val());
+						inputLng.val(inputLngH.val());
+						inputRadius.val((Math.ceil(Number(inputRadiusH.val())*1000)/1000));
+						dialog.dialog("close");
+					}
+				},
+				open:function(){
+					updatingGeocode(inputGeoname.val());
+				},
+				close: function() {
+					
+				}
 			});
-			
+			$('.map-dialog-open',THIS).click(function(e){
+				e.preventDefault();
+				dialog.dialog('open');
+				return false;
+			});
+		});
+		modal.hide();
+		$('.map-dialog-open',THIS).click(function(e){
+			e.preventDefault();
+			$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocompleter');
+			return false;
 		});
 	});
 	window.geocompleter = function(){
 		for(var i in geocallbacks)
 			geocallbacks[i]();
 	};
-	$(document).one("open","[data-remodal-id=map]",function(){
-		$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocompleter');
-	});
-	$js('remodal');
+	
 });
