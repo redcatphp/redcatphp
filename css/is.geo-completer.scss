@@ -18,28 +18,38 @@ geo-completer{
 				border-radius: 5px;
 				background: #fff;
 				padding-left:0.5em;
-				padding-right: 1.4em;
+				padding-right: 55px;
 			}
 			>button{
 				float:left;
 				cursor:pointer;
 				height:100%;
 				position: absolute;
-				right:0;
 				font-size: 1.5em;
 				background: transparent;
 				color: #000;
 				opacity: 0.8;
-				@?include icon(globe);
 				border:0;
 				box-shadow: none;
 				&:hover,
 				&:focus,
-				&:active
-				{
+				&:active{
 					text-decoration:none;
 					color: #000;
 					opacity: 1;
+					border:0;
+					outline:0;
+				}
+				&.map-dialog-open{
+					right:24px;
+					@?include icon(globe);
+				}
+				&.geo-details-drop{
+					right:0;
+					@?include icon(angle-down);
+					&.open{
+						@?include icon(angle-up);
+					}
 				}
 			}
 		}
@@ -85,6 +95,9 @@ geo-completer{
 		overflow-x: hidden;
 		overflow-y: auto;
 		padding-right: 20px;
+	}
+	.geo-details{
+		display:none;
 	}
 }
 

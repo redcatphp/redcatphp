@@ -287,6 +287,20 @@ $js(true,[
 			});
 		});
 		modal.hide();
+		$('.geo-details-drop',THIS).click(function(e){
+			e.preventDefault();
+			var gd = $('.geo-details',THIS),
+				g = $(this);
+			if(g.hasClass('open')){
+				gd.hide();
+				g.removeClass('open');
+			}
+			else{
+				gd.show();
+				g.addClass('open');
+			}
+			return false;
+		});
 		$('.map-dialog-open',THIS).click(function(e){
 			e.preventDefault();
 			$js('http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&callback=geocompleter');
