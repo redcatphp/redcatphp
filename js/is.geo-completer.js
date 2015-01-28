@@ -262,8 +262,6 @@ $js(true,[
 			});
 			updatingGeocode(inputGeoname.val());			
 			dialog = modal.dialog({
-				//autoOpen: false,
-				//height: 300,
 				width: '90%',
 				modal: true,
 				buttons: {

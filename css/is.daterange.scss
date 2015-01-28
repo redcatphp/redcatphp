@@ -1,7 +1,7 @@
 [is=daterange]{
 	fieldset{
 		@?include grid(	*, 	100 );
-		@?include grid(	10,		0-25-5,		0-25-5,		30, 	960px	);
+		@?include grid(	10,		0-25-5,		0-25-5,		30, 	680px	);
 	}
 	label{
 		cursor: pointer;
@@ -13,6 +13,5 @@
 	input[type=checkbox]{
 		margin-left: 0.5em;
 		margin-right: 0.2em;
-		margin-top: 0.25em;
 	}
 }
