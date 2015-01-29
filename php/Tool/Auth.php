@@ -79,8 +79,8 @@ class Auth{
 	
 	static $One;
 	private $db;
-	protected $tableRequests = 'requests';
-	protected $tableUsers = 'users';
+	protected $tableRequests = 'request';
+	protected $tableUsers = 'user';
 	protected $site_name = 'The Lab';
 	protected $site_url;
 	protected $site_email = 'no-reply@lab.cuonic.com';
@@ -102,9 +102,8 @@ class Auth{
 	
 	static function sendMail($email, $subject, $message, $site_email){
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 		$headers .= "From: {$site_email}" . "\r\n";
-		var_dump($email, $subject, $message, $headers);
 		return mail($email, $subject, $message, $headers);
 	}
 	
@@ -342,10 +341,7 @@ class Auth{
 	}
 
 	public function getUser($uid){
-		$row = $this->db->load($this->tableUsers,(int)$uid);
-		if(!$row)
-			return false;
-		return $row->getProperties();
+		return $this->db->load($this->tableUsers,(int)$uid);
 	}
 
 	public function deleteUser($uid, $password) {
@@ -395,8 +391,12 @@ class Auth{
 		}
 		$key = $this->getRandomKey(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$request = $this->db->create($this->tableRequests,[$this->tableUsers.'_id'=>$uid, 'rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
-		if(!$request->store()) {
+		$request = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
+		$user['xown'.ucfirst($this->tableRequests)][] = $request;
+		//$user->{'xown'.ucfirst($this->tableRequests)}[] = $request;
+		//$request[$this->tableUsers] = $user;
+		//if(!$request->store()){
+		if(!$user->store()){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		if($type == "activation") {
