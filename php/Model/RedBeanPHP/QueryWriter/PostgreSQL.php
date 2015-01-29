@@ -257,7 +257,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	{
 		$table  = $this->safeTable( $type );
 		$name   = preg_replace( '/\W/', '', $name );
-		$column = $this->esc( $property );
+		$column = $this->safeColumn( $property );
 
 		try {
 			$this->adapter->exec( "CREATE INDEX {$name} ON $table ({$column}) " );

@@ -805,6 +805,13 @@ class Database{
 		Table::_checkUniq($b);
 	}
 	
+	function safeTable($t){
+		return $this->writer->safeTable($t);
+	}
+	function safeColumn($t){
+		return $this->writer->safeColumn($t);
+	}
+	
 	function preload($beans, $preload, $closure = NULL){
 		$preloader = new Preloader( $this->getToolBox() );
 		return $preloader->load($beans, $preload, $closure);

@@ -188,7 +188,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			$myFieldLink = $parentField . '_id';
 		}
 		$writer = $toolbox->getWriter();
-		$myFieldLink = $writer->esc ($myFieldLink);
+		$myFieldLink = $writer->safeColumn($myFieldLink);
 
 		$beans = [];
 
