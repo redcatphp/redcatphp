@@ -1,4 +1,4 @@
-<?php namespace Surikat\Tool\Auth;
+<?php namespace Surikat\Tool;
 /*
 	API
 	
@@ -98,6 +98,14 @@ class Auth{
 		if(!isset(self::$One))
 			self::$One = new static();
 		return self::$One;
+	}
+	
+	static function sendMail($email, $subject, $message, $site_email){
+		$headers  = 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+		$headers .= "From: {$site_email}" . "\r\n";
+		var_dump($email, $subject, $message, $headers);
+		return mail($email, $subject, $message, $headers);
 	}
 	
 	public function __construct(){
@@ -257,7 +265,7 @@ class Auth{
 		catch(Exception $e){
 			throw new Exception(self::ERROR_EMAIL_INVALID);
 		}
-		$id = $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
+		$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
 		if(!$id){
 			$this->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
@@ -280,7 +288,7 @@ class Auth{
 		return password_hash($string, PASSWORD_BCRYPT, ['salt' => $salt, 'cost' => $this->bcrypt_cost]);
 	}
 	public function getUID($name){
-		return $this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE name = ?",[$name]);
+		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$name]);
 	}
 	private function addSession($uid){
 		$ip = $this->getIp();
@@ -301,7 +309,7 @@ class Auth{
 		return $data;
 	}
 	private function isEmailTaken($email){
-		return !!$this->db->getCell("SELECT id FROM {$this->tableUsers} WHERE email = ?",[$email]);
+		return !!$this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
 	}
 	private function isUsernameTaken($name){
 		return !!$this->getUID($name);
@@ -372,7 +380,7 @@ class Auth{
 		if($type != "activation" && $type != "reset") {
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		$row = $this->db->findOne($this->tableRequests," WHERE {$this->tableUsers}_id = ? AND type = ?",[$uid, $type]);
+		$row = $this->db->findOne($this->tableRequests,' WHERE '.$this->db->safeColumn($this->tableUsers.'_id').' = ? AND type = ?',[$uid, $type]);
 		if(!$row){
 			$expiredate = strtotime($row['expire']);
 			$currentdate = strtotime(date("Y-m-d H:i:s"));
@@ -398,12 +406,9 @@ class Auth{
 			$message = "Password reset request : <strong><a href=\"{$this->site_url}/reset/{$key}\">Reset my password</a></strong>";		
 			$subject = "{$this->site_name} - Password reset request";
 		}
-		//$headers  = 'MIME-Version: 1.0' . "\r\n";
-		//$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		//$headers .= "From: {$this->site_email}" . "\r\n";
-		//if(!mail($email, $subject, $message, $headers)) {
-			//return self::ERROR_SYSTEM_ERROR;
-		//}
+		if(!self::sendMail($email, $subject, $message, $this->site_email)){
+			return self::ERROR_SYSTEM_ERROR;
+		}
 	}
 	private function getRequest($key, $type){
 		$row = $this->db->findOne($this->tableRequests,' WHERE rkey = ? AND type = ?',[$key, $type]);
@@ -431,7 +436,7 @@ class Auth{
 		];
 	}
 	private function deleteRequest($id){
-		return $this->db->exec("DELETE FROM {$this->tableRequests} WHERE id = ?",[$id]);
+		return $this->db->exec('DELETE FROM '.$this->db->safeTable($this->tableRequests).' WHERE id = ?',[$id]);
 	}
 	public function validateUsername($name) {
 		if (strlen($name) < 3)
