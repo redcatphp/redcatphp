@@ -161,10 +161,7 @@ class Fluid extends Repository
 	{
 		$beanType = $bean->getMeta( 'type' );
 
-		foreach ( $ownAdditions as $addition ) {
-			if ( $addition instanceof SimpleModel ) {
-				$addition = $addition->unbox();
-			}
+		foreach ( $ownAdditions as $addition){
 			if ( $addition instanceof OODBBean ) {
 
 				$myFieldLink = $beanType . '_id';

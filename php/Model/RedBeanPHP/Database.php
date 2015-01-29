@@ -204,6 +204,20 @@ class Database{
 	}
 
 	function store( $bean ){
+		if($bean instanceof SimpleModel)
+			$bean = $bean->unbox();
+		foreach(array_keys($bean->getProperties()) as $k){
+			if(is_array($bean[$k])){
+				foreach(array_keys($bean[$k]) as $i){
+					if($bean[$k][$i] instanceof SimpleModel){
+						$bean[$k][$i] = $bean[$k][$i]->unbox();
+					}
+				}
+			}
+			elseif($bean[$k] instanceof SimpleModel){
+				$bean[$k] = $bean[$k]->unbox();
+			}
+		}
 		if($bean->storing())
 			return $this->redbean->store( $bean );
 	}
