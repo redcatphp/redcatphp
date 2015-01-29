@@ -18,7 +18,7 @@ geo-completer{
 				border-radius: 5px;
 				background: #fff;
 				padding-left:0.5em;
-				padding-right: 55px;
+				padding-right: 80px;
 			}
 			>button{
 				float:left;
@@ -39,6 +39,10 @@ geo-completer{
 					opacity: 1;
 					border:0;
 					outline:0;
+				}
+				&.reset{
+					right:48px;
+					@?include icon(close);
 				}
 				&.map-dialog-open{
 					right:24px;

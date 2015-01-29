@@ -45,6 +45,22 @@ $js(true,[
 		inputRadiusH.appendTo(modal);
 		
 		inputGeoname.wrap('<div>');
+		
+		var reset = function(){
+			inputLat.val('');
+			inputLng.val('');
+			inputRadius.val('');
+		};
+		inputGeoname.keypress(function(e){
+			if(e.which!=13){
+				reset();
+			}
+		});
+		$('.reset',THIS).click(function(){
+			inputGeoname.val('');
+			reset();
+		});
+		
 		inputGeoname.autocomplete({
 			selectFirst:true,
 			autoFill:true,
