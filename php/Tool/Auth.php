@@ -100,7 +100,15 @@ class Auth{
 		return self::$One;
 	}
 	
-	static function sendMail($email, $subject, $message, $site_email){
+	static function sendMail($email, $type, $key, $site_email, $site_url, $site_name){
+		if($type == "activation"){
+			$message = "Account activation required : <strong><a href=\"{$site_url}/Signin?action=activate&key={$key}\">Activate my account</a></strong>";
+			$subject = "{$site_name} - Account Activation";
+		}
+		else{
+			$message = "Password reset request : <strong><a href=\"{$site_url}/Signin?action=resetpass&key={$key}\">Reset my password</a></strong>";
+			$subject = "{$site_name} - Password reset request";
+		}
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 		$headers .= "From: {$site_email}" . "\r\n";
@@ -391,22 +399,11 @@ class Auth{
 		}
 		$key = $this->getRandomKey(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$request = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
-		$user['xown'.ucfirst($this->tableRequests)][] = $request;
-		//$user->{'xown'.ucfirst($this->tableRequests)}[] = $request;
-		//$request[$this->tableUsers] = $user;
-		//if(!$request->store()){
+		$user['xown'.ucfirst($this->tableRequests)][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$user->store()){
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if($type == "activation") {
-			$message = "Account activation required : <strong><a href=\"{$this->site_url}/activate/{$key}\">Activate my account</a></strong>";
-			$subject = "{$this->site_name} - Account Activation";
-		} else {
-			$message = "Password reset request : <strong><a href=\"{$this->site_url}/reset/{$key}\">Reset my password</a></strong>";		
-			$subject = "{$this->site_name} - Password reset request";
-		}
-		if(!self::sendMail($email, $subject, $message, $this->site_email)){
+		if(!self::sendMail($email, $type, $key, $this->site_email, $this->site_url, $this->site_name)){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 	}
