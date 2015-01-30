@@ -5,10 +5,15 @@ use Surikat\Core\Dev;
 class Toolbox{
 	static function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
-		if(!$head&&$TML->find('body',0)){
-			$head = $TML;
-			$head->append('<script type="text/javascript" src="/js/js.js"></script>');
-			$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
+		if(!$head){
+			if($TML->find('body',0)){
+				$head = $TML;
+				$head->append('<script type="text/javascript" src="/js/js.js"></script>');
+				$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
+			}
+			else{
+				return;
+			}
 		}
 		$s = [];
 		$TML->recursive(function($el)use($TML,$head,$href,&$s){
