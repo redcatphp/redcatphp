@@ -1,24 +1,4 @@
 <?php namespace Surikat\Tool;
-/*
-	API
-	
-	Right::ADMIN
-	Right::has()
-		Session::get('_AUTH_','rights')
-	Auth::lock($right)		COOKIE OR 403
-	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
-	
-	$auth->register($email, $name, $password, $repeatpassword)
-	$auth->activate($key)
-	$auth->resendActivation($email)
-	$auth->login($name, $password)
-	$auth->requestReset($email)
-	$auth->resetPass($key, $password, $repeatpassword)
-	$auth->changePassword($uid, $currpass, $newpass, $repeatnewpass)
-	$auth->changeEmail($uid, $email, $password)
-	$auth->deleteUser($uid, $password)
-	$auth->logout()
-*/
 use Surikat\Core\Config;
 use Surikat\Core\Session;
 use Surikat\Core\FS;
@@ -26,7 +6,6 @@ use Surikat\Model\R;
 use Surikat\I18n\Lang;
 use Core\Domain;
 use Exception;
-
 if (version_compare(phpversion(), '5.5.0', '<')) {
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
 }
@@ -79,7 +58,7 @@ class Auth{
 	const OK_RESET_REQUESTED = 44;
 	const OK_ACTIVATION_SENT = 45;
 	
-	static $One;
+	static $instances;
 	private $db;
 	protected $tableRequests = 'request';
 	protected $tableUsers = 'user';
@@ -90,17 +69,29 @@ class Auth{
 	protected $messages;
 	protected $attemptsPath;
 	protected $blockedWait = 1800;
+	
+	const RIGHT_MANAGE = 2;
+	const RIGHT_EDIT = 4;
+	const RIGHT_MODERATE = 8;
+	
+	const ROLE_ADMIN = 14;
+	const ROLE_EDITOR = 4;
+	const ROLE_MODERATOR = 8;
 		
-	static function lock(){
-		
+	static function allowed($right){
+		return self::instance()->isAllowed($right);
 	}
-	static function lockHTTP(){
-		
+	static function lock($right){
+		return self::instance()->_lock($right);
 	}
-	static function One(){
-		if(!isset(self::$One))
-			self::$One = new static();
-		return self::$One;
+	static function lockHTTP($right){
+		return self::instance()->_lockHTTP($right);
+	}
+	
+	static function instance($k=0){
+		if(!isset(self::$instances[$k]))
+			self::$instances[$k] = new static();
+		return self::$instances[$k];
 	}
 	
 	static function sendMail($email, $type, $key, $site_email, $site_url, $site_name){
@@ -314,6 +305,7 @@ class Auth{
 			'id'=>$uid,
 			'email'=>$user['email'],
 			'name'=>$user['name'],
+			'right'=>$user['right'],
 		];
 		Session::set('_AUTH_',$data);
 		return $data;
@@ -620,5 +612,35 @@ class Auth{
 	}
 	private function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
+	}
+	
+	private $right;
+	function getRight(){
+		if(!isset($this->right))
+			$this->right = Session::get('_AUTH_','right');
+		return $this->right;
+	}
+	function setRight($r){
+		$this->right = $r;
+	}
+	function isAllowed($d){
+		return !!($d&$this->getRight());
+	}
+	function allow($d){
+		return $this->setRight($d|$this->getRight());
+	}
+	function deny($d){
+		return $this->setRight($d^$this->getRight());
+	}
+	
+	function _lock($r){
+		if($this->isAllowed($r))
+			return;
+		
+	}
+	function _lockHTTP($r){
+		if($this->isAllowed($r))
+			return;
+		
 	}
 }
