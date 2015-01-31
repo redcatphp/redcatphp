@@ -2,6 +2,7 @@
 use Surikat\Core\Config;
 use Surikat\Core\Session;
 use Surikat\Core\FS;
+use Surikat\Core\HTTP;
 use Surikat\Model\R;
 use Surikat\I18n\Lang;
 use Core\Domain;
@@ -81,8 +82,8 @@ class Auth{
 	static function allowed($right){
 		return self::instance()->isAllowed($right);
 	}
-	static function lock($right){
-		return self::instance()->_lock($right);
+	static function lock($right,$redirect=true){
+		return self::instance()->_lock($right,$redirect);
 	}
 	static function lockHTTP($right){
 		return self::instance()->_lockHTTP($right);
@@ -633,14 +634,24 @@ class Auth{
 		return $this->setRight($d^$this->getRight());
 	}
 	
-	function _lock($r){
+	function _lock($r,$redirect=true){
 		if($this->isAllowed($r))
 			return;
-		
+		HTTP::nocacheHeaders();
+		if($redirect){
+			if($redirect===true)
+				$redirect = 403;
+			header('Location: '.$redirect,false,302);
+		}
+		else{
+			HTTP::code(403);
+		}
+		exit;
 	}
 	function _lockHTTP($r){
 		if($this->isAllowed($r))
 			return;
 		
+		//$this->login($login,$password);
 	}
 }

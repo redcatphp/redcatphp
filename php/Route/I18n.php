@@ -23,7 +23,7 @@ class I18n extends Faceted {
 				if(isset($langMap[$path]))
 					$templatePath = $langMap[$path];
 				elseif(($k=array_search($path,$langMap))!==false){
-					header('Location: /'.$k,301);
+					header('Location: /'.$k,false,301);
 					exit;
 				}
 			}
