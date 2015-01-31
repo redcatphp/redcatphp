@@ -166,6 +166,7 @@ abstract class PARSER{
 								$charContainer = '';
 							}
 						break;
+						case self::STATE_ATTR_VALUE:
 						case self::STATE_NOPARSING:
 						case self::STATE_PARSING_COMMENT:
 							$charContainer .= $currentChar;
