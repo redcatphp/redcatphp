@@ -136,7 +136,7 @@ class RPDO implements Driver
 		if(Dev::has(Dev::SQL)||Dev::has(Dev::DBSPEED))
 			$this->debugger()->logOpen();
 		
-		$sql = str_replace('{$prefix}',$this->DB->getPrefix(),$sql);
+		$sql = str_replace('{#prefix}',$this->DB->getPrefix(),$sql);
 		
 		if ( $this->debug && $this->logger ) {
 			$this->logger->log( $sql, $bindings );

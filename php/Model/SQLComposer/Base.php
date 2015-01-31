@@ -128,7 +128,7 @@ abstract class Base {
 	function getQuery($removeUnbinded=true){
 		$q = $this->render($removeUnbinded);
 		if($this->writer)
-			$q = str_replace('{$prefix}',$this->writer->prefix,$q);
+			$q = str_replace('{#prefix}',$this->writer->prefix,$q);
 		return $q;
 	}
 	abstract function render();
