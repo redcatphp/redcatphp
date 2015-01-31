@@ -440,7 +440,7 @@ class Query {
 		return $this;
 	}
 	function row(){
-		return self::explodeAgg((array)$this->getAll());
+		return self::explodeAgg((array)$this->getRow());
 	}
 	function table(){
 		return self::explodeAggTable((array)$this->getAll());
