@@ -440,10 +440,10 @@ class Query {
 		return $this;
 	}
 	function row(){
-		return self::explodeAgg($this->getAll());
+		return self::explodeAgg((array)$this->getAll());
 	}
 	function table(){
-		return self::explodeAggTable($this->getAll());
+		return self::explodeAggTable((array)$this->getAll());
 	}
 	function tableRw(){
 		return R::convertToBeans($this->table,$this->table());
