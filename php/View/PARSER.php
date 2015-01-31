@@ -153,9 +153,9 @@ abstract class PARSER{
 						case self::STATE_PARSING_OPENER:
 						case self::STATE_PARSING:
 							if ($xmlText{($i+1)}=='!'){
+								$this->fireCharacterData($charContainer);
 								if(substr($charContainer,1,7)!='[CDATA['&&substr($xmlText,$i+2,2)!='--'){
 									$state = self::STATE_PROLOG_EXCLAMATION;
-									$this->fireCharacterData($charContainer);
 									$charContainer = '';
 								}		
 								$charContainer .= $currentChar;
@@ -175,7 +175,8 @@ abstract class PARSER{
 							$this->fireCharacterData($charContainer);
 							$charContainer = '';
 							if ($xmlText{($i+1)}=='!'){
-								$state = self::STATE_PROLOG_EXCLAMATION;								
+								$this->fireCharacterData($charContainer);
+								$state = self::STATE_PROLOG_EXCLAMATION;
 								$charContainer .= $currentChar;
 							}
 							else {
