@@ -3,7 +3,11 @@
 	margin-bottom: 9px;
 	display: inline-block;
 	input[type=file]{
-		display:none;
+		display: block;
+		height: 150px;
+		opacity: 0;
+		position: absolute;
+		width: 200px;
 	}
 	.thumbnail {
 		float:left;
