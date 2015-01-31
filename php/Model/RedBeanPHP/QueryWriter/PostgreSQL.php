@@ -505,7 +505,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			$query->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",$t);
 		}
 	}
-	function selectFullTextHighlite($query,$col,$t,$truncation=369,$lang=null,$config=[],$getl=true){
+	function selectFullTextHighlightTruncated($query,$col,$t,$truncation=369,$lang=null,$config=[],$getl=true){
 		if(!$t)
 			return $query->selectTruncation($col,$truncation,$getl);
 		if($lang)
@@ -523,7 +523,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 		$q = $this->quoteCharacter;
 		$query->select("SUBSTRING(ts_headline({$lang}$c,plainto_tsquery($lang?),?),1,?) as $q$col$q",$t,$conf,$truncation);
 		if($getl)
-			$query->select("LENGTH($c) as $q{$col}_length$q");
+			$query->select("LENGTH(TRIM(both '\n\r\t\s' from $c)) as $q{$col}_length$q");
 	}
 	function selectFullTextHighlight($query,$col,$t,$lang=null,$config=[]){
 		if(!$t)

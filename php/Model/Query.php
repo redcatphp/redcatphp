@@ -90,8 +90,8 @@ class Query {
 			switch($f){
 				case 'orderByFullTextRank':
 				case 'selectFullTextRank':
-				case 'selectFullTextHighlite':
 				case 'selectFullTextHighlight':
+				case 'selectFullTextHighlightTruncated':
 				case 'whereFullText':
 					array_unshift($args,$this);
 					call_user_func_array([$this->writer,$f],$args);
