@@ -47,6 +47,12 @@ class Ruler {
 	static function numeric($v){
 		return is_numeric($v);
 	}
+	static function maximum($v,$r){
+		return (float)$v<=(float)$r;
+	}
+	static function minimum($v,$r){
+		return (float)$v>=(float)$r;
+	}
 	static function integer($v){
 		return is_integer($v)||is_integer(filter_var($v, FILTER_VALIDATE_INT));
 	}
