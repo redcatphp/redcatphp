@@ -2,7 +2,9 @@
 /*
 	API
 	
-	Auth::RIGHT_ADMIN
+	Right::ADMIN
+	Right::has()
+		Session::get('_AUTH_','rights')
 	Auth::lock($right)		COOKIE OR 403
 	Auth::lockHTTP($right)	COOKIE OR CHECK-HTTP OR 401
 	
@@ -87,6 +89,7 @@ class Auth{
 	protected $bcrypt_cost = '10';
 	protected $messages;
 	protected $attemptsPath;
+	protected $blockedWait = 1800;
 		
 	static function lock(){
 		
@@ -583,7 +586,7 @@ class Auth{
 			$count = (int)file_get_contents($this->attemptsPath.$ip);
 		else
 			return false;
-		$expiredate = filemtime($this->attemptsPath.$ip)+1800;
+		$expiredate = filemtime($this->attemptsPath.$ip)+$this->blockedWait;
 		$currentdate = time();
 		if($count==5){
 			if($currentdate<$expiredate)
