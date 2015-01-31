@@ -26,26 +26,29 @@ $js(true,[
 ],function(){
 	var geocallbacks = [];
 	$('geo-completer').each(function(){
-		var THIS = $(this);
-		var inputLat = $('input.in-latitude',THIS);
-		var inputLng = $('input.in-longitude',THIS);
-		var inputRadius = $('input.in-radius',THIS);
-		var inputGG = $('input.gg-maps',THIS);
-			inputGG.after('<div class="map-wrapper"><div class="map-canvas"></div></div>');
-		var theMAP = $('.map-canvas',THIS);
-		var inputGeoname = $('input.geoname',THIS);
-
-		var modal = $('.map-dialog',THIS);
-		var inputRadiusH = $('<input type="hidden">');
-		var inputLatH = $('<input type="hidden">');
-		var inputLngH = $('<input type="hidden">');
-		var dialog;
+		var THIS,dialogTitle,modal,inputLat,inputLng,inputGG,inputGeoname,theMAP,
+			inputRadius,inputRadiusH,inputLatH,inputLngH,placeHolder,dialog;
+		THIS = $(this);
+		dialogTitle = THIS.attr('data-dialog-title') | 'Find location';
+		placeHolder = THIS.attr('data-dialog-placeholder') | 'Look for adress, place or city';
+		THIS.append('<div class="map-dialog" title="'+dialogTitle+'"></div>');
+		modal = $('.map-dialog',THIS);
+		modal.append('<input class="gg-maps" type="text" value="" placeholder="'+placeHolder+'">');
+		inputLat = $('input.in-latitude',THIS);
+		inputLng = $('input.in-longitude',THIS);
+		inputRadius = $('input.in-radius',THIS);
+		inputGG = $('input.gg-maps',THIS);
+		inputGG.after('<div class="map-wrapper"><div class="map-canvas"></div></div>');
+		theMAP = $('.map-canvas',THIS);
+		inputGeoname = $('input.geoname',THIS);
+		inputRadiusH = $('<input type="hidden">');
+		inputLatH = $('<input type="hidden">');
+		inputLngH = $('<input type="hidden">');
+		dialog;
 		inputLatH.appendTo(modal);
 		inputLngH.appendTo(modal);
 		inputRadiusH.appendTo(modal);
-		
 		inputGeoname.wrap('<div>');
-		
 		var reset = function(){
 			inputLat.val('');
 			inputLng.val('');

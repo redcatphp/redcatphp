@@ -1,6 +1,7 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\FS;
 use Surikat\Core\Images;
+use Surikat\Core\Exception_Upload;
 abstract class Uploader{
 	static function image($conf){
 		$conf = array_merge([
@@ -63,11 +64,13 @@ abstract class Uploader{
 			$name = substr($name,0,-1*strlen($e)).static::$extensionRewrite[$e];
 		return $name;
 	}
-	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null){
+	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null,$maxFileSize=null){
 		if($file['error']!==UPLOAD_ERR_OK)
 			throw new Exception_Upload($file['error']);
 		if($mime&&stripos($file['type'],$mime)!==0)
 			throw new Exception_Upload('type');
+		if($maxFileSize&&filesize($file['tmp_name'])>$maxFileSize)
+			throw new Exception_Upload(UPLOAD_ERR_FORM_SIZE);
 		FS::mkdir($dir);
 		$name = self::formatFilename($file['name']);
 		if($nooverw){
@@ -83,14 +86,14 @@ abstract class Uploader{
 		if($callback)
 			$callback($dir.$name);
 	}
-	static function file($dir,$k,$mime=null,$callback=null){
+	static function file($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
 		if(isset($_FILES[$k])){
 			if($_FILES[$k]['name'])
-				self::uploadFile($_FILES[$k],$dir,$mime,$callback,false,true);
+				self::uploadFile($_FILES[$k],$dir,$mime,$callback,false,true,$maxFileSize);
 			return true;
 		}
 	}
-	static function files($dir,$k,$mime=null,$callback=null){
+	static function files($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
 		if(isset($_FILES[$k])){
 			$files =& $_FILES[$k];
 			for($i=0;count($files['name'])>$i;$i++){
@@ -98,9 +101,36 @@ abstract class Uploader{
 				foreach(array_keys($files) as $prop)
 					$file[$prop] =& $files[$prop][$i];
 				if($file['name'])
-					self::uploadFile($file,$dir,$mime,$callback,false,true);
+					self::uploadFile($file,$dir,$mime,$callback,false,true,$maxFileSize);
 			}
 			return true;
+		}
+	}
+	
+	static function file_upload_max_size() {
+		static $max_size = -1;
+		if ($max_size < 0) {
+			// Start with post_max_size.
+			$max_size = self::parse_size(ini_get('post_max_size'));
+
+			// If upload_max_size is less, then reduce. Except if upload_max_size is
+			// zero, which indicates no limit.
+			$upload_max = self::parse_size(ini_get('upload_max_filesize'));
+			if ($upload_max > 0 && $upload_max < $max_size) {
+				$max_size = $upload_max;
+			}
+		}
+		return $max_size;
+	}
+	static function parse_size($size) {
+		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
+		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
+		if ($unit) {
+			// Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+			return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+		}
+		else {
+			return round($size);
 		}
 	}
 }
