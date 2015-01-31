@@ -64,7 +64,7 @@ class Debug extends RDefault implements Logger
 			$value = str_replace(',','.',$value);
 		elseif ( $value !== 'NULL')
 			$value = "'".str_replace("'","\'",$value)."'";
-
+		$value = htmlentities($value);
 		return $value;
 	}
 
