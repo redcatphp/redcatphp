@@ -1,3 +1,3 @@
 <?php return [	
-	'root' => '',
+	'root'	=> 'root',
 ];

@@ -66,10 +66,12 @@ class Auth{
 	protected $site_name = 'The Lab';
 	protected $site_url;
 	protected $site_email = 'no-reply@lab.cuonic.com';
-	protected $bcrypt_cost = '10';
+	protected $cost = 10;
+	protected $algo;
 	protected $messages;
 	protected $attemptsPath;
 	protected $blockedWait = 1800;
+	protected $superRoot = 'root';
 	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;
@@ -109,11 +111,14 @@ class Auth{
 		$headers .= "From: {$site_email}" . "\r\n";
 		return mail($email, $subject, $message, $headers);
 	}
-	
 	public function __construct(){
-		$this->db = R::getDatabase();
+		$db = Config::db();
+		if((isset($db['name'])&&$db['name'])||(isset($db['file'])&&$db['file'])){
+			$this->db = R::getDatabase();
+		}
 		$this->site_url = rtrim(Domain::getBaseHref(),'/');
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+		$this->algo = PASSWORD_DEFAULT;
 	}
 	
 	public function getMessage($code){
@@ -169,11 +174,55 @@ class Auth{
 		}
 		return $this->messages[$code];
 	}
+	public function loginRoot($password){
+		$config = Config::auth();
+		$pass = $config[$this->superRoot];
+		if(!$pass)
+			return self::ERROR_SYSTEM_ERROR;
+		$id = 0;
+		if(strpos($pass,'$')!==0){
+			if($pass!=$password){
+				$this->addAttempt();
+				return self::ERROR_NAME_PASSWORD_INCORRECT;
+			}
+		}
+		else{
+			if(!password_verify($password, $pass)){
+				$this->addAttempt();
+				return self::ERROR_NAME_PASSWORD_INCORRECT;
+			}
+			else{
+				$options = ['cost' => $this->cost];
+				if(password_needs_rehash($pass, $this->algo, $options)){
+					$config[$this->superRoot] = password_hash($password, $this->algo, $options);
+					if(!Config::STORE('auth',$config)){
+						return self::ERROR_SYSTEM_ERROR;
+					}
+				}
+			}
+		}
+		if($this->db){
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$this->superRoot]);
+			if(!$id){
+				$id = $this->db
+					->newOne($this->tableUsers,['name'=>$this->superRoot])
+					->store()
+				;
+				if(!$id){
+					return self::ERROR_SYSTEM_ERROR;
+				}
+			}
+		}
+		Session::setKey($id);
+		return self::OK_LOGGED_IN;
+	}
 	public function login($name, $password){
 		if($this->isBlocked()){
 			return self::ERROR_USER_BLOCKED;
 		}
-		try{			
+		if($name==$this->superRoot)
+			return $this->loginRoot($password);
+		try{
 			$this->validateUsername($name);
 			$this->validatePassword($password);
 		}
@@ -181,7 +230,7 @@ class Auth{
 			$this->addAttempt();
 			throw new Exception(self::ERROR_NAME_PASSWORD_INVALID);
 		}
-		$uid = $this->getUID(strtolower($name));
+		$uid = $this->getUID($name);
 		if(!$uid){
 			$this->addAttempt();
 			return self::ERROR_NAME_PASSWORD_INCORRECT;
@@ -192,9 +241,9 @@ class Auth{
 			return self::ERROR_NAME_PASSWORD_INCORRECT;
 		}
 		else{
-			$options = ['salt' => $user['salt'], 'cost' => $this->bcrypt_cost];
-			if(password_needs_rehash($user['password'], PASSWORD_BCRYPT, $options)){
-				$password = password_hash($password, PASSWORD_BCRYPT, $options);
+			$options = ['salt' => $user['salt'], 'cost' => $this->cost];
+			if(password_needs_rehash($user['password'], $this->algo, $options)){
+				$password = password_hash($password, $this->algo, $options);
 				$row = $this->db->load($this->tableUsers,(int)$user['id']);
 				$row->password = $password;
 				if(!$row->store()){
@@ -287,7 +336,7 @@ class Auth{
 		}
 	}
 	public function getHash($string, $salt){
-		return password_hash($string, PASSWORD_BCRYPT, ['salt' => $salt, 'cost' => $this->bcrypt_cost]);
+		return password_hash($string, $this->algo, ['salt' => $salt, 'cost' => $this->cost]);
 	}
 	public function getUID($name){
 		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$name]);
@@ -323,7 +372,6 @@ class Auth{
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$uid = $row->id;
-		$email = htmlentities($email);
 		try{
 			$this->addRequest($uid, $email, "activation");
 		}
@@ -332,7 +380,6 @@ class Auth{
 			throw $e;
 		}
 		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
-		$name = htmlentities(strtolower($name));
 		$password = $this->getHash($password, $salt);
 		$row->name = $name;
 		$row->password = $password;
@@ -348,7 +395,7 @@ class Auth{
 		return $this->db->load($this->tableUsers,(int)$uid);
 	}
 
-	public function deleteUser($uid, $password) {
+	public function deleteUser($uid, $password){
 		if ($this->isBlocked()) {
 			return self::ERROR_USER_BLOCKED;
 		}
@@ -432,7 +479,7 @@ class Auth{
 		return $this->db->exec('DELETE FROM '.$this->db->safeTable($this->tableRequests).' WHERE id = ?',[$id]);
 	}
 	public function validateUsername($name) {
-		if (strlen($name) < 3)
+		if (strlen($name) < 1)
 			return self::ERROR_NAME_SHORT;
 		elseif (strlen($name) > 30)
 			return self::ERROR_NAME_LONG;
