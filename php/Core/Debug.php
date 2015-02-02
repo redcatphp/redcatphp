@@ -49,8 +49,8 @@ class Debug{
 		$end = $line+self::$debugLines;
 		if($start<0)
 			$start = 0;
-		if($end>$c)
-			$end = $c;
+		if($end>($c-1))
+			$end = $c-1;
 		$e = '';
 		for($i=$start;$i<=$end;$i++){
 			$e .= $f[$i];
