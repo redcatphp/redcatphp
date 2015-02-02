@@ -1,8 +1,14 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\Arrays;
-class Config extends ArrayObject {
+class Config {
 	private static $registry = [];
 	protected static $directory = 'config';
+	static function STORE($f,$a){
+		if(!isset(self::$registry[$f]))
+			self::$registry[$f] = new static($f);
+		self::$registry[$f]->conf = $a;
+		return self::$registry[$f]->put_contents();
+	}
 	static function __callStatic($f,$args){
 		if(!isset(self::$registry[$f]))
 			self::$registry[$f] = new static($f);
@@ -62,5 +68,11 @@ class Config extends ArrayObject {
 	}
 	protected function getConf($inc){
 		return include($inc);
+	}
+	protected function getString(){
+		return '<?php return '.var_export($this->conf,true).';';
+	}
+	protected function put_contents(){
+		return file_put_contents(SURIKAT_PATH.static::$directory.'/'.$this->file,$this->getString());
 	}
 }
