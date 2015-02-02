@@ -1,6 +1,6 @@
 <?php namespace Surikat\Tool\Crypto;
-class Toolbox{
-	public static function crypt_apr1_md5($plainpasswd) {
+abstract class Hash{
+	static function apr1_md5($plainpasswd) {
 		$salt = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8);
 		$len = strlen($plainpasswd);
 		$text = $plainpasswd.'$apr1$'.$salt;
@@ -29,5 +29,16 @@ class Toolbox{
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
 		"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 		return "$"."apr1"."$".$salt."$".$tmp;
+	}
+	static function appropriateCost($algo=null,$timeTarget=0.05,$cost=8){
+		if(!$algo)
+			$algo = PASSWORD_DEFAULT;
+		do{
+			$cost++;
+			$start = microtime(true);
+			password_hash("test", $algo, ["cost" => $cost]);
+			$end = microtime(true);
+		}while(($end - $start) < $timeTarget);
+		return $cost;
 	}
 }
