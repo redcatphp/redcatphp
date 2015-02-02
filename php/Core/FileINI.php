@@ -1,6 +1,6 @@
-<?php namespace Surikat\Tool;
-class iniFile{
-	static function write($path,$assoc_arr,$has_sections=true,$quotes=false){
+<?php namespace Surikat\Core;
+abstract class FileINI{
+	static function arrayToStr($assoc_arr,$has_sections=true,$quotes=false){
 		$content = ""; 
 		if($has_sections){
 			$arr_tmp = $assoc_arr;
@@ -83,12 +83,16 @@ class iniFile{
 				}
 			} 
 		}
+		return $content;
+	}
+	static function write($path,$assoc_arr,$has_sections=true,$quotes=false){
 		if (!$handle = fopen($path, 'w')) { 
 			return false; 
-		} 
-		if (!fwrite($handle, $content)) { 
+		}
+		$content = self::arrayToStr($assoc_arr,$has_sections,$quotes);
+		if (!fwrite($handle, $content)){
 			return false; 
-		} 
+		}
 		fclose($handle); 
 		return true; 
 	}
