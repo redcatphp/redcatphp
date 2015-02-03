@@ -1,4 +1,5 @@
 <?php namespace Surikat\Core;
+use Surikat\Core\Session;
 class SessionHandler{
 	private $savePath;
 	static $maxNoConnectionTime = 172800; //deux jours
@@ -14,8 +15,13 @@ class SessionHandler{
         return true;
     }
     function read($id){
-		/* if(!is_file()) addAttempt*/
-        return (string)@file_get_contents($this->savePath.'/'.$id);
+		$file = $this->savePath.'/'.$id;
+		if(is_file($file)){
+			return file_get_contents($file);
+		}
+		else{
+			Session::addAttempt();
+		}
     }
     function write($id, $data){
         return file_put_contents($this->savePath.'/'.$id, $data, LOCK_EX) === false ? false : true;
