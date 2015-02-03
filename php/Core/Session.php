@@ -121,4 +121,45 @@ class Session{
 			session_start();
 		}
 	}
+	
+	protected static $attemptsPath;
+	protected static $blockedWait = 1800;
+	static function __initialize(){
+		self::$attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+	}
+	static function getIp(){
+		return $_SERVER['REMOTE_ADDR'];
+	}
+	static function addAttempt(){
+		$ip = self::getIp();
+		FS::mkdir(self::$attemptsPath);
+		if(is_file(self::$attemptsPath.$ip))
+			$attempt_count = ((int)file_get_contents(self::$attemptsPath.$ip))+1;
+		else
+			$attempt_count = 1;
+		return file_put_contents(self::$attemptsPath.$ip,$attempt_count,LOCK_EX);
+	}
+	static function isBlocked(){
+		$ip = self::getIp();
+		if(is_file(self::$attemptsPath.$ip))
+			$count = (int)file_get_contents(self::$attemptsPath.$ip);
+		else
+			return false;
+		$expiredate = filemtime(self::$attemptsPath.$ip)+self::$blockedWait;
+		$currentdate = time();
+		if($count==5){
+			if($currentdate<$expiredate)
+				return $expiredate-$currentdate;
+			self::deleteAttempts();
+			return false;
+		}
+		if($currentdate>$expiredate)
+			self::deleteAttempts();
+		return false;
+	}
+	static function deleteAttempts(){
+		$ip = self::getIp();
+		return is_file(self::$attemptsPath.$ip)&&unlink(self::$attemptsPath.$ip);
+	}
 }
+Session::__initialize();
