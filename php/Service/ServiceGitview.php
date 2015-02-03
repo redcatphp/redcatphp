@@ -1,11 +1,13 @@
 <?php namespace Surikat\Service; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
-use Surikat\Tool;
+use Suriakt\Tool\Auth;
 use Surikat\Tool\PhpGit\Git;
 class ServiceGitview{
 	static function surikat(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::main(SURIKAT_SPATH);
 	}
 	static function method(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::main(SURIKAT_PATH);
 	}
 	protected static function main($dir){

@@ -1,10 +1,20 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\FS;
+use Surikat\Core\Domain;
 use Surikat\Core\SessionHandler;
 class Session{
 	private static $id;
 	private static $key;
 	private static $handler;
+	private static $sessionName = 'surikat';
+	private static $cookieLifetime = 0;
+	static function setName($name){
+		self::$sessionName = $name;
+	}
+	static function setCookieLifetime($time){
+		self::$cookieLifetime = $time;
+		ini_set('session.cookie_lifetime',$time);
+	}
 	static function &set(){
 		self::start();
 		$args = func_get_args();
@@ -35,12 +45,13 @@ class Session{
 			}
 		return $ref;
 	}
-	static function destroyKey($skey=null,$name='projet'){
+	static function destroyKey($skey=null){
 		self::sessionHandler()->destroyKey($skey);
 	}
-	static function setKey($skey=null,$name='projet'){
+	static function setKey($skey=null){
+		self::destroyKey($skey);
 		if(!self::$id)
-			self::start($name);
+			self::start();
 		$tmp = [];
 		foreach($_SESSION as $k=>$v)
 			$tmp[$k] = $v;
@@ -52,10 +63,10 @@ class Session{
 			$_SESSION[$k] = $v;
 		self::$key = $skey;
 	}
-	static function start($name='project'){
+	static function start(){
 		if(!self::$id){
 			self::handle();
-			session_name("surikat_".$name);
+			session_name(self::$sessionName);
 			if(session_start()){
 				self::regenerate();
 				self::$id = session_id();
@@ -63,8 +74,8 @@ class Session{
 		}
 		return self::$id;
 	}
-	static function destroy($name='project'){
-		if(self::start($name)){
+	static function destroy(){
+		if(self::start()){
 			$_SESSION = [];
 			session_destroy();
 			session_write_close();
@@ -77,7 +88,9 @@ class Session{
 			@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
 			@ini_set('session.gc_divisor',1000);			// Idem
 			@ini_set('session.gc_maxlifetime',3600);
-			ini_set("session.save_path",$d);
+			ini_set('session.save_path',$d);
+			ini_set('session.use_cookies',1);
+			ini_set('session.use_only_cookies',1);
 			FS::mkdir($d);
 			self::$handler = new SessionHandler();
 		}
@@ -85,6 +98,12 @@ class Session{
 	}
 	private static function handle(){
 		$handler = self::sessionHandler();
+		//session_set_cookie_params(self::$cookieLifetime,'/'.Domain::getSuffixHref(),Domain::getServerHref(),false,true);
+		ini_set('session.cookie_lifetime',self::$cookieLifetime);
+		ini_set('session.cookie_path','/'.Domain::getSuffixHref());
+		ini_set('session.cookie_domain',Domain::getServerHref());
+		ini_set('session.cookie_secure',0);
+		ini_set('session.cookie_httponly',1);
 		session_set_save_handler(
 			[$handler, 'open'],
 			[$handler, 'close'],

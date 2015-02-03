@@ -1,5 +1,5 @@
 <?php namespace Surikat\Service; 
-use Surikat\Tool;
+use Suriakt\Tool\Auth;
 use Surikat\Core\FS;
 use Surikat\Tool\JSON;
 use Surikat\Tool\Min\PHP as minPHP;
@@ -23,6 +23,7 @@ abstract class ServiceKompiler{
 	static $PATH = 'Surikat';
 	static $surikat = 'index.php';
 	static function method(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		$class = new ReflectionClass(__CLASS__);
 		$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
 		foreach($methods as $method)
@@ -36,6 +37,7 @@ if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
 	symlink('../".self::$PATH."','Surikat')&&include('".self::$PATH."/Bootstrap.php');");
 	}
 	static function Set_PROD_Mode($target=null){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		set_time_limit(0);
 		ob_implicit_flush(true);
 		ob_end_flush();

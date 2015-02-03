@@ -1,6 +1,7 @@
 <?php namespace Surikat\Service;
-use Surikat\Tool\GitDeploy\GitDeploy;
 use Surikat\Core\HTTP;
+use Surikat\Tool\GitDeploy\GitDeploy;
+use Suriakt\Tool\Auth;
 class ServiceDeploy{
 	protected static function directOutput(){
 		set_time_limit(0);
@@ -10,6 +11,7 @@ class ServiceDeploy{
 		echo '<pre>';
 	}
 	static function method(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
 			->maintenanceOn()
@@ -22,6 +24,7 @@ class ServiceDeploy{
 		;
 	}
 	static function single(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
 			->maintenanceOn()
@@ -31,6 +34,7 @@ class ServiceDeploy{
 		;
 	}
 	static function version(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory()
 			->maintenanceOn()
@@ -39,6 +43,7 @@ class ServiceDeploy{
 		;
 	}
 	static function shared(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
 			->maintenanceOn()
@@ -51,6 +56,7 @@ class ServiceDeploy{
 		;
 	}
 	static function surikat(){
+		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_SPATH)
 			->maintenanceOn()

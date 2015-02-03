@@ -227,7 +227,7 @@ class Auth{
 			return $this->messages[$code];
 		}
 	}
-	public function loginRoot($password){
+	public function loginRoot($password,$lifetime=0){
 		$pass = $this->config['root'];
 		if(!$pass)
 			return self::ERROR_SYSTEM_ERROR;
@@ -270,15 +270,15 @@ class Auth{
 			'name'=>$this->superRoot,
 			'email'=>isset($this->config['email'])?$this->config['email']:null,
 			'right'=>static::ROLE_ADMIN,
-		]);
+		],$lifetime);
 		return self::OK_LOGGED_IN;
 	}
-	public function login($name, $password){
+	public function login($name, $password, $lifetime=0){
 		if($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($name==$this->superRoot)
-			return $this->loginRoot($password);
+			return $this->loginRoot($password,$lifetime);
 		try{
 			$this->validateUsername($name);
 			$this->validatePassword($password);
@@ -312,7 +312,7 @@ class Auth{
 			Session::addAttempt();
 			return self::ERROR_ACCOUNT_INACTIVE;
 		}
-		if(!$this->addSession($user)){
+		if(!$this->addSession($user,$lifetime)){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		return self::OK_LOGGED_IN;
@@ -395,9 +395,10 @@ class Auth{
 	public function getUID($name){
 		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$name]);
 	}
-	private function addSession($user){
+	private function addSession($user,$lifetime=0){
 		if(!Session::start())
 			return false;
+		Session::setCookieLifetime($lifetime);
 		Session::setKey($user['id']);
 		Session::set('_AUTH_',[
 			'id'=>$user['id'],
