@@ -8,8 +8,12 @@ class Session{
 	private static $handler;
 	private static $sessionName = 'surikat';
 	private static $cookieLifetime = 0;
-	//private static $maxAttempts = 10;
-	private static $maxAttempts = 5;
+	private static $maxAttempts = 10;
+	protected static $attemptsPath;
+	protected static $blockedWait = 1800;
+	static function __initialize(){
+		self::$attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+	}
 	static function setName($name){
 		self::$sessionName = $name;
 	}
@@ -155,12 +159,6 @@ class Session{
 			session_id($sid);
 			session_start();
 		}
-	}
-	
-	protected static $attemptsPath;
-	protected static $blockedWait = 1800;
-	static function __initialize(){
-		self::$attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 	}
 	static function getIp(){
 		return $_SERVER['REMOTE_ADDR'];

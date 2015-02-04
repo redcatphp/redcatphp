@@ -154,7 +154,7 @@ class Auth{
 			$this->algo = PASSWORD_DEFAULT;
 	}
 	
-	public function getMessage($code){
+	public function getMessage($code,$widget=false){
 		if(!isset($this->messages)){
 			$this->messages = [
 				self::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),
@@ -219,6 +219,51 @@ class Auth{
 					}
 					else{
 						$code[] = $t;
+					}
+					if($widget){
+						if($t>60){
+							$minutes = floor($t/60);
+							$t = $t%60;
+						}
+						else{
+							$minutes = 0;
+						}
+						$r = '<div id="msgcountdown">'.$this->getMessage([self::ERROR_USER_BLOCKED,$t]).'</div>';
+						$r .= '<div id="countdown"></div>';
+						$r .= '<script>
+							var interval;
+							var minutes = '.$minutes.';
+							var seconds = '.$t.';
+							window.onload = function(){
+								var countdown = document.getElementById("countdown");
+								var msgcountdown = document.getElementById("msgcountdown");
+								var showCountDown = function(){
+									if(seconds == 0) {
+										if(minutes == 0) {
+											countdown.innerHTML = "";
+											msgcountdown.innerHTML = "";
+											clearInterval(interval);
+											return;
+										} else {
+											minutes--;
+											seconds = 60;
+										}
+									}
+									if(minutes > 0) {
+										var minute_text = minutes + (minutes > 1 ? "minutes" : "minute");
+									} else {
+										var minute_text = "";
+									}
+									var second_text = seconds > 1 ? "seconds" : "second";
+									countdown.innerHTML = minute_text + " " + seconds + " " + second_text;
+									seconds--;
+								};
+								msgcountdown.innerHTML = "'.$this->getMessage(self::ERROR_USER_BLOCKED_3).'";
+								showCountDown();
+								var interval = setInterval(showCountDown,1000);
+							}
+						</script>';
+						return $r;
 					}
 				break;
 			}
@@ -721,13 +766,9 @@ class Auth{
 	function _lockServer($r,$redirect=true){
 		$action = Domain::getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/').(isset($_SERVER['QUERY_STRING'])&&$_SERVER['QUERY_STRING']?'?'.$_SERVER['QUERY_STRING']:'');
 		if(isset($_POST['__name__'])&&isset($_POST['__password__'])){
-			$r = $this->login($_POST['__name__'],$_POST['__password__']);
-			if($r===self::OK_LOGGED_IN){
+			if($this->login($_POST['__name__'],$_POST['__password__'])===self::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
-			}
-			elseif(is_array($r)&&$r[0]==self::ERROR_USER_BLOCKED){
-				echo $this->getMessage($r);
 			}
 		}
 		if($this->isAllowed($r))
@@ -761,44 +802,7 @@ class Auth{
 		</style>
 		</head><body>';
 		if($seconds=Session::isBlocked()){
-			//echo $this->getMessage([self::ERROR_USER_BLOCKED,$seconds]);
-			if($seconds>60){
-				$minutes = floor($seconds/60);
-				$seconds = $seconds%60;
-			}
-			echo '<div id="msgcountdown">'.$this->getMessage([self::ERROR_USER_BLOCKED,$seconds]).'</div>';
-			echo '<div id="countdown"></div>';
-			echo '<script>
-				var interval;
-				var minutes = '.$minutes.';
-				var seconds = '.$seconds.';
-				window.onload = function(){
-					var showCountDown = function(){
-						var el = document.getElementById("countdown");
-						if(seconds == 0) {
-							if(minutes == 0) {
-								el.innerHTML = "";
-								clearInterval(interval);
-								return;
-							} else {
-								minutes--;
-								seconds = 60;
-							}
-						}
-						if(minutes > 0) {
-							var minute_text = minutes + (minutes > 1 ? "minutes" : "minute");
-						} else {
-							var minute_text = "";
-						}
-						var second_text = seconds > 1 ? "seconds" : "second";
-						el.innerHTML = minute_text + " " + seconds + " " + second_text + "remaining";
-						seconds--;
-					};
-					document.getElementById("msgcountdown").innerHTML = "'.$this->getMessage(self::ERROR_USER_BLOCKED_3).'";
-					showCountDown();
-					var interval = setInterval(showCountDown,1000);
-				}
-			</script>';
+			echo $this->getMessage([self::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">
 			<label for="__name__">Login</label><input type="text" id="__name__" name="__name__" placeholder="Login"><br>
