@@ -15,6 +15,7 @@ Lang::initialize();
 class Auth{
 	const ERROR_USER_BLOCKED = 1;
 	const ERROR_USER_BLOCKED_2 = 46;
+	const ERROR_USER_BLOCKED_3 = 47;
 	const ERROR_NAME_SHORT = 2;
 	const ERROR_NAME_LONG = 3;
 	const ERROR_NAME_INCORRECT = 4;
@@ -156,8 +157,9 @@ class Auth{
 	public function getMessage($code){
 		if(!isset($this->messages)){
 			$this->messages = [
-				self::ERROR_USER_BLOCKED => __("You are currently locked out of the system for at least another %d seconds",null,'auth'),
-				self::ERROR_USER_BLOCKED_2 => __("You are currently locked out of the system for at least another %d minutes and %d seconds",null,'auth'),
+				self::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),
+				self::ERROR_USER_BLOCKED_2 => __("Too many failed attempts, try again in %d minutes and %d seconds",null,'auth'),
+				self::ERROR_USER_BLOCKED_3 => __("Too many failed attempts, try again in :",null,'auth'),
 				self::ERROR_NAME_SHORT => __("Username is too short",null,'auth'),
 				self::ERROR_NAME_LONG => __("Username is too long",null,'auth'),
 				self::ERROR_NAME_INCORRECT => __("Username is incorrect",null,'auth'),
@@ -209,15 +211,15 @@ class Auth{
 			$c = array_shift($code);
 			switch($c){
 				case self::ERROR_USER_BLOCKED:
-				$t = array_shift($code);
-				if($t>60){
-					$c = self::ERROR_USER_BLOCKED_2;
-					$code[] = floor($t/60);
-					$code[] = $t%60;
-				}
-				else{
-					$code[] = $t;
-				}
+					$t = array_shift($code);
+					if($t>60){
+						$c = self::ERROR_USER_BLOCKED_2;
+						$code[] = floor($t/60);
+						$code[] = $t%60;
+					}
+					else{
+						$code[] = $t;
+					}
 				break;
 			}
 			array_unshift($code,$this->messages[$c]);
@@ -719,9 +721,13 @@ class Auth{
 	function _lockServer($r,$redirect=true){
 		$action = Domain::getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/').(isset($_SERVER['QUERY_STRING'])&&$_SERVER['QUERY_STRING']?'?'.$_SERVER['QUERY_STRING']:'');
 		if(isset($_POST['__name__'])&&isset($_POST['__password__'])){
-			if($this->login($_POST['__name__'],$_POST['__password__'])===self::OK_LOGGED_IN){
+			$r = $this->login($_POST['__name__'],$_POST['__password__']);
+			if($r===self::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
+			}
+			elseif(is_array($r)&&$r[0]==self::ERROR_USER_BLOCKED){
+				echo $this->getMessage($r);
 			}
 		}
 		if($this->isAllowed($r))
@@ -753,8 +759,48 @@ class Auth{
 				left:100px;
 			}
 		</style>
-		</head><body>
-		<form id="form" action="'.$action.'" method="POST">
+		</head><body>';
+		if($seconds=Session::isBlocked()){
+			//echo $this->getMessage([self::ERROR_USER_BLOCKED,$seconds]);
+			if($seconds>60){
+				$minutes = floor($seconds/60);
+				$seconds = $seconds%60;
+			}
+			echo '<div id="msgcountdown">'.$this->getMessage([self::ERROR_USER_BLOCKED,$seconds]).'</div>';
+			echo '<div id="countdown"></div>';
+			echo '<script>
+				var interval;
+				var minutes = '.$minutes.';
+				var seconds = '.$seconds.';
+				window.onload = function(){
+					var showCountDown = function(){
+						var el = document.getElementById("countdown");
+						if(seconds == 0) {
+							if(minutes == 0) {
+								el.innerHTML = "";
+								clearInterval(interval);
+								return;
+							} else {
+								minutes--;
+								seconds = 60;
+							}
+						}
+						if(minutes > 0) {
+							var minute_text = minutes + (minutes > 1 ? "minutes" : "minute");
+						} else {
+							var minute_text = "";
+						}
+						var second_text = seconds > 1 ? "seconds" : "second";
+						el.innerHTML = minute_text + " " + seconds + " " + second_text + "remaining";
+						seconds--;
+					};
+					document.getElementById("msgcountdown").innerHTML = "'.$this->getMessage(self::ERROR_USER_BLOCKED_3).'";
+					showCountDown();
+					var interval = setInterval(showCountDown,1000);
+				}
+			</script>';
+		}
+		echo '<form id="form" action="'.$action.'" method="POST">
 			<label for="__name__">Login</label><input type="text" id="__name__" name="__name__" placeholder="Login"><br>
 			<label id="password" for="__password__">Password</label><input type="password" id="__password__" name="__password__" placeholder="Password"><br>
 			<input id="submit" value="Connection" type="submit">

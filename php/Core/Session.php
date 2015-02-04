@@ -8,6 +8,8 @@ class Session{
 	private static $handler;
 	private static $sessionName = 'surikat';
 	private static $cookieLifetime = 0;
+	//private static $maxAttempts = 10;
+	private static $maxAttempts = 5;
 	static function setName($name){
 		self::$sessionName = $name;
 	}
@@ -57,7 +59,9 @@ class Session{
 			$tmp[$k] = $v;
 		$_SESSION = [];
 		session_destroy();
-		session_id($skey.'.'.self::$id);
+		$id = $skey.'.'.self::$id;
+		session_id($id);
+		file_put_contents(self::getSavePath().self::getSessionName().'_'.$id,''); //prevent record a failed attempt
 		session_start();
 		foreach($tmp as $k=>$v)
 			$_SESSION[$k] = $v;
@@ -79,20 +83,32 @@ class Session{
 			$_SESSION = [];
 			session_destroy();
 			session_write_close();
+			self::removeCookie();
 			return true;
 		}
 	}
+	static function removeCookie(){
+		setcookie(self::$sessionName,null,-1,ini_get('session.cookie_path'),ini_get('session.cookie_domain'),false,true);
+	}
+	static function getSavePath(){
+		return SURIKAT_TMP.'sessions/';
+	}
+	static function getSessionName(){
+		return str_replace('.','-',self::$sessionName);
+	}
 	private static function sessionHandler(){
 		if(!isset(self::$handler)){
-			$d = SURIKAT_TMP.'sessions/';
+			$d = self::getSavePath();
 			@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
 			@ini_set('session.gc_divisor',1000);			// Idem
 			@ini_set('session.gc_maxlifetime',3600);
 			ini_set('session.save_path',$d);
 			ini_set('session.use_cookies',1);
 			ini_set('session.use_only_cookies',1);
+			//ini_set('session.entropy_file', '/dev/urandom');
+			//ini_set('session.entropy_length', '512');
 			FS::mkdir($d);
-			self::$handler = new SessionHandler();
+			self::$handler = new SessionHandler(self::$sessionName);
 		}
 		return self::$handler;
 	}
@@ -166,7 +182,7 @@ class Session{
 			return false;
 		$expiredate = filemtime(self::$attemptsPath.$ip)+self::$blockedWait;
 		$currentdate = time();
-		if($count==5){
+		if($count>=self::$maxAttempts){
 			if($currentdate<$expiredate)
 				return $expiredate-$currentdate;
 			self::deleteAttempts();
