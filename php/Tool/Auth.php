@@ -319,6 +319,9 @@ class Auth{
 		}
 		if($name==$this->superRoot)
 			return $this->loginRoot($password,$lifetime);
+		if(!ctype_alnum($name)&&filter_var($name,FILTER_VALIDATE_EMAIL)){
+			$name = $this->db->getCell('SELECT name FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$name]);
+		}
 		try{
 			$this->validateUsername($name);
 			$this->validatePassword($password);
