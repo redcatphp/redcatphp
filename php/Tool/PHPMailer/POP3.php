@@ -1,4 +1,5 @@
 <?php namespace Surikat\Tool\PHPMailer;
+use Exception;
 /**
  * PHPMailer POP-Before-SMTP Authentication Class.
  * PHP Version 5

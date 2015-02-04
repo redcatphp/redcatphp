@@ -1,6 +1,6 @@
 <?php namespace Surikat\Tool;
 use Surikat\Core\Config;
-use Surikat\Tool\PHPMailer as OPHPMailer;
+use Surikat\Tool\PHPMailer\PHPMailer as OPHPMailer;
 class PHPMailer extends OPHPMailer{
 	static function mail($email, $subject, $message, $html=true){
 		$o = self::instance();
@@ -36,29 +36,33 @@ class PHPMailer extends OPHPMailer{
 	function __construct($exceptions = false){
         parent::__construct($exceptions);
         $config = Config::mailer();
+		$fromName = isset($config['fromName'])?$config['fromName']:null;
+		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
+		$replyName = isset($config['replyName'])?$config['replyName']:null;
+		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
         if(isset($config['host'])&&$config['host']){
-			$mail->isSMTP();
+			$this->isSMTP();
 			if(isset($config['debug'])){
-				$mail->SMTPDebug = $config['debug'];
+				$this->SMTPDebug = $config['debug'];
 				if($config['debug'])
-					$mail->Debugoutput = 'html';
+					$this->Debugoutput = 'html';
 			}
-			$mail->Host = $config['host'];
-			$mail->Port = isset($config['port'])?$config['port']:25;
+			$this->Host = $config['host'];
+			$this->Port = isset($config['port'])?$config['port']:25;
 			if(isset($config['username'])){
-				$mail->SMTPAuth = true;
+				$this->SMTPAuth = true;
 				if(isset($config['secure']))
-					$mail->SMTPSecure = $config['secure']===true?'tls':$config['secure'];
-				$mail->Username = $config['username'];
-				$mail->Password = $config['password'];
+					$this->SMTPSecure = $config['secure']===true?'tls':$config['secure'];
+				$this->Username = $config['username'];
+				$this->Password = $config['password'];
 			}
 		}
 		elseif(isset($config['sendmail'])&&$config['sendmail']){
-			$mail->isSendmail();
+			$this->isSendmail();
 		}
 		if($fromEmail)
-			$mail->setFrom($fromEmail, $fromName);
+			$this->setFrom($fromEmail, $fromName);
 		if($replyEmail)
-			$mail->addReplyTo($replyEmail, $replyName);
+			$this->addReplyTo($replyEmail, $replyName);
     }
 }

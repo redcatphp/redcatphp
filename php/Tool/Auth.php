@@ -115,11 +115,11 @@ class Auth{
 		
 		if($type=="activation"){
 			$subject = "{$fromName} - Account Activation";
-			$message = "Account activation required : <strong><a href=\"{$siteUrl}{$siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
+			$message = "Account activation required : <strong><a href=\"{$this->siteUrl}{$siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
 		}
 		else{
 			$subject = "{$fromName} - Password reset request";
-			$message = "Password reset request : <strong><a href=\"{$siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
+			$message = "Password reset request : <strong><a href=\"{$this->siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
 		}
 		return PHPMailer::mail([$email=>$name],$subject,$message);
 	}
