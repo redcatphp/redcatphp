@@ -3,6 +3,7 @@
 /config/deploy.ini
 /config/db.php
 /config/db.*.php
+/config/auth.php
 /Surikat
 *.min.css
 *.min.js
