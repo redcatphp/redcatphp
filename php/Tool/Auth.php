@@ -6,6 +6,7 @@ use Surikat\Core\HTTP;
 use Surikat\Model\R;
 use Surikat\I18n\Lang;
 use Surikat\Tool\AuthDigest;
+use Surikat\Tool\PHPMailer;
 use Core\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
@@ -76,11 +77,6 @@ class Auth{
 	protected $tableRequests = 'request';
 	protected $tableUsers = 'user';
 	protected $siteUrl;
-	protected $siteName = '';
-	protected $siteEmail = '';
-	protected $siteLoginUri = 'Login';
-	protected $siteActivateUri = 'Signin';
-	protected $siteResetUri = 'Signin';
 	protected $cost = 10;
 	protected $algo;
 	protected $messages;
@@ -106,19 +102,26 @@ class Auth{
 		return self::$instances[$k];
 	}
 	
-	function sendMail($email, $type, $key){
-		if($type == "activation"){
-			$message = "Account activation required : <strong><a href=\"{$this->siteUrl}{$this->siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
-			$subject = "{$this->siteName} - Account Activation";
+	function sendMail($email, $type, $key, $name){
+		$config = Config::mailer();
+				
+		$fromName = isset($config['fromName'])?$config['fromName']:null;
+		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
+		$replyName = isset($config['replyName'])?$config['replyName']:null;
+		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
+		$siteLoginUri = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:null;
+		$siteActivateUri = isset($this->config['siteActivateUri'])?$this->config['siteActivateUri']:null;
+		$siteResetUri = isset($this->config['siteResetUri'])?$this->config['siteResetUri']:null;
+		
+		if($type=="activation"){
+			$subject = "{$fromName} - Account Activation";
+			$message = "Account activation required : <strong><a href=\"{$siteUrl}{$siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
 		}
 		else{
-			$message = "Password reset request : <strong><a href=\"{$this->siteUrl}{$this->siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
-			$subject = "{$this->siteName} - Password reset request";
+			$subject = "{$fromName} - Password reset request";
+			$message = "Password reset request : <strong><a href=\"{$siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
 		}
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-		$headers .= "From: {$this->siteEmail}" . "\r\n";
-		return mail($email, $subject, $message, $headers);
+		return PHPMailer::mail([$email=>$name],$subject,$message);
 	}
 	public function __construct(){
 		$this->config = Config::auth();
@@ -134,16 +137,6 @@ class Auth{
 		else
 			$this->siteUrl = Domain::getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
-		if(isset($this->config['siteName']))
-			$this->siteName = $this->config['siteName'];
-		if(isset($this->config['siteEmail']))
-			$this->siteEmail = $this->config['siteEmail'];
-		if(isset($this->config['siteLoginUri']))
-			$this->siteLoginUri = $this->config['siteLoginUri'];
-		if(isset($this->config['siteActivateUri']))
-			$this->siteActivateUri = $this->config['siteActivateUri'];
-		if(isset($this->config['siteResetUri']))
-			$this->siteResetUri = $this->config['siteResetUri'];
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
 		if(isset($this->config['tableRequests'])&&$this->config['tableRequests'])
@@ -539,7 +532,7 @@ class Auth{
 		if(!$user->store()){
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!$this->sendMail($email, $type, $key)){
+		if(!$this->sendMail($email, $type, $key, $user['name'])){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 	}
@@ -752,7 +745,7 @@ class Auth{
 			if($this->isConnected())
 				$redirect = '403';
 			if($redirect===true)
-				$redirect = $this->siteLoginUri;
+				$redirect = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:'403';
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{
