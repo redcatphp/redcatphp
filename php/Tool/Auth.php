@@ -517,12 +517,7 @@ class Auth{
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$row = $this->db->findOne($this->tableRequests,' WHERE '.$this->db->safeColumn($this->tableUsers.'_id').' = ? AND type = ?',[$uid, $type]);
-		if(!$row){
-			$expiredate = strtotime($row['expire']);
-			$currentdate = strtotime(date("Y-m-d H:i:s"));
-			if($currentdate < $expiredate){ //allready-exists
-				return;
-			}
+		if($row){
 			$this->deleteRequest($row['id']);
 		}
 		$user = $this->getUser($uid);
