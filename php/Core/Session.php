@@ -17,9 +17,11 @@ class Session{
 	static function setName($name){
 		self::$sessionName = $name;
 	}
+	static function exist(){
+		return isset($_COOKIE[self::$sessionName]);
+	}
 	static function setCookieLifetime($time){
 		self::$cookieLifetime = $time;
-		ini_set('session.cookie_lifetime',$time);
 	}
 	static function &set(){
 		self::start();
@@ -38,7 +40,9 @@ class Session{
 		$ref = $v;
 		return $ref;
 	}
-	static function &get(){
+	static function get(){
+		if(!self::exist())
+			return;
 		self::start();
 		$args = func_get_args();
 		$ref =& $_SESSION;

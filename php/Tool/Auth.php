@@ -443,8 +443,6 @@ class Auth{
 		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$name]);
 	}
 	private function addSession($user,$lifetime=0){
-		if(!Session::start())
-			return false;
 		Session::setCookieLifetime($lifetime);
 		Session::setKey($user['id']);
 		Session::set('_AUTH_',[
@@ -734,8 +732,7 @@ class Auth{
 	}
 	
 	function isConnected(){
-		if(Session::start())
-			return !!Session::get('_AUTH_');
+		return !!Session::get('_AUTH_');
 	}
 	function isAllowed($d){
 		return !!($d&$this->getRight());
@@ -766,7 +763,24 @@ class Auth{
 	function _lockServer($r,$redirect=true){
 		$action = Domain::getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/').(isset($_SERVER['QUERY_STRING'])&&$_SERVER['QUERY_STRING']?'?'.$_SERVER['QUERY_STRING']:'');
 		if(isset($_POST['__name__'])&&isset($_POST['__password__'])){
-			if($this->login($_POST['__name__'],$_POST['__password__'])===self::OK_LOGGED_IN){
+			$lifetime = 0;
+			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
+				switch($_POST['lifetime']){
+					case 'day':
+						$lifetime = 86400;
+					break;
+					case 'week':
+						$lifetime = 604800;
+					break;
+					case 'month':
+						$lifetime = 2592000;
+					break;
+					case 'year':
+						$lifetime = 31536000;
+					break;
+				}
+			}
+			if($this->login($_POST['__name__'],$_POST['__password__'],$lifetime)===self::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}
@@ -807,6 +821,16 @@ class Auth{
 		echo '<form id="form" action="'.$action.'" method="POST">
 			<label for="__name__">Login</label><input type="text" id="__name__" name="__name__" placeholder="Login"><br>
 			<label id="password" for="__password__">Password</label><input type="password" id="__password__" name="__password__" placeholder="Password"><br>
+			<fieldset>
+				<label for="remember">Remember me</label>
+				<input type="checkbox" name="remember" value="1">
+				<select name="lifetime">
+					<option value="day">One Day</option>
+					<option value="week" selected>One Week</option>
+					<option value="month">One Month</option>
+					<option value="year">One Year</option>
+				</select>
+			</fieldset>
 			<input id="submit" value="Connection" type="submit">
 		</form>
 		</body></html>';
