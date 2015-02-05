@@ -1,7 +1,7 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\FS;
 use Surikat\Core\Images;
-use Surikat\Core\Exception_Upload;
+use Surikat\Core\ExceptionUpload;
 abstract class Uploader{
 	static function image($conf){
 		$conf = array_merge([
@@ -30,7 +30,7 @@ abstract class Uploader{
 						$img = imagecreatefrompng($file);
 					break;
 					default:
-						throw new Exception_Upload('image format conversion not supported');
+						throw new ExceptionUpload('image format conversion not supported');
 					break;
 				}
 				$file = substr($file,0,-1*strlen($ext)).$conversion;
@@ -51,7 +51,7 @@ abstract class Uploader{
 		},function($file){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 			if(!in_array($ext,(array)$extensions))
-				throw new Exception_Upload('extension');
+				throw new ExceptionUpload('extension');
 		});
 	}
 	protected static $extensionRewrite = [
@@ -66,11 +66,11 @@ abstract class Uploader{
 	}
 	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null,$maxFileSize=null){
 		if($file['error']!==UPLOAD_ERR_OK)
-			throw new Exception_Upload($file['error']);
+			throw new ExceptionUpload($file['error']);
 		if($mime&&stripos($file['type'],$mime)!==0)
-			throw new Exception_Upload('type');
+			throw new ExceptionUpload('type');
 		if($maxFileSize&&filesize($file['tmp_name'])>$maxFileSize)
-			throw new Exception_Upload(UPLOAD_ERR_FORM_SIZE);
+			throw new ExceptionUpload(UPLOAD_ERR_FORM_SIZE);
 		FS::mkdir($dir);
 		$name = self::formatFilename($file['name']);
 		if($nooverw){
@@ -82,7 +82,7 @@ abstract class Uploader{
 		if($precallback)
 			$precallback($dir.$name);
 		if(!move_uploaded_file($file['tmp_name'],$dir.$name))
-			throw new Exception_Upload('move_uploaded_file');
+			throw new ExceptionUpload('move_uploaded_file');
 		if($callback)
 			$callback($dir.$name);
 	}
