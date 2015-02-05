@@ -2,6 +2,7 @@
 use Surikat\Core\FS;
 use Surikat\Core\Domain;
 use Surikat\Core\SessionHandler;
+use Surikat\Core\Exception;
 class Session{
 	private static $id;
 	private static $key;
@@ -11,6 +12,7 @@ class Session{
 	private static $maxAttempts = 10;
 	protected static $attemptsPath;
 	protected static $blockedWait = 1800;
+	protected static $regeneratePeriod = 10;
 	static function __initialize(){
 		self::$attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 	}
@@ -60,28 +62,51 @@ class Session{
 	}
 	static function setKey($skey=null){
 		self::destroyKey($skey);
-		if(!self::$id)
-			self::start();
+		self::start();
 		$tmp = [];
 		foreach($_SESSION as $k=>$v)
 			$tmp[$k] = $v;
 		$_SESSION = [];
 		session_destroy();
-		$id = $skey.'.'.self::$id;
-		session_id($id);
+		session_write_close();
+		$id = self::$id;
+		if($p=strpos($id,'-'))
+			$id = substr($id,$p+1);
+		$id = $skey.'-'.$id;
 		file_put_contents(self::getSavePath().self::getSessionName().'_'.$id,''); //prevent record a failed attempt
+		session_id($id);
 		session_start();
+		self::$id = $id;
 		foreach($tmp as $k=>$v)
 			$_SESSION[$k] = $v;
 		self::$key = $skey;
+	}
+	static function checkBlocked(){
+		if($s=self::isBlocked()){
+			self::removeCookie();
+			self::sessionHandler()->setWrite(false);
+			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
+		}
 	}
 	static function start(){
 		if(!self::$id){
 			self::handle();
 			session_name(self::$sessionName);
+			$id = isset($_COOKIE[self::$sessionName])?$_COOKIE[self::$sessionName]:self::generateId();
+			session_id($id);
+			if(strpos($id,'-')!==false){
+				self::checkBlocked();
+				if(!is_file(self::getSavePath().self::$sessionName.'_'.$id)){
+					self::addAttempt();
+					self::checkBlocked();
+				}
+			}
 			if(session_start()){
 				self::regenerate();
 				self::$id = session_id();
+			}
+			else{
+				throw new Exception('Unable to start session');
 			}
 		}
 		return self::$id;
@@ -102,19 +127,17 @@ class Session{
 		return SURIKAT_TMP.'sessions/';
 	}
 	static function getSessionName(){
-		return str_replace('.','-',self::$sessionName);
+		return str_replace('-','_',self::$sessionName);
 	}
 	private static function sessionHandler(){
 		if(!isset(self::$handler)){
 			$d = self::getSavePath();
-			@ini_set('session.gc_probability',1);			// Initialise le garbage collector (rares bugs php)
-			@ini_set('session.gc_divisor',1000);			// Idem
+			@ini_set('session.gc_probability',1);
+			@ini_set('session.gc_divisor',1000);
 			@ini_set('session.gc_maxlifetime',3600);
 			ini_set('session.save_path',$d);
 			ini_set('session.use_cookies',1);
 			ini_set('session.use_only_cookies',1);
-			//ini_set('session.entropy_file', '/dev/urandom');
-			//ini_set('session.entropy_length', '512');
 			FS::mkdir($d);
 			self::$handler = new SessionHandler(self::$sessionName);
 		}
@@ -141,7 +164,7 @@ class Session{
 	private static function regenerate(){
 		$now = time();
 		if(!isset($_SESSION['_EXPIRE_'])){
-			$_SESSION['_EXPIRE_'] = $now+ini_get('session.gc_maxlifetime');
+			$_SESSION['_EXPIRE_'] = $now+self::$regeneratePeriod;
 			$_SESSION['_IP_'] = $_SERVER['REMOTE_ADDR'];
 			$_SESSION['_AGENT_'] = $_SERVER['HTTP_USER_AGENT'];
 		}
@@ -153,16 +176,29 @@ class Session{
 		){
 			session_destroy();
 			session_write_close();
+			session_id(self::generateId());
 			session_start();
 		}
 		elseif($now>=$_SESSION['_EXPIRE_']||$_SESSION['_IP_']!=$_SERVER['REMOTE_ADDR']||$_SESSION['_AGENT_']!=$_SERVER['HTTP_USER_AGENT']){
-			$_SESSION['_EXPIRE_'] = $now+ini_get('session.gc_maxlifetime');
-			session_regenerate_id(true);
-			$sid = session_id();
+			$_SESSION['_EXPIRE_'] = $now+self::$regeneratePeriod;
+			$tmp = [];
+			foreach($_SESSION as $k=>$v)
+				$tmp[$k] = $v;
+			$id = session_id();
+			$prefix = '';
+			if($p=strpos($id,'-'))
+				$prefix = substr($id,0,$p).'-';
+			session_destroy();
 			session_write_close();
+			$sid = self::generateId($prefix);
 			session_id($sid);
 			session_start();
+			foreach($tmp as $k=>$v)
+				$_SESSION[$k] = $v;
 		}
+	}
+	static function generateId($prefix=''){
+		return $prefix.base64_encode(hash('sha512',uniqid('',true).uniqid('',true)));
 	}
 	static function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
