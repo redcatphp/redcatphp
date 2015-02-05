@@ -12,7 +12,7 @@ class Session{
 	private static $maxAttempts = 10;
 	protected static $attemptsPath;
 	protected static $blockedWait = 1800;
-	protected static $regeneratePeriod = 10;
+	protected static $regeneratePeriod = 3600;
 	static function __initialize(){
 		self::$attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 	}
