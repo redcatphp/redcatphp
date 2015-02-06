@@ -175,7 +175,7 @@ class Auth{
 			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$this->superRoot]);
 			if(!$id){
 				$id = $this->db
-					->newOne($this->tableUsers,['name'=>$this->superRoot,'active'=>1])
+					->newOne($this->tableUsers,['name'=>$this->superRoot,'active'=>1,'type'=>'root'])
 					->store()
 				;
 				if(!$id){
@@ -349,9 +349,10 @@ class Auth{
 		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
 		$password = $this->getHash($password, $salt);
 		$row->name = $name;
-		$row->password = $password;
 		$row->email = $email;
+		$row->password = $password;
 		$row->salt = $salt;
+		$row->type = 'local';
 		if(!$row->store()){
 			$row->trash();
 			return self::ERROR_SYSTEM_ERROR;
