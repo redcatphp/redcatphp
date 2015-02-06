@@ -1,12 +1,19 @@
 <?php namespace Surikat\Service;
 use Surikat\Core\Session;
 class ServiceAuth {
+	static function infos(){
+		header('Content-Type: application/json; charset=UTF-8');
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+		header('Pragma: no-cache');
+		echo json_encode(Session::get('_AUTH_'));
+	}
 	static function email(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode(Session::get('email'));
+		echo json_encode(Session::get('_AUTH_','email'));
 	}
 	static function persona(){
 		$response = '';
