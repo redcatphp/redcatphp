@@ -4,6 +4,7 @@
 /config/db.php
 /config/db.*.php
 /config/auth.php
+/config/mailer.php
 /Surikat
 *.min.css
 *.min.js

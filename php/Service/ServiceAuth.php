@@ -1,7 +1,6 @@
 <?php namespace Surikat\Service;
 use Surikat\Core\Session;
-class ServicePersona {
-    protected $audience; //Scheme, hostname and port
+class ServiceAuth {
 	static function email(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
@@ -9,7 +8,7 @@ class ServicePersona {
 		header('Pragma: no-cache');
 		echo json_encode(Session::get('email'));
 	}
-	static function login(){
+	static function persona(){
 		$response = '';
 		if(isset($_POST['assertion'])){
 			$assertion = $_POST['assertion'];

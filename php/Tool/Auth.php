@@ -297,7 +297,7 @@ class Auth{
 			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$this->superRoot]);
 			if(!$id){
 				$id = $this->db
-					->newOne($this->tableUsers,['name'=>$this->superRoot])
+					->newOne($this->tableUsers,['name'=>$this->superRoot,'active'=>1])
 					->store()
 				;
 				if(!$id){
