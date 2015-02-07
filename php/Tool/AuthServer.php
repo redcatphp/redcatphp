@@ -20,13 +20,13 @@ class AuthServer{
 			$ajax = HTTP::isAjax();
 			switch($r){
 				case Auth::OK_LOGGED_IN:
-					if($ajax){
+					if(!$ajax){
 						Session::set('Auth','result',$action,$r);
 						HTTP::reloadLocation();
 					}
 				break;
 				case Auth::OK_REGISTER_SUCCESS:
-					if($ajax){
+					if(!$ajax){
 						Session::set('Auth','result',$action,$r);
 						HTTP::reloadLocation();
 					}
