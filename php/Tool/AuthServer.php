@@ -15,8 +15,6 @@ class AuthServer{
 		$r = null;
 		if(method_exists($this,$action)){
 			$r = $this->$action();
-			if(!$r)
-				$r = Session::get('Auth','result',$action);
 			$ajax = HTTP::isAjax();
 			switch($r){
 				case Auth::OK_LOGGED_IN:
@@ -32,6 +30,8 @@ class AuthServer{
 					}
 				break;
 			}
+			if(!$r)
+				$r = Session::get('Auth','result',$action);
 		}
 		return $r;
 	}
@@ -90,7 +90,7 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = Domain::getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/').(isset($_SERVER['QUERY_STRING'])&&$_SERVER['QUERY_STRING']?'?'.$_SERVER['QUERY_STRING']:'');
+		$action = Domain::getLocation();
 		if(isset($_POST['__name__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
