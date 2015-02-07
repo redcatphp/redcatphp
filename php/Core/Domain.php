@@ -56,4 +56,7 @@ abstract class Domain {
 		else
 			return null;
 	}
+	static function getLocation(){
+		return self::getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/').(isset($_SERVER['QUERY_STRING'])&&$_SERVER['QUERY_STRING']?'?'.$_SERVER['QUERY_STRING']:'');
+	}
 }

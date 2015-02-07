@@ -1,6 +1,13 @@
 <?php namespace Surikat\Core;
 use Closure;
+use Surikat\Core\Domain;
 abstract class HTTP{
+	static function reloadLocation(){
+		header('Location: '.Domain::getLocation(),false,302);
+	}
+	static function isAjax(){
+		return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';
+	}
 	static function getallheaders(){ //for ngix compatibility
 		if(function_exists('getallheaders')){
 			return call_user_func_array('getallheaders',func_get_args());

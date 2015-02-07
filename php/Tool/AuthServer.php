@@ -1,6 +1,7 @@
 <?php namespace Surikat\Tool;
 use Surikat\Core\Domain;
 use Surikat\Core\Session;
+use Surikat\Core\HTTP;
 use Surikat\Tool\Auth;
 use Surikat\I18n\Lang;
 class AuthServer{
@@ -10,16 +11,40 @@ class AuthServer{
 			$auth = new Auth();
 		$this->Auth = $auth;
 	}
+	function action($action){
+		$r = null;
+		if(method_exists($this,$action)){
+			$r = $this->$action();
+			if(!$r)
+				$r = Session::get('Auth','result',$action);
+			$ajax = HTTP::isAjax();
+			switch($r){
+				case Auth::OK_LOGGED_IN:
+					if($ajax){
+						Session::set('Auth','result',$action,$r);
+						HTTP::reloadLocation();
+					}
+				break;
+				case Auth::OK_REGISTER_SUCCESS:
+					if($ajax){
+						Session::set('Auth','result',$action,$r);
+						HTTP::reloadLocation();
+					}
+				break;
+			}
+		}
+		return $r;
+	}
 	function register(){
 		if(isset($_POST['email'])&&isset($_POST['name'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			$email = $_POST['email'];
 			$name = trim($_POST['name'])?$_POST['name']:$email;
-			Session::set('register','email',$email);
+			Session::set('Auth','email',$email);
 			return $this->Auth->register($email, $name, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
-		if($email=Session::get('register','email')){
+		if($email=Session::get('Auth','email')){
 			return $this->Auth->resendActivation($email);
 		}
 	}
