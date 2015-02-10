@@ -17,10 +17,10 @@ class Auth{
 	const ERROR_USER_BLOCKED = 1;
 	const ERROR_USER_BLOCKED_2 = 46;
 	const ERROR_USER_BLOCKED_3 = 47;
-	const ERROR_NAME_SHORT = 2;
-	const ERROR_NAME_LONG = 3;
-	const ERROR_NAME_INCORRECT = 4;
-	const ERROR_NAME_INVALID = 5;
+	const ERROR_LOGIN_SHORT = 2;
+	const ERROR_LOGIN_LONG = 3;
+	const ERROR_LOGIN_INCORRECT = 4;
+	const ERROR_LOGIN_INVALID = 5;
 	const ERROR_PASSWORD_SHORT = 6;
 	const ERROR_PASSWORD_LONG = 7;
 	const ERROR_PASSWORD_INVALID = 8;
@@ -31,14 +31,14 @@ class Auth{
 	const ERROR_NEWPASSWORD_LONG = 13;
 	const ERROR_NEWPASSWORD_INVALID = 14;
 	const ERROR_NEWPASSWORD_NOMATCH = 15;
-	const ERROR_NAME_PASSWORD_INVALID = 16;
-	const ERROR_NAME_PASSWORD_INCORRECT = 17;
+	const ERROR_LOGIN_PASSWORD_INVALID = 16;
+	const ERROR_LOGIN_PASSWORD_INCORRECT = 17;
 	const ERROR_EMAIL_INVALID = 18;
 	const ERROR_EMAIL_INCORRECT = 19;
 	const ERROR_NEWEMAIL_MATCH = 20;
 	const ERROR_ACCOUNT_INACTIVE = 21;
 	const ERROR_SYSTEM_ERROR = 22;
-	const ERROR_NAME_TAKEN = 23;
+	const ERROR_LOGIN_TAKEN = 23;
 	const ERROR_EMAIL_TAKEN = 24;
 	const ERROR_AUTHENTICATION_REQUIRED = 25;
 	const ERROR_ALREADY_AUTHENTICATED = 26;
@@ -101,7 +101,7 @@ class Auth{
 		return self::$instances[$k];
 	}
 	
-	function sendMail($email, $type, $key, $name){
+	function sendMail($email, $type, $key, $login){
 		$config = Config::mailer();
 				
 		$fromName = isset($config['fromName'])?$config['fromName']:null;
@@ -120,7 +120,7 @@ class Auth{
 			$subject = "{$fromName} - Password reset request";
 			$message = "Password reset request : <strong><a href=\"{$this->siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
 		}
-		return PHPMailer::mail([$email=>$name],$subject,$message);
+		return PHPMailer::mail([$email=>$login],$subject,$message);
 	}
 	public function __construct(){
 		$this->config = Config::auth();
@@ -153,13 +153,13 @@ class Auth{
 		if(strpos($pass,'$')!==0){
 			if($pass!=$password){
 				Session::addAttempt();
-				return self::ERROR_NAME_PASSWORD_INCORRECT;
+				return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 			}
 		}
 		else{
 			if(!password_verify($password, $pass)){
 				Session::addAttempt();
-				return self::ERROR_NAME_PASSWORD_INCORRECT;
+				return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 			}
 			else{
 				$options = ['cost' => $this->cost];
@@ -172,10 +172,10 @@ class Auth{
 			}
 		}
 		if($this->db){
-			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$this->superRoot]);
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->superRoot]);
 			if(!$id){
 				$id = $this->db
-					->newOne($this->tableUsers,['name'=>$this->superRoot,'active'=>1,'type'=>'root'])
+					->newOne($this->tableUsers,['login'=>$this->superRoot,'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,'active'=>1,'type'=>'root'])
 					->store()
 				;
 				if(!$id){
@@ -185,38 +185,39 @@ class Auth{
 		}
 		$this->addSession([
 			'id'=>$id,
-			'name'=>$this->superRoot,
+			'login'=>$this->superRoot,
+			'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
 			'email'=>isset($this->config['email'])?$this->config['email']:null,
 			'right'=>static::ROLE_ADMIN,
 		],$lifetime);
 		return self::OK_LOGGED_IN;
 	}
-	public function login($name, $password, $lifetime=0){
+	public function login($login, $password, $lifetime=0){
 		if($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		if($name==$this->superRoot)
+		if($login==$this->superRoot)
 			return $this->loginRoot($password,$lifetime);
-		if(!ctype_alnum($name)&&filter_var($name,FILTER_VALIDATE_EMAIL)){
-			$name = $this->db->getCell('SELECT name FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$name]);
+		if(!ctype_alnum($login)&&filter_var($login,FILTER_VALIDATE_EMAIL)){
+			$login = $this->db->getCell('SELECT login FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$login]);
 		}
 		try{
-			$this->validateUsername($name);
+			$this->validateLogin($login);
 			$this->validatePassword($password);
 		}
 		catch(Exception $e){
 			Session::addAttempt();
-			throw new Exception(self::ERROR_NAME_PASSWORD_INVALID);
+			throw new Exception(self::ERROR_LOGIN_PASSWORD_INVALID);
 		}
-		$uid = $this->getUID($name);
+		$uid = $this->getUID($login);
 		if(!$uid){
 			Session::addAttempt();
-			return self::ERROR_NAME_PASSWORD_INCORRECT;
+			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		$user = $this->getUser($uid);
 		if(!password_verify($password, $user['password'])){
 			Session::addAttempt();
-			return self::ERROR_NAME_PASSWORD_INCORRECT;
+			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		else{
 			$options = ['salt' => $user['salt'], 'cost' => $this->cost];
@@ -239,12 +240,15 @@ class Auth{
 		return self::OK_LOGGED_IN;
 	}
 
-	public function register($email, $name, $password, $repeatpassword){
+	public function register($email, $login, $password, $repeatpassword, $name=null){
 		if ($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
+		if(!$name)
+			$name = $login;
 		$this->validateEmail($email);
-		$this->validateUsername($name);
+		$this->validateLogin($login);
+		$this->validateDisplayname($name);
 		$this->validatePassword($password);
 		if($password!==$repeatpassword){
 			return self::ERROR_PASSWORD_NOMATCH;
@@ -253,11 +257,11 @@ class Auth{
 			Session::addAttempt();
 			return self::ERROR_EMAIL_TAKEN;
 		}
-		if($this->isUsernameTaken($name)){
+		if($this->isLoginTaken($login)){
 			Session::addAttempt();
-			return self::ERROR_NAME_TAKEN;
+			return self::ERROR_LOGIN_TAKEN;
 		}
-		$this->addUser($email, $name, $password);
+		$this->addUser($email, $password, $login, $name);
 		return self::OK_REGISTER_SUCCESS;
 	}
 	public function activate($key){
@@ -306,15 +310,16 @@ class Auth{
 		return self::OK_RESET_REQUESTED;
 	}
 	public function logout(){
-		if(Session::destroy()){
+		if($this->isConnected()&&Session::destroy()){
 			return self::OK_LOGGED_OUT;
 		}
+		return Session::destroy();
 	}
 	public function getHash($string, $salt){
 		return password_hash($string, $this->algo, ['salt' => $salt, 'cost' => $this->cost]);
 	}
-	public function getUID($name){
-		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE name = ?',[$name]);
+	public function getUID($login){
+		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$login]);
 	}
 	private function addSession($user,$lifetime=0){
 		Session::setCookieLifetime($lifetime);
@@ -322,6 +327,7 @@ class Auth{
 		Session::set('_AUTH_',[
 			'id'=>$user['id'],
 			'email'=>$user['email'],
+			'login'=>$user['login'],
 			'name'=>$user['name'],
 			'right'=>$user['right'],
 		]);
@@ -330,10 +336,10 @@ class Auth{
 	private function isEmailTaken($email){
 		return !!$this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
 	}
-	private function isUsernameTaken($name){
-		return !!$this->getUID($name);
+	private function isLoginTaken($login){
+		return !!$this->getUID($login);
 	}
-	private function addUser($email, $name, $password){
+	private function addUser($email, $password, $login=null, $name=null){
 		$row = $this->db->create($this->tableUsers);
 		if(!$row->store()){
 			return self::ERROR_SYSTEM_ERROR;
@@ -348,6 +354,11 @@ class Auth{
 		}
 		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
 		$password = $this->getHash($password, $salt);
+		if(!$login)
+			$login = $email;
+		if(!$name)
+			$name = $login;
+		$row->login = $login;
 		$row->name = $name;
 		$row->email = $email;
 		$row->password = $password;
@@ -441,13 +452,19 @@ class Auth{
 	private function deleteRequest($id){
 		return $this->db->exec('DELETE FROM '.$this->db->safeTable($this->tableRequests).' WHERE id = ?',[$id]);
 	}
-	public function validateUsername($name){
-		if (strlen($name) < 1)
-			return self::ERROR_NAME_SHORT;
-		elseif (strlen($name) > 30)
-			return self::ERROR_NAME_LONG;
-		elseif (!ctype_alnum($name))
-			return self::ERROR_NAME_INVALID;
+	public function validateLogin($login){
+		if (strlen($login) < 1)
+			return self::ERROR_LOGIN_SHORT;
+		elseif (strlen($login) > 30)
+			return self::ERROR_LOGIN_LONG;
+		elseif (!ctype_alnum($login))
+			return self::ERROR_LOGIN_INVALID;
+	}
+	public function validateDisplayname($login){
+		if (strlen($login) < 1)
+			return self::ERROR_LOGIN_SHORT;
+		elseif (strlen($login) > 50)
+			return self::ERROR_LOGIN_LONG;
 	}
 	private function validatePassword($password){
 		if (strlen($password) < 6)

@@ -16,19 +16,21 @@ class AuthServer{
 		if(method_exists($this,$action)){
 			$r = $this->$action();
 			$ajax = HTTP::isAjax();
-			switch($r){
-				case Auth::OK_LOGGED_IN:
-					if(!$ajax){
-						Session::set('Auth','result',$action,$r);
-						HTTP::reloadLocation();
-					}
-				break;
-				case Auth::OK_REGISTER_SUCCESS:
-					if(!$ajax){
-						Session::set('Auth','result',$action,$r);
-						HTTP::reloadLocation();
-					}
-				break;
+			if(!is_bool($r)){
+				switch($r){
+					case Auth::OK_LOGGED_IN:
+						if(!$ajax){
+							Session::set('Auth','result',$action,$r);
+							HTTP::reloadLocation();
+						}
+					break;
+					case Auth::OK_REGISTER_SUCCESS:
+						if(!$ajax){
+							Session::set('Auth','result',$action,$r);
+							HTTP::reloadLocation();
+						}
+					break;
+				}
 			}
 			if(!$r)
 				$r = Session::get('Auth','result',$action);
@@ -36,11 +38,11 @@ class AuthServer{
 		return $r;
 	}
 	function register(){
-		if(isset($_POST['email'])&&isset($_POST['name'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
+		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			$email = $_POST['email'];
-			$name = trim($_POST['name'])?$_POST['name']:$email;
+			$login = trim($_POST['login'])?$_POST['login']:$email;
 			Session::set('Auth','email',$email);
-			return $this->Auth->register($email, $name, $_POST['password'], $_POST['confirm']);
+			return $this->Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
@@ -54,7 +56,7 @@ class AuthServer{
 		}
 	}
 	function login(){
-		if(isset($_POST['name'])&&isset($_POST['password'])){
+		if(isset($_POST['login'])&&isset($_POST['password'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
 				switch($_POST['lifetime']){
@@ -72,7 +74,7 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->Auth->login($_POST['name'], $_POST['password'], $lifetime);
+			return $this->Auth->login($_POST['login'], $_POST['password'], $lifetime);
 		}
 	}
 	function resetreq(){
@@ -91,7 +93,7 @@ class AuthServer{
 	
 	function htmlLock($r,$redirect=true){
 		$action = Domain::getLocation();
-		if(isset($_POST['__name__'])&&isset($_POST['__password__'])){
+		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
 				switch($_POST['lifetime']){
@@ -109,7 +111,7 @@ class AuthServer{
 					break;
 				}
 			}
-			if($this->Auth->login($_POST['__name__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
+			if($this->Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}
@@ -148,7 +150,7 @@ class AuthServer{
 			echo $this->Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">
-			<label for="__name__">Login</label><input type="text" id="__name__" name="__name__" placeholder="Login"><br>
+			<label for="__login__">Login</label><input type="text" id="__login__" name="__login__" placeholder="Login"><br>
 			<label id="password" for="__password__">Password</label><input type="password" id="__password__" name="__password__" placeholder="Password"><br>
 			<fieldset>
 				<label for="remember">Remember me</label>
@@ -174,10 +176,10 @@ class AuthServer{
 				Auth::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),
 				Auth::ERROR_USER_BLOCKED_2 => __("Too many failed attempts, try again in %d minutes and %d seconds",null,'auth'),
 				Auth::ERROR_USER_BLOCKED_3 => __("Too many failed attempts, try again in :",null,'auth'),
-				Auth::ERROR_NAME_SHORT => __("Username is too short",null,'auth'),
-				Auth::ERROR_NAME_LONG => __("Username is too long",null,'auth'),
-				Auth::ERROR_NAME_INCORRECT => __("Username is incorrect",null,'auth'),
-				Auth::ERROR_NAME_INVALID => __("Username is invalid",null,'auth'),
+				Auth::ERROR_LOGIN_SHORT => __("Login is too short",null,'auth'),
+				Auth::ERROR_LOGIN_LONG => __("Login is too long",null,'auth'),
+				Auth::ERROR_LOGIN_INCORRECT => __("Login is incorrect",null,'auth'),
+				Auth::ERROR_LOGIN_INVALID => __("Login is invalid",null,'auth'),
 				Auth::ERROR_PASSWORD_SHORT => __("Password is too short",null,'auth'),
 				Auth::ERROR_PASSWORD_LONG => __("Password is too long",null,'auth'),
 				Auth::ERROR_PASSWORD_INVALID => __("Password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
@@ -188,14 +190,14 @@ class AuthServer{
 				Auth::ERROR_NEWPASSWORD_LONG => __("New password is too long",null,'auth'),
 				Auth::ERROR_NEWPASSWORD_INVALID => __("New password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
 				Auth::ERROR_NEWPASSWORD_NOMATCH => __("New passwords do not match",null,'auth'),
-				Auth::ERROR_NAME_PASSWORD_INVALID => __("Username / Password are invalid",null,'auth'),
-				Auth::ERROR_NAME_PASSWORD_INCORRECT => __("Username / Password are incorrect",null,'auth'),
+				Auth::ERROR_LOGIN_PASSWORD_INVALID => __("Login / Password are invalid",null,'auth'),
+				Auth::ERROR_LOGIN_PASSWORD_INCORRECT => __("Login / Password are incorrect",null,'auth'),
 				Auth::ERROR_EMAIL_INVALID => __("Email address is invalid",null,'auth'),
 				Auth::ERROR_EMAIL_INCORRECT => __("Email address is incorrect",null,'auth'),
 				Auth::ERROR_NEWEMAIL_MATCH => __("New email matches previous email",null,'auth'),
 				Auth::ERROR_ACCOUNT_INACTIVE => __("Account has not yet been activated",null,'auth'),
 				Auth::ERROR_SYSTEM_ERROR => __("A system error has been encountered. Please try again",null,'auth'),
-				Auth::ERROR_NAME_TAKEN => __("The name is already taken",null,'auth'),
+				Auth::ERROR_LOGIN_TAKEN => __("The login is already taken",null,'auth'),
 				Auth::ERROR_EMAIL_TAKEN => __("The email address is already in use",null,'auth'),
 				Auth::ERROR_AUTHENTICATION_REQUIRED => __("Authentication required",null,'auth'),
 				Auth::ERROR_ALREADY_AUTHENTICATED => __("You are already authenticated",null,'auth'),
