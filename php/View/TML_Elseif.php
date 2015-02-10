@@ -1,8 +1,9 @@
 <?php namespace Surikat\View; 
-class TML_Elseif extends TML {
+class TML_Elseif extends TML_If {
 	protected $selfClosed = true;
-	protected $hiddenWrap = true;
 	function load(){
-		$this->head("<?php }elseif{?>\n");
+		array_unshift($this->head,'<?php }elseif('.$this->evalSource()."){?>\n");
+		if(!$this->selfClosed)
+			array_push($this->foot,"<?php }?>\n");
 	}
 }
