@@ -4,6 +4,7 @@ use Surikat\Core\Session;
 use Surikat\Core\HTTP;
 use Surikat\Tool\Auth;
 use Surikat\I18n\Lang;
+Lang::initialize();
 class AuthServer{
 	protected $messages = [];
 	function __construct(Auth $auth=null){

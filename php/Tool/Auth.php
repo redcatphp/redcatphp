@@ -4,16 +4,22 @@ use Surikat\Core\Session;
 use Surikat\Core\FS;
 use Surikat\Core\HTTP;
 use Surikat\Model\R;
-use Surikat\I18n\Lang;
-use Surikat\Tool\AuthDigest;
 use Surikat\Tool\PHPMailer;
 use Core\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
 }
-Lang::initialize();
 class Auth{
+
+	const RIGHT_MANAGE = 2;
+	const RIGHT_EDIT = 4;
+	const RIGHT_MODERATE = 8;
+	
+	const ROLE_ADMIN = 14;
+	const ROLE_EDITOR = 4;
+	const ROLE_MODERATOR = 8;
+	
 	const ERROR_USER_BLOCKED = 1;
 	const ERROR_USER_BLOCKED_2 = 46;
 	const ERROR_USER_BLOCKED_3 = 47;
@@ -51,7 +57,6 @@ class Auth{
 	const ERROR_RESET_EXISTS = 33;
 	const ERROR_ALREADY_ACTIVATED = 34;
 	const ERROR_ACTIVATION_EXISTS = 35;
-	
 	const OK_PASSWORD_CHANGED = 36;
 	const OK_EMAIL_CHANGED = 37;
 	const OK_ACCOUNT_ACTIVATED = 38;
@@ -62,15 +67,6 @@ class Auth{
 	const OK_PASSWORD_RESET = 43;
 	const OK_RESET_REQUESTED = 44;
 	const OK_ACTIVATION_SENT = 45;
-	
-
-	const RIGHT_MANAGE = 2;
-	const RIGHT_EDIT = 4;
-	const RIGHT_MODERATE = 8;
-	
-	const ROLE_ADMIN = 14;
-	const ROLE_EDITOR = 4;
-	const ROLE_MODERATOR = 8;
 	
 	static $instances;
 	private $db;
