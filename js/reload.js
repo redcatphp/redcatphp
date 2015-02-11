@@ -1,7 +1,8 @@
 $js('jquery',function(){
 	$.fn.reload = function(target){
 		return this.each(function(){
-			$(this).find('[data-reload]').each(function(){
+			var self = $(this);
+			self.find('[data-reload]').each(function(){
 				var load = $(this).attr('data-reload');
 				var t = target;
 				if(target){
@@ -11,7 +12,7 @@ $js('jquery',function(){
 					t = $('*[data-load="'+load+'"][data-href]',t);
 				}
 				else{
-					t = $('*[data-load="'+load+'"][data-href]');
+					t = $('*[data-load="'+load+'"][data-href]',self);
 				}
 				t.each(function(){
 					var href = $(this).attr('data-href');
