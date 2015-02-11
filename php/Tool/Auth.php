@@ -27,6 +27,7 @@ class Auth{
 	const ERROR_LOGIN_LONG = 3;
 	const ERROR_LOGIN_INCORRECT = 4;
 	const ERROR_LOGIN_INVALID = 5;
+	const ERROR_NAME_INVALID =  48;
 	const ERROR_PASSWORD_SHORT = 6;
 	const ERROR_PASSWORD_LONG = 7;
 	const ERROR_PASSWORD_INVALID = 8;
@@ -188,6 +189,31 @@ class Auth{
 		],$lifetime);
 		return self::OK_LOGGED_IN;
 	}
+	public function loginPersona($email,$lifetime=0){
+		$id = 0;
+		if($e=$this->validateEmail($email))
+			return $e;
+		if($this->db){
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->superRoot]);
+			if(!$id){
+				$id = $this->db
+					->newOne($this->tableUsers,['login'=>$this->superRoot,'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,'active'=>1,'type'=>'root'])
+					->store()
+				;
+				if(!$id){
+					return self::ERROR_SYSTEM_ERROR;
+				}
+			}
+		}
+		$this->addSession([
+			'id'=>$id,
+			'login'=>$this->superRoot,
+			'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
+			'email'=>isset($this->config['email'])?$this->config['email']:null,
+			'right'=>static::ROLE_ADMIN,
+		],$lifetime);
+		return self::OK_LOGGED_IN;
+	}
 	public function login($login, $password, $lifetime=0){
 		if($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
@@ -197,13 +223,9 @@ class Auth{
 		if(!ctype_alnum($login)&&filter_var($login,FILTER_VALIDATE_EMAIL)){
 			$login = $this->db->getCell('SELECT login FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$login]);
 		}
-		try{
-			$this->validateLogin($login);
-			$this->validatePassword($password);
-		}
-		catch(Exception $e){
+		if($e=($this->validateLogin($login)||$this->validatePassword($password))){
 			Session::addAttempt();
-			throw new Exception(self::ERROR_LOGIN_PASSWORD_INVALID);
+			return self::ERROR_LOGIN_PASSWORD_INVALID;
 		}
 		$uid = $this->getUID($login);
 		if(!$uid){
@@ -242,10 +264,14 @@ class Auth{
 		}
 		if(!$name)
 			$name = $login;
-		$this->validateEmail($email);
-		$this->validateLogin($login);
-		$this->validateDisplayname($name);
-		$this->validatePassword($password);
+		if($e=$this->validateEmail($email))
+			return $e;
+		if($e=$this->validateLogin($login))
+			return $e;
+		if($e=$this->validateDisplayname($name))
+			return $e;
+		if($e=$this->validatePassword($password))
+			return $e;
 		if($password!==$repeatpassword){
 			return self::ERROR_PASSWORD_NOMATCH;
 		}
@@ -285,23 +311,16 @@ class Auth{
 		if ($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		try{
-			$this->validateEmail($email);
-		}
-		catch(Exception $e){
-			throw new Exception(self::ERROR_EMAIL_INVALID);
-		}
+		if($e=$this->validateEmail($email))
+			return $e;
 		$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
 		if(!$id){
 			Session::addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
 		}
-		try{
-			$this->addRequest($id, $email, 'reset');
-		}
-		catch(Exception $e){
+		if($e=$this->addRequest($id, $email, 'reset')){
 			Session::addAttempt();
-			throw $e;
+			return $e;
 		}
 		return self::OK_RESET_REQUESTED;
 	}
@@ -341,12 +360,9 @@ class Auth{
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$uid = $row->id;
-		try{
-			$this->addRequest($uid, $email, "activation");
-		}
-		catch(Exception $e){
+		if($e=$this->addRequest($uid, $email, "activation")){
 			$row->trash();
-			throw $e;
+			return $e;
 		}
 		$salt = substr(strtr(base64_encode(\mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
 		$password = $this->getHash($password, $salt);
@@ -374,12 +390,9 @@ class Auth{
 		if ($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		try{
-			$this->validatePassword($password);
-		}
-		catch(Exception $e){
+		if($e=$this->validatePassword($password)){
 			Session::addAttempt();
-			throw $e;
+			return $e;
 		}
 		$getUser = $this->getUser($uid);
 		if(!password_verify($password, $getUser['password'])){
@@ -458,9 +471,9 @@ class Auth{
 	}
 	public function validateDisplayname($login){
 		if (strlen($login) < 1)
-			return self::ERROR_LOGIN_SHORT;
+			return self::ERROR_NAME_INVALID;
 		elseif (strlen($login) > 50)
-			return self::ERROR_LOGIN_LONG;
+			return self::ERROR_NAME_INVALID;
 	}
 	private function validatePassword($password){
 		if (strlen($password) < 6)
@@ -481,7 +494,8 @@ class Auth{
 		if(strlen($key) != 40){
 			return self::ERROR_RESETKEY_INVALID;
 		}
-		$this->validatePassword($password);
+		if($e=$this->validatePassword($password))
+			return $e;
 		if($password !== $repeatpassword){ // Passwords don't match
 			return self::ERROR_NEWPASSWORD_NOMATCH;
 		}
@@ -507,7 +521,8 @@ class Auth{
 		if ($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		$this->validateEmail($email);
+		if($e=$this->validateEmail($email))
+			return $r;
 		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
 		if(!$row){
 			Session::addAttempt();
@@ -517,12 +532,9 @@ class Auth{
 			Session::addAttempt();
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
-		try{
-			$this->addRequest($row['id'], $email, "activation");
-		}
-		catch(Exception $e){
+		if($e=$this->addRequest($row['id'], $email, "activation")){
 			Session::addAttempt();
-			throw $e;
+			return $e;
 		}
 		return self::OK_ACTIVATION_SENT;
 	}
@@ -530,14 +542,12 @@ class Auth{
 		if ($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		try{
-			$this->validatePassword($currpass);
-		}
-		catch(Exception $e){
+		if($e=$this->validatePassword($currpass)){
 			Session::addAttempt();
-			throw $e;
+			return $e;
 		}
-		$this->validatePassword($newpass);
+		if($e=$this->validatePassword($newpass))
+			return $e;
 		if($newpass !== $repeatnewpass){
 			return self::ERROR_NEWPASSWORD_NOMATCH;
 		}
@@ -569,13 +579,10 @@ class Auth{
 		if($s=Session::isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		$this->validateEmail($email);
-		try{
-			$this->validatePassword($password);
-		}
-		catch(Exception $e){
-			throw new Exception(self::ERROR_PASSWORD_NOTVALID);
-		}
+		if($e=$this->validateEmail($email))
+			return $e;
+		if($e=$this->validatePassword($password))
+			return $e;
 		$user = $this->getUser($uid);
 		if(!$user){
 			Session::addAttempt();

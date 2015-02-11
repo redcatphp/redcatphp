@@ -1,5 +1,6 @@
 <?php namespace Surikat\Service;
 use Surikat\Core\Session;
+use Surikat\Tool\Auth;
 class ServiceAuth {
 	static function infos(){
 		header('Content-Type: application/json; charset=UTF-8');

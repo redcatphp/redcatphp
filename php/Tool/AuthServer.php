@@ -181,6 +181,7 @@ class AuthServer{
 				Auth::ERROR_LOGIN_LONG => __("Login is too long",null,'auth'),
 				Auth::ERROR_LOGIN_INCORRECT => __("Login is incorrect",null,'auth'),
 				Auth::ERROR_LOGIN_INVALID => __("Login is invalid",null,'auth'),
+				Auth::ERROR_NAME_INVALID => __("Name is invalid",null,'auth'),
 				Auth::ERROR_PASSWORD_SHORT => __("Password is too short",null,'auth'),
 				Auth::ERROR_PASSWORD_LONG => __("Password is too long",null,'auth'),
 				Auth::ERROR_PASSWORD_INVALID => __("Password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
