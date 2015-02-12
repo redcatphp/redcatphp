@@ -291,7 +291,7 @@ class SCSSC {
 	protected function evalFree($__code){
 		ob_start();
 		$o = &$this;
-		set_error_handler(function($errno, $errstr, $errfile, $errline)use($o,$__code){
+		$h = set_error_handler(function($errno, $errstr, $errfile, $errline)use($o,$__code){
 			if(0===error_reporting())
 				return false;
 			ob_get_clean();
@@ -300,10 +300,9 @@ class SCSSC {
 		if(Dev::has(Dev::CSS)&&strpos($__code,'//:eval_debug'))
 			exit(print($__code));
 		eval('?>'.$__code);
-		if(error_get_last())
-			$o->throwError(" error in eval php code: %s",$__code);
 		$c = ob_get_clean();
-		restore_error_handler();
+		//restore_error_handler();
+		set_error_handler($h);
 		return $c;
 	}
 	
@@ -936,7 +935,7 @@ class SCSSC {
 				//$mixin = $this->get(self::$namespaces["mixin"] . $name, false);
 			//}
 			if (!$mixin)
-					$this->throwError("Undefined mixin $name");
+				$this->throwError("Undefined mixin $name");
 
 			$callingScope = $this->env;
 
@@ -2606,11 +2605,9 @@ class SCSSC {
 		if (func_num_args() > 1) {
 			$msg = call_user_func_array("sprintf", func_get_args());
 		}
-
 		if ($this->sourcePos >= 0 && isset($this->sourceParser)) {
 			$this->sourceParser->throwParseError($msg, $this->sourcePos);
 		}
-
 		throw new Exception($msg);
 	}
 

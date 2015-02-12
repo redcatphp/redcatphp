@@ -2,6 +2,7 @@
 use Surikat\Core\FS;
 use Surikat\Core\HTTP;
 use Surikat\Core\SCSSC;
+use Surikat\Core\Debug;
 use Exception;
 class SCSSCServer{
 	static function joinPath($left, $right) {
@@ -55,6 +56,8 @@ class SCSSCServer{
 				catch (Exception $e) {
 					header('HTTP/1.1 500 Internal Server Error');
 					echo 'Parse error: ' . $e->getMessage() . "\n";
+					if($e=error_get_last())
+						printf("%s in eval php: %s in %s:%s",Debug::errorType($e['type']),$e['message'],$e['file'],$e['line']);
 				}
 			} else {
 				header('X-SCSS-Cache: true');
