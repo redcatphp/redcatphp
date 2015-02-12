@@ -3,6 +3,7 @@ class Debug{
 	private static $errorHandler;
 	private static $registeredErrorHandler;
 	private static $debugLines = 5;
+	private static $errorType;
 	private static $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
 	static $debugWrapInlineCSS = 'margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;';
 	static function errorHandler($set=true){
@@ -55,7 +56,7 @@ class Debug{
 			header("Content-Type: text/html; charset=utf-8");
 			$html = true;
 		}
-		$msg = "Error\t$message\nFile\t$file\nLine\t$line";
+		$msg = self::$errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
 		if($html){
 			echo self::$debugStyle;
 			echo "<pre class=\"error\" style=\"".self::$debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
@@ -99,4 +100,25 @@ class Debug{
 			self::errorHandle(E_ERROR,$error['message'],$error['file'],$error['line']);
 		}
 	}
+	static function initialize(){
+		self::$errorType = [
+			E_ERROR           => 'error',
+			E_WARNING         => 'warning',
+			E_PARSE           => 'parsing error',
+			E_NOTICE          => 'notice',
+			E_CORE_ERROR      => 'core error',
+			E_CORE_WARNING    => 'core warning',
+			E_COMPILE_ERROR   => 'compile error',
+			E_COMPILE_WARNING => 'compile warning',
+			E_USER_ERROR      => 'user error',
+			E_USER_WARNING    => 'user warning',
+			E_USER_NOTICE     => 'user notice'
+		];
+		if(defined('E_STRICT'))
+		  self::$errorType[E_STRICT] = 'runtime notice';
+	}
+	static function errorType($code){
+		return isset(self::$errorType[$code])?self::$errorType[$code]:null;
+	}
 }
+Debug::initialize();
