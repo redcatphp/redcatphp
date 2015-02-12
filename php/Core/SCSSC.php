@@ -292,7 +292,7 @@ class SCSSC {
 		ob_start();
 		$o = &$this;
 		set_error_handler(function($errno, $errstr, $errfile, $errline)use($o,$__code){
-			if (0===error_reporting())
+			if(0===error_reporting())
 				return false;
 			ob_get_clean();
 			$o->throwError(" error in eval php: %s \r\n in code: %s",$errstr,$__code);
@@ -300,6 +300,8 @@ class SCSSC {
 		if(Dev::has(Dev::CSS)&&strpos($__code,'//:eval_debug'))
 			exit(print($__code));
 		eval('?>'.$__code);
+		if(error_get_last())
+			$o->throwError(" error in eval php code: %s",$__code);
 		$c = ob_get_clean();
 		restore_error_handler();
 		return $c;
