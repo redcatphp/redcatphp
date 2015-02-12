@@ -56,6 +56,28 @@ class AuthServer{
 			return $this->Auth->activate($_GET['key']);
 		}
 	}
+	function loginPersona(){
+		if(isset($_POST['email'])&&$_POST['email']==($email=Session::get('email'))){
+			$lifetime = 0;
+			if(isset($_POST['login'])){
+				switch($_POST['lifetime']){
+					case 'day':
+						$lifetime = 86400;
+					break;
+					case 'week':
+						$lifetime = 604800;
+					break;
+					case 'month':
+						$lifetime = 2592000;
+					break;
+					case 'year':
+						$lifetime = 31536000;
+					break;
+				}
+			}
+			return $this->Auth->loginPersona($email, $lifetime);
+		}
+	}
 	function login(){
 		if(isset($_POST['login'])&&isset($_POST['password'])){
 			$lifetime = 0;

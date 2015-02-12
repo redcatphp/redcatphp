@@ -15,10 +15,12 @@ class Auth{
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;
 	const RIGHT_MODERATE = 8;
+	const RIGHT_POST = 16;
 	
 	const ROLE_ADMIN = 14;
 	const ROLE_EDITOR = 4;
 	const ROLE_MODERATOR = 8;
+	const ROLE_MEMBER = 16;
 	
 	const ERROR_USER_BLOCKED = 1;
 	const ERROR_USER_BLOCKED_2 = 46;
@@ -172,7 +174,13 @@ class Auth{
 			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->superRoot]);
 			if(!$id){
 				$id = $this->db
-					->newOne($this->tableUsers,['login'=>$this->superRoot,'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,'active'=>1,'type'=>'root'])
+					->newOne($this->tableUsers,[
+						'login'=>$this->superRoot,
+						'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
+						'email'=>isset($this->config['rootEmail'])?$this->config['rootEmail']:null,
+						'active'=>1,
+						'type'=>'root'
+					])
 					->store()
 				;
 				if(!$id){
@@ -186,32 +194,35 @@ class Auth{
 			'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
 			'email'=>isset($this->config['email'])?$this->config['email']:null,
 			'right'=>static::ROLE_ADMIN,
+			'type'=>'root'
 		],$lifetime);
 		return self::OK_LOGGED_IN;
 	}
 	public function loginPersona($email,$lifetime=0){
-		$id = 0;
 		if($e=$this->validateEmail($email))
 			return $e;
+		$userDefault = [,
+			'login'=>$email,
+			'name'=>$email,
+			'email'=>$email,
+			'type'=>'persona',
+			'right'=>static::ROLE_MEMBER,
+			'active'=>1,
+		];
 		if($this->db){
-			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->superRoot]);
-			if(!$id){
-				$id = $this->db
-					->newOne($this->tableUsers,['login'=>$this->superRoot,'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,'active'=>1,'type'=>'root'])
-					->store()
-				;
-				if(!$id){
+			$user = $this->db->findOne($this->tableUsers,' WHERE email = ? AND type = ?',[$email,'persona']);
+			if(!$user){
+				$user = $this->db->newOne($this->tableUsers,$userDefault);
+				if(!$user->store()){
 					return self::ERROR_SYSTEM_ERROR;
 				}
 			}
 		}
-		$this->addSession([
-			'id'=>$id,
-			'login'=>$this->superRoot,
-			'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
-			'email'=>isset($this->config['email'])?$this->config['email']:null,
-			'right'=>static::ROLE_ADMIN,
-		],$lifetime);
+		else{
+			$user = $userDefault;
+			$user['id'] = $email;
+		}
+		$this->addSession($user,$lifetime);
 		return self::OK_LOGGED_IN;
 	}
 	public function login($login, $password, $lifetime=0){
@@ -345,6 +356,7 @@ class Auth{
 			'login'=>$user['login'],
 			'name'=>$user['name'],
 			'right'=>$user['right'],
+			'type'=>$user['type'],
 		]);
 		return true;
 	}
@@ -375,6 +387,7 @@ class Auth{
 		$row->email = $email;
 		$row->password = $password;
 		$row->salt = $salt;
+		$row->right = static::ROLE_MEMBER;
 		$row->type = 'local';
 		if(!$row->store()){
 			$row->trash();
@@ -524,6 +537,7 @@ class Auth{
 		if($e=$this->validateEmail($email))
 			return $r;
 		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
+		var_dump($row);
 		if(!$row){
 			Session::addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
