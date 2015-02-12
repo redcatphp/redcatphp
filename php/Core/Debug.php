@@ -25,50 +25,70 @@ class Debug{
 		}
 	}
 	static function catchException($e){
-		if(!headers_sent())
+		$html = false;
+		if(!headers_sent()){
 			header("Content-Type: text/html; charset=utf-8");
-		echo self::$debugStyle;
-		echo '<pre class="error" style="'.self::$debugWrapInlineCSS.'"><span>Exception: '.$e->getMessage()."</span>\nStackTrace:\n";
-		echo '#'.get_class($e);
-		if(method_exists($e,'getData')){
-			echo ':';
-			var_dump($e->getData());
+			$html = true;
 		}
-		echo htmlentities($e->getTraceAsString());
-		echo '</pre>';
+		$msg = 'Exception: '.$e->getMessage();
+		if($html){
+			echo self::$debugStyle;
+			echo '<pre class="error" style="'.self::$debugWrapInlineCSS.'"><span>'.$msg."</span>\nStackTrace:\n";
+			echo '#'.get_class($e);
+			if(method_exists($e,'getData')){
+				echo ':';
+				var_dump($e->getData());
+			}
+			echo htmlentities($e->getTraceAsString());
+			echo '</pre>';
+		}
+		else{
+			echo strip_tags($msg);
+		}
 		return false;
 	}
 	static function errorHandle($code, $message, $file, $line){
 		if(!self::$errorHandler||!ini_get('error_reporting'))
 			return;
-		echo self::$debugStyle;
-		echo "<pre class=\"error\" style=\"".self::$debugWrapInlineCSS."\"><span>Error\t$message\nFile\t$file\nLine\t$line</span>\nContext:\n";
-		$f = file($file);
-		$c = count($f);
-		$start = $line-self::$debugLines;
-		$end = $line+self::$debugLines;
-		if($start<0)
-			$start = 0;
-		if($end>($c-1))
-			$end = $c-1;
-		$e = '';
-		for($i=$start;$i<=$end;$i++){
-			$e .= $f[$i];
+		$html = false;
+		if(!headers_sent()){
+			header("Content-Type: text/html; charset=utf-8");
+			$html = true;
 		}
-		$e = highlight_string('<?php '.$e,true);
-		$e = str_replace('<br />',"\n",$e);
-		$e = substr($e,35);
-		$x = explode("\n",$e);
-		$e = '<code><span style="color: #000000">';
-		for($i=0;$i<count($x);$i++){
-			$y = $start+$i;
-			$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
-			$e .= $x[$i]."\n";
+		$msg = "Error\t$message\nFile\t$file\nLine\t$line";
+		if($html){
+			echo self::$debugStyle;
+			echo "<pre class=\"error\" style=\"".self::$debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
+			$f = file($file);
+			$c = count($f);
+			$start = $line-self::$debugLines;
+			$end = $line+self::$debugLines;
+			if($start<0)
+				$start = 0;
+			if($end>($c-1))
+				$end = $c-1;
+			$e = '';
+			for($i=$start;$i<=$end;$i++){
+				$e .= $f[$i];
+			}
+			$e = highlight_string('<?php '.$e,true);
+			$e = str_replace('<br />',"\n",$e);
+			$e = substr($e,35);
+			$x = explode("\n",$e);
+			$e = '<code><span style="color: #000000">';
+			for($i=0;$i<count($x);$i++){
+				$y = $start+$i;
+				$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
+				$e .= $x[$i]."\n";
+			}
+			$p = strpos($e,'&lt;?php');
+			$e = substr($e,0,$p).substr($e,$p+8);
+			echo $e;
+			echo '</pre>';
 		}
-		$p = strpos($e,'&lt;?php');
-		$e = substr($e,0,$p).substr($e,$p+8);
-		echo $e;
-		echo '</pre>';
+		else{
+			echo strip_tags($msg);
+		}
 		return true;
 	}
 	static function fatalErrorHandle(){
