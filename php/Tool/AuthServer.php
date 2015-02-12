@@ -57,7 +57,7 @@ class AuthServer{
 		}
 	}
 	function loginPersona(){
-		if(isset($_POST['email'])&&$_POST['email']==($email=Session::get('email'))){
+		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=Session::get('email'))){
 			$lifetime = 0;
 			if(isset($_POST['login'])){
 				switch($_POST['lifetime']){
@@ -79,7 +79,7 @@ class AuthServer{
 		}
 	}
 	function login(){
-		if(isset($_POST['login'])&&isset($_POST['password'])){
+		if(isset($_POST['login'])&&$_POST['login']&&isset($_POST['password'])&&$_POST['password']){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
 				switch($_POST['lifetime']){
@@ -98,6 +98,9 @@ class AuthServer{
 				}
 			}
 			return $this->Auth->login($_POST['login'], $_POST['password'], $lifetime);
+		}
+		elseif(isset($_POST['email'])&&$_POST['email']){
+			return $this->loginPersona();
 		}
 	}
 	function resetreq(){

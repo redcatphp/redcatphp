@@ -201,7 +201,7 @@ class Auth{
 	public function loginPersona($email,$lifetime=0){
 		if($e=$this->validateEmail($email))
 			return $e;
-		$userDefault = [,
+		$userDefault = [
 			'login'=>$email,
 			'name'=>$email,
 			'email'=>$email,
