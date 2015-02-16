@@ -136,7 +136,7 @@ class Query {
 				break;
 			}
 		}
-		throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$f);
+		throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_class($this),$f));
 	}
 	function getQuery($removeUnbinded=true){
 		return $this->composer->getQuery($removeUnbinded);

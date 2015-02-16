@@ -13,7 +13,7 @@ abstract class STR{
 		return mb_strtolower($str,mb_detect_encoding($str));
 	}
 	// An example string like ÀØėÿᾜὨζὅБю will be translated to AOeyIOzoBY More complete than : strtr((string)$str,"ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ","aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn"); @author http://www.evaisse.net/2008/php-translit-remove-accent-unaccent-21001
-    static function unaccent($str, $utf8 = true){
+	static function unaccent($str, $utf8 = true){
 		static $transliteration = [
 			'Ĳ' => 'I', 'Ö' => 'O', 'Œ' => 'O', 'Ü' => 'U', 'ä' => 'a', 'æ' => 'a',
 			'ĳ' => 'i', 'ö' => 'o', 'œ' => 'o', 'ü' => 'u', 'ß' => 's', 'ſ' => 's',
@@ -137,7 +137,7 @@ abstract class STR{
 		if(!$utf8)
 			$str = utf8_encode($str);
 		return str_replace(array_keys($transliteration), array_values($transliteration), $str);
-    }
+	}
 	
 	static function html_convert_entities($string) {
 		return preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/S',['self','convert_entity'], $string);

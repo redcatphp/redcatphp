@@ -370,7 +370,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		if(is_callable([$this->bean,$func]))
 			return call_user_func_array([$this->bean,$func],$args);
 		else
-			throw new BadMethodCallException('Class "'.get_class($this).'": call to undefined method '.$func);
+			throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_class($this),$func));
 	}
 	function xownList($type){
 		return $this->__get('xown'.ucfirst($this->table).'_'.$type);

@@ -1,5 +1,5 @@
 <?php namespace Surikat\Core;
-class Debug{
+abstract class Debug{
 	private static $errorHandler;
 	private static $registeredErrorHandler;
 	private static $debugLines = 5;
