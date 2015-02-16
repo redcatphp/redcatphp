@@ -1,7 +1,8 @@
 <?php namespace Surikat\Core; 
 class Chrono {
 	static $sizeFactors = 'BKMGTP';
-	static $time;
+	private static $__times = [];
+	
 	static function sizeFromBytes($bytes,$dec=2){
 		return rtrim(sprintf("%.{$dec}f",(float)($bytes)/(float)pow(1024,$factor=floor((strlen($bytes)-1)/3))),'.0').' '.@self::$sizeFactors[$factor].($factor?'B':'ytes');
 	}
@@ -23,7 +24,6 @@ class Chrono {
 		return sprintf("%.{$dec}f", $v).' '.$u;
 	}
 
-	private static $__times = [];
 	static function start($k){
 		return self::$__times[$k] = microtime(true);
 	}
