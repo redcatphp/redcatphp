@@ -1,13 +1,12 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\Dependency;
 use ReflectionClass;
 use ReflectionProperty;
 use BadMethodCallException;
-use Surikat\Core\DependencyRegistry;
-trait DependencyInjector{
+use Dependency\Registry;
+trait Injector{
 	protected $__dependenciesRegistry = [];
-	protected $mapDependency = [];
 	protected $__protectedIsReadOnly;
-	function setDependency($key,$value){
+	private function dependencyMixedToObject($value){
 		if($value&&!is_object($value)){
 			if(is_array($value)&&!empty($value)){
 				$value = (new ReflectionClass(array_shift($value)))->newInstanceArgs($value);
@@ -16,29 +15,47 @@ trait DependencyInjector{
 				$value = new $value();
 			}
 		}
-		$this->__dependenciesRegistry[$key] = $value;
+		return $value;
+	}
+	function setDependency($key,$value){
+		$this->__dependenciesRegistry[$key] = $this->dependencyMixedToObject($value);
 		return $this;
 	}
 	function getDependency($key){
-		if(array_key_exists($key,$this->__dependenciesRegistry[$key]))
+		if(array_key_exists($key,$this->__dependenciesRegistry))
 			return $this->__dependenciesRegistry[$key];
 		$method = 'getDependency'.ucfirst($key);
-		if(method_exist($this,$method)){
+		if(method_exists($this,$method)){
 			return $this->setDependency($key,$this->$method())
 						->getDependency($key);
 		}
-		if(isset($this->mapDependency[$key])){
+		if(property_exists($this,'mapDependency')&&isset($this->mapDependency[$key])){
 			return $this->setDependency($key,$this->mapDependency[$key])
 						->getDependency($key);
 		}
-		return $this->defaultDependency($key);
-	}
-	function defaultDependency($key){
-		return $this->setDependency($key,$this->getDependencyInjector())
+		return $this->setDependency($key,$this->defaultDependency($key))
 					->getDependency($key);
 	}
+	function getNew($key){
+		$method = 'getDependency'.ucfirst($key);
+		if(method_exists($this,$method))
+			$new = $this->$method();
+		elseif(property_exists($this,'mapDependency')&&isset($this->mapDependency[$key]))
+			$new = $this->mapDependency[$key];
+		else
+			$new = $this->defaultNew($key);
+		return $this->dependencyMixedToObject($new);
+	}
+	function defaultNew($key){
+		if(strpos($key,'\\')===false)
+			$key = ucfirst($key).'\\'.ucfirst($key);
+		return Registry::instance($key);
+	}
+	function defaultDependency($key){
+		return $this->getDependencyInjector()->getDependency($key);
+	}
 	function getDependencyInjector(){
-		return DependencyRegistry::instance();
+		return Registry::instance();
 	}
 	function __call($f,$args){
 		if(strpos($f,'getDependency')===0&&ctype_upper(substr($f,13,1))){
@@ -48,7 +65,7 @@ trait DependencyInjector{
 			return $this->setDependency(lcfirst(substr($f,13)),$args);
 		}
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
-			if(property_exists($this,$p=substr($f,3)){
+			if(property_exists($this,$p=substr($f,3))){
 				$r = new ReflectionProperty(get_class($this),$p);
 				if($r->isPublic()||($this->__protectedIsReadOnly&&$r->isProtected()))
 					return $this->$p;
@@ -56,7 +73,7 @@ trait DependencyInjector{
 			return $this->getDependency(lcfirst(substr($f,3)));
 		}
 		if(strpos($f,'set')===0&&ctype_upper(substr($f,3,1))){
-			if(property_exists($this,$p=substr($f,3)){
+			if(property_exists($this,$p=substr($f,3))){
 				$r = new ReflectionProperty(get_class($this),$p);
 				if($r->isPublic()){
 					$this->$p = count($args)>1?$args:array_shift($args);
@@ -77,7 +94,7 @@ trait DependencyInjector{
 	static function setSelf(){
 		$args = func_get_args();
 		array_unshift($args,get_called_class());
-		return self::$__instance = call_user_func_array(['Core\DependencyRegistry','instance'],$args);
+		return self::$__instance = call_user_func_array(['Dependency\Registry','instance'],$args);
 	}
 	static function __callStatic($f,$args){
 		if(strpos($f,'self')===0&&ctype_upper(substr($f,4,1))){

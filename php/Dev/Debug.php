@@ -1,22 +1,22 @@
-<?php namespace Surikat\Core;
-abstract class Debug{
-	private static $errorHandler;
-	private static $registeredErrorHandler;
-	private static $debugLines = 5;
-	private static $errorType;
-	private static $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
-	static $debugWrapInlineCSS = 'margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;';
-	static function errorHandler($set=true){
-		self::$errorHandler = $set;
+<?php namespace Surikat\Dev;
+class Debug{
+	private $errorHandler;
+	private $registeredErrorHandler;
+	private $debugLines = 5;
+	private $errorType;
+	private $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
+	public $debugWrapInlineCSS = 'margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;';
+	function errorHandler($set=true){
+		$this->errorHandler = $set;
 		if($set){
 			error_reporting(-1);
 			ini_set('display_startup_errors',true);
 			ini_set('display_errors','stdout');
-			if(!self::$registeredErrorHandler){
-				self::$registeredErrorHandler = true;
-				set_error_handler(['Surikat\Core\Debug','errorHandle']);
-				register_shutdown_function(['Surikat\Core\Debug','fatalErrorHandle']);
-				set_exception_handler(['Surikat\Core\Debug','catchException']);
+			if(!$this->registeredErrorHandler){
+				$this->registeredErrorHandler = true;
+				set_error_handler([$this,'errorHandle']);
+				register_shutdown_function([$this,'fatalErrorHandle']);
+				set_exception_handler([$this,'catchException']);
 			}
 		}
 		else{
@@ -25,7 +25,7 @@ abstract class Debug{
 			ini_set('display_errors',false);
 		}
 	}
-	static function catchException($e){
+	function catchException($e){
 		$html = false;
 		if(!headers_sent()){
 			header("Content-Type: text/html; charset=utf-8");
@@ -33,8 +33,8 @@ abstract class Debug{
 		}
 		$msg = 'Exception: '.$e->getMessage();
 		if($html){
-			echo self::$debugStyle;
-			echo '<pre class="error" style="'.self::$debugWrapInlineCSS.'"><span>'.$msg."</span>\nStackTrace:\n";
+			echo $this->debugStyle;
+			echo '<pre class="error" style="'.$this->debugWrapInlineCSS.'"><span>'.$msg."</span>\nStackTrace:\n";
 			echo '#'.get_class($e);
 			if(method_exists($e,'getData')){
 				echo ':';
@@ -48,22 +48,22 @@ abstract class Debug{
 		}
 		return false;
 	}
-	static function errorHandle($code, $message, $file, $line){
-		if(!self::$errorHandler||!ini_get('error_reporting'))
+	function errorHandle($code, $message, $file, $line){
+		if(!$this->errorHandler||!ini_get('error_reporting'))
 			return;
 		$html = false;
 		if(!headers_sent()){
 			header("Content-Type: text/html; charset=utf-8");
 			$html = true;
 		}
-		$msg = self::$errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
+		$msg = $this->errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
 		if($html){
-			echo self::$debugStyle;
-			echo "<pre class=\"error\" style=\"".self::$debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
+			echo $this->debugStyle;
+			echo "<pre class=\"error\" style=\"".$this->debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
 			$f = file($file);
 			$c = count($f);
-			$start = $line-self::$debugLines;
-			$end = $line+self::$debugLines;
+			$start = $line-$this->debugLines;
+			$end = $line+$this->debugLines;
 			if($start<0)
 				$start = 0;
 			if($end>($c-1))
@@ -92,16 +92,16 @@ abstract class Debug{
 		}
 		return true;
 	}
-	static function fatalErrorHandle(){
-		if(!self::$errorHandler)
+	function fatalErrorHandle(){
+		if(!$this->errorHandler)
 			return;
 		$error = error_get_last();
 		if($error['type']===E_ERROR){
 			self::errorHandle(E_ERROR,$error['message'],$error['file'],$error['line']);
 		}
 	}
-	static function initialize(){
-		self::$errorType = [
+	function __construct(){
+		$this->errorType = [
 			E_ERROR           => 'error',
 			E_WARNING         => 'warning',
 			E_PARSE           => 'parsing error',
@@ -115,10 +115,9 @@ abstract class Debug{
 			E_USER_NOTICE     => 'user notice'
 		];
 		if(defined('E_STRICT'))
-		  self::$errorType[E_STRICT] = 'runtime notice';
+		  $this->errorType[E_STRICT] = 'runtime notice';
 	}
-	static function errorType($code){
-		return isset(self::$errorType[$code])?self::$errorType[$code]:null;
+	function errorType($code){
+		return isset($this->errorType[$code])?$this->errorType[$code]:null;
 	}
 }
-Debug::initialize();

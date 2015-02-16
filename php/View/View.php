@@ -1,13 +1,13 @@
 <?php namespace Surikat\View;
-use Surikat\Core\Dev;
+use Surikat\Dependency\Injector;
 use Surikat\Tool;
-use Surikat\Core\Sync;
+use Surikat\Cache\Sync;
 use Surikat\Core\FS;
 use Surikat\Tool\PHP;
 use Surikat\Tool\Min\HTML as minHTML;
 use Surikat\Tool\Min\PHP as minPHP;
-use Surikat\Core\Synaptic;
 class View {
+	use Injector;
 	var $forceCompile;
 	var $path;
 	var $dirCwd = [];
@@ -21,6 +21,7 @@ class View {
 	var $present;
 	protected $devCompileFile;
 	protected $vars = [];
+	protected $DevLevel;
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
 		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
@@ -34,6 +35,7 @@ class View {
 			$this->set($vars);
 		if(isset($options))
 			$this->setOptions($options);
+		$this->DevLevel = $this->getDependency('Dev\Level');
 	}
 	protected $Controller;
 	function setController($Controller){
@@ -105,7 +107,7 @@ class View {
 	}
 	function evalue(){
 		$compileFile = $this->dirCompile.$this->path.'.svar';
-		if((!isset($this->forceCompile)&&Dev::has(Dev::VIEW))||$this->forceCompile||!is_file($compileFile))
+		if((!isset($this->forceCompile)&&$this->DevLevel->VIEW)||$this->forceCompile||!is_file($compileFile))
 			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
 			$ev = unserialize(file_get_contents($compileFile,LOCK_EX));
@@ -118,24 +120,24 @@ class View {
 			unlink($this->devCompileFile);
 			FS::rmdir($this->dirCompile);
 			FS::rmdir($this->dirCache);
-			Synaptic::cleanMini();
+			$this->getDependency('Extension\Synaptic')->cleanMini();
 		}
 		else{
-			if(Dev::has(Dev::VIEW)){
+			if($this->DevLevel->VIEW){
 				FS::mkdir($this->devCompileFile,true);
 				file_put_contents($this->devCompileFile,'');
 			}
-			if(Dev::has(Dev::CSS))
-				Synaptic::cleanMini('css');
-			if(Dev::has(Dev::CSS))
-				Synaptic::cleanMini('js');
+			if($this->DevLevel->CSS)
+				$this->getDependency('Extension\Synaptic')->cleanMini('css');
+			if($this->DevLevel->CSS)
+				$this->getDependency('Extension\Synaptic')->cleanMini('js');
 		}
 	}
 	function display($file=null,$vars=[]){
 		if(isset($file))
 			$this->setPath($file);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&Dev::has(Dev::VIEW))||!is_file($this->dirCompile.$this->path))
+		if((!isset($this->forceCompile)&&$this->DevLevel->VIEW)||!is_file($this->dirCompile.$this->path))
 			$this->compilePHP($this->dirCompile.$this->path,(string)$this->prepare());
 		if(!empty($this->vars))
 		$vars = array_merge($this->vars,$vars);
@@ -192,13 +194,13 @@ class View {
 	}
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file;
-		if(!Dev::has(Dev::VIEW))
+		if(!$this->DevLevel->VIEW)
 			$str = minHTML::minify($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file.'.php';
-		if(!Dev::has(Dev::VIEW))
+		if(!$this->DevLevel->VIEW)
 			$str = minPHP::minify($str);
 		return $this->compileStore($file,$str);
 	}
@@ -242,7 +244,7 @@ class View {
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
 		$str = self::phpEmulations($str);
-		if(!Dev::has(Dev::VIEW))
+		if(!$this->DevLevel->VIEW)
 			$str = minPHP::minify($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}

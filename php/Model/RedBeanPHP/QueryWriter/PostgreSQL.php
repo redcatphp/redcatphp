@@ -11,7 +11,6 @@ use Surikat\Model\RedBeanPHP\Database;
 use Surikat\Model\R;
 use Surikat\Model\Table;
 use Surikat\Model\Query;
-use Surikat\Core\Dev;
 
 /**
  * RedBean PostgreSQL Query Writer

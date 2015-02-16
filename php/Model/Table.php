@@ -23,9 +23,8 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use Surikat\Model\RedBeanPHP\OODBBean;
 use Surikat\Model\RedBeanPHP\SimpleModel;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
-use Surikat\Core\Dev;
 use Surikat\Tool\JSON;
-use Surikat\Core\Sync;
+use Surikat\Cache\Sync;
 use BadMethodCallException;
 use Model\Exception_Validation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{

@@ -1,5 +1,4 @@
 <?php namespace Surikat\Dispatcher;
-use Surikat\Core\Synaptic as CoreSynaptic;
 class Synaptic extends Dispatcher{
 	protected $pathFS;
 	function __construct($pathFS=''){
@@ -8,6 +7,6 @@ class Synaptic extends Dispatcher{
 			$this->pathFS .= '/';
 	}
 	function __invoke($filename,$file){
-		CoreSynaptic::load($this->pathFS.$file);
+		$this->getDependency('Extension\Synaptic')->load($this->pathFS.$file);
 	}
 }

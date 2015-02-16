@@ -1,5 +1,5 @@
 <?php namespace Surikat\Core;
-use Surikat\Core\FS;
+use Surikat\Cache\FS;
 class Sync{
 	const TIMESPACE = 'sync/timespace/';
 	const CACHE = 'sync/cache/';

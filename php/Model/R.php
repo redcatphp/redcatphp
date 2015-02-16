@@ -1,5 +1,5 @@
 <?php namespace Surikat\Model;
-use Surikat\Core\Dev;
+use Surikat\Dependency\Registry;
 use Surikat\Core\Config;
 use Surikat\Core\STR;
 class R extends RedBeanPHP\Facade{
@@ -32,7 +32,7 @@ class R extends RedBeanPHP\Facade{
 		if($name)
 			$name = ';dbname='.$name;
 		if(!isset($frozen))
-			$frozen = !Dev::has(Dev::DB);		
+			$frozen = !Registry::instance('Dev\Level')->DB;
 		if(!isset($case))
 			$case = true;
 		$dsn = $type.':'.$host.$port.$name;

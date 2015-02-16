@@ -1,8 +1,7 @@
 <?php
-
 namespace Surikat\Model\RedBeanPHP\Logger\RDefault;
 
-use Surikat\Core\Debug as CoreDebug;
+use Surikat\Dependency\Injector;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
@@ -24,6 +23,7 @@ use Surikat\Model\RedBeanPHP\RedException\Security as Security;
  */
 class Debug extends RDefault implements Logger
 {
+	use Injector;
 
 	/**
 	 * Writes a query for logging with all bindings / params filled
@@ -163,7 +163,7 @@ class Debug extends RDefault implements Logger
 	public function logOpen(){
 		if(!headers_sent())
 			header('Content-Type: text/html; charset=utf-8');
-		echo '<div style="'.CoreDebug::$debugWrapInlineCSS.'">';
+		echo '<div style="'.$this->getDependency('Dev\Debug')->debugWrapInlineCSS.'">';
 		
 	}
 	public function logClose(){

@@ -1,9 +1,10 @@
 <?php namespace Surikat\View;
 use I18n\Lang;
 use Core\Domain;
-use Surikat\Core\Dev;
+use Surikat\Dependency\Injector;
 class Toolbox{
-	static function JsIs($TML,$href='css/is.'){
+	use Injector;
+	function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
 		if(!$head){
 			if($TML->find('body',0)){
@@ -33,19 +34,19 @@ class Toolbox{
 		foreach($s as $is)
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
 	}
-	static function autoMIN($TML){
-		if(!Dev::has(Dev::CSS)){
+	function autoMIN($TML){
+		if(!$this->getDependency('Dev\Level')->CSS){
 			foreach($TML('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
 				if(strpos($l,'://')===false)
 					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 		}
-		if(!Dev::has(Dev::JS)){
+		if(!$this->getDependency('Dev\Level')->JS){
 			foreach($TML('script[src]') as $s)
 				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 		}
 	}
-	static function setCDN($TML,$url=true){
+	function setCDN($TML,$url=true){
 		if($url===true){
 			$prefix = 'cdn';
 			$url = 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://'.(strpos($_SERVER['SERVER_NAME'],$prefix.'.')===0?'':$prefix.'.').$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/';
@@ -54,10 +55,10 @@ class Toolbox{
 			$url .= '/';
 		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
 			if(
-				($el->nodeName=='link'&&$el->type=='text/css'&&Dev::has(Dev::CSS))
-				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&Dev::has(Dev::IMG))
-				|| ($el->nodeName=='img'&&Dev::has(Dev::IMG))
-				|| ($el->nodeName=='script'&&Dev::has(Dev::JS))
+				($el->nodeName=='link'&&$el->type=='text/css'&&$this->getDependency('Dev\Level')->CSS)
+				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$this->getDependency('Dev\Level')->IMG)
+				|| ($el->nodeName=='img'&&$this->getDependency('Dev\Level')->IMG)
+				|| ($el->nodeName=='script'&&$this->getDependency('Dev\Level')->JS)
 			)
 				return;
 			$k = $el->src?'src':'href';
@@ -65,7 +66,7 @@ class Toolbox{
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
 	}
-	static function i18nGettext($TML,$cache=true){
+	function i18nGettext($TML,$cache=true){
 		$TML('html')->attr('lang',Lang::currentLangCode());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
@@ -105,7 +106,7 @@ class Toolbox{
 		});
 		$TML('*[i18n]')->removeAttr('i18n');
 	}
-	static function i18nRel($TML,$lang,$path,$langMap=null){
+	function i18nRel($TML,$lang,$path,$langMap=null){
 		$head = $TML->find('head',0);
 		if(!$head)
 			return;

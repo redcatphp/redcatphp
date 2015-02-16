@@ -1,9 +1,11 @@
 <?php namespace Surikat\View;
-use Surikat\Core\Dev;
 use Surikat\View\TML;
 use Surikat\View\TML_Apply;
 use Surikat\View\CssSelector;
+use Surikat\Dependency\Injector;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
+	use Injector;
+	
 	var $nodeName;
 	var $parent;
 	var $constructor;
@@ -508,7 +510,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return Dev::has(Dev::VIEW)&&$this->nodeName&&!$this->hiddenWrap;
+		return $this->getDependency('Dev\Level')->VIEW&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)

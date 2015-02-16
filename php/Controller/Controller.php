@@ -1,13 +1,14 @@
 <?php namespace Surikat\Controller;
-use Surikat\Core\Dev;
 use Surikat\Core\HTTP;
 use Core\Domain;
 use Surikat\Core\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;
-use Surikat\View\Toolbox as ViewToolbox;
 use Surikat\I18n\Lang;
+use Surikat\Dependency\Injector;
 class Controller{
+	use Injector;
+	
 	protected $Router;
 	protected $View;
 	protected $prefixTmlCompile = '';
@@ -26,9 +27,9 @@ class Controller{
 		$v->onCompile(function($TML){
 			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 				$TML->prepend('<Presenter:Presenter uri="static" />');
-			ViewToolbox::JsIs($TML);
-			if(!Dev::has(Dev::VIEW))
-				ViewToolbox::autoMIN($TML);
+			$this->getDependency('View\Toolbox')->JsIs($TML);
+			if(!$this->getDependency('Dev\Level')->VIEW)
+				$this->getDependency('View\Toolbox')->autoMIN($TML);
 		});
 		$this->display($path.'.tml');
 	}

@@ -1,12 +1,14 @@
-<?php namespace Surikat\Core;
-use Surikat\Core\DependencyInjector;
-class DependencyRegistry{
-	use DependencyInjector;
+<?php namespace Surikat\Dependency;
+use Surikat\Dependency\Injector;
+class Registry{
+	use Injector;
 	protected $mapDependency = [];
-	private $__objectsRegistry = [];
+	private static $__objectsRegistry = [];
 	static function instance(){
 		$args = func_get_args();
 		$class = array_shift($args);
+		if(!$class)
+			$class = get_called_class();
 		$key = empty($args)?0:sha1(serialize($args));
 		return self::instanceKey($class,$key,$args);
 	}
@@ -23,10 +25,10 @@ class DependencyRegistry{
 			 return (new ReflectionClass($class))->newInstanceArgs($args);
 		}
 		else{
-			return = new $class();
+			return new $class();
 		}
 	}
 	function defaultDependency($key){
-		return self::factory(ucfirst($key).'\\'.ucfirst($key));
+		return $this->defaultNew($key);
 	}
 }

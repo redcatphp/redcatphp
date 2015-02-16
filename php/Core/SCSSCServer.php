@@ -2,9 +2,10 @@
 use Surikat\Core\FS;
 use Surikat\Core\HTTP;
 use Surikat\Core\SCSSC;
-use Surikat\Core\Debug;
+use Surikat\Dependency\Injector;
 use Exception;
 class SCSSCServer{
+	use Injector;
 	static function joinPath($left, $right) {
 		return rtrim($left, '/\\') . DIRECTORY_SEPARATOR . ltrim($right, '/\\');
 	}
@@ -57,7 +58,7 @@ class SCSSCServer{
 					header('HTTP/1.1 500 Internal Server Error');
 					echo 'Parse error: ' . $e->getMessage() . "\n";
 					if($e=error_get_last())
-						printf("%s in eval php: %s in %s:%s",Debug::errorType($e['type']),$e['message'],$e['file'],$e['line']);
+						printf("%s in eval php: %s in %s:%s",$this->getDependency('Dev\Debug')->errorType($e['type']),$e['message'],$e['file'],$e['line']);
 				}
 			} else {
 				header('X-SCSS-Cache: true');

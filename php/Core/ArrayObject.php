@@ -1,6 +1,7 @@
 <?php namespace Surikat\Core;
-use Surikat\Core\Dev;
+use Surikat\Dependency\Injector;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
+	use Injector;
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))
@@ -153,7 +154,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return new static(array_filter((array)$this,$cb));
 	}
 	function __toString(){
-		if(Dev::has(Dev::CONTROL))
+		if($this->getDependency('Dev\Level')->CONTROL)
 			return $this->__debug();
 		else
 			return '';

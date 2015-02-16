@@ -1,8 +1,8 @@
 <?php
 namespace Surikat\Core;
-use Surikat\Core\Dev;
 use stdClass;
 use Exception;
+use Surikat\Dependency\Injector;
 //+surikat addon for php Mixin/Include special support
 //		sass with superpower of php for complex and plainly maitrised advanced syntax function
 /**
@@ -52,6 +52,8 @@ use Exception;
 //addons by surikat
 
 class SCSSC {
+	use Injector;
+	
 	static public $VERSION = "v0.0.9.surikat";
 
 	static protected $operatorNames = [
@@ -297,7 +299,7 @@ class SCSSC {
 			ob_get_clean();
 			$o->throwError(" error in eval php: %s \r\n in code: %s",$errstr,$__code);
 		});
-		if(Dev::has(Dev::CSS)&&strpos($__code,'//:eval_debug'))
+		if($this->getDependency('Dev\Level')->CSS&&strpos($__code,'//:eval_debug'))
 			exit(print($__code));
 		eval('?>'.$__code);
 		$c = ob_get_clean();
@@ -1047,12 +1049,12 @@ class SCSSC {
 				// 2. op_[left type]_[right type] (passing the op as first arg
 				// 3. op_[op name]
 				$fn = "op_${opName}_${ltype}_${rtype}";
-				if (is_callable([$this, $fn]) ||
+				if (method_exists($this, $fn) ||
 					(($fn = "op_${ltype}_${rtype}") &&
-						is_callable([$this, $fn]) &&
+						method_exists($this, $fn) &&
 						$passOp = true) ||
 					(($fn = "op_${opName}") &&
-						is_callable([$this, $fn]) &&
+						method_exists($this, $fn) &&
 						$genOp = true))
 				{
 					$unitChange = false;
@@ -1826,7 +1828,7 @@ class SCSSC {
 		$f = [$this, $libName];
 		$prototype = isset(self::$$libName) ? self::$$libName : null;
 
-		if (is_callable($f)) {
+		if (method_exists($this,$libName)) {
 			$sorted = $this->sortArgs($prototype, $args);
 			foreach ($sorted as &$val) {
 				$val = $this->reduce($val, true);

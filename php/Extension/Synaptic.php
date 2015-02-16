@@ -1,31 +1,32 @@
-<?php namespace Surikat\Core;
-use Surikat\Core\Dev;
+<?php namespace Surikat\Extension;
 use Surikat\Core\SCSSCServer;
 use Surikat\Core\SCSSC;
 use Surikat\Core\HTTP;
 use Surikat\Core\FS;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
+use Surikat\Dependency\Injector;
 class Synaptic {
-	protected static $expires = 2592000;
-	protected static $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
-	static function load($k){
+	use Injector;
+	protected $expires = 2592000;
+	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
+	function load($k){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
-		if(!in_array($extension,self::$allowedExtensions)){
+		if(!in_array($extension,$this->allowedExtensions)){
 			HTTP::code(403);
 			exit;
 		}
 		switch($extension){
 			case 'js':
 				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
-					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
+					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: application/javascript; charset:utf-8');
 					HTTP::fileCache($f);
 					readfile($f);
 				}
 				elseif(substr($k,-7,-3)=='.min'){
 					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					self::minifyJS($kv,$k);
+					$this->minifyJS($kv,$k);
 				}
 				else{
 					HTTP::code(404);
@@ -33,18 +34,18 @@ class Synaptic {
 			break;
 			case 'css':
 				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
-					header('Expires: '.gmdate('D, d M Y H:i:s', time()+static::$expires).'GMT');
+					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: text/css; charset:utf-8');
 					HTTP::fileCache($f);
 					readfile($f);
 				}
 				elseif(substr($k,-8,-4)=='.min')
-					self::minifyCSS(substr($k,0,-8).'.css');
+					$this->minifyCSS(substr($k,0,-8).'.css');
 				elseif(
 					is_file(dirname($key=$k).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss')
 					||(($key=basename(SURIKAT_SPATH).'/'.$key)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
 				){
-					if(self::scss($key)===false){
+					if($this->scss($key)===false){
 						HTTP::code(404);
 					}
 				}
@@ -72,7 +73,7 @@ class Synaptic {
 			break;
 		}
 	}
-	static function cleanMini($ext=null){
+	function cleanMini($ext=null){
 		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
 		if(!is_file($f))
 			return;
@@ -88,26 +89,26 @@ class Synaptic {
 		}
 		unlink($f);
 	}
-	protected static function registerMini($min){
+	protected function registerMini($min){
 		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
 		FS::mkdir($f,true);
 		file_put_contents($f,$min."\n",FILE_APPEND|LOCK_EX);
 	}
-	protected static function minifyJS($f,$min){
+	protected function minifyJS($f,$min){
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
 		$c = JS::minify(file_get_contents($f));
-		if(!Dev::has(Dev::JS)){
+		if(!$this->getDependency('Dev\Level')->JS){
 			FS::mkdir($min,true);
-			self::registerMini($min);
+			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}
 		if(!headers_sent())
 			header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
 	}
-	protected static function minifyCSS($f){
+	protected function minifyCSS($f){
 		if(!is_file($f)
 			&&!is_file($f=dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
 			&&!is_file($f=SURIKAT_SPATH.dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
@@ -117,23 +118,23 @@ class Synaptic {
 		$e = pathinfo($f,PATHINFO_EXTENSION);
 		if($e=='scss'){
 			ob_start();
-			self::scss($f);
+			$this->scss($f);
 			$c = ob_get_clean();
 		}
 		else
 			$c = file_get_contents($f);
 		$c = CSS::minify($c);
-		if(!Dev::has(Dev::CSS)){
+		if(!$this->getDependency('Dev\Level')->CSS){
 			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
 			FS::mkdir($min,true);
-			self::registerMini($min);
+			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}
 		if(!headers_sent())
 			header('Content-Type:text/css; charset=utf-8');
 		echo $c;
 	}
-	protected static function scss($path) {
+	protected function scss($path) {
 		set_time_limit(0);
 		SCSSC::$allowImportCSS = true;
 		SCSSC::$allowImportRemote = true;
