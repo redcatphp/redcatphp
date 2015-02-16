@@ -1,6 +1,5 @@
 <?php namespace Surikat\Model;
 use Surikat\Model\SQLComposer\Exception as SQLComposerException;
-use Surikat\Model\SQLComposer\Expr as SQLComposerExpr;
 use Surikat\Model\SQLComposer\Select as SQLComposerSelect;
 use Surikat\Model\SQLComposer\Insert as SQLComposerInsert;
 use Surikat\Model\SQLComposer\Update as SQLComposerUpdate;
@@ -180,16 +179,9 @@ abstract class SQLComposer {
 		$placeholders = [ ];
 		$params = [];
 
-		foreach ($given_params as $p) {
-			if ($p instanceof SQLComposerExpr) {
-				$placeholders[] = $p->value;
-				if (!empty($p->params)) {
-					$params = array_merge($params, $p->params);
-				}
-			} else {
-				$placeholders[] = "?";
-				$params[] = $p;
-			}
+		foreach ($given_params as $p) {			
+			$placeholders[] = "?";
+			$params[] = $p;
 		}
 
 		if (strlen($mysqli_types) == 1) {
@@ -241,35 +233,15 @@ abstract class SQLComposer {
 			case 'between':
 				$sql = "{$column} between ";
 				$p = array_shift($params);
-				if ($p instanceof SQLComposerExpr) {
-					$sql .= $p->value;
-				} else {
-					$sql .= "?";
-					array_push($params, $p);
-				}
+				$sql .= "?";
+				array_push($params, $p);
 				$sql .= " and ";
 				$p = array_shift($params);
-				if ($p instanceof SQLComposerExpr) {
-					$sql .= $p->value;
-				} else {
-					$sql .= "?";
-					array_push($params, $p);
-				}
+				$sql .= "?";
+				array_push($params, $p);
 				return [$sql, $params, $mysqli_types];
 			default:
 				throw new SQLComposerException("Invalid operator: {$op}");
 		}
-	}
-
-	/**
-	 * A factory for SQLComposerExpr
-	 *
-	 * @param string $val
-	 * @param array $params
-	 * @param string $mysqli_types
-	 * @return SQLComposerExpr
-	 */
-	public static function expr($val,  array $params=[], $mysqli_types="") {
-		return new SQLComposerExpr($val, $params, $mysqli_types);
 	}
 }
