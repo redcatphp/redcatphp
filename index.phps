@@ -1,8 +1,8 @@
 <?php
 #Copy this file to ../DOCUMENT_ROOT to start a new project
 
-if(!@include(__DIR__.'/Surikat/php/Loader.php'))
-	symlink('../Surikat','Surikat')&&include('Surikat/php/Loader.php');
+if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
+	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
 
 //Registry::instance('Dev\Level')->PHP();
 //Registry::instance('Dev\Level')->CONTROL();
