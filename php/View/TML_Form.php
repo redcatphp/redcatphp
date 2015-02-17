@@ -120,7 +120,7 @@ class TML_Form extends TML {
 							$el->$k = null;
 						break;
 						case 'ruler':
-							$code .= ' if(($r=Core\\Ruler::'.$b.'($_POST[\''.$n.'\']'.($v?','.var_export($v,true):'').'))!==true) return $r; ';
+							$code .= ' if(($r=Validation\\Ruler::'.$b.'($_POST[\''.$n.'\']'.($v?','.var_export($v,true):'').'))!==true) return $r; ';
 							$el->$k = null;
 						break;
 					}

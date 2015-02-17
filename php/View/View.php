@@ -4,8 +4,8 @@ use Surikat\Tool;
 use Surikat\Cache\Sync;
 use Surikat\FileSystem\FS;
 use Surikat\Tool\PHP;
-use Surikat\Tool\Min\HTML as minHTML;
-use Surikat\Tool\Min\PHP as minPHP;
+use Surikat\Minify\HTML as minHTML;
+use Surikat\Minify\PHP as minPHP;
 class View {
 	use Injector;
 	var $forceCompile;

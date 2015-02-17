@@ -298,7 +298,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				if(!call_user_func_array(['Core\\Ruler',$f],$a))
+				if(!call_user_func_array(['Validation\\Ruler',$f],$a))
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}
