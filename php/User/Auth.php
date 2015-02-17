@@ -5,13 +5,15 @@ use Surikat\FileSystem\FS;
 use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
 use Surikat\Mail\PHPMailer;
+use Surikat\Dependency\Injector;
 use HTTP\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
 }
 class Auth{
-
+	use Injector;
+	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;
 	const RIGHT_MODERATE = 8;
@@ -151,13 +153,13 @@ class Auth{
 		$id = 0;
 		if(strpos($pass,'$')!==0){
 			if($pass!=$password){
-				Session::addAttempt();
+				$this->getDependency('User\Session')->addAttempt();
 				return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 			}
 		}
 		else{
 			if(!password_verify($password, $pass)){
-				Session::addAttempt();
+				$this->getDependency('User\Session')->addAttempt();
 				return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 			}
 			else{
@@ -227,7 +229,7 @@ class Auth{
 		return self::OK_LOGGED_IN;
 	}
 	public function login($login, $password, $lifetime=0){
-		if($s=Session::isBlocked()){
+		if($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($login==$this->superRoot)
@@ -236,17 +238,17 @@ class Auth{
 			$login = $this->db->getCell('SELECT login FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$login]);
 		}
 		if($e=($this->validateLogin($login)||$this->validatePassword($password))){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_LOGIN_PASSWORD_INVALID;
 		}
 		$uid = $this->getUID($login);
 		if(!$uid){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		$user = $this->getUser($uid);
 		if(!password_verify($password, $user['password'])){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		else{
@@ -261,7 +263,7 @@ class Auth{
 			}
 		}
 		if(!isset($user['active'])||$user['active']!=1){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_ACCOUNT_INACTIVE;
 		}
 		if(!$this->addSession($user,$lifetime)){
@@ -271,7 +273,7 @@ class Auth{
 	}
 
 	public function register($email, $login, $password, $repeatpassword, $name=null){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if(!$name)
@@ -288,28 +290,28 @@ class Auth{
 			return self::ERROR_PASSWORD_NOMATCH;
 		}
 		if($this->isEmailTaken($email)){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_EMAIL_TAKEN;
 		}
 		if($this->isLoginTaken($login)){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_LOGIN_TAKEN;
 		}
 		$this->addUser($email, $password, $login, $name);
 		return self::OK_REGISTER_SUCCESS;
 	}
 	public function activate($key){
-		if($s=Session::isBlocked()){
+		if($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if(strlen($key) !== 40){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_ACTIVEKEY_INVALID;
 		}
 		$getRequest = $this->getRequest($key, "activation");
 		$user = $this->getUser($getRequest[$this->tableUsers.'_id']);
 		if(isset($user['active'])&&$user['active']==1){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			$this->deleteRequest($getRequest['id']);
 			return self::ERROR_SYSTEM_ERROR;
 		}
@@ -320,27 +322,27 @@ class Auth{
 		return self::OK_ACCOUNT_ACTIVATED;
 	}
 	public function requestReset($email){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($e=$this->validateEmail($email))
 			return $e;
 		$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
 		if(!$id){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
 		}
 		if($e=$this->addRequest($id, $email, 'reset')){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return $e;
 		}
 		return self::OK_RESET_REQUESTED;
 	}
 	public function logout(){
-		if($this->isConnected()&&Session::destroy()){
+		if($this->isConnected()&&$this->getDependency('User\Session')->destroy()){
 			return self::OK_LOGGED_OUT;
 		}
-		return Session::destroy();
+		return $this->getDependency('User\Session')->destroy();
 	}
 	public function getHash($string, $salt){
 		return password_hash($string, $this->algo, ['salt' => $salt, 'cost' => $this->cost]);
@@ -349,9 +351,9 @@ class Auth{
 		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$login]);
 	}
 	private function addSession($user,$lifetime=0){
-		Session::setCookieLifetime($lifetime);
-		Session::setKey($user['id']);
-		Session::set('_AUTH_',[
+		$this->getDependency('User\Session')->setCookieLifetime($lifetime);
+		$this->getDependency('User\Session')->setKey($user['id']);
+		$this->getDependency('User\Session')->set('_AUTH_',[
 			'id'=>$user['id'],
 			'email'=>$user['email'],
 			'login'=>$user['login'],
@@ -401,23 +403,23 @@ class Auth{
 	}
 
 	public function deleteUser($uid, $password){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($e=$this->validatePassword($password)){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return $e;
 		}
 		$getUser = $this->getUser($uid);
 		if(!password_verify($password, $getUser['password'])){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
 		$row = $this->db->load($this->tableUsers,(int)$uid);
 		if(!$row->trash()){
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		Session::destroyKey($uid);
+		$this->getDependency('User\Session')->destroyKey($uid);
 		foreach($row->own($this->tableRequests) as $request){
 			if(!$request->trash()){
 				return self::ERROR_SYSTEM_ERROR;
@@ -450,7 +452,7 @@ class Auth{
 	private function getRequest($key, $type){
 		$row = $this->db->findOne($this->tableRequests,' WHERE rkey = ? AND type = ?',[$key, $type]);
 		if(!$row){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			if($type=='activation')
 				return self::ERROR_ACTIVEKEY_INCORRECT;
 			elseif($type=='reset')
@@ -460,7 +462,7 @@ class Auth{
 		$expiredate = strtotime($row['expire']);
 		$currentdate = strtotime(date("Y-m-d H:i:s"));
 		if ($currentdate > $expiredate){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			$this->deleteRequest($row['id']);
 			if($type=='activation')
 				return self::ERROR_ACTIVEKEY_EXPIRED;
@@ -502,7 +504,7 @@ class Auth{
 			return self::ERROR_EMAIL_INVALID;
 	}
 	public function resetPass($key, $password, $repeatpassword){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if(strlen($key) != 40){
@@ -516,7 +518,7 @@ class Auth{
 		$data = $this->getRequest($key, "reset");
 		$user = $this->getUser($data[$this->tableUsers.'_id']);
 		if(!$user){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			$this->deleteRequest($data['id']);
 			return self::ERROR_SYSTEM_ERROR;
 		}
@@ -532,7 +534,7 @@ class Auth{
 		return self::OK_PASSWORD_RESET;
 	}
 	public function resendActivation($email){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($e=$this->validateEmail($email))
@@ -540,25 +542,25 @@ class Auth{
 		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
 		var_dump($row);
 		if(!$row){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
 		}
 		if(isset($row['active'])&&$row['active'] == 1){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
 		if($e=$this->addRequest($row['id'], $email, "activation")){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return $e;
 		}
 		return self::OK_ACTIVATION_SENT;
 	}
 	public function changePassword($uid, $currpass, $newpass, $repeatnewpass){
-		if ($s=Session::isBlocked()){
+		if ($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($e=$this->validatePassword($currpass)){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return $e;
 		}
 		if($e=$this->validatePassword($newpass))
@@ -568,12 +570,12 @@ class Auth{
 		}
 		$user = $this->getUser($uid);
 		if(!$user){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$newpass = $this->getHash($newpass, $user['salt']);
 		if(!password_verify($currpass, $user['password'])){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
 		if($currpass != $newpass){			
@@ -591,7 +593,7 @@ class Auth{
 		return $row['email'];
 	}
 	public function changeEmail($uid, $email, $password){
-		if($s=Session::isBlocked()){
+		if($s=$this->getDependency('User\Session')->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
 		if($e=$this->validateEmail($email))
@@ -600,15 +602,15 @@ class Auth{
 			return $e;
 		$user = $this->getUser($uid);
 		if(!$user){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		if(!password_verify($password, $user['password'])){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
 		if ($email == $user['email']){
-			Session::addAttempt();
+			$this->getDependency('User\Session')->addAttempt();
 			return self::ERROR_NEWEMAIL_MATCH;
 		}
 		$row = $this->db->load($this->tableUsers,(int)$uid);
@@ -629,7 +631,7 @@ class Auth{
 	private $right;
 	function getRight(){
 		if(!isset($this->right))
-			$this->right = Session::get('_AUTH_','right');
+			$this->right = $this->getDependency('User\Session')->get('_AUTH_','right');
 		return $this->right;
 	}
 	function setRight($r){
@@ -637,7 +639,7 @@ class Auth{
 	}
 	
 	function isConnected(){
-		return !!Session::get('_AUTH_');
+		return !!$this->getDependency('User\Session')->get('_AUTH_');
 	}
 	function isAllowed($d){
 		return !!($d&$this->getRight());

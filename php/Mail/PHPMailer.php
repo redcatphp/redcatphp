@@ -1,4 +1,4 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\Mail;
 use Surikat\Config\Config;
 use Surikat\Mail\PHPMailer\PHPMailer as OPHPMailer;
 class PHPMailer extends OPHPMailer{

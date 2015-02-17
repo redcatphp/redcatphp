@@ -1,5 +1,6 @@
 <?php namespace Surikat\User;
 use Surikat\Vars\ArrayObject;
+use Surikat\Dependency\Container;
 class Post extends ArrayObject{
 	private static $postObject;
 	function offsetGet($k){
@@ -18,7 +19,7 @@ class Post extends ArrayObject{
 		return htmlentities((string)self::get($k,$default,$persistant));
 	}
 	static function clearPersistance($k=null,$p=null){
-		Session::start();
+		Container::get('User\Session')->start();
 		$p = $p===null?sha1(@$_SERVER['PATH_INFO']):$p;
 		if(isset($_SESSION[self::$key])&&isset($_SESSION[self::$key][$p])){
 			if($k!==null){
@@ -34,7 +35,7 @@ class Post extends ArrayObject{
 	}
 	static function get($k,$default=null,$persistant=null,$p=null,$ifn=null){
 		if($persistant)
-			Session::start();
+			Container::get('User\Session')->start();
 		if(strpos($k,'[')!==false){
 			$x = explode('[',str_replace(']','',$k));
 			$r = self::get(($k=array_shift($x)),null,$persistant,$p);

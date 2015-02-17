@@ -8,7 +8,6 @@ use Surikat\I18n\Lang;
 use Surikat\Dependency\Injector;
 class Controller{
 	use Injector;
-	
 	protected $Router;
 	protected $View;
 	protected $prefixTmlCompile = '';

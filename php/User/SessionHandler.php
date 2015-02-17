@@ -8,7 +8,7 @@ class SessionHandler implements SessionHandlerInterface{
 	static $maxNoConnectionTimePrefixed = 31536000; //1 year
 	function __construct($sessionName,$savePath=null){
 		if(!$savePath)
-			$savePath = Session::getSavePath();
+			$savePath = Container::get('User\Session')->getSavePath();
 		$this->open($savePath,$sessionName);
 	}
 	function destroyKey($key){

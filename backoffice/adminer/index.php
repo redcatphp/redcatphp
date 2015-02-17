@@ -45,7 +45,6 @@ function adminer_object() {
     return new AdminerSurikat($plugins);
 }
 //$_SERVER['SCRIPT_FILENAME'] = __FILE__;
-//Core\Session::start();
 //include __DIR__.'/adminer.inc';
 chdir(__DIR__.'/adminer');
 include 'index.php';

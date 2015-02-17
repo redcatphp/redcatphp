@@ -1,11 +1,13 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\User;
 use Surikat\HTTP\Domain;
 use Surikat\User\Session;
 use Surikat\HTTP\HTTP;
 use Surikat\User\Auth;
 use Surikat\I18n\Lang;
+use Surikat\Dependency\Injector;
 Lang::initialize();
 class AuthServer{
+	use Injector;
 	protected $messages = [];
 	function __construct(Auth $auth=null){
 		if(!$auth)
@@ -21,20 +23,20 @@ class AuthServer{
 				switch($r){
 					case Auth::OK_LOGGED_IN:
 						if(!$ajax){
-							Session::set('Auth','result',$action,$r);
+							$this->getDependency('User\Session')->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
 						}
 					break;
 					case Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
-							Session::set('Auth','result',$action,$r);
+							$this->getDependency('User\Session')->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
 						}
 					break;
 				}
 			}
 			if(!$r)
-				$r = Session::get('Auth','result',$action);
+				$r = $this->getDependency('User\Session')->get('Auth','result',$action);
 		}
 		return $r;
 	}
@@ -42,12 +44,12 @@ class AuthServer{
 		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			$email = $_POST['email'];
 			$login = trim($_POST['login'])?$_POST['login']:$email;
-			Session::set('Auth','email',$email);
+			$this->getDependency('User\Session')->set('Auth','email',$email);
 			return $this->Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
-		if($email=Session::get('Auth','email')){
+		if($email=$this->getDependency('User\Session')->get('Auth','email')){
 			return $this->Auth->resendActivation($email);
 		}
 	}
@@ -57,7 +59,7 @@ class AuthServer{
 		}
 	}
 	function loginPersona(){
-		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=Session::get('email'))){
+		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->getDependency('User\Session')->get('email'))){
 			$lifetime = 0;
 			if(isset($_POST['login'])){
 				switch($_POST['lifetime']){
@@ -172,7 +174,7 @@ class AuthServer{
 			}
 		</style>
 		</head><body>';
-		if($seconds=Session::isBlocked()){
+		if($seconds=$this->getDependency('User\Session')->isBlocked()){
 			echo $this->Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">

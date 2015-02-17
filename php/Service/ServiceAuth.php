@@ -1,20 +1,21 @@
 <?php namespace Surikat\Service;
 use Surikat\User\Session;
 use Surikat\User\Auth;
+use Surikat\Dependency\Container;
 class ServiceAuth {
 	static function infos(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode(Session::get('_AUTH_'));
+		echo json_encode(Container::get('User\Session')->get('_AUTH_'));
 	}
 	static function email(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode(Session::get('_AUTH_','email'));
+		echo json_encode(Container::get('User\Session')->get('_AUTH_','email'));
 	}
 	static function persona(){
 		$response = '';
@@ -32,7 +33,7 @@ class ServiceAuth {
 			$response = curl_exec($ch);
 			curl_close($ch);
 			if(($js = json_decode($response))&&$js->status==='okay'&&$js->email)
-				Session::set('email',$js->email);
+				Container::get('User\Session')->set('email',$js->email);
 		}
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
@@ -44,7 +45,7 @@ class ServiceAuth {
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		Session::destroy();
+		Container::get('User\Session')->destroy();
 		echo 'ok';
 	}
 }

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\Cache;
 use Surikat\Cache\FS;
 class Sync{
 	const TIMESPACE = 'sync/timespace/';

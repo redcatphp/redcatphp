@@ -1,13 +1,14 @@
 <?php namespace Surikat\Dispatcher;
 use Surikat\User\Auth;
 use Surikat\User\Session;
+use Surikat\Dependency\Container;
 class Backoffice extends ViewController{
 	protected $pathFS = 'backoffice';
 	function __construct(){
 		$this->setHooks();
 	}
 	function setHooks(){
-		Session::setName('surikat_backoffice');
+		Container::get('User\Session')->setName('surikat_backoffice');
 		$this
 			->append(['new','Surikat\Route\Extension','css|js|png|jpg|jpeg|gif'],
 						['new','Surikat\Dispatcher\Synaptic',$this->pathFS])

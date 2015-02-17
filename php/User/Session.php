@@ -1,26 +1,30 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\User;
 use Surikat\FileSystem\FS;
 use Surikat\HTTP\Domain;
 use Surikat\User\SessionHandler;
 use Surikat\Exception\Exception;
+use Surikat\Dependency\Injector;
 class Session{
+	use Injector;
 	private $id;
 	private $key;
 	private $handler;
-	private $sessionName = 'surikat';
+	private $name = 'surikat';
 	private $cookieLifetime = 0;
 	private $maxAttempts = 10;
 	protected $attemptsPath;
 	protected $blockedWait = 1800;
 	protected $regeneratePeriod = 3600;
-	function __construct(){
+	function __construct($name=null){
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+		if($name)
+			$this->setName($name);
 	}
 	function setName($name){
-		$this->sessionName = $name;
+		$this->name = $name;
 	}
 	function exist(){
-		return isset($_COOKIE[$this->sessionName]);
+		return isset($_COOKIE[$this->name]);
 	}
 	function setCookieLifetime($time){
 		$this->cookieLifetime = $time;
@@ -91,13 +95,12 @@ class Session{
 	}
 	function start(){
 		if(!$this->id){
-			self::handle();
-			session_name($this->sessionName);
-			$id = isset($_COOKIE[$this->sessionName])?$_COOKIE[$this->sessionName]:self::generateId();
+			session_name($this->name);
+			$id = isset($_COOKIE[$this->name])?$_COOKIE[$this->name]:self::generateId();
 			session_id($id);
 			if(strpos($id,'-')!==false){
 				self::checkBlocked();
-				if(!is_file(self::getSavePath().$this->sessionName.'_'.$id)){
+				if(!is_file(self::getSavePath().$this->name.'_'.$id)){
 					self::addAttempt();
 					self::checkBlocked();
 				}
@@ -125,11 +128,11 @@ class Session{
 		return SURIKAT_TMP.'sessions/';
 	}
 	function getSessionName(){
-		return str_replace('-','_',$this->sessionName);
+		return str_replace('-','_',$this->name);
 	}
 	private function sessionHandler(){
 		if(!isset($this->handler))
-			$this->handler = new SessionHandler($this->sessionName);
+			$this->handler = new SessionHandler($this->name);
 		return $this->handler;
 	}
 	function __destruct(){
