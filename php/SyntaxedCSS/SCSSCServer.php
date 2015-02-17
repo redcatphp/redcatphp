@@ -1,7 +1,6 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\SyntaxedCSS;
 use Surikat\Core\FS;
 use Surikat\Core\HTTP;
-use Surikat\Core\SCSSC;
 use Surikat\Dependency\Injector;
 use Exception;
 class SCSSCServer{
@@ -34,7 +33,7 @@ class SCSSCServer{
 		else
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
-		$v = SCSSC::$VERSION;
+		$v = $this->scss->VERSION;
 		$t = @date('r');
 		$css = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
 		file_put_contents($out, $css, LOCK_EX);
@@ -75,11 +74,13 @@ class SCSSCServer{
 			return;
 		HTTP::fileCache($output);
 	}
-	function __construct($dir, $cacheDir=null){
+	function __construct(){
+		$this->scss = $this->getDependency('SyntaxedCSS\SCSSC');
+	}
+	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;
 		$this->cacheDir = $cacheDir?$cacheDir:SURIKAT_TMP.'scss/';
 		FS::mkdir($this->cacheDir);
-		$this->scss = new SCSSC();
 		$this->scss->setImportPaths($this->dir);
 		if(is_dir('css'))
 			$this->scss->addImportPath('css');

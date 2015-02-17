@@ -1,6 +1,4 @@
 <?php namespace Surikat\Extension;
-use Surikat\Core\SCSSCServer;
-use Surikat\Core\SCSSC;
 use Surikat\Core\HTTP;
 use Surikat\Core\FS;
 use Surikat\Tool\Min\JS;
@@ -136,9 +134,11 @@ class Synaptic {
 	}
 	protected function scss($path) {
 		set_time_limit(0);
-		SCSSC::$allowImportCSS = true;
-		SCSSC::$allowImportRemote = true;
-		$server = new SCSSCServer(dirname($path));
+		$server = $this->getDependency('SyntaxedCSS\SCSSCServer');
+		$scssc = $server->getDependency('SyntaxedCSS\SCSSC');
+		$scssc->allowImportCSS = true;
+		$scssc->allowImportRemote = true;
+		$server->setPath(dirname($path));
 		$server->serve(pathinfo($path,PATHINFO_FILENAME).'.scss');
 	}
 }

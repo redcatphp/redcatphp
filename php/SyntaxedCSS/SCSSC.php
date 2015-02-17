@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Core;
+namespace Surikat\SyntaxedCSS;
 use stdClass;
 use Exception;
 use Surikat\Dependency\Injector;
@@ -54,7 +54,7 @@ use Surikat\Dependency\Injector;
 class SCSSC {
 	use Injector;
 	
-	static public $VERSION = "v0.0.9.surikat";
+	public $VERSION = "v0.0.9.surikat";
 
 	static protected $operatorNames = [
 		'+' => "add",
@@ -102,7 +102,7 @@ class SCSSC {
 	protected $userFunctions = [];
 
 	protected $numberPrecision = 5;
-	protected $formatter = "Surikat\\Core\\scss_formatter_nested";
+	protected $formatter;
 	var $sourcePos;
 	//followings addons methods by surikat
 	function phpScssSupport($code){
@@ -325,7 +325,7 @@ class SCSSC {
 		$this->parser = new scss_parser($name,true,$this); //addon by surikat
 		$tree = $this->parser->parse($code);
 
-		$this->formatter = new $this->formatter();
+		$this->formatter = new scss_formatter_nested();
 
 		$this->env = null;
 		$this->scope = null;
@@ -1773,17 +1773,17 @@ class SCSSC {
 		$this->compileChildren($tree->children, $out);
 		array_shift($this->importPaths);
 	}
-	public static $allowImportCSS;//addon by surikat
-	public static $allowImportRemote;//addon by surikat
+	public $allowImportCSS;//addon by surikat
+	public $allowImportRemote;//addon by surikat
 	// results the file path for an import url if it exists
 	public function findImport($url) {
 		$urls = [];
 
 		// for "normal" scss imports (ignore vanilla css and external requests)
 		$reg = '';
-		if(!self::$allowImportCSS)
+		if(!$this->allowImportCSS)
 			$reg .= '\.css';
-		if(!self::$allowImportRemote)
+		if(!$this->allowImportRemote)
 			$reg .= ($reg?'|':'').'^http:\/\/$';
 		$reg = '/'.$reg.'/';
 		if (preg_match($reg, $url)) {
