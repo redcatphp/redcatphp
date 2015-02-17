@@ -2,7 +2,7 @@
 use Surikat\Dependency\Injector;
 use Surikat\Tool;
 use Surikat\Cache\Sync;
-use Surikat\Core\FS;
+use Surikat\FileSystem\FS;
 use Surikat\Tool\PHP;
 use Surikat\Tool\Min\HTML as minHTML;
 use Surikat\Tool\Min\PHP as minPHP;
@@ -120,7 +120,7 @@ class View {
 			unlink($this->devCompileFile);
 			FS::rmdir($this->dirCompile);
 			FS::rmdir($this->dirCache);
-			$this->getDependency('Extension\Synaptic')->cleanMini();
+			$this->getDependency('FileSystem\Synaptic')->cleanMini();
 		}
 		else{
 			if($this->DevLevel->VIEW){
@@ -128,9 +128,9 @@ class View {
 				file_put_contents($this->devCompileFile,'');
 			}
 			if($this->DevLevel->CSS)
-				$this->getDependency('Extension\Synaptic')->cleanMini('css');
+				$this->getDependency('FileSystem\Synaptic')->cleanMini('css');
 			if($this->DevLevel->CSS)
-				$this->getDependency('Extension\Synaptic')->cleanMini('js');
+				$this->getDependency('FileSystem\Synaptic')->cleanMini('js');
 		}
 	}
 	function display($file=null,$vars=[]){

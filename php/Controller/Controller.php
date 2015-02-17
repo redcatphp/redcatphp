@@ -1,6 +1,6 @@
 <?php namespace Surikat\Controller;
-use Surikat\Core\HTTP;
-use Core\Domain;
+use Surikat\HTTP\HTTP;
+use HTTP\Domain;
 use Surikat\Core\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;

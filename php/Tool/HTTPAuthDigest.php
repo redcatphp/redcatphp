@@ -1,5 +1,5 @@
 <?php namespace Surikat\Tool;
-use Surikat\Core\HTTP;
+use Surikat\HTTP\HTTP;
 abstract class HTTPAuthDigest{
 	static $defaultRealm = 'Restricted area';
 	static function start($realm=null){

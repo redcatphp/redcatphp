@@ -1,6 +1,6 @@
 <?php namespace Surikat\SyntaxedCSS;
-use Surikat\Core\FS;
-use Surikat\Core\HTTP;
+use Surikat\FileSystem\FS;
+use Surikat\HTTP\HTTP;
 use Surikat\Dependency\Injector;
 use Exception;
 class SCSSCServer{

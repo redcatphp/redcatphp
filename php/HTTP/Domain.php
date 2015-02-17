@@ -1,4 +1,4 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\HTTP;
 abstract class Domain {
 	protected static $baseHref;
 	protected static $suffixHref;

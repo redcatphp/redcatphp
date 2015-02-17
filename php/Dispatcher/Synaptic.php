@@ -7,6 +7,6 @@ class Synaptic extends Dispatcher{
 			$this->pathFS .= '/';
 	}
 	function __invoke($filename,$file){
-		$this->getDependency('Extension\Synaptic')->load($this->pathFS.$file);
+		$this->getDependency('FileSystem\Synaptic')->load($this->pathFS.$file);
 	}
 }

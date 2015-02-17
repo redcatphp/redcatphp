@@ -1,7 +1,7 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
 use Surikat\Core\Config;
-use Core\Domain;
+use HTTP\Domain;
 use I18n\Lang;
 use Surikat\Dependency\Injector;
 class I18n extends Faceted {

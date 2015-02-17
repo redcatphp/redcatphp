@@ -1,6 +1,6 @@
 <?php namespace Surikat\View;
 use I18n\Lang;
-use Core\Domain;
+use HTTP\Domain;
 use Surikat\Dependency\Injector;
 class Toolbox{
 	use Injector;

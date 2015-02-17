@@ -1,7 +1,7 @@
 <?php namespace Surikat\Tool;
-use Surikat\Core\Domain;
+use Surikat\HTTP\Domain;
 use Surikat\Core\Session;
-use Surikat\Core\HTTP;
+use Surikat\HTTP\HTTP;
 use Surikat\Tool\Auth;
 use Surikat\I18n\Lang;
 Lang::initialize();

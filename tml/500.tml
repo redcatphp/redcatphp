@@ -1,6 +1,6 @@
 <Presenter:Presenter />
 <?
-use Core\HTTP;
+use HTTP\HTTP;
 HTTP::code(500);
 ?>
 <extend>

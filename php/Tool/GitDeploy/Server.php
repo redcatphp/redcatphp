@@ -1,5 +1,5 @@
 <?php namespace Surikat\Tool\GitDeploy;
-use Surikat\Core\FS;
+use Surikat\FileSystem\FS;
 abstract class Server {
     var $connection;
     var $current_commit;

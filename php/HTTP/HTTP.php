@@ -1,6 +1,6 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\HTTP;
 use Closure;
-use Surikat\Core\Domain;
+use Surikat\HTTP\Domain;
 abstract class HTTP{
 	static function reloadLocation(){
 		header('Location: '.Domain::getLocation(),false,302);

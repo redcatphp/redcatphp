@@ -1,6 +1,6 @@
-<?php namespace Surikat\Core;
-use Surikat\Core\FS;
-use Surikat\Core\Images;
+<?php namespace Surikat\FileSystem;
+use Surikat\FileSystem\FS;
+use Surikat\FileSystem\Images;
 use Surikat\Exception\Upload as Exception\Upload;
 abstract class Uploader{
 	static function image($conf){

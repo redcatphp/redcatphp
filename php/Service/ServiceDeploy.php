@@ -1,5 +1,5 @@
 <?php namespace Surikat\Service;
-use Surikat\Core\HTTP;
+use Surikat\HTTP\HTTP;
 use Surikat\Tool\GitDeploy\GitDeploy;
 use Suriakt\Tool\Auth;
 class ServiceDeploy{

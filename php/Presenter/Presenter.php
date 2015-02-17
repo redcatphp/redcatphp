@@ -3,7 +3,7 @@ use Surikat\Core\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 use Dispatcher\Index;
-use Core\Domain;
+use HTTP\Domain;
 class Presenter extends ArrayObject{
 	static function load(TML $tml){
 		if(!$tml->View)

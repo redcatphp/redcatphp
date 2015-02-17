@@ -1,4 +1,4 @@
-<?php namespace Surikat\Core; 
+<?php namespace Surikat\FileSystem;
 abstract class FS {
 	static function recurse($dir,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
 		$dir = rtrim($dir,'/').'/';

@@ -1,6 +1,6 @@
-<?php namespace Surikat\Extension;
-use Surikat\Core\HTTP;
-use Surikat\Core\FS;
+<?php namespace Surikat\FileSystem;
+use Surikat\HTTP\HTTP;
+use Surikat\FileSystem\FS;
 use Surikat\Tool\Min\JS;
 use Surikat\Tool\Min\CSS;
 use Surikat\Dependency\Injector;
