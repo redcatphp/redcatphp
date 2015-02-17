@@ -27,4 +27,7 @@ $js('jquery',function(){
 		}
 		return source.reload(target);
 	};
+	$.reloader = function(source,target){
+		return $('<b data-reload="'+source+'" />').reload(target);
+	};
 });

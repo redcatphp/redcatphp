@@ -1,14 +1,14 @@
-<?php namespace Surikat\Tool;
+<?php namespace Surikat\User;
 use Surikat\Core\Config;
-use Surikat\Core\Session;
-use Surikat\Core\FS;
-use Surikat\Core\HTTP;
+use Surikat\User\Session;
+use Surikat\FileSystem\FS;
+use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
-use Surikat\Tool\PHPMailer;
-use Core\Domain;
+use Surikat\Mail\PHPMailer;
+use HTTP\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
-	require_once SURIKAT_SPATH.'php/Tool/Crypto/password-compat.inc.php';
+	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
 }
 class Auth{
 
@@ -17,7 +17,7 @@ class Auth{
 	const RIGHT_MODERATE = 8;
 	const RIGHT_POST = 16;
 	
-	const ROLE_ADMIN = 14;
+	const ROLE_ADMIN = 30;
 	const ROLE_EDITOR = 4;
 	const ROLE_MODERATOR = 8;
 	const ROLE_MEMBER = 16;
@@ -179,6 +179,7 @@ class Auth{
 						'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
 						'email'=>isset($this->config['rootEmail'])?$this->config['rootEmail']:null,
 						'active'=>1,
+						'right'=>static::ROLE_ADMIN,
 						'type'=>'root'
 					])
 					->store()
@@ -436,7 +437,7 @@ class Auth{
 		if($type == "activation" && isset($user['active']) && $user['active'] == 1){
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
-		$key = $this->getRandomKey(40);
+		$key = self::getRandomKey(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
 		$user['xown'.ucfirst($this->tableRequests)][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$user->store()){
@@ -617,7 +618,7 @@ class Auth{
 		}
 		return self::OK_EMAIL_CHANGED;
 	}
-	public function getRandomKey($length = 40){
+	static function getRandomKey($length = 40){
 		$chars = "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6";
 		$key = "";
 		for ($i = 0; $i < $length; $i++)

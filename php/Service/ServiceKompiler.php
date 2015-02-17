@@ -1,5 +1,5 @@
 <?php namespace Surikat\Service; 
-use Suriakt\Tool\Auth;
+use Suriakt\User\Auth;
 use Surikat\FileSystem\FS;
 use Surikat\Tool\JSON;
 use Surikat\Minify\PHP as minPHP;
