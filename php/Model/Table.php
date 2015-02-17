@@ -26,7 +26,7 @@ use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
 use Surikat\Tool\JSON;
 use Surikat\Cache\Sync;
 use BadMethodCallException;
-use Model\Exception_Validation; //for allowing mirrored exception class catching and (optional) hook
+use Exception\ModelValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
 	function onNew(){}
@@ -116,7 +116,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $this;
 	}
 	function throwValidationError($e=null){
-		throw new Exception_Validation('Données manquantes ou erronées',$e);
+		throw new ExceptionModelValidation('Données manquantes ou erronées',$e);
 	}
 	function _relationsKeysRestore(){
 		foreach($this->_relationsKeysStore as $k=>$v)

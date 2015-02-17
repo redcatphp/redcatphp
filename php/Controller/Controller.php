@@ -60,7 +60,7 @@ class Controller{
 		try{
 			$v->display($file);
 		}
-		catch(\Surikat\View\Exception $e){
+		catch(\Surikat\Exception\View $e){
 			$this->error($e->getMessage());
 		}
 	}
@@ -70,7 +70,7 @@ class Controller{
 			$v->set('URI',$this->getRouter());
 			$v->display($c.'.tml');
 		}
-		catch(\Surikat\View\Exception $e){
+		catch(\Surikat\Exception\View $e){
 			HTTP::code($e->getMessage());
 		}
 		exit;

@@ -1,4 +1,5 @@
 <?php namespace Surikat\View;
+use Surikat\Exception\ViewTML as ExceptionTML;
 abstract class PARSER{
 	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;
@@ -664,7 +665,7 @@ abstract class PARSER{
 	protected function throwException($msg){
 		if($this->View)
 			$msg .= $this->exceptionContext();
-		throw new Exception_TML($msg);
+		throw new ExceptionTML($msg);
 	}
 	function exceptionContext(){
 		return ' on "'.$this->View->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';

@@ -1,7 +1,7 @@
 <?php namespace Surikat\Core;
 use Surikat\Core\FS;
 use Surikat\Core\Images;
-use Surikat\Core\ExceptionUpload;
+use Surikat\Exception\Upload as Exception\Upload;
 abstract class Uploader{
 	static function image($conf){
 		$conf = array_merge([

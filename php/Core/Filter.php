@@ -1,5 +1,5 @@
 <?php namespace Surikat\Core; 
-use Surikat\Core\PasswordHash;
+use Surikat\Crypto\PasswordHash;
 //think to look http://www.php.net/manual/en/filter.filters.sanitize.php
 abstract class Filter{
 	const BASIC_TAGS = 'br,p,a,strong,b,i,em,img,blockquote,code,dd,dl,hr,h1,h2,h3,h4,h5,h6,label,ul,li,span,sub,sup';
