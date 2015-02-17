@@ -14,7 +14,7 @@ use Surikat\View\CssSelector\Model\CssParserModelFactor;
 use Surikat\View\CssSelector\Model\CssParserModelSelector;
 use Surikat\View\CssSelector\TextParserException;
 use Surikat\View\CssSelector\TextParser;
-use Surikat\Core\Arrays;
+use Surikat\Vars\Arrays;
  
 /**
  * selectorList			  = selector {"," selector}

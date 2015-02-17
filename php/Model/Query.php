@@ -1,8 +1,8 @@
 <?php namespace Surikat\Model;
 use ArrayAccess;
 use BadMethodCallException;
-use Surikat\Core\ArrayObject;
-use Surikat\Core\Arrays;
+use Surikat\Vars\ArrayObject;
+use Surikat\Vars\Arrays;
 use Surikat\Model\SqlFormatter;
 use Surikat\Model;
 use Surikat\Model\R;

@@ -1,5 +1,5 @@
-<?php namespace Surikat\Core;
-abstract class FileINI{
+<?php namespace Surikat\FileSystem;
+abstract class INI{
 	static function arrayToStr($assoc_arr,$has_sections=true,$quotes=false){
 		$content = ""; 
 		if($has_sections){

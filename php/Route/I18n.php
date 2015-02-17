@@ -1,6 +1,6 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
-use Surikat\Core\Config;
+use Surikat\Config\Config;
 use HTTP\Domain;
 use I18n\Lang;
 use Surikat\Dependency\Injector;

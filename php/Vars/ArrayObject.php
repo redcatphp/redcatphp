@@ -1,4 +1,4 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\Vars;
 use Surikat\Dependency\Injector;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	use Injector;

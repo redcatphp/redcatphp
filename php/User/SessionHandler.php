@@ -1,4 +1,4 @@
-<?php namespace Surikat\Core;
+<?php namespace Surikat\User;
 use Surikat\Exception\Security as ExceptionSecurity;
 use Surikat\User\Session;
 use SessionHandlerInterface;

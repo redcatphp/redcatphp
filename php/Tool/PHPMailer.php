@@ -1,5 +1,5 @@
 <?php namespace Surikat\Tool;
-use Surikat\Core\Config;
+use Surikat\Config\Config;
 use Surikat\Mail\PHPMailer\PHPMailer as OPHPMailer;
 class PHPMailer extends OPHPMailer{
 	static function mail($email, $subject, $message, $html=true){

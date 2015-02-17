@@ -1,7 +1,7 @@
 <?php namespace Surikat\Controller;
 use Surikat\HTTP\HTTP;
 use HTTP\Domain;
-use Surikat\Core\ArrayObject;
+use Surikat\Vars\ArrayObject;
 use Surikat\View\View;
 use Surikat\View\TML;
 use Surikat\I18n\Lang;

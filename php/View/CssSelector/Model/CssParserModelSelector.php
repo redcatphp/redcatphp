@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\View\CssSelector\Model;
 use Surikat\View\CssSelector\Model\CssParserModelFactor;
-use Surikat\Core\Arrays;
+use Surikat\Vars\Arrays;
 class CssParserModelSelector{
 	private $_factors = [];
 	function addFactor($factor){

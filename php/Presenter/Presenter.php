@@ -1,5 +1,5 @@
 <?php namespace Surikat\Presenter;
-use Surikat\Core\ArrayObject;
+use Surikat\Vars\ArrayObject;
 use Surikat\View\FILE;
 use Surikat\View\TML;
 use Dispatcher\Index;

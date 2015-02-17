@@ -1,5 +1,5 @@
-<?php namespace Surikat\Core;
-use Surikat\Core\ArrayObject;
+<?php namespace Surikat\User;
+use Surikat\Vars\ArrayObject;
 class Post extends ArrayObject{
 	private static $postObject;
 	function offsetGet($k){

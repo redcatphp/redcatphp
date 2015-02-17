@@ -1,5 +1,5 @@
 <?php namespace Surikat\Presenter;
-use Surikat\Core\ArrayObject;
+use Surikat\Vars\ArrayObject;
 use Surikat\Exception\View as View_Exception;
 trait Mixin_Pagination{
 	protected $limit				= 5;

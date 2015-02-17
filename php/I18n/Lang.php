@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\I18n{
 	use Surikat\Dependency\Injector;
-	use Surikat\Core\Config;
+	use Surikat\Config\Config;
 	use Surikat\I18n\GettextEmulator;
 	class Lang {
 		use Injector;

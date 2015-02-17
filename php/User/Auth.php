@@ -1,5 +1,5 @@
 <?php namespace Surikat\User;
-use Surikat\Core\Config;
+use Surikat\Config\Config;
 use Surikat\User\Session;
 use Surikat\FileSystem\FS;
 use Surikat\HTTP\HTTP;
