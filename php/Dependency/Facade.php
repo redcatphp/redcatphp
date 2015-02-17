@@ -1,14 +1,28 @@
 <?php namespace Surikat\Dependency;
 use BadMethodCallException;
 trait Facade{	
-	private static $__instance;
+	protected static $__instances = [];
+	protected static $__instance;
 	static function getSelf(){
 		return isset(self::$__instance)?self::$__instance:self::setSelf();
 	}
 	static function setSelf(){
-		$args = func_get_args();
-		array_unshift($args,get_called_class());
-		return self::$__instance = call_user_func_array(['Dependency\Registry','instance'],$args);
+		return self::$__instance = self::registry(get_called_class(),func_get_args());
+	}
+	static function registry($class,$args=null){
+		$key = empty($args)?0:sha1(serialize($args));
+		if(!isset(self::$__instances[$key])){
+			self::$__instances[$key] = self::factory($class,$args);
+		}
+		return self::$__instances[$key];
+	}
+	static function factory($class,$args=null){
+		if(is_array($args)&&!empty($args)){
+			 return (new ReflectionClass($class))->newInstanceArgs($args);
+		}
+		else{
+			return new $class();
+		}
 	}
 	static function __callStatic($f,$args){
 		if(strpos($f,'self')===0&&ctype_upper(substr($f,4,1))){

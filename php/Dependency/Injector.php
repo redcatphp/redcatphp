@@ -2,7 +2,7 @@
 use ReflectionClass;
 use ReflectionProperty;
 use BadMethodCallException;
-use Dependency\Registry;
+use Dependency\Container;
 trait Injector{
 	protected $__dependenciesRegistry = [];
 	protected $__protectedIsReadOnly;
@@ -49,13 +49,10 @@ trait Injector{
 	function defaultNew($key){
 		if(strpos($key,'\\')===false)
 			$key = ucfirst($key).'\\'.ucfirst($key);
-		return Registry::instance($key);
+		return Container::factory($key);
 	}
 	function defaultDependency($key){
-		return $this->getDependencyInjector()->getDependency($key);
-	}
-	function getDependencyInjector(){
-		return Registry::instance();
+		return Container::get($key);
 	}
 	function __call($f,$args){
 		if(strpos($f,'getDependency')===0&&ctype_upper(substr($f,13,1))){

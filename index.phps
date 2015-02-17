@@ -4,21 +4,23 @@
 if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
 
-//Registry::instance('Dev\Level')->PHP();
-//Registry::instance('Dev\Level')->CONTROL();
-//Registry::instance('Dev\Level')->VIEW();
-//Registry::instance('Dev\Level')->PRESENT();
-//Registry::instance('Dev\Level')->MODEL();
-//Registry::instance('Dev\Level')->DB();
-//Registry::instance('Dev\Level')->DBSPEED();
-//Registry::instance('Dev\Level')->SQL();
-//Registry::instance('Dev\Level')->ROUTE();
-//Registry::instance('Dev\Level')->I18N();
-//Registry::instance('Dev\Level')->IMG();
-//Registry::instance('Dev\Level')->SERVER();
-//Registry::instance('Dev\Level')->NAV();
-Registry::instance('Dev\Level')->STD();
-Registry::instance('Dev\Level')->CSS();
-Registry::instance('Dev\Level')->JS();
+use Dependency\Container;
+
+//Container::get('Dev\Level')->PHP();
+//Container::get('Dev\Level')->CONTROL();
+//Container::get('Dev\Level')->VIEW();
+//Container::get('Dev\Level')->PRESENT();
+//Container::get('Dev\Level')->MODEL();
+//Container::get('Dev\Level')->DB();
+//Container::get('Dev\Level')->DBSPEED();
+//Container::get('Dev\Level')->SQL();
+//Container::get('Dev\Level')->ROUTE();
+//Container::get('Dev\Level')->I18N();
+//Container::get('Dev\Level')->IMG();
+//Container::get('Dev\Level')->SERVER();
+//Container::get('Dev\Level')->NAV();
+Container::get('Dev\Level')->STD();
+Container::get('Dev\Level')->CSS();
+Container::get('Dev\Level')->JS();
 
 (new Controller\Application())->run(@$_SERVER['PATH_INFO']);
