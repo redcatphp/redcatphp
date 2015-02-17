@@ -6,7 +6,7 @@ require __DIR__.'/Dependency/Injector.php';
 require __DIR__.'/Dependency/Facade.php';
 require __DIR__.'/Dependency/Container.php';
 $autoload = new SuperNamespace();
-Container::get()->setDependency('Autoload',$autoload);
+Container::set('Autoload',$autoload);
 if(!defined('SURIKAT_PATH'))
 	define('SURIKAT_PATH',getcwd().'/');
 if(!defined('SURIKAT_SPATH'))

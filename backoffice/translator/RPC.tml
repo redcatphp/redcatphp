@@ -1,6 +1,7 @@
 <Presenter: uri="dynamic" />
 <?
-Loader::addNamespace('Translator',__DIR__);
+use Dependency\Container;
+Container::get('Autoload')->addNamespace('Translator',__DIR__);
 header('Content-Type: application/json; charset=UTF-8;');
 $service = new Translator\MessageService();
 $response = ['error'=>null];
