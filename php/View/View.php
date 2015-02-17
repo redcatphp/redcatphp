@@ -3,7 +3,7 @@ use Surikat\Dependency\Injector;
 use Surikat\Tool;
 use Surikat\Cache\Sync;
 use Surikat\FileSystem\FS;
-use Surikat\Tool\PHP;
+use Surikat\SourceCode\PHP;
 use Surikat\Minify\HTML as minHTML;
 use Surikat\Minify\PHP as minPHP;
 class View {

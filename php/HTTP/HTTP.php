@@ -235,4 +235,26 @@ abstract class HTTP{
 		elseif(isset($_SERVER['HTTP_ACCEPT_ENCODING'])&&strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false)
 			return 'gzip';
 	}
+	static function filterDotDotSlash($val){
+		if(is_integer($val))
+			return $val;
+		elseif(is_array($val)){
+			foreach(array_keys($val) as $k){
+				if(!is_integer($k)){
+					$tmp = $k;
+					$k = self::filterDotDotSlash($k);
+					if($k!=$tmp){
+						$val[$k] = $val[$tmp];
+						unset($val[$tmp]);
+					}
+				
+				}
+				$val[$k] = self::filterDotDotSlash($val[$k]);
+			}
+			return $val;
+		}
+		while(!(stripos($val,'./')===false&&stripos($val,'..')===false))
+			$val = str_replace(['./','..'],'',$val);
+		return $val;
+	}
 }

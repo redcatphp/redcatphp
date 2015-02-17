@@ -23,7 +23,7 @@ onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 use Surikat\Model\RedBeanPHP\OODBBean;
 use Surikat\Model\RedBeanPHP\SimpleModel;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
-use Surikat\Tool\JSON;
+use Surikat\Vars\JSON;
 use Surikat\Cache\Sync;
 use BadMethodCallException;
 use Exception\ModelValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook

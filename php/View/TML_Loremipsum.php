@@ -17,6 +17,6 @@ class TML_Loremipsum extends TML {
 		$loremipsum = $this->loremipsum?'true':'false';
 		$html = $this->html==='false'?'false':'true';
 		$mini = $this->mini?'true':'false';
-		$this->innerHead[] = "<?php echo Surikat\Tool\LoremIpsum::get($count,$wordsPerParagraph,$format,$loremipsum,$html,$mini);?>";
+		$this->innerHead[] = "<?php echo Surikat\Dev\LoremIpsum::get($count,$wordsPerParagraph,$format,$loremipsum,$html,$mini);?>";
 	}
 }

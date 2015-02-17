@@ -30,7 +30,7 @@ class Session{
 		$this->cookieLifetime = $time;
 	}
 	function &set(){
-		self::start();
+		$this->start();
 		$args = func_get_args();
 		$v = array_pop($args);
 		if(empty($args)){
@@ -47,9 +47,9 @@ class Session{
 		return $ref;
 	}
 	function get(){
-		if(!self::exist())
+		if(!$this->exist())
 			return;
-		self::start();
+		$this->start();
 		$args = func_get_args();
 		$ref =& $_SESSION;
 		foreach($args as $k)
@@ -62,12 +62,12 @@ class Session{
 		return $ref;
 	}
 	function destroyKey($skey=null){
-		self::sessionHandler()->destroyKey($skey);
+		$this->sessionHandler()->destroyKey($skey);
 	}
 	function setKey($skey=null){
-		self::destroyKey($skey);
-		session_id(self::generateId());
-		self::start();
+		$this->destroyKey($skey);
+		session_id($this->generateId());
+		$this->start();
 		$tmp = [];
 		foreach($_SESSION as $k=>$v)
 			$tmp[$k] = $v;
@@ -78,7 +78,7 @@ class Session{
 		if($p=strpos($id,'-'))
 			$id = substr($id,$p+1);
 		$id = $skey.'-'.$id;
-		file_put_contents(self::getSavePath().self::getSessionName().'_'.$id,''); //prevent record a failed attempt
+		file_put_contents($this->getSavePath().$this->getSessionName().'_'.$id,''); //prevent record a failed attempt
 		session_id($id);
 		session_start();
 		$this->id = $id;
@@ -87,26 +87,26 @@ class Session{
 		$this->key = $skey;
 	}
 	function checkBlocked(){
-		if($s=self::isBlocked()){
-			self::removeCookie();
-			self::sessionHandler()->setWrite(false);
+		if($s=$this->isBlocked()){
+			$this->removeCookie();
+			$this->sessionHandler()->setWrite(false);
 			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
 		}
 	}
 	function start(){
 		if(!$this->id){
 			session_name($this->name);
-			$id = isset($_COOKIE[$this->name])?$_COOKIE[$this->name]:self::generateId();
+			$id = isset($_COOKIE[$this->name])?$_COOKIE[$this->name]:$this->generateId();
 			session_id($id);
 			if(strpos($id,'-')!==false){
-				self::checkBlocked();
-				if(!is_file(self::getSavePath().$this->name.'_'.$id)){
-					self::addAttempt();
-					self::checkBlocked();
+				$this->checkBlocked();
+				if(!is_file($this->getSavePath().$this->name.'_'.$id)){
+					$this->addAttempt();
+					$this->checkBlocked();
 				}
 			}
 			if(session_start()){
-				self::regenerate();
+				$this->regenerate();
 				$this->id = session_id();
 			}
 			else{
@@ -116,11 +116,11 @@ class Session{
 		return $this->id;
 	}
 	function destroy(){
-		if(self::start()){
+		if($this->start()){
 			$_SESSION = [];
 			session_destroy();
 			session_write_close();
-			self::removeCookie();
+			$this->removeCookie();
 			return true;
 		}
 	}
@@ -139,13 +139,13 @@ class Session{
 		//write close
 	}
 	function generateId($prefix=''){
-		return $prefix.base64_encode(hash('sha512',self::getRandomKey(rand(2,5)).uniqid('',true).self::getRandomKey(rand(2,5))));
+		return $prefix.base64_encode(hash('sha512',$this->getRandomKey(rand(2,5)).uniqid('',true).$this->getRandomKey(rand(2,5))));
 	}
 	function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
 	}
 	function addAttempt(){
-		$ip = self::getIp();
+		$ip = $this->getIp();
 		FS::mkdir($this->attemptsPath);
 		if(is_file($this->attemptsPath.$ip))
 			$attempt_count = ((int)file_get_contents($this->attemptsPath.$ip))+1;
@@ -154,7 +154,7 @@ class Session{
 		return file_put_contents($this->attemptsPath.$ip,$attempt_count,LOCK_EX);
 	}
 	function isBlocked(){
-		$ip = self::getIp();
+		$ip = $this->getIp();
 		if(is_file($this->attemptsPath.$ip))
 			$count = (int)file_get_contents($this->attemptsPath.$ip);
 		else
@@ -164,15 +164,15 @@ class Session{
 		if($count>=$this->maxAttempts){
 			if($currentdate<$expiredate)
 				return $expiredate-$currentdate;
-			self::deleteAttempts();
+			$this->deleteAttempts();
 			return false;
 		}
 		if($currentdate>$expiredate)
-			self::deleteAttempts();
+			$this->deleteAttempts();
 		return false;
 	}
 	function deleteAttempts(){
-		$ip = self::getIp();
+		$ip = $this->getIp();
 		return is_file($this->attemptsPath.$ip)&&unlink($this->attemptsPath.$ip);
 	}
 	
