@@ -2,8 +2,8 @@
 use Surikat\HTTP\HTTP;
 use HTTP\Domain;
 use Surikat\Vars\ArrayObject;
-use Surikat\View\View;
-use Surikat\View\TML;
+use Surikat\Templator\Template;
+use Surikat\Templator\TML;
 use Surikat\I18n\Lang;
 use Surikat\Dependency\Injector;
 class Controller{
@@ -26,9 +26,9 @@ class Controller{
 		$v->onCompile(function($TML){
 			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 				$TML->prepend('<Presenter:Presenter uri="static" />');
-			$this->getDependency('View\Toolbox')->JsIs($TML);
+			$this->getDependency('Templator\Toolbox')->JsIs($TML);
 			if(!$this->getDependency('Dev\Level')->VIEW)
-				$this->getDependency('View\Toolbox')->autoMIN($TML);
+				$this->getDependency('Templator\Toolbox')->autoMIN($TML);
 		});
 		$this->display($path.'.tml');
 	}
@@ -43,7 +43,7 @@ class Controller{
 	}
 	function getView(){
 		if(!isset($this->View)){
-			$this->setView(new View());
+			$this->setView(new Template());
 			$this->View->setController($this);
 		}
 		return $this->View;

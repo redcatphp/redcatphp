@@ -1,7 +1,7 @@
 <?php namespace Surikat\Presenter;
 use Surikat\Vars\ArrayObject;
-use Surikat\View\FILE;
-use Surikat\View\TML;
+use Surikat\Templator\FILE;
+use Surikat\Templator\TML;
 use Dispatcher\Index;
 use HTTP\Domain;
 class Presenter extends ArrayObject{

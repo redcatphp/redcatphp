@@ -1,5 +1,5 @@
 <?php namespace Surikat\Dispatcher;
-use Surikat\View\View;
+use Surikat\Templator\Template;
 use Controller\Controller;
 class ViewController extends Dispatcher{
 	protected $Controller;
@@ -25,7 +25,7 @@ class ViewController extends Dispatcher{
 	}
 	function getView(){
 		if(!isset($this->View)){
-			$this->setView(new View());
+			$this->setView(new Template());
 			if(isset($this->Controller)){
 				$this->View->setController($this->Controller);
 				$this->Controller->setView($this->View);

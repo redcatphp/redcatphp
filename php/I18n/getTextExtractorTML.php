@@ -1,5 +1,5 @@
 <?php namespace Surikat\I18n;
-use View\TML;
+use Templator\TML;
 class getTextExtractorTML extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		$filename = $file;

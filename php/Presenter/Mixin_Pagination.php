@@ -1,6 +1,6 @@
 <?php namespace Surikat\Presenter;
 use Surikat\Vars\ArrayObject;
-use Surikat\Exception\View as View_Exception;
+use Surikat\Exception\View as ViewException;
 trait Mixin_Pagination{
 	protected $limit				= 5;
 	protected $offset	    		= 0;
@@ -18,7 +18,7 @@ trait Mixin_Pagination{
 			||($this->page=(int)$this->page)<2
 			||$this->count<=($this->offset=($this->page-1)*$this->limit)
 		)
-			throw new View_Exception('404');
+			throw new ViewException('404');
 		
 		if(($this->offset+$this->limit)>$this->count)
 			$this->pagination->end = $this->count;
