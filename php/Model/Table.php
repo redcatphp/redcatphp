@@ -284,7 +284,7 @@ class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				$this->$col = call_user_func_array(['Tool\\filter',$f],$a);
+				$this->$col = call_user_func_array(['Validation\\Filter',$f],$a);
 			}
 		}
 	}

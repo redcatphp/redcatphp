@@ -1,5 +1,5 @@
 <?php namespace Translator;
-use Surikat\Core\FS;
+use Surikat\FileSystem\FS;
 class Catalogue {
 	protected $db;
 	protected $lang;

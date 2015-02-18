@@ -1,6 +1,5 @@
 <?php namespace Surikat\Templator;
 use Surikat\Dependency\Injector;
-use Surikat\Tool;
 use Surikat\Cache\Sync;
 use Surikat\FileSystem\FS;
 use Surikat\SourceCode\PHP;

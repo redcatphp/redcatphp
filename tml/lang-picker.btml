@@ -2,15 +2,15 @@
 	<?
 		$langDir = 'langs/';
 		$lgC = I18n\Lang::get();
-		$lgD = Core\Config::langs('default');
+		$lgD = Config\Config::langs('default');
 		$langs = [$lgD];
 		foreach(glob($langDir.'*.ini') as $langFile)
 			$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
 	?>
 	<foreach "$langs as $lg">
 		<?
-			$language = Tool\Punic\Language::getName($lg,$lg);
-			$language = Core\STR::ucfirst($language);
+			$language = I18n\Punic\Language::getName($lg,$lg);
+			$language = Vars\STR::ucfirst($language);
 			$lcPath = $URI[0];
 			if($lg!=$lgC){
 				if($lg==$lgD){
@@ -24,7 +24,7 @@
 						$lcPath = $k;
 				}
 			}
-			$lcLink = Core\Domain::getSubdomainHref($lg!=$lgD?$lg:null);
+			$lcLink = HTTP\Domain::getSubdomainHref($lg!=$lgD?$lg:null);
 			$lcLink .= $lcPath;
 		?>
 		<li>

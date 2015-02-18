@@ -19,13 +19,6 @@
 	<footer>
 		<include "surikat-powered.btml">
 	</footer>
-	<script type="text/javascript" src="js/js-is.pack.js"></script>
-	<script type="text/javascript">
-		<?$devLevel = $this->getDependency('Dev\Level');?>
-		<?if($devLevel->CSS):?>$css().dev=true;<?endif;?>
-		<?if($devLevel->JS):?>$js().dev=true;<?endif;?>
-		$js('script');
-		<?if($devLevel->CONTROL):?>if(console) console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$this->getDependency('Dev\Chrono')->requestTime()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');<?endif;?>
-	</script>
+	<include "scriptLazyJS.btml">
 </body>
 </html>

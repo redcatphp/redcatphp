@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Tool\Surikat\I18n\Punic\Exception;
+namespace Surikat\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data file has been hit

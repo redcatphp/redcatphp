@@ -1,5 +1,5 @@
 <?php namespace Translator;
-use Surikat\Core\FS;
+use Surikat\FileSystem\FS;
 use Surikat\I18n\msgfmt;
 use Surikat\I18n\getTextExtractorTML;
 use Surikat\I18n\getTextExtractorPHP;

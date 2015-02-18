@@ -1,5 +1,4 @@
 <?php namespace Surikat\SourceCode;
-use Surikat\Tool;
 abstract class PHP{
 	static function extractCode($text){
 		$tokens = token_get_all($text);

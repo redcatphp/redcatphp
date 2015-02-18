@@ -116,7 +116,7 @@ class TML_Form extends TML {
 						continue;
 					switch($a){
 						case 'filter':
-							$code .= ' $_POST[\''.$n.'\'] = Tool\\filter::'.$b.'($_POST[\''.$n.'\'],'.($v?','.var_export($v,true):'').'); ';
+							$code .= ' $_POST[\''.$n.'\'] = Validation\\Filter::'.$b.'($_POST[\''.$n.'\'],'.($v?','.var_export($v,true):'').'); ';
 							$el->$k = null;
 						break;
 						case 'ruler':
