@@ -1,4 +1,4 @@
-<?php namespace Surikat\Time;
+<?php namespace Surikat\DateTime;
 class DateParser{
 	function __construct($timezone=null){
 		$this->date = null;

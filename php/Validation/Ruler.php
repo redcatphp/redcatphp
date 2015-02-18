@@ -1,5 +1,5 @@
 <?php namespace Surikat\Validation;
-use Surikat\Time\Dates;
+use Surikat\DateTime\Dates;
 class Ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
 	static function unique($v){

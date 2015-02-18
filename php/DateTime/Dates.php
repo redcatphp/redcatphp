@@ -1,4 +1,4 @@
-<?php namespace Surikat\Time;
+<?php namespace Surikat\DateTime;
 abstract class Dates {
 	static function dtp_to_datetime(&$dtp){
 		if(is_array($dtp))
