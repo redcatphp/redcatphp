@@ -1,43 +1,32 @@
 <?php namespace Surikat\HTTP;
 /*
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+Copyright (c) 2014-2015, Tom
+All rights reserved.
 
-   * Redistributions of source code must retain the above copyright
-     notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in the
-     documentation and/or other materials provided with the distribution.
-   * Neither the name of the University of California, Berkeley nor the
-      names of its contributors may be used to endorse or promote products
-     derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-sample:
-$csp = new CSPGenerator();
-$csp->addImagesrc("data:"); // Allow data uri images e.g. data:image/png;base64,.. 
-$csp->addImagesrc("*"); // Allow images from everywhere.
-$csp->addFontsrc("'self'"); // Allow font files from same origin.
-$csp->addStylesrc("'unsafe-inline'"); // Allow use of style="..." iniline CSS.
-$csp->addConnectsrc("'self'"); // Allow AJAX request to same origin.
-$csp->Parse(); // Set the Content-Security-Policy HTTP header
+Redistribution and use in source and binary forms, with or without modification, are permitted 
+provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright notice, this list of 
+   conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+   the following disclaimer in the documentation and/or other materials provided with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse
+   or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
  * Content Security Policy generator.
- * @author Tom
  */
 class CSPGenerator {
+
+    private static $instance;
 
     private $reportonly = FALSE;
 
@@ -76,6 +65,17 @@ class CSPGenerator {
     }
 
     /**
+     * Get instance of CSPGenerator class.
+     */
+    public static function getInstance() {
+        if (empty(self::$instance)) {
+            self::$instance = new CSPGenerator();
+        }
+
+        return self::$instance;
+    }
+
+    /**
      * Set the url to where to report violations of the Content Security Policy.
      */
     public function setReporturi($reporturi) {
@@ -99,12 +99,12 @@ class CSPGenerator {
 
     /**
      * Parse user-agent header and set proper content security policy header and X-Frame-Options header
-     * and X-XSS-Protection header based on the user-agent browser and version.
+     * and X-XSS-Protection header based on the browser and browser version.
      */
     public function Parse() {
         $useragentinfo = $this->getBrowserInfo();
         if ($useragentinfo['browser'] === 'chrome') {
-            // Disable content security policy volation reporting if chrome is used
+            // Disable content security policy violation reporting if chrome is used
             // because google chrome is causing false positives with google translate translating the page.
             $this->reporturi = NULL;
         }
@@ -138,7 +138,7 @@ class CSPGenerator {
         }
 
         if (!empty($this->stylesrc)) {
-            // X-Content-Security-Policy, style-src blocking is not implemented.
+            // The obsolete decreated X-Content-Security-Policy header does not support style-src. This is not implemented.
             $cspheader .= '; style-src' . $this->stylesrc;
         }
 
@@ -156,7 +156,7 @@ class CSPGenerator {
             }
         }
 
-        // Chrome for iOS fails to render page if connect-src 'self' is missing.
+        // Chrome for iOS fails to render page if "connect-src 'self'" is missing.
         if ($useragentinfo['browser'] === 'chrome') {
             $this->addConnectsrc("'self'");
         }
@@ -207,13 +207,7 @@ class CSPGenerator {
         //}
 
         if (!empty($this->reporturi)) {
-            if ($useragentinfo['browser'] === 'firefox' && $useragentinfo['version'] <= 22 && $useragentinfo['version'] >= 3.7) {
-                // X-Content-Security-Policy: needs a full url with domain, a relative url does not to work. bug #594446
-                if (isset($_SERVER['SERVER_NAME'])) {
-                    // UseCanonicalName On  required for security see http://shiflett.org/blog/2006/mar/server-name-versus-http-host
-                    $cspheader .= '; report-uri ' . $_SERVER['SERVER_NAME'] . $this->reporturi;
-                }
-            } else {
+            if ($useragentinfo['browser'] !== 'firefox' || $useragentinfo['version'] > 22) {
                 $cspheader .= '; report-uri ' . $this->reporturi;
             }
         }
@@ -228,7 +222,7 @@ class CSPGenerator {
             // ALLOW-FROM Not supported in Chrome or Safari or Opera and any Firefox less than version 18.0 and any Internet Explorer browser less than version 9.0. (source: http://erlend.oftedal.no/blog/tools/xframeoptions/)
             if (($useragentinfo['browser'] === 'firefox' && $useragentinfo['version'] >= 18) || 
                 ($useragentinfo['browser'] === 'msie' && $useragentinfo['version'] >= 9)) {
-                header('X-Frame-Options: ALLOW-FROM ' . $framesrc, TRUE);
+                header('X-Frame-Options: ALLOW-FROM ' . $this->framesrc, TRUE);
             }
         }
 
@@ -251,9 +245,9 @@ class CSPGenerator {
      * Get browser name and version from user-agent header.
      * @return string[]
      */
-    function getBrowserInfo() {
+    private function getBrowserInfo() {
         // Declare known browsers to look for
-        $known = array('firefox', 'msie', 'safari', 'webkit', 'chrome', 'opr', 'opera', 'netscape', 'konqueror');
+        $browsers = array('firefox', 'msie', 'safari', 'webkit', 'chrome', 'opr', 'opera', 'netscape', 'konqueror');
 
         // Clean up useragent and build regex that matches phrases for known browsers
         // (e.g. "Firefox/2.0" or "MSIE 6.0" (This only matches the major and minor
@@ -263,12 +257,15 @@ class CSPGenerator {
         }
 
         $useragent = strtolower($_SERVER['HTTP_USER_AGENT']);
-        $pattern = '#(?<browser>' . join('|', $known) .')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';
+        $pattern = '#(?<browser>' . join('|', $browsers) .')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';
         // Find all phrases (or return empty array if none found)
         if (!preg_match_all($pattern, $useragent, $matches)) {
             if (strpos($useragent, 'Trident/') >= 0) {
-                // IE 11 does not have msie in user-agent header anymore, IE developers want forcing feature detecting with javascript. This is not for HTTP headers possible, because headers are then already send. source: http://blogs.msdn.com/b/ieinternals/archive/2013/09/21/internet-explorer-11-user-agent-string-ua-string-sniffing-compatibility-with-gecko-webkit.aspx
-                return array('browser' => 'msie', 'version' => '11'); // FIXME version does not yet matter, Current IE11 only has CSP sandbox directive support.
+                // IE 11 does not have msie in user-agent header anymore, IE developers want forcing
+                // feature detecting with javascript. This is not for HTTP headers possible, 
+                // because then the headers are already send. 
+                // source: http://blogs.msdn.com/b/ieinternals/archive/2013/09/21/internet-explorer-11-user-agent-string-ua-string-sniffing-compatibility-with-gecko-webkit.aspx
+                return array('browser' => 'msie', 'version' => '11');
             } else {
                 // Unknow browser.
                 return array('browser' => 'unknown', 'version' => '-1.0');
