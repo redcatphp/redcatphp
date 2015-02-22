@@ -4,7 +4,7 @@ use Surikat\Dependency\Container;
 
 require __DIR__.'/Autoload/SuperNamespace.php';
 
-require __DIR__.'/Dependency/MutatorLegacy.php';
+require __DIR__.'/Dependency/Mutator.php';
 require __DIR__.'/Dependency/MutatorProperty.php';
 require __DIR__.'/Dependency/MutatorCall.php';
 require __DIR__.'/Dependency/MutatorMagic.php';

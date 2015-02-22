@@ -1,6 +1,5 @@
 <?php namespace Surikat\Dependency;
 use BadMethodCallException;
-use Surikat\Dependency\MutatorLegacy;
 trait MutatorCall{
 	function __call($f,$args){
 		if(ctype_upper($f{0}))

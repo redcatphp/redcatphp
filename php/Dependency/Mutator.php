@@ -1,7 +1,7 @@
 <?php namespace Surikat\Dependency;
 use ReflectionClass;
 use Surikat\Dependency\Container;
-trait MutatorLegacy{
+trait Mutator{
 	private $__dependenciesRegistry = [];
 	private $__metaRegistry = [];
 	public $Dependency_Container;

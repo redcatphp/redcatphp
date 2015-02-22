@@ -1,5 +1,4 @@
 <?php namespace Surikat\Dependency;
-use Surikat\Dependency\MutatorLegacy;
 trait MutatorProperty{
 	function __get($k){
 		if(ctype_upper($k{0}))
