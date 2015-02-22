@@ -1,12 +1,13 @@
 <?php namespace Surikat\Dependency;
 use BadMethodCallException;
+use ReflectionMethod;
 trait Facade{	
 	protected static $__instances = [];
 	protected static $__instance;
-	static function getSelf(){
-		return isset(self::$__instance)?self::$__instance:self::setSelf();
+	static function getStatic(){
+		return isset(self::$__instance)?self::$__instance:self::setStatic();
 	}
-	static function setSelf(){
+	static function setStatic(){
 		return self::$__instance = self::registry(get_called_class(),func_get_args());
 	}
 	static function registry($class,$args=null){
@@ -24,12 +25,23 @@ trait Facade{
 			return new $class();
 		}
 	}
-	static function __callStatic($f,$args){
-		if(strpos($f,'self')===0&&ctype_upper(substr($f,4,1))){
-			return call_user_func_array([self::getSelf(),lcfirst(substr($f,4))],$args);
-		}
-		if(method_exists(get_called_class(),__FUNCTION__))
-			return parent::__callStatic($f,$args);
-		throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_called_class(),$f));
-	}
+	//function __call($f,$args){
+		//$method = '_'.$f;
+		//if(method_exists($this,$method)&&(new ReflectionMethod($this, $method))->isPublic())
+			//return call_user_func_array([$this,$method],$args);
+		//elseif(is_callable('parent::__call'))
+			//return parent::__call($f,$args);
+		//else
+			//throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_class($this),$f));
+	//}
+	//static function __callStatic($f,$args){
+		//$method = '_'.$f;
+		//$c = get_called_class();
+		//if(method_exists($c,$method)&&(new ReflectionMethod($c, $method))->isPublic())
+			//return call_user_func_array([$c::getStatic(),$method],$args);
+		//elseif(is_callable('parent::__callStatic'))
+			//return parent::__callStatic($f,$args);
+		//else
+			//throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',$c,$f));
+	//}
 }
