@@ -16,6 +16,18 @@ class SuperNamespace extends PSR4{
 			return true;
 		}
 	}
+	function instanceOfNS($o,$i){
+		if($o instanceof $i)
+			return true;
+		foreach(array_keys($this->superNamespaces) as $ns){
+			if(strpos($i,$ns)!==0&&($o instanceof $ns.$i))
+				return true;
+		}
+		return false;
+	}
+	function getSuperNamespaces(){
+		return $this->superNamespaces;
+	}
 	function addSuperNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';
 		$base_dir = rtrim($base_dir, '/').'/';
