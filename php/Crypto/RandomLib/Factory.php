@@ -16,7 +16,7 @@
 
 namespace RandomLib;
 
-use Surikat\SecurityLib\Strength;
+use Surikat\Crypto\SecurityLib\Strength;
 
 /**
  * The Random Factory
@@ -27,7 +27,7 @@ use Surikat\SecurityLib\Strength;
  * @package    Random
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  */
-class Factory extends \Surikat\SecurityLib\AbstractFactory {
+class Factory extends \Surikat\Crypto\SecurityLib\AbstractFactory {
 
     /**
      * @var array A list of available random number mixing strategies
@@ -57,7 +57,7 @@ class Factory extends \Surikat\SecurityLib\AbstractFactory {
      * @return Generator The instantiated generator
      * @throws RuntimeException If an appropriate mixing strategy isn't found
      */
-    public function getGenerator(\Surikat\SecurityLib\Strength $strength) {
+    public function getGenerator(\Surikat\Crypto\SecurityLib\Strength $strength) {
         $sources    = $this->getSources();
         $newSources = array();
         foreach ($sources as $source) {
@@ -172,7 +172,7 @@ class Factory extends \Surikat\SecurityLib\AbstractFactory {
      * @return Mixer The found mixer
      * @throws RuntimeException if a valid mixer cannot be found
      */
-    protected function findMixer(\Surikat\SecurityLib\Strength $strength) {
+    protected function findMixer(\Surikat\Crypto\SecurityLib\Strength $strength) {
         $newMixer = null;
         $fallback = null;
         foreach ($this->getMixers() as $mixer) {

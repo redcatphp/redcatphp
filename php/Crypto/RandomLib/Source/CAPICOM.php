@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\RandomLib\Source;
+namespace Surikat\Crypto\RandomLib\Source;
 
-use Surikat\SecurityLib\Strength;
+use Surikat\Crypto\SecurityLib\Strength;
 
 /**
  * The Capicom Random Number Source
@@ -30,7 +30,7 @@ use Surikat\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class CAPICOM implements \Surikat\RandomLib\Source {
+class CAPICOM implements \Surikat\Crypto\RandomLib\Source {
 
     /**
      * Return an instance of Strength indicating the strength of the source

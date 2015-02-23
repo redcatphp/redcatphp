@@ -16,9 +16,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\RandomLib\Source;
+namespace Surikat\Crypto\RandomLib\Source;
 
-use Surikat\SecurityLib\Strength;
+use Surikat\Crypto\SecurityLib\Strength;
 
 /**
  * The UniqID Random Number Source
@@ -32,7 +32,7 @@ use Surikat\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class UniqID implements \Surikat\RandomLib\Source {
+class UniqID implements \Surikat\Crypto\RandomLib\Source {
 
     /**
      * Return an instance of Strength indicating the strength of the source

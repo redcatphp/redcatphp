@@ -17,9 +17,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\RandomLib\Mixer;
+namespace Surikat\Crypto\RandomLib\Mixer;
 
-use \Surikat\SecurityLib\Strength;
+use \Surikat\Crypto\SecurityLib\Strength;
 
 /**
  * The Hash medium strength mixer class
@@ -33,7 +33,7 @@ use \Surikat\SecurityLib\Strength;
  * @subpackage Mixer
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  */
-class Hash extends \Surikat\RandomLib\AbstractMixer {
+class Hash extends \Surikat\Crypto\RandomLib\AbstractMixer {
 
     /**
      * @var string The hash instance to use

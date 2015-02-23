@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\RandomLib\Source;
+namespace Surikat\Crypto\RandomLib\Source;
 
-use Surikat\SecurityLib\Strength;
+use Surikat\Crypto\SecurityLib\Strength;
 
 /**
  * The URandom Random Number Source
@@ -30,7 +30,7 @@ use Surikat\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class URandom implements \Surikat\RandomLib\Source {
+class URandom implements \Surikat\Crypto\RandomLib\Source {
 
     /**
      * @var string The file to read from

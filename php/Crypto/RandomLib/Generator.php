@@ -17,7 +17,7 @@
 
 namespace RandomLib;
 
-use Surikat\SecurityLib\BaseConverter;
+use Surikat\Crypto\SecurityLib\BaseConverter;
 
 /**
  * The Random Number Generator Class
