@@ -12,7 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Surikat\SecurityLib\BigMath;
+namespace Surikat\Crypto\SecurityLib\BigMath;
 
 /**
  * A class for arbitrary precision math functions implemented using GMP
@@ -21,7 +21,7 @@ namespace Surikat\SecurityLib\BigMath;
  * @package    Core
  * @subpackage BigMath
  */
-class GMP extends \Surikat\SecurityLib\BigMath {
+class GMP extends \Surikat\Crypto\SecurityLib\BigMath {
 
     /**
      * Add two numbers together

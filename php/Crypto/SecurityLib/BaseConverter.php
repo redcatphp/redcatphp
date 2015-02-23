@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\SecurityLib;
+namespace Surikat\Crypto\SecurityLib;
 
 /**
  * A Utility class for converting between raw binary strings and a given
