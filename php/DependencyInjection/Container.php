@@ -6,8 +6,7 @@ use Surikat\DependencyInjection\Facade;
 class Container{
 	use Mutator;
 	use MutatorProperty;
-	use MutatorCall,
-		Facade{
+	use MutatorCall,Facade{
 		Facade::__call insteadof MutatorCall;
 		MutatorCall::__call as ___call;
 	}
