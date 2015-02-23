@@ -3,9 +3,9 @@ use Surikat\FileSystem\FS;
 use Surikat\HTTP\Domain;
 use Surikat\Exception\Exception;
 use Surikat\Exception\Security as ExceptionSecurity;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Session{
-	use Injector;
+	use MutatorMagic;
 	private $id;
 	private $key;
 	private $name = 'surikat';

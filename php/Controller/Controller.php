@@ -5,9 +5,9 @@ use Surikat\Vars\ArrayObject;
 use Surikat\Templator\Template;
 use Surikat\Templator\TML;
 use Surikat\I18n\Lang;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Controller{
-	use Injector;
+	use MutatorMagic;
 	protected $Router;
 	protected $View;
 	protected $prefixTmlCompile = '';

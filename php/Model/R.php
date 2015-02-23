@@ -1,5 +1,5 @@
 <?php namespace Surikat\Model;
-use Surikat\Dependency\Container;
+use Surikat\DependencyInjection\Container;
 use Surikat\Config\Config;
 use Surikat\Vars\STR;
 class R extends RedBeanPHP\Facade{

@@ -1,9 +1,8 @@
-<?php namespace Surikat\Dependency;
+<?php namespace Surikat\DependencyInjection;
 use ReflectionClass;
-use Surikat\Dependency\Container;
+use Surikat\DependencyInjection\Container;
 trait Mutator{
 	private $__dependenciesRegistry = [];
-	private $__metaRegistry = [];
 	public $Dependency_Container;
 	private function __dependencyMixedToObject($value){
 		if($value&&!is_object($value)){

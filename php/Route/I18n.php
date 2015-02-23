@@ -3,9 +3,9 @@ use ArrayAccess;
 use Surikat\Config\Config;
 use HTTP\Domain;
 use I18n\Lang;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class I18n extends Faceted {
-	use Injector;
+	use MutatorMagic;
 	
 	protected $Dispatcher;
 	function __construct($Dispatcher){

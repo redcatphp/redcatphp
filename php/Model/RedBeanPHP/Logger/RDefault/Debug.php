@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\Model\RedBeanPHP\Logger\RDefault;
 
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
@@ -23,7 +23,7 @@ use Surikat\Model\RedBeanPHP\RedException\Security as Security;
  */
 class Debug extends RDefault implements Logger
 {
-	use Injector;
+	use MutatorMagic;
 
 	/**
 	 * Writes a query for logging with all bindings / params filled

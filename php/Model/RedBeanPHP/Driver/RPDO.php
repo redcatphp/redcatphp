@@ -2,7 +2,7 @@
 
 namespace Surikat\Model\RedBeanPHP\Driver;
 
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\Model\SqlFormatter;
 use Surikat\Model\RedBeanPHP\Driver as Driver;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
@@ -27,7 +27,7 @@ use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
  */
 class RPDO implements Driver
 {
-	use Injector;
+	use MutatorMagic;
 	protected $DevLevel;
 	/**
 	* @var integer

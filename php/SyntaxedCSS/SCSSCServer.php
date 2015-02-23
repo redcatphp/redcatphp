@@ -1,10 +1,10 @@
 <?php namespace Surikat\SyntaxedCSS;
 use Surikat\FileSystem\FS;
 use Surikat\HTTP\HTTP;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 use Exception;
 class SCSSCServer{
-	use Injector;
+	use MutatorMagic;
 	static function joinPath($left, $right) {
 		return rtrim($left, '/\\') . DIRECTORY_SEPARATOR . ltrim($right, '/\\');
 	}

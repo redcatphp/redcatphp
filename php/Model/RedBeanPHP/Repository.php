@@ -14,7 +14,7 @@ use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\OODB as OODB;
 
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 
 /**
  * Abstract Repository
@@ -37,7 +37,7 @@ use Surikat\Dependency\Injector;
  */
 abstract class Repository
 {
-	use Injector;
+	use MutatorMagic;
 	/**
 	 * @var array
 	 */

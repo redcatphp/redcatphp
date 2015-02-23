@@ -1,6 +1,6 @@
 <?php namespace Surikat\User;
 use Surikat\Vars\ArrayObject;
-use Surikat\Dependency\Container;
+use Surikat\DependencyInjection\Container;
 class Post extends ArrayObject{
 	private static $postObject;
 	function offsetGet($k){

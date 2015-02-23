@@ -2,9 +2,9 @@
 use Surikat\Templator\TML;
 use Surikat\Templator\TML_Apply;
 use Surikat\Templator\CssSelector;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
-	use Injector;
+	use MutatorMagic;
 	
 	var $nodeName;
 	var $parent;

@@ -1,7 +1,7 @@
 <?php #Copy this file to ../DOCUMENT_ROOT to start a new project
 if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
-use Dependency\Container;
+use DependencyInjection\Container;
 //Container::get('Dev\Level')->PHP();
 //Container::get('Dev\Level')->CONTROL();
 //Container::get('Dev\Level')->VIEW();

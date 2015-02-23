@@ -5,14 +5,14 @@ use Surikat\FileSystem\FS;
 use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
 use Surikat\Mail\PHPMailer;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 use HTTP\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
 }
 class Auth{
-	use Injector;
+	use MutatorMagic;
 	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;

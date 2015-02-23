@@ -3,9 +3,9 @@ use Surikat\HTTP\HTTP;
 use Surikat\FileSystem\FS;
 use Surikat\Minify\JS;
 use Surikat\Minify\CSS;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Synaptic {
-	use Injector;
+	use MutatorMagic;
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	function load($k){

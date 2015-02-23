@@ -1,12 +1,12 @@
 <?php namespace Surikat\Templator;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\Cache\Sync;
 use Surikat\FileSystem\FS;
 use Surikat\SourceCode\PHP;
 use Surikat\Minify\HTML as minHTML;
 use Surikat\Minify\PHP as minPHP;
 class Template {
-	use Injector;
+	use MutatorMagic;
 	var $forceCompile;
 	var $path;
 	var $dirCwd = [];

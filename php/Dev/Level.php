@@ -1,7 +1,7 @@
 <?php namespace Surikat\Dev;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Level{
-	use Injector;
+	use MutatorMagic;
 	private $phpDev;
 	private $level = 0;
 	private $levels;

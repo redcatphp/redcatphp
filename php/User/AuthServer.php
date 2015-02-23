@@ -4,10 +4,10 @@ use Surikat\User\Session;
 use Surikat\HTTP\HTTP;
 use Surikat\User\Auth;
 use Surikat\I18n\Lang;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 Lang::initialize();
 class AuthServer{
-	use Injector;
+	use MutatorMagic;
 	protected $messages = [];
 	function __construct(Auth $auth=null){
 		if(!$auth)

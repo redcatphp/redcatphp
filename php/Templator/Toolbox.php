@@ -1,9 +1,9 @@
 <?php namespace Surikat\Templator;
 use I18n\Lang;
 use HTTP\Domain;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Toolbox{
-	use Injector;
+	use MutatorMagic;
 	function JsIs($TML,$href='css/is.'){
 		$head = $TML->find('head',0);
 		if(!$head){

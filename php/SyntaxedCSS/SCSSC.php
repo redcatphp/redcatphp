@@ -2,7 +2,7 @@
 namespace Surikat\SyntaxedCSS;
 use stdClass;
 use Exception;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 //+surikat addon for php Mixin/Include special support
 //		sass with superpower of php for complex and plainly maitrised advanced syntax function
 /**
@@ -52,7 +52,7 @@ use Surikat\Dependency\Injector;
 //addons by surikat
 
 class SCSSC {
-	use Injector;
+	use MutatorMagic;
 	
 	public $VERSION = "v0.0.9.surikat";
 

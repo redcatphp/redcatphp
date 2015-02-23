@@ -1,7 +1,7 @@
 <?php namespace Surikat\Vars;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	use Injector;
+	use MutatorMagic;
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Dependency;
+<?php namespace Surikat\DependencyInjection;
 use BadMethodCallException;
 use ReflectionMethod;
 trait Facade{	

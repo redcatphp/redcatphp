@@ -1,8 +1,8 @@
 <?php namespace Surikat\Dispatcher;
 use ReflectionClass;
-use Surikat\Dependency\Injector;
+use Surikat\DependencyInjection\MutatorMagic;
 class Dispatcher {
-	use Injector;
+	use MutatorMagic;
 	protected $routes = [];
 	static function runner($uri){
 		$dispatcher = new static();

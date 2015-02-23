@@ -1,17 +1,20 @@
 <?php namespace Surikat;
 use Surikat\Autoload\SuperNamespace;
-use Surikat\Dependency\Container;
+use Surikat\DependencyInjection\Container;
+
+error_reporting(-1);
+ini_set('display_startup_errors',true);
+ini_set('display_errors','stdout');
 
 require __DIR__.'/Autoload/SuperNamespace.php';
 
-require __DIR__.'/Dependency/Mutator.php';
-require __DIR__.'/Dependency/MutatorProperty.php';
-require __DIR__.'/Dependency/MutatorCall.php';
-require __DIR__.'/Dependency/MutatorMagic.php';
-require __DIR__.'/Dependency/Injector.php';
+require __DIR__.'/DependencyInjection/Mutator.php';
+require __DIR__.'/DependencyInjection/MutatorProperty.php';
+require __DIR__.'/DependencyInjection/MutatorCall.php';
+require __DIR__.'/DependencyInjection/MutatorMagic.php';
 
-require __DIR__.'/Dependency/Facade.php';
-require __DIR__.'/Dependency/Container.php';
+require __DIR__.'/DependencyInjection/Facade.php';
+require __DIR__.'/DependencyInjection/Container.php';
 
 $autoload = new SuperNamespace();
 Container::set('Autoload',$autoload);

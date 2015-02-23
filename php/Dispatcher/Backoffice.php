@@ -1,7 +1,7 @@
 <?php namespace Surikat\Dispatcher;
 use Surikat\User\Auth;
 use Surikat\User\Session;
-use Surikat\Dependency\Container;
+use Surikat\DependencyInjection\Container;
 class Backoffice extends ViewController{
 	protected $pathFS = 'backoffice';
 	function __construct(){

@@ -1,8 +1,8 @@
-<?php namespace Surikat\Dependency;
-use Surikat\Dependency\Injector;
-use Surikat\Dependency\Facade;
+<?php namespace Surikat\DependencyInjection;
+use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\DependencyInjection\Facade;
 class Container{
-	use Injector;
+	use MutatorMagic;
 	use Facade;
 	static function get($key=null){
 		return $key?self::getStatic()->getDependency($key):self::getStatic();
