@@ -12,7 +12,7 @@
  * @version   Build @@version@@
  */
 
-namespace RandomLib;
+namespace Surikat\Crypto\RandomLib;
 
 /**
  * An abstract mixer to implement a common mixing strategy

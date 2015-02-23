@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace RandomLib;
+namespace Surikat\Crypto\RandomLib;
 
 /**
  * The Mixer strategy interface.

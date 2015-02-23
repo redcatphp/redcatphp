@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace RandomLib;
+namespace Surikat\Crypto\RandomLib;
 
 use Surikat\Crypto\SecurityLib\Strength;
 
