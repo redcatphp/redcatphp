@@ -34,7 +34,7 @@ trait Facade{
 			return call_user_func_array([$this,$method],$args);
 		elseif(is_callable('parent::__call'))
 			return parent::__call($f,$args);
-		elseif(is_callable('parent::___call'))
+		elseif(method_exists($this,'___call'))
 			return parent::___call($f,$args);
 		else
 			throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_class($this),$f));
@@ -46,7 +46,7 @@ trait Facade{
 			return call_user_func_array([$c::getStatic(),$method],$args);
 		elseif(is_callable('parent::__callStatic'))
 			return parent::__callStatic($f,$args);
-		elseif(is_callable('parent::___callStatic'))
+		elseif(method_exists($c,'___callStatic'))
 			return parent::___callStatic($f,$args);
 		else
 			throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',$c,$f));
