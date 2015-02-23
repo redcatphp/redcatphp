@@ -1,32 +1,26 @@
 <?php namespace Surikat\DependencyInjection;
 use BadMethodCallException;
 use ReflectionMethod;
+use ReflectionClass;
 trait Facade{	
 	protected static $__instances = [];
 	protected static $__instance;
 	static function getStatic(){
-		return isset(self::$__instance)?self::$__instance:self::setStatic();
+		return isset(static::$__instance)?static::$__instance:static::setStatic();
 	}
 	static function setStatic(){
-		return self::$__instance = self::registry(get_called_class(),func_get_args());
+		return static::$__instance = static::registry(func_get_args());
 	}
-	static function registry($class,$args=null){
+	static function registry($args=null){
 		$key = empty($args)?0:sha1(serialize($args));
-		if(!isset(self::$__instances[$key])){
-			self::$__instances[$key] = self::factory($class,$args);
+		$class = get_called_class();
+		if(!isset(static::$__instances[$key])){
+			if(is_array($args)&&!empty($args))
+				static::$__instances[$key] = (new ReflectionClass($class))->newInstanceArgs($args);
+			else
+				static::$__instances[$key] = new $class();
 		}
-		return self::$__instances[$key];
-	}
-	static function factory($value){
-		if($value&&!is_object($value)){
-			if(is_array($value)&&!empty($value)){
-				$value = (new ReflectionClass(array_shift($value)))->newInstanceArgs($value);
-			}
-			else{
-				$value = new $value();
-			}
-		}
-		return $value;
+		return static::$__instances[$key];
 	}
 	function __call($f,$args){
 		$method = '_'.$f;
