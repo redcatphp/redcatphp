@@ -4,40 +4,49 @@ use Surikat\HTTP\Domain;
 use Surikat\Exception\Exception;
 use Surikat\Exception\Security as ExceptionSecurity;
 use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\Crypto\RandomLib\Factory as RandomLib_Factory;
 class Session{
 	use MutatorMagic;
 	private $id;
 	private $key;
 	private $name = 'surikat';
-	private $cookieLifetime = 0;
 	private $maxAttempts = 10;
+	private $cookieLifetime = 0;
 	protected $attemptsPath;
-	protected $blockedWait = 1800;
+	protected $idLength = 100;
 	protected $data = [];
 	protected $modified;
 	protected $savePath;
 	protected $splitter = '.';
 	protected $sessionName;
+	protected $gc_probability = 1;
+	protected $gc_divisor = 100;
+	protected $blockedWait = 1800; //half hour
 	protected $maxLifetime = 31536000; //1 year
-	protected $regeneratePeriod = 3600;
+	protected $regeneratePeriod = 3600; //1 hour
 	function __construct($sessionName='surikat',$savePath=null){
-		$this->sessionName = $sessionName;
 		if(!$savePath)
 			$savePath = SURIKAT_PATH.'.tmp/sessions/';
-		$savePath = rtrim($savePath,'/').'/';
-		$this->savePath = $savePath.'/'.$sessionName.'/';
-		$this->sessionName = $savePath.'/'.$sessionName.'/';
-		$this->open();
+		$this->sessionName = $sessionName;
+		$this->savePath = rtrim($savePath,'/').'/'.$sessionName.'/';
+		if($this->clientExist()){
+			$this->id = $this->clientId();
+			$this->open();
+		}
 		$this->autoRegenerateId();
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 		if($sessionName)
 			$this->setName($sessionName);
-		if(mt_rand(1, 100)===1)
+		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
 			$this->gc($this->maxLifetime);
 	}
+	function getPrefix(){
+		return $this->key?$this->key.$this->splitter:'';
+	}
 	function open(){
-		if(is_file($this->savePath.$this->key.$this->splitter.$id))
-			$this->data = (array)@unserialize(file_get_contents($this->savePath.$this->key.$this->splitter.$id));
+		$id = func_num_args()?func_get_arg(0):$this->id;
+		if(is_file($this->savePath.$this->getPrefix().$id))
+			$this->data = (array)@unserialize(file_get_contents($this->savePath.$this->getPrefix().$id));
 	}
 	function destroyKey($key){
 		foreach(glob($this->savePath.$key.'.*') as $file)
@@ -47,14 +56,16 @@ class Session{
 		$this->destroyKey($key);
 		$this->key = $key;
 	}
-	function write($id, $data){
+	function write(){
+		$id = func_num_args()?func_get_arg(0):$this->id;
+		$data = func_num_args()>1?func_get_arg(1):$this->data;
 		if(!is_dir($this->savePath))
 			@mkdir($this->savePath,0777,true);
 		if(!empty($this->data))
-			return file_put_contents($this->savePath.$this->key.$this->splitter.$id, serialize($this->data), LOCK_EX) === false ? false : true;
+			return file_put_contents($this->savePath.$this->getPrefix().$id, serialize($this->data), LOCK_EX) === false ? false : true;
 	}
 	function destroy($id){
-		$file = $this->savePath.$this->key.$this->splitter.$id;
+		$file = $this->savePath.$this->getPrefix().$id;
 		if(file_exists($file))
 			unlink($file);
 		self::removeCookie($this->name);
@@ -69,32 +80,50 @@ class Session{
 		return true;
 	}
 	function regenerateId(){
-		
+		$old = $this->serverFile();
+		$this->id = $this->generateId();
+		$new = $this->serverFile();
+		while(file_exists($new)){ //avoid collision
+			$this->id = $this->generateId();
+			$new = $this->serverFile();
+		}
+		$this->writeCookie();
+		rename($old,$new);
+	}
+	function getClientFP(){
+		return md5($_SERVER['REMOTE_ADDR'].' '.$_SERVER['HTTP_USER_AGENT']);
 	}
 	function autoRegenerateId(){
 		$now = time();
-		if(!isset($this->data['_EXPIRE_'])){
-			$this->data['_EXPIRE_'] = $now+$this->regeneratePeriod;
-			$this->data['_IP_'] = $_SERVER['REMOTE_ADDR'];
-			$this->data['_AGENT_'] = $_SERVER['HTTP_USER_AGENT'];
+		$file = $this->serverFile();
+		if(!$file||!file_exists($file)){
+			$this->data['_FP_'] = $this->getClientFP();
+			return;
 		}
-		if(
-			!isset($this->data['_IP_'])
-			||!isset($this->data['_AGENT_'])
-			||($this->data['_IP_']!=$_SERVER['REMOTE_ADDR']&&$this->data['_AGENT_']!=$_SERVER['HTTP_USER_AGENT'])
-			||($this->data['_EXPIRE_']<=$now-$this->maxLifetime)
-		){
-			$this->regenerateId();
+		$mtime = filemtime($file);
+		if($now>$mtime+$this->maxLifetime){
+			throw new ExceptionSecurity('Invalid session');
 		}
-		elseif($now>=$this->data['_EXPIRE_']||$this->data['_IP_']!=$_SERVER['REMOTE_ADDR']||$this->data['_AGENT_']!=$_SERVER['HTTP_USER_AGENT']){
-			$this->data['_EXPIRE_'] = $now+$this->regeneratePeriod;
+		if($now>$mtime+$this->regeneratePeriod||$this->data['_FP_']!=$this->getClientFP()){
+			$this->data['_FP_'] = $this->getClientFP();
 			$this->regenerateId();
 		}
 	}
 	function setName($name){
 		$this->name = $name;
 	}
-	function exist(){
+	function serverFile(){
+		$id = func_num_args()?func_get_arg(0):$this->id;
+		return $id?$this->savePath.$id:false;
+	}
+	function serverExist(){
+		$id = func_num_args()?func_get_arg(0):$this->id;
+		return is_file($this->serverFile($id));
+	}
+	function clientId(){
+		return $this->clientExist()?$_COOKIE[$this->name]:null;
+	}
+	function clientExist(){
 		return isset($_COOKIE[$this->name]);
 	}
 	function setCookieLifetime($time){
@@ -102,6 +131,7 @@ class Session{
 	}
 	function &set(){
 		$this->start();
+		$this->modified = true;
 		$args = func_get_args();
 		$v = array_pop($args);
 		if(empty($args)){
@@ -118,9 +148,6 @@ class Session{
 		return $ref;
 	}
 	function get(){
-		if(!$this->exist())
-			return;
-		$this->start();
 		$args = func_get_args();
 		$ref =& $this->data;
 		foreach($args as $k)
@@ -143,32 +170,28 @@ class Session{
 		$this->data = [];
 	}
 	function start(){
-		if(!$this->id){
-			$id = isset($_COOKIE[$this->name])?$_COOKIE[$this->name]:$this->generateId();
-			$this->setId($id);
-			if(strpos($id,'.')!==false){
+		if(!$this->id){			
+			$this->id = $this->generateId();
+			$this->writeCookie();
+			if(strpos($this->id,'.')!==false){
 				$this->checkBlocked();
-				if(!is_file($this->savePath.$this->name.'_'.$id)){
+				if(!$this->serverExist()){
 					$this->addAttempt();
 					$this->checkBlocked();
 				}
-			}
-			if(session_start()){
-				$this->regenerate();
-				$this->id = session_id();
-			}
-			else{
-				throw new Exception('Unable to start session');
 			}
 		}
 		return $this->id;
 	}
 	function __destruct(){
-		var_dump(__LINE__);
-		$this->write();
+		if($this->modified)
+			$this->write();
 	}
 	function generateId(){
-		return uniqid();
+		return hash('sha512',$this->Randomizator->generate($this->idLength));
+	}
+	function Randomizator(){
+		return (new RandomLib_Factory)->getMediumStrengthGenerator();
 	}
 	function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
@@ -204,12 +227,11 @@ class Session{
 		$ip = $this->getIp();
 		return is_file($this->attemptsPath.$ip)&&unlink($this->attemptsPath.$ip);
 	}
-	
 	function writeCookie(){
 		self::setCookie(
 			$this->name,
-			$this->key.$this->splitter.$this->id,
-			time()+$this->cookieLifetime,
+			$this->getPrefix().$this->id,
+			($this->cookieLifetime?time()+$this->cookieLifetime:0),
 			'/'.Domain::getSuffixHref(),
 			Domain::getServerHref(),
 			false,
