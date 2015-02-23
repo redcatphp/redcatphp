@@ -10,7 +10,7 @@ class TML_Img extends TML{
 					$this->height = $size[1];
 				}
 			}
-			if($this->getDependency('Dev\Level')->IMG&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
+			if($this->Dev_Level()->IMG&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
 				if(strpos($this->src,'?')===false)
 					$this->src .= '?';
 				else

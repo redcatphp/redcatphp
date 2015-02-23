@@ -3,6 +3,6 @@ use Surikat\DependencyInjection\MutatorCall;
 use Surikat\DependencyInjection\MutatorProperty;
 trait MutatorMagic{
 	use Mutator;
-	use MutatorProperty;
-	use MutatorCall;
+	use MutatorMagicProperty;
+	use MutatorMagicCall;
 }

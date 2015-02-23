@@ -1,17 +1,16 @@
 <script type="text/javascript" src="js/js-is.pack.js"></script>
 <script type="text/javascript">
-	<?$devLevel = $this->getDependency('Dev\Level');?>
-	<?if($devLevel->CSS):?>
+	<?if($this->Dev_Level()->CSS):?>
 		$css().dev=true;
 		//$js('window-size-bookmarklet');
 	<?endif;?>
-	<?if($devLevel->JS):?>
+	<?if($this->Dev_Level()->JS):?>
 		$js().dev=true;
 	<?endif;?>
 	$js('script');
-	<?if($devLevel->CONTROL):?>
+	<?if($this->Dev_Level()->CONTROL):?>
 		if(console){
-			console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$this->getDependency('Dev\Chrono')->requestTime()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');
+			console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$this->Dev_Chrono()->requestTime()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');
 		}
 	<?endif;?>
 </script>

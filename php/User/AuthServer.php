@@ -23,20 +23,20 @@ class AuthServer{
 				switch($r){
 					case Auth::OK_LOGGED_IN:
 						if(!$ajax){
-							$this->getDependency('User\Session')->set('Auth','result',$action,$r);
+							$this->User_Session->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
 						}
 					break;
 					case Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
-							$this->getDependency('User\Session')->set('Auth','result',$action,$r);
+							$this->User_Session->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
 						}
 					break;
 				}
 			}
 			if(!$r)
-				$r = $this->getDependency('User\Session')->get('Auth','result',$action);
+				$r = $this->User_Session->get('Auth','result',$action);
 		}
 		return $r;
 	}
@@ -44,12 +44,12 @@ class AuthServer{
 		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			$email = $_POST['email'];
 			$login = trim($_POST['login'])?$_POST['login']:$email;
-			$this->getDependency('User\Session')->set('Auth','email',$email);
+			$this->User_Session->set('Auth','email',$email);
 			return $this->Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
-		if($email=$this->getDependency('User\Session')->get('Auth','email')){
+		if($email=$this->User_Session->get('Auth','email')){
 			return $this->Auth->resendActivation($email);
 		}
 	}
@@ -59,7 +59,7 @@ class AuthServer{
 		}
 	}
 	function loginPersona(){
-		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->getDependency('User\Session')->get('email'))){
+		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->User_Session->get('email'))){
 			$lifetime = 0;
 			if(isset($_POST['login'])){
 				switch($_POST['lifetime']){
@@ -174,7 +174,7 @@ class AuthServer{
 			}
 		</style>
 		</head><body>';
-		if($seconds=$this->getDependency('User\Session')->isBlocked()){
+		if($seconds=$this->User_Session->isBlocked()){
 			echo $this->Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">

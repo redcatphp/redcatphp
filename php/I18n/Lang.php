@@ -96,7 +96,7 @@ namespace Surikat\I18n{
 			$this->originLocale = $locale;
 			$this->locale = $locale;
 			$this->domain = $domain;
-			if($this->getDependency('Dev\Level')->I18N)
+			if($this->Dev_Level->I18N)
 				$this->realDomain = $this->getLastMoFile();
 			else
 				$this->realDomain = $this->domain;

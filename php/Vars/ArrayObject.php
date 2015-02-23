@@ -1,7 +1,7 @@
 <?php namespace Surikat\Vars;
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\DependencyInjection\MutatorCall;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	use MutatorMagic;
+	use MutatorCall;
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))
@@ -154,7 +154,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return new static(array_filter((array)$this,$cb));
 	}
 	function __toString(){
-		if($this->getDependency('Dev\Level')->CONTROL)
+		if($this->Dev_Level()->CONTROL)
 			return $this->__debug();
 		else
 			return '';
@@ -180,7 +180,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
                 $a[$k] = self::array2object($v);
         return new static($a);
     }
-    function __call($f,$args){
+    function ___call($f,$args){
 		if(strpos($f,'array_')===0)
 			array_unshift($args,$this->getArray());
 		else

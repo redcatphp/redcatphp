@@ -28,7 +28,6 @@ use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
 class RPDO implements Driver
 {
 	use MutatorMagic;
-	protected $DevLevel;
 	/**
 	* @var integer
 	*/
@@ -134,7 +133,7 @@ class RPDO implements Driver
 	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
-		if($this->DevLevel->SQL||$this->DevLevel->DBSPEED)
+		if($this->Dev_Level->SQL||$this->Dev_Level->DBSPEED)
 			$this->debugger()->logOpen();
 		
 		$sql = str_replace('{#prefix}',$this->DB->getPrefix(),$sql);
@@ -142,7 +141,7 @@ class RPDO implements Driver
 		if ( $this->debug && $this->logger ) {
 			$this->logger->log( $sql, $bindings );
 		}
-		if($this->DevLevel->SQL)
+		if($this->Dev_Level->SQL)
 			$this->debugger()->log(SqlFormatter::format($sql), $bindings);
 
 		try {
@@ -154,10 +153,10 @@ class RPDO implements Driver
 
 			$this->bindParams( $statement, $bindings );
 
-			if($this->DevLevel->DBSPEED)
+			if($this->Dev_Level->DBSPEED)
 				$Chrono = $this->getNew('Dev\Chrono');
 			$statement->execute();
-			if($this->DevLevel->DBSPEED){
+			if($this->Dev_Level->DBSPEED){
 				$this->debugger()->log('<span style="color:#d00;">'.$Chrono->display().'</span>');
 				if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
 					if ( strpos( 'pgsql', $this->dsn ) === 0 ) {
@@ -188,7 +187,7 @@ class RPDO implements Driver
 						$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
 					}
 					
-					if($this->DevLevel->SQL)
+					if($this->Dev_Level->SQL)
 						$this->debugger()->log('resultset: <span style="color:#d00;">' . count( $this->resultArray ) . ' rows</span>');
 				}
 				else{
@@ -206,13 +205,13 @@ class RPDO implements Driver
 			if ( $this->debug && $this->logger )
 				$this->logger->log( 'An error occurred: ' . $err );
 			
-			if($this->DevLevel->MODEL){
-				if(!($this->DevLevel->DBSPEED||$this->DevLevel->SQL))
+			if($this->Dev_Level->MODEL){
+				if(!($this->Dev_Level->DBSPEED||$this->Dev_Level->SQL))
 					$this->debugger()->logOpen();
 					$this->debugger()->log('An error occurred: '.$err);
-				if(!$this->DevLevel->SQL)
+				if(!$this->Dev_Level->SQL)
 					$this->debugger()->log(SqlFormatter::format($sql), $bindings);
-				if(!($this->DevLevel->DBSPEED||$this->DevLevel->SQL))
+				if(!($this->Dev_Level->DBSPEED||$this->Dev_Level->SQL))
 					$this->debugger()->logClose();
 			}
 				
@@ -222,7 +221,7 @@ class RPDO implements Driver
 			throw $exception;
 		}
 		
-		if($this->DevLevel->SQL||$this->DevLevel->DBSPEED)
+		if($this->Dev_Level->SQL||$this->Dev_Level->DBSPEED)
 			$this->debugger()->logClose();
 	}
 
@@ -294,7 +293,6 @@ class RPDO implements Driver
 		} else {
 			$this->max = PHP_INT_MAX; //the normal value of course (makes it possible to use large numbers in LIMIT clause)
 		}
-		$this->DevLevel = $this->getDependency('Dev\Level');
 	}
 
 	/**
@@ -345,7 +343,7 @@ class RPDO implements Driver
 
 			$dbname  = ( preg_match( '/dbname=(\w+)/', $this->dsn, $matches ) ) ? $matches[1] : '?';
 			$msg = 'Could not connect to database (' . $dbname . ').';
-			if($this->DevLevel->MODEL)
+			if($this->Dev_Level->MODEL)
 				$msg .= ' '.$exception->getMessage();
 			throw new\PDOException( $msg, $exception->getCode() );
 		}

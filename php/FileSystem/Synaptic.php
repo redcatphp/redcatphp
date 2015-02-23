@@ -97,7 +97,7 @@ class Synaptic {
 			return false;
 		set_time_limit(0);
 		$c = JS::minify(file_get_contents($f));
-		if(!$this->getDependency('Dev\Level')->JS){
+		if(!$this->Dev_Level->JS){
 			FS::mkdir($min,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
@@ -122,7 +122,7 @@ class Synaptic {
 		else
 			$c = file_get_contents($f);
 		$c = CSS::minify($c);
-		if(!$this->getDependency('Dev\Level')->CSS){
+		if(!$this->Dev_Level->CSS){
 			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
 			FS::mkdir($min,true);
 			$this->registerMini($min);
@@ -134,8 +134,8 @@ class Synaptic {
 	}
 	protected function scss($path) {
 		set_time_limit(0);
-		$server = $this->getDependency('SyntaxedCSS\SCSSCServer');
-		$scssc = $server->getDependency('SyntaxedCSS\SCSSC');
+		$server = $this->SyntaxedCSS_SCSSCServer;
+		$scssc = $server->SyntaxedCSS_SCSSC;
 		$scssc->allowImportCSS = true;
 		$scssc->allowImportRemote = true;
 		$server->setPath(dirname($path));

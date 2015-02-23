@@ -299,7 +299,7 @@ class SCSSC {
 			ob_get_clean();
 			$o->throwError(" error in eval php: %s \r\n in code: %s",$errstr,$__code);
 		});
-		if($this->getDependency('Dev\Level')->CSS&&strpos($__code,'//:eval_debug'))
+		if($this->Dev_Level->CSS&&strpos($__code,'//:eval_debug'))
 			exit(print($__code));
 		eval('?>'.$__code);
 		$c = ob_get_clean();

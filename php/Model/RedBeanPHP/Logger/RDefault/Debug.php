@@ -163,7 +163,7 @@ class Debug extends RDefault implements Logger
 	public function logOpen(){
 		if(!headers_sent())
 			header('Content-Type: text/html; charset=utf-8');
-		echo '<div style="'.$this->getDependency('Dev\Debug')->debugWrapInlineCSS.'">';
+		echo '<div style="'.$this->Dev_Debug->debugWrapInlineCSS.'">';
 		
 	}
 	public function logClose(){

@@ -35,12 +35,12 @@ class Toolbox{
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
 	}
 	function autoMIN($TML){
-		if(!$this->getDependency('Dev\Level')->CSS){
+		if(!$this->Dev_Level->CSS){
 			foreach($TML('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
 				if(strpos($l,'://')===false)
 					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 		}
-		if(!$this->getDependency('Dev\Level')->JS){
+		if(!$this->Dev_Level->JS){
 			foreach($TML('script[src]') as $s)
 				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
@@ -55,10 +55,10 @@ class Toolbox{
 			$url .= '/';
 		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
 			if(
-				($el->nodeName=='link'&&$el->type=='text/css'&&$this->getDependency('Dev\Level')->CSS)
-				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$this->getDependency('Dev\Level')->IMG)
-				|| ($el->nodeName=='img'&&$this->getDependency('Dev\Level')->IMG)
-				|| ($el->nodeName=='script'&&$this->getDependency('Dev\Level')->JS)
+				($el->nodeName=='link'&&$el->type=='text/css'&&$this->Dev_Level->CSS)
+				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$this->Dev_Level->IMG)
+				|| ($el->nodeName=='img'&&$this->Dev_Level->IMG)
+				|| ($el->nodeName=='script'&&$this->Dev_Level->JS)
 			)
 				return;
 			$k = $el->src?'src':'href';

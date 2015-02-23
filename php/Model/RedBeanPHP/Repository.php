@@ -114,7 +114,7 @@ abstract class Repository
 			if ( $addition instanceof OODBBean ) {
 				$this->oodb->getAssociationManager()->associate( $addition, $bean );
 			} else {
-				if($this->getDependency('Dev\Level')->MODEL)
+				if($this->Dev_Level->MODEL)
 					var_dump($sharedAdditions);
 				throw new RedException( 'Array may only contain OODBBeans' );
 			}

@@ -2,9 +2,9 @@
 use Surikat\Templator\TML;
 use Surikat\Templator\TML_Apply;
 use Surikat\Templator\CssSelector;
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\DependencyInjection\MutatorCall;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
-	use MutatorMagic;
+	use MutatorCall;
 	
 	var $nodeName;
 	var $parent;
@@ -510,7 +510,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return $this->getDependency('Dev\Level')->VIEW&&$this->nodeName&&!$this->hiddenWrap;
+		return $this->Dev_Level()->VIEW&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)

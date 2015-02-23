@@ -57,7 +57,7 @@ class SCSSCServer{
 					header('HTTP/1.1 500 Internal Server Error');
 					echo 'Parse error: ' . $e->getMessage() . "\n";
 					if($e=error_get_last())
-						printf("%s in eval php: %s in %s:%s",$this->getDependency('Dev\Debug')->errorType($e['type']),$e['message'],$e['file'],$e['line']);
+						printf("%s in eval php: %s in %s:%s",$this->Dev_Debug->errorType($e['type']),$e['message'],$e['file'],$e['line']);
 				}
 			} else {
 				header('X-SCSS-Cache: true');
@@ -75,7 +75,7 @@ class SCSSCServer{
 		HTTP::fileCache($output);
 	}
 	function __construct(){
-		$this->scss = $this->getDependency('SyntaxedCSS\SCSSC');
+		$this->scss = $this->SyntaxedCSS_SCSSC;
 	}
 	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;

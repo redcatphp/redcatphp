@@ -1,7 +1,7 @@
 <?php namespace Surikat\Dev;
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\DependencyInjection\Mutator;
 class Level{
-	use MutatorMagic;
+	use Mutator;
 	private $phpDev;
 	private $level = 0;
 	private $levels;
@@ -80,7 +80,7 @@ class Level{
 			$php = $this->has(self::PHP);
 			if(!isset($this->phpDev)||($php&&!$this->phpDev)||(!$php&&$this->phpDev)){
 				$this->phpDev = $php;
-				$this->getDependency('Dev\Debug')->errorHandler($php);
+				$this->getDependency('Dev_Debug')->errorHandler($php);
 			}
 		}
 		return $oldLevel;

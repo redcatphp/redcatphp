@@ -5,10 +5,10 @@ class TML_Dev extends TML{
 	function load(){
 		if(!empty($this->attributes)){
 			foreach($this->attributes as $dev)
-				if($this->getDependency('Dev\Level')->has($dev))
+				if($this->Dev_Level()->has($dev))
 					return;
 		}
-		elseif($this->getDependency('Dev\Level')->level())
+		elseif($this->Dev_Level()->level())
 			return;
 		$this->childNodes = [];
 	}
