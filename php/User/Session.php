@@ -3,10 +3,10 @@ use Surikat\FileSystem\FS;
 use Surikat\HTTP\Domain;
 use Surikat\Exception\Exception;
 use Surikat\Exception\Security as ExceptionSecurity;
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\Crypto\RandomLib\Factory as RandomLib_Factory;
+use Surikat\DependencyInjection\MutatorCall;
+use Surikat\User\SessionHandler;
 class Session{
-	use MutatorMagic;
+	use MutatorCall;
 	private $id;
 	private $key;
 	private $name = 'surikat';
@@ -23,13 +23,18 @@ class Session{
 	protected $blockedWait = 1800; //half hour
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
-	function __construct($name=null,$savePath=null){
+	protected $User_SessionHandler;
+	function __construct($name=null,$savePath=null,SessionHandler $sessionHandler=null){
 		if(!$savePath)
 			$savePath = SURIKAT_PATH.'.tmp/sessions/';
 		if($name)
 			$this->setName($name);
 		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+		if(isset($sessionHandler))
+			$this->User_SessionHandler = $sessionHandler;
+		else
+			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
 		$this->User_SessionHandler->open($this->savePath,$this->name);
 		$this->checkBlocked();
 		if($this->clientExist()){
@@ -166,10 +171,7 @@ class Session{
 		$this->User_SessionHandler->close();
 	}
 	function generateId(){
-		return hash('sha512',$this->Randomizator->generate($this->idLength));
-	}
-	function Randomizator(){
-		return (new RandomLib_Factory)->getMediumStrengthGenerator();
+		return hash('sha512',$this->Crypto_RandomLib_Factory()->getMediumStrengthGenerator()->generate($this->idLength));
 	}
 	function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
@@ -215,6 +217,13 @@ class Session{
 			false,
 			true
 		);
+	}
+	
+	function __set($k,$v){
+		$this->data[$k] = $v;
+	}
+	function __get($k){
+		return $this->data[$k];
 	}
 	
 	static function getCookie($name){
