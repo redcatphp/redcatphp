@@ -31,9 +31,20 @@ class Session{
 		$this->savePath = rtrim($savePath,'/').'/'.$sessionName.'/';
 		if($this->clientExist()){
 			$this->id = $this->clientId();
-			$this->open();
+			$this->checkBlocked();
+			if($this->serverExist()){
+				$this->open();
+				$this->autoRegenerateId();
+			}
+			else{
+				$this->data['_FP_'] = $this->getClientFP();
+				$this->addAttempt();
+				$this->checkBlocked();
+			}
 		}
-		$this->autoRegenerateId();
+		else{
+			$this->data['_FP_'] = $this->getClientFP();
+		}
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 		if($sessionName)
 			$this->setName($sessionName);
@@ -87,25 +98,20 @@ class Session{
 			$this->id = $this->generateId();
 			$new = $this->serverFile();
 		}
-		$this->writeCookie();
 		rename($old,$new);
+		$this->writeCookie();
 	}
 	function getClientFP(){
 		return md5($_SERVER['REMOTE_ADDR'].' '.$_SERVER['HTTP_USER_AGENT']);
 	}
 	function autoRegenerateId(){
 		$now = time();
-		$file = $this->serverFile();
-		if(!$file||!file_exists($file)){
-			$this->data['_FP_'] = $this->getClientFP();
-			return;
-		}
-		$mtime = filemtime($file);
+		$mtime = filemtime($this->serverFile());
 		if($now>$mtime+$this->maxLifetime){
 			throw new ExceptionSecurity('Invalid session');
 		}
-		if($now>$mtime+$this->regeneratePeriod||$this->data['_FP_']!=$this->getClientFP()){
-			$this->data['_FP_'] = $this->getClientFP();
+		if($now>$mtime+$this->regeneratePeriod||$this->get('_FP_')!=$this->getClientFP()){
+			$this->set('_FP_',$this->getClientFP());
 			$this->regenerateId();
 		}
 	}
@@ -129,7 +135,7 @@ class Session{
 	function setCookieLifetime($time){
 		$this->cookieLifetime = $time;
 	}
-	function &set(){
+	function set(){
 		$this->start();
 		$this->modified = true;
 		$args = func_get_args();
@@ -150,13 +156,15 @@ class Session{
 	function get(){
 		$args = func_get_args();
 		$ref =& $this->data;
-		foreach($args as $k)
+		foreach($args as $k){
 			if(is_array($ref)&&isset($ref[$k]))
 				$ref =& $ref[$k];
 			else{
+				unset($ref);
 				$ref = null;
 				break;
 			}
+		}
 		return $ref;
 	}
 	function checkBlocked(){
@@ -173,13 +181,6 @@ class Session{
 		if(!$this->id){			
 			$this->id = $this->generateId();
 			$this->writeCookie();
-			if(strpos($this->id,'.')!==false){
-				$this->checkBlocked();
-				if(!$this->serverExist()){
-					$this->addAttempt();
-					$this->checkBlocked();
-				}
-			}
 		}
 		return $this->id;
 	}
