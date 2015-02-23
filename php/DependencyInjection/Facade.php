@@ -17,13 +17,16 @@ trait Facade{
 		}
 		return self::$__instances[$key];
 	}
-	static function factory($class,$args=null){
-		if(is_array($args)&&!empty($args)){
-			 return (new ReflectionClass($class))->newInstanceArgs($args);
+	static function factory($value){
+		if($value&&!is_object($value)){
+			if(is_array($value)&&!empty($value)){
+				$value = (new ReflectionClass(array_shift($value)))->newInstanceArgs($value);
+			}
+			else{
+				$value = new $value();
+			}
 		}
-		else{
-			return new $class();
-		}
+		return $value;
 	}
 	function __call($f,$args){
 		$method = '_'.$f;
