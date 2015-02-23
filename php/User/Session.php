@@ -18,46 +18,44 @@ class Session{
 	protected $modified;
 	protected $savePath;
 	protected $splitter = '.';
-	protected $sessionName;
 	protected $gc_probability = 1;
 	protected $gc_divisor = 100;
 	protected $blockedWait = 1800; //half hour
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
-	function __construct($sessionName='surikat',$savePath=null){
+	function __construct($name=null,$savePath=null){
 		if(!$savePath)
 			$savePath = SURIKAT_PATH.'.tmp/sessions/';
-		$this->sessionName = $sessionName;
-		$this->savePath = rtrim($savePath,'/').'/'.$sessionName.'/';
+		if($name)
+			$this->setName($name);
+		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
+		$this->User_SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
 			$this->checkBlocked();
 			if($this->serverExist()){
-				$this->open();
+				$this->data = (array)unserialize($this->User_SessionHandler->read($this->getPrefix().$this->id));
 				$this->autoRegenerateId();
 			}
 			else{
-				$this->data['_FP_'] = $this->getClientFP();
 				$this->addAttempt();
 				$this->checkBlocked();
 			}
 		}
-		else{
+		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
-		if($sessionName)
-			$this->setName($sessionName);
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
-			$this->gc($this->maxLifetime);
+			$this->User_SessionHandler->gc($this->maxLifetime);
 	}
 	function getPrefix(){
 		return $this->key?$this->key.$this->splitter:'';
 	}
-	function open(){
-		$id = func_num_args()?func_get_arg(0):$this->id;
-		if(is_file($this->savePath.$this->getPrefix().$id))
-			$this->data = (array)@unserialize(file_get_contents($this->savePath.$this->getPrefix().$id));
+	function destroy(){
+		$this->User_SessionHandler->destroy($this->getPrefix().$id);
+		$this->User_SessionHandler->close();
+		self::removeCookie($this->name);
 	}
 	function destroyKey($key){
 		foreach(glob($this->savePath.$key.'.*') as $file)
@@ -66,29 +64,6 @@ class Session{
 	function setKey($key=null){
 		$this->destroyKey($key);
 		$this->key = $key;
-	}
-	function write(){
-		$id = func_num_args()?func_get_arg(0):$this->id;
-		$data = func_num_args()>1?func_get_arg(1):$this->data;
-		if(!is_dir($this->savePath))
-			@mkdir($this->savePath,0777,true);
-		if(!empty($this->data))
-			return file_put_contents($this->savePath.$this->getPrefix().$id, serialize($this->data), LOCK_EX) === false ? false : true;
-	}
-	function destroy($id){
-		$file = $this->savePath.$this->getPrefix().$id;
-		if(file_exists($file))
-			unlink($file);
-		self::removeCookie($this->name);
-	}
-	function gc($max){
-		$check = time()-$max;
-		foreach(glob($this->savePath.'*') as $file){
-			if(filemtime($file)<$check){
-				@unlink($file);
-			}
-		}
-		return true;
 	}
 	function regenerateId(){
 		$old = $this->serverFile();
@@ -186,7 +161,8 @@ class Session{
 	}
 	function __destruct(){
 		if($this->modified)
-			$this->write();
+			$this->User_SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
+		$this->User_SessionHandler->close();
 	}
 	function generateId(){
 		return hash('sha512',$this->Randomizator->generate($this->idLength));
