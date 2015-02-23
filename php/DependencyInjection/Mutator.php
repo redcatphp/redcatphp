@@ -15,8 +15,8 @@ trait Mutator {
 			$value = $this->getDependency('Dependency_Container')->factory($value);
 		$c = Convention::toClass($key);
 		if(interface_exists($c)){
-			if(!($value instanceof $c)){
-				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($obj)));
+			if(!Container::get('Autoload')->instanceOfNS($value,$c)){
+				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 			}
 		}
 		$this->__dependenciesRegistry[$key] = $value;
