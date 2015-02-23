@@ -9,12 +9,11 @@ class Convention{
 	static function interfaceSubstitutionDefaultClass(&$value){
 		$value = self::toClass($value);
 		if(interface_exists($value)){
-			$pos = strrpos($a,'\\');
-			$value = $a;
+			$pos = strrpos($value,'\\');
 			if($pos===false)
-				$value .= '\\'.$a;
+				$value .= '\\'.$value;
 			else
-				$value .= substr($a,strrpos($a,'\\'));
+				$value .= substr($value,strrpos($value,'\\'));
 		}
 		if(strpos($value,'\\')===false)
 			$value = $value.'\\'.$value;
