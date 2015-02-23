@@ -29,15 +29,17 @@ class Session{
 		if($name)
 			$this->setName($name);
 		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
+		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 		$this->User_SessionHandler->open($this->savePath,$this->name);
+		$this->checkBlocked();
 		if($this->clientExist()){
 			$this->id = $this->clientId();
-			$this->checkBlocked();
 			if($this->serverExist()){
 				$this->data = (array)unserialize($this->User_SessionHandler->read($this->getPrefix().$this->id));
 				$this->autoRegenerateId();
 			}
 			else{
+				$this->id = null;
 				$this->addAttempt();
 				$this->checkBlocked();
 			}
@@ -45,7 +47,6 @@ class Session{
 		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
-		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
 			$this->User_SessionHandler->gc($this->maxLifetime);
 	}
@@ -144,7 +145,7 @@ class Session{
 	}
 	function checkBlocked(){
 		if($s=$this->isBlocked()){
-			self::removeCookie();
+			self::removeCookie($this->name);
 			$this->reset();
 			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
 		}
