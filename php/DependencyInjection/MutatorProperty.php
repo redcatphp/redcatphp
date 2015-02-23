@@ -3,10 +3,12 @@ trait MutatorProperty{
 	private $__metaRegistry = [];
 	function &__get($k){
 		if(ctype_upper($k{0})){
-			return $this->getDependency($k);
+			$r = $this->getDependency($k);
+			return $r;
 		}
 		elseif(is_callable('parent::__get')){
-			return parent::__get($k);
+			$r = parent::__get($k);
+			return $r;
 		}
 		else{
 			if(!isset($this->__metaRegistry[$k]))
