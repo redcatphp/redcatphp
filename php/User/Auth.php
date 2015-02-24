@@ -539,7 +539,6 @@ class Auth{
 		if($e=$this->validateEmail($email))
 			return $r;
 		$row = $this->db->findOne($this->tableUsers,' WHERE email = ?',[$email]);
-		var_dump($row);
 		if(!$row){
 			$this->User_Session->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
