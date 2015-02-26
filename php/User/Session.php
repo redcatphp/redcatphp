@@ -12,6 +12,8 @@ class Session{
 	private $name = 'surikat';
 	private $maxAttempts = 10;
 	private $cookieLifetime = 0;
+	private $cookiePath;
+	private $cookieDomain;
 	protected $attemptsPath;
 	protected $idLength = 100;
 	protected $data = [];
@@ -28,9 +30,11 @@ class Session{
 		if(!$savePath)
 			$savePath = SURIKAT_PATH.'.tmp/sessions/';
 		if($name)
-			$this->setName($name);
+			$this->name = $name;
 		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+		$this->cookiePath = '/'.Domain::getSuffixHref();
+		$this->cookieDomain = Domain::getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->User_SessionHandler = $sessionHandler;
@@ -49,6 +53,7 @@ class Session{
 			}
 			else{
 				$this->id = null;
+				self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
 				$this->checkBlocked();
 			}
@@ -223,8 +228,8 @@ class Session{
 			$this->name,
 			$this->getPrefix().$this->id,
 			($this->cookieLifetime?time()+$this->cookieLifetime:0),
-			'/'.Domain::getSuffixHref(),
-			Domain::getServerHref(),
+			$this->cookiePath,
+			$this->cookieDomain,
 			false,
 			true
 		);
@@ -244,8 +249,8 @@ class Session{
         $_COOKIE[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
-    static function removeCookie($name){
+    static function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
         unset($_COOKIE[$name]);
-        return setcookie($name, NULL, -1);
+        return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
 }
