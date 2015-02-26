@@ -20,6 +20,10 @@ class SessionHandler implements User_SessionHandler{
 	function write($id,$data){
 		return file_put_contents($this->savePath.$id, $data, LOCK_EX) === false ? false : true;
 	}
+	function touch($id){
+		if(is_file($this->savePath.$id))
+			return touch($this->savePath.$id);
+	}
 	function destroy($id){
 		$file = $this->savePath.$id;
 		if(file_exists($file))

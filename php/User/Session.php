@@ -31,12 +31,16 @@ class Session{
 			$this->setName($name);
 		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
+		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->User_SessionHandler = $sessionHandler;
 		else
 			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
+		$this->handle();
+		$this->garbageCollector();
+	}
+	function handle(){
 		$this->User_SessionHandler->open($this->savePath,$this->name);
-		$this->checkBlocked();
 		if($this->clientExist()){
 			$this->id = $this->clientId();
 			if($this->serverExist()){
@@ -52,6 +56,8 @@ class Session{
 		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
+	}
+	function garbageCollector(){
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
 			$this->User_SessionHandler->gc($this->maxLifetime);
 	}
@@ -98,6 +104,7 @@ class Session{
 	}
 	function setName($name){
 		$this->name = $name;
+		$this->handle();
 	}
 	function serverFile(){
 		$id = func_num_args()?func_get_arg(0):$this->id;
@@ -159,8 +166,10 @@ class Session{
 		$this->data = [];
 	}
 	function start(){
-		if(!$this->id){			
+		if(!$this->id){		
 			$this->id = $this->generateId();
+		}
+		if($this->clientId()!=$this->getPrefix().$this->id){
 			$this->writeCookie();
 		}
 		return $this->id;
@@ -168,6 +177,8 @@ class Session{
 	function __destruct(){
 		if($this->modified)
 			$this->User_SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
+		else
+			$this->User_SessionHandler->touch($this->getPrefix().$this->id);
 		$this->User_SessionHandler->close();
 	}
 	function generateId(){

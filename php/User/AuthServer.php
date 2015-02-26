@@ -1,6 +1,5 @@
 <?php namespace Surikat\User;
 use Surikat\HTTP\Domain;
-use Surikat\User\Session;
 use Surikat\HTTP\HTTP;
 use Surikat\User\Auth;
 use Surikat\I18n\Lang;

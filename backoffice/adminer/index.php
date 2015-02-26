@@ -1,7 +1,7 @@
 <?php
-//restore_error_handler();
+restore_error_handler();
 use Surikat\DependencyInjection\Container;
-Container::get('Dev\Level')->PHP();
+//Container::get('Dev\Level')->PHP();
 function adminer_object() {
     include_once __DIR__.'/plugins/plugin.php';
     foreach (glob(__DIR__.'/plugins/*.php') as $filename) {
