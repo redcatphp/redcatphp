@@ -17,10 +17,10 @@ class Dispatcher {
 	function route($route,$callback,$index=0,$prepend=false){
 		if(is_string($route)){
 			if(strpos($route,'/^')===0&&strrpos($route,'$/')-strlen($route)===-2){
-				$route = ['new','Surikat\Route\Regex',$route];
+				$route = ['Route_Regex',$route];
 			}
 			else{
-				$route = ['new','Surikat\Route\Prefix',$route];
+				$route = ['Route_Prefix',$route];
 			}
 		}
 		$route = [$route,$callback];
@@ -38,13 +38,13 @@ class Dispatcher {
 		foreach($this->routes as $group){
 			foreach($group as $router){
 				list($route,$callback) = $router;
-				self::objectify($route);
+				$this->objectify($route);
 				$params = call_user_func_array($route,[&$uri]);
 				if($params===true){
 					return true;
 				}
 				elseif($params!==null&&$params!==false){
-					self::objectify($callback);
+					$this->objectify($callback);
 					while(is_callable($callback)){
 						$callback =	call_user_func($callback,$params,$uri,$route);
 					}
@@ -60,15 +60,19 @@ class Dispatcher {
 			self::$reflectionRegistry[$c] = new ReflectionClass($c);
 		return self::$reflectionRegistry[$c];
 	}
-	private static function objectify(&$a){
+	private function objectify(&$a){
 		$c = null;
-		if(is_array($a)&&isset($a[0])){
+		$d = null;
+		if(is_array($a)&&isset($a[0])&&is_string($a[0])){
 			if($a[0]=='new'){
 				array_shift($a);
 				$c = array_shift($a);
 			}
-			elseif(is_string($a[0])&&strpos($a[0],'new::')===0){
+			elseif(strpos($a[0],'new::')===0){
 				$c = substr(array_shift($a),5);
+			}
+			else{
+				$d = array_shift($a);
 			}
 		}
 		if($c){
@@ -76,6 +80,9 @@ class Dispatcher {
 				$a = new $c();
 			else
 				$a = self::reflectionRegistry($c)->newInstanceArgs($a);
+		}
+		elseif($d){
+			$a = $this->getDependency($d,$a);
 		}
 	}
 }

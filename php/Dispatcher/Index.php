@@ -25,7 +25,7 @@ class Index extends ViewController{
 		if($this->backoffice){
 			if($this->backoffice===true)
 				$this->backoffice = 'backoffice/';
-			$this->prepend($this->backoffice,['Dispatcher\Backoffice','runner']);
+			$this->prepend($this->backoffice,'Dispatcher\Backoffice::runner');
 		}
 	}
 	function run($path){
