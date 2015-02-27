@@ -16,7 +16,7 @@ class Index extends ViewController{
 		return call_user_func_array([$this,'getController'],func_get_args());
 	}
 	function convention(){
-		$this->append('service/',['Surikat\Service\Service','method']);
+		$this->append('service/',['Service']);
 		$this->append(['Route_Extension','css|js|png|jpg|jpeg|gif'], ['Dispatcher_Synaptic']);
 		$this->append(['Route_ByTml','plugin'],$this);
 		$this->append(['Route_ByTml'],$this);
