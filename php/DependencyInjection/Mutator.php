@@ -4,7 +4,9 @@ use Surikat\DependencyInjection\Convention;
 use Surikat\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
-	function setDependency($key,$value=null){
+	function setDependency($key,$value=null,$rkey=null){
+		if(!isset($rkey))
+			$rkey = $key;
 		if(is_object($key)){
 			if(!isset($value))
 				$value = $key;
@@ -19,32 +21,46 @@ trait Mutator {
 				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 			}
 		}
-		$this->__dependenciesRegistry[$key] = $value;
+		$this->__dependenciesRegistry[$rkey] = $value;
 		return $this;
 	}
-	function getDependency($key){
+	function getDependency($key,$args=null){
 		$key = Convention::toMethod($key);
-		if(array_key_exists($key,$this->__dependenciesRegistry))
-			return $this->__dependenciesRegistry[$key];
+		if(empty($args)){
+			$rkey = $key;
+		}
+		else{
+			if(!is_array($args))
+				$args = [$args];
+			$rkey = $key.'.'.sha1(serialize($args));
+		}
+		if(array_key_exists($rkey,$this->__dependenciesRegistry))
+			return $this->__dependenciesRegistry[$rkey];
 		if(method_exists($this,$key))
-			$value = $this->$key();
+			$value = $this->$key($args);
 		else
-			$value = $this->defaultDependency($key);
-		$this->setDependency($key,$value);
-		return $this->getDependency($key);
+			$value = $this->defaultDependency($key,$args);
+		$this->setDependency($key,$value,$rkey);
+		return $this->getDependency($key,$args);
 	}
-	function getNew($key){
+	function getNew($key,$args=null){
 		$key = Convention::toMethod($key);
 		if(method_exists($this,$key))
-			return $this->$key();
+			return $this->$key($args);
 		else
-			return $this->defaultNew($key);
+			return $this->defaultNew($key,$args);
 	}
-	function defaultNew($key){
+	function defaultNew($key,$args=null){
+		if(!empty($args)){
+			if(!is_array($args))
+				$args = [$args];
+			array_unshift($args,$key);
+			$key = $args;
+		}
 		return $this->getDependency('Dependency_Container')->factory($key);
 	}
-	function defaultDependency($key){
-		return $this->getDependency('Dependency_Container')->getDependency($key);
+	function defaultDependency($key,$args=null){
+		return $this->getDependency('Dependency_Container')->getDependency($key,$args);
 	}
 	function Dependency_Container(){
 		return Container::get();

@@ -7,8 +7,12 @@ class Container{
 		Facade::__call insteadof MutatorMagic;
 		MutatorMagic::__call as ___call;
 	}
-	static function get($key=null){
-		return $key?static::getStatic()->getDependency($key):static::getStatic();
+	static function get(){
+		$args = func_get_args();
+		if(empty($args))
+			return static::getStatic();
+		$key = array_shift($args);
+		return static::getStatic()->getDependency($key,$args);
 	}
 	static function set($key,$value){
 		return static::getStatic()->setDependency($key,$value);
@@ -25,7 +29,7 @@ class Container{
 		}
 		return $value;
 	}
-	function defaultDependency($key){
-		return $this->defaultNew($key);
+	function defaultDependency($key,$args=null){
+		return $this->defaultNew($key,$args);
 	}
 }
