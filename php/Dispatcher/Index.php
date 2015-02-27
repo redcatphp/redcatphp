@@ -17,11 +17,11 @@ class Index extends ViewController{
 	}
 	function convention(){
 		$this->append('service/',['Surikat\Service\Service','method']);
-		$this->append(['new','Surikat\Route\Extension','css|js|png|jpg|jpeg|gif'], ['new','Surikat\Dispatcher\Synaptic']);
-		$this->append(['new','Surikat\Route\ByTml','plugin'],$this);
-		$this->append(['new','Surikat\Route\ByTml'],$this);
+		$this->append(['Route_Extension','css|js|png|jpg|jpeg|gif'], ['Dispatcher_Synaptic']);
+		$this->append(['Route_ByTml','plugin'],$this);
+		$this->append(['Route_ByTml'],$this);
 		if($this->i18nConvention)
-			$this->prepend(['new','Surikat\Route\I18n',$this],$this);
+			$this->prepend(['Route_I18n',$this],$this);
 		if($this->backoffice){
 			if($this->backoffice===true)
 				$this->backoffice = 'backoffice/';
