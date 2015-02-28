@@ -8,12 +8,25 @@ Lang::initialize();
 class AuthServer{
 	use MutatorMagic;
 	protected $messages = [];
+	protected $lastResult;
 	function __construct(Auth $auth=null){
 		if(!$auth)
 			$auth = new Auth();
 		$this->Auth = $auth;
 	}
-	function action($action){
+	function getResultMessage($widget=false){
+		if($this->lastResult&&!is_bool($this->lastResult)){
+			return $this->getMessage($this->lastResult,$widget);
+		}
+	}
+	function getResult(){
+		return $this->lastResult;
+	}
+	function action($action=null){
+		if(!func_num_args())
+			$action = isset($_GET['action'])?$_GET['action']:null;
+		if(!$action)
+			return;
 		$r = null;
 		if(method_exists($this,$action)){
 			$r = $this->$action();
@@ -37,7 +50,7 @@ class AuthServer{
 			if(!$r)
 				$r = $this->User_Session->get('Auth','result',$action);
 		}
-		return $r;
+		return $this->lastResult = $r;
 	}
 	function register(){
 		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
