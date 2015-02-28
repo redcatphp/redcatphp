@@ -1,70 +1,61 @@
-<?php namespace Surikat\Service; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
-use Suriakt\User\Auth;
-use Surikat\Git\PhpGit\Git;
-class ServiceGitview{
-	function surikat(){
-		Auth::lockServer(Auth::RIGHT_MANAGE);
-		$this->main(SURIKAT_SPATH);
+<?php
+use Surikat\Git\PhpGit\Git; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
+if(!isset($dir))
+	return;
+$git = new Git($dir.'.git');
+/* commit file list */
+if (isset($_GET['commit'])){
+	$commit = $_GET['commit'];
+	$commit = $git->getCommit($commit); 
+	$file_list = & $commit['Tree'];
+}
+elseif (isset($_GET['file'])){
+	/* it is a file */
+	$object = $git->getFile($_GET['file'], $type);
+	if ($type == OBJ_TREE) {
+		$file_list = & $object;
 	}
-	function __invoke(){
-		Auth::lockServer(Auth::RIGHT_MANAGE);
-		$this->main(SURIKAT_PATH);
+	else{
+		$content = & $object;
 	}
-	protected function main($dir){
-		$git = new Git($dir.'.git');
-		/* commit file list */
-		if (isset($_GET['commit'])){
-			$commit = $_GET['commit'];
-			$commit = $git->getCommit($commit); 
-			$file_list = & $commit['Tree'];
+}
+elseif (isset($_GET['diff'])){
+	include(SURIKAT_SPATH."php/Git/PhpGit/contrib.diff.php");
+	$diff    = $git->getCommitDiff($_GET['diff']);
+	$changes = $diff[0];
+	foreach ($changes as $change) {
+		$obj1 = $git->getFile($change[1]);
+		$obj2 = "";
+		if (isset($change[2])) {
+			$obj2 = $git->getFile($change[2]);
 		}
-		elseif (isset($_GET['file'])){
-			/* it is a file */
-			$object = $git->getFile($_GET['file'], $type);
-			if ($type == OBJ_TREE) {
-				$file_list = & $object;
-			}
-			else{
-				$content = & $object;
-			}
-		}
-		elseif (isset($_GET['diff'])){
-			include(SURIKAT_SPATH."php/Git/PhpGit/contrib.diff.php");
-			$diff    = $git->getCommitDiff($_GET['diff']);
-			$changes = $diff[0];
-			foreach ($changes as $change) {
-				$obj1 = $git->getFile($change[1]);
-				$obj2 = "";
-				if (isset($change[2])) {
-					$obj2 = $git->getFile($change[2]);
-				}
-				$diff = phpdiff($obj1,$obj2);
-				$diff = htmlentities($diff);
-				echo ("<h1>{$change[0]}</h1>");
-				echo ("<pre>$diff</pre>");
-			}
-		}
-		if(isset($_GET['tag'])){
-			$tag = $git->getTag($_GET['tag']);
-			$file_list = & $tag['Tree'];
-		}
-		if(isset($_GET['history'])){
-			$history = $git->getHistory($_GET['history'],200);
-		}
-		/* it is a branch  */
-		if (!isset($content) && !isset($history) && !isset($file_list) && !isset($_GET['branch'])) {
-			$_GET['branch'] = 'master';
-		}
-		if (isset($_GET['branch'])) {
-			try {
-				$history = $git->getHistory($_GET['branch'], 1);
-			} catch(Exception $e) {
-				$history = $git->getHistory('master', 1);
-			}
-			$commit    = $git->getCommit($history[0]["id"]);
-			$file_list = $commit['Tree']; 
-			unset($commit, $history);
-		}
+		$diff = phpdiff($obj1,$obj2);
+		$diff = htmlentities($diff);
+		echo ("<h1>{$change[0]}</h1>");
+		echo ("<pre>$diff</pre>");
+	}
+}
+if(isset($_GET['tag'])){
+	$tag = $git->getTag($_GET['tag']);
+	$file_list = & $tag['Tree'];
+}
+if(isset($_GET['history'])){
+	$history = $git->getHistory($_GET['history'],200);
+}
+/* it is a branch  */
+if (!isset($content) && !isset($history) && !isset($file_list) && !isset($_GET['branch'])) {
+	$_GET['branch'] = 'master';
+}
+if (isset($_GET['branch'])) {
+	try {
+		$history = $git->getHistory($_GET['branch'], 1);
+	} catch(Exception $e) {
+		$history = $git->getHistory('master', 1);
+	}
+	$commit    = $git->getCommit($history[0]["id"]);
+	$file_list = $commit['Tree']; 
+	unset($commit, $history);
+}
 ?>
 <html>
 <head>
@@ -218,9 +209,4 @@ endif;
 ?>
 
 </body>
-</html><?php
-
-
-	}
-	
-}
+</html>

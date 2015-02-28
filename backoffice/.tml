@@ -174,9 +174,23 @@
 			});
 			
 			BackofficeAddIcon('PhpInfo',{
-				url:'/service/phpinfo',
+				url:'./phpinfo/',
 				icon:'icon_phpinfo.png'
 			});
+			
+			BackofficeAddIcon('GitView',{
+				url:'./gitview/',
+				icon:'icon_versionning.png'
+			});
+			BackofficeAddIcon('Deploy',{
+				url:'./deploy/'
+				,icon:'icon_default.png'
+			});
+			BackofficeAddIcon('Compiler',{
+				url:'./compiler/',
+				icon:'icon_compiler.png'
+			});
+			
 			/*
 			var show_surikat_update = function(msg){
 				if(!$('.surikat-bo-updating').length){
