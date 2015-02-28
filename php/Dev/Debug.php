@@ -60,8 +60,11 @@ class Debug{
 		if($html){
 			echo $this->debugStyle;
 			echo "<pre class=\"error\" style=\"".$this->debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
-			$f = file($file);
-			$c = count($f);
+			//$f = file($file);
+			$f = explode("\n",str_replace(["\r\n","\r"],"\n",file_get_contents($file)));
+			foreach($f as &$x)
+				$x .= "\n";
+			$c = count($f);			
 			$start = $line-$this->debugLines;
 			$end = $line+$this->debugLines;
 			if($start<0)
@@ -77,7 +80,8 @@ class Debug{
 			$e = substr($e,35);
 			$x = explode("\n",$e);
 			$e = '<code><span style="color: #000000">';
-			for($i=0;$i<count($x);$i++){
+			$count = count($x);
+			for($i=0;$i<$count;$i++){
 				$y = $start+$i;
 				$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
 				$e .= $x[$i]."\n";
