@@ -19,10 +19,10 @@ foreach([
 ] as $inc)
 	require dirname(__FILE__).'/../control/'.$inc.'.php';
 abstract class ServiceKompiler{
-	static $httpCache = 4000; //in second
-	static $PATH = 'Surikat';
-	static $surikat = 'index.php';
-	static function method(){
+	public $httpCache = 4000; //in second
+	public $PATH = 'Surikat';
+	public $surikat = 'index.php';
+	function __invoke(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		$class = new ReflectionClass(__CLASS__);
 		$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
@@ -30,18 +30,18 @@ abstract class ServiceKompiler{
 			if($method->name!=__FUNCTION__)
 				echo '<button onclick="document.location=\''.@$_SERVER['PATH_INFO'].'/'.$method->name.'\';">'.str_replace('_',' ',$method->name).'</button><br>';
 	}
-	static function Set_DEV_Mode(){
-		echo "<pre>surikat mapped to sources by '".getcwd().'/'.self::$surikat."':\r\n";
-		file_put_contents(self::$surikat,"<?php
-if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
-	symlink('../".self::$PATH."','Surikat')&&include('".self::$PATH."/Bootstrap.php');");
+	function Set_DEV_Mode(){
+		echo "<pre>surikat mapped to sources by '".getcwd().'/'.$this->surikat."':\r\n";
+		file_put_contents($this->surikat,"<?php
+if(!@include(__DIR__.'/".$this->PATH."/Bootstrap.php'))
+	symlink('../".$this->PATH."','Surikat')&&include('".$this->PATH."/Bootstrap.php');");
 	}
-	static function Set_PROD_Mode($target=null){
+	function Set_PROD_Mode($target=null){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		set_time_limit(0);
 		ob_implicit_flush(true);
 		ob_end_flush();
-		$target=$target?$target:self::$surikat;
+		$target=$target?$target:$this->surikat;
 		$minifyPHP=true;
 		error_reporting(-1);
 		ini_set('display_errors','stdout');
@@ -50,7 +50,7 @@ if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
 		if(is_file($target.'.phar'))
 			unlink($target.'.phar');
 		$p = new \Phar($target.'.phar',0,'surikat');
-		$directory = getcwd().'/'.self::$PATH;
+		$directory = getcwd().'/'.$this->PATH;
 		$p->setStub('<?php error_reporting(-1);ini_set("display_startup_errors",true);ini_set("display_errors","stdout");ini_set("html_errors",false);include \'phar://\'.__FILE__.\'/Bootstrap.php\'; __HALT_COMPILER(); ?>');
 		echo "<h1>Surikat Compilation to '".$target."':</h1><pre>\r\n";
 		$tt = 0;
@@ -84,14 +84,14 @@ if(!@include(__DIR__.'/".self::$PATH."/Bootstrap.php'))
 		});
 			
 	}
-	protected static function cachedHTTP($file){
-		return is_file($file)&&filesize($file)&&filemtime($file)>time()-self::$httpCache;
+	protected function cachedHTTP($file){
+		return is_file($file)&&filesize($file)&&filemtime($file)>time()-$this->httpCache;
 	}
-	protected static function getZIP($url){
+	protected function getZIP($url){
 		$zip = new ZipArchive;
 		$dir = SURIKAT_TMP.'kompiler_cache/'.sha1($url);
 		FS::mkdir($dir);
-		if($cached = self::cachedHTTP($dir.'.zip'))
+		if($cached = $this->cachedHTTP($dir.'.zip'))
 			print "from cache \r\n";
 		if(!$cached&&$tmp=file_get_contents($url))
 			file_put_contents($dir.'.zip',$tmp);

@@ -17,14 +17,13 @@ class Service {
 		$c = 'Service\\Service_';
 		if($pos){
 			$c .= ucfirst(substr($func,0,$pos));
-			$m = lcfirst(substr($func,$pos+1));
+			$m = lcfirst(self::StudlyCaps(substr($func,$pos+1)));
 		}
 		else{
 			$c .= ucfirst($func);
 			$m = '__invoke';
 		}
 		$c = self::StudlyCaps($c);
-		$m = lcfirst(self::StudlyCaps($m));
 		return [$c,$m];
 	}
 }

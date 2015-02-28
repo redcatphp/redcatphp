@@ -3,14 +3,7 @@ use Surikat\HTTP\HTTP;
 use Surikat\Git\GitDeploy\GitDeploy;
 use Suriakt\User\Auth;
 class ServiceDeploy{
-	protected static function directOutput(){
-		set_time_limit(0);
-		HTTP::nocacheHeaders();
-		ob_implicit_flush(true);
-		@ob_end_flush();
-		echo '<pre>';
-	}
-	static function method(){
+	function __invoke(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
@@ -23,6 +16,13 @@ class ServiceDeploy{
 				->maintenanceOff()
 		;
 	}
+	protected static function directOutput(){
+		set_time_limit(0);
+		HTTP::nocacheHeaders();
+		ob_implicit_flush(true);
+		@ob_end_flush();
+		echo '<pre>';
+	}
 	static function single(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
@@ -33,7 +33,7 @@ class ServiceDeploy{
 			->maintenanceOff()
 		;
 	}
-	static function version(){
+	function version(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory()
@@ -42,7 +42,7 @@ class ServiceDeploy{
 			->maintenanceOff()
 		;
 	}
-	static function shared(){
+	function shared(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_PATH)
@@ -55,7 +55,7 @@ class ServiceDeploy{
 				->maintenanceOff()
 		;
 	}
-	static function surikat(){
+	function surikat(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
 		self::directOutput();
 		GitDeploy::factory(SURIKAT_SPATH)

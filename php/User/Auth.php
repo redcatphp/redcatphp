@@ -5,6 +5,7 @@ use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
 use Surikat\Mail\PHPMailer;
 use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\DependencyInjection\Constant;
 use HTTP\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
@@ -12,6 +13,7 @@ if (version_compare(phpversion(), '5.5.0', '<')){
 }
 class Auth{
 	use MutatorMagic;
+	use Constant;
 	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;

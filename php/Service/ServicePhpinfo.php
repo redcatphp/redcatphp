@@ -1,8 +1,9 @@
 <?php namespace Surikat\Service;
-use Suriakt\User\Auth;
+use Surikat\DependencyInjection\MutatorProperty;
 class ServicePhpinfo{
-	static function method(){
-		Auth::lockServer(Auth::RIGHT_MANAGE);
+	use MutatorProperty;
+	function __invoke(){
+		$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
 		phpinfo();
 	}
 }

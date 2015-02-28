@@ -2,15 +2,15 @@
 use Suriakt\User\Auth;
 use Surikat\Git\PhpGit\Git;
 class ServiceGitview{
-	static function surikat(){
+	function surikat(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
-		self::main(SURIKAT_SPATH);
+		$this->main(SURIKAT_SPATH);
 	}
-	static function method(){
+	function __invoke(){
 		Auth::lockServer(Auth::RIGHT_MANAGE);
-		self::main(SURIKAT_PATH);
+		$this->main(SURIKAT_PATH);
 	}
-	protected static function main($dir){
+	protected function main($dir){
 		$git = new Git($dir.'.git');
 		/* commit file list */
 		if (isset($_GET['commit'])){
