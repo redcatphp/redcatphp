@@ -159,7 +159,7 @@ class Auth{
 			}
 		}
 		else{
-			if(!password_verify($password, $pass)){
+			if(!($password&&password_verify($password, $pass))){
 				$this->User_Session->addAttempt();
 				return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 			}
@@ -248,7 +248,7 @@ class Auth{
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		$user = $this->getUser($uid);
-		if(!password_verify($password, $user['password'])){
+		if(!($password&&password_verify($password, $user['password']))){
 			$this->User_Session->addAttempt();
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
@@ -412,7 +412,7 @@ class Auth{
 			return $e;
 		}
 		$getUser = $this->getUser($uid);
-		if(!password_verify($password, $getUser['password'])){
+		if(!($password&&password_verify($password, $getUser['password']))){
 			$this->User_Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
@@ -523,7 +523,7 @@ class Auth{
 			$this->deleteRequest($data['id']);
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!password_verify($password, $user['password'])){			
+		if(!($password&&password_verify($password, $user['password']))){
 			$password = $this->getHash($password, $user['salt']);
 			$row = $this->db->load($this->tableUsers,$data[$this->tableUsers.'_id']);
 			$row->password = $password;
@@ -574,7 +574,7 @@ class Auth{
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$newpass = $this->getHash($newpass, $user['salt']);
-		if(!password_verify($currpass, $user['password'])){
+		if(!($password&&password_verify($currpass, $user['password']))){
 			$this->User_Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
@@ -605,7 +605,7 @@ class Auth{
 			$this->User_Session->addAttempt();
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!password_verify($password, $user['password'])){
+		if(!($password&&password_verify($password, $user['password']))){
 			$this->User_Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
