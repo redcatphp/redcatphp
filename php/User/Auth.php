@@ -73,35 +73,16 @@ class Auth{
 	const OK_PASSWORD_RESET = 43;
 	const OK_RESET_REQUESTED = 44;
 	const OK_ACTIVATION_SENT = 45;
-	
-	static $instances;
+
+	public $siteUrl;
 	private $db;
+	private $right;
 	protected $tableRequests = 'request';
 	protected $tableUsers = 'user';
-	protected $siteUrl;
 	protected $cost = 10;
 	protected $algo;
 	protected $superRoot = 'root';
 	protected $config = [];
-		
-	static function connected(){
-		return self::instance()->isConnected();
-	}
-	static function allowed($right){
-		return self::instance()->isAllowed($right);
-	}
-	static function lock($right,$redirect=true){
-		return self::instance()->_lock($right,$redirect);
-	}
-	static function lockServer($right){
-		return self::instance()->_lockServer($right);
-	}
-	
-	static function instance($k=0){
-		if(!isset(self::$instances[$k]))
-			self::$instances[$k] = new static();
-		return self::$instances[$k];
-	}
 	
 	function sendMail($email, $type, $key, $login){
 		$config = Config::mailer();
@@ -210,7 +191,7 @@ class Auth{
 			'name'=>$email,
 			'email'=>$email,
 			'type'=>'persona',
-			'right'=>static::ROLE_MEMBER,
+			'right'=>self::ROLE_MEMBER,
 			'active'=>1,
 		];
 		if($this->db){
@@ -340,7 +321,7 @@ class Auth{
 		return self::OK_RESET_REQUESTED;
 	}
 	public function logout(){
-		if($this->isConnected()&&$this->User_Session->destroy()){
+		if($this->connected()&&$this->User_Session->destroy()){
 			return self::OK_LOGGED_OUT;
 		}
 		return $this->User_Session->destroy();
@@ -391,7 +372,7 @@ class Auth{
 		$row->email = $email;
 		$row->password = $password;
 		$row->salt = $salt;
-		$row->right = static::ROLE_MEMBER;
+		$row->right = self::ROLE_MEMBER;
 		$row->type = 'local';
 		if(!$row->store()){
 			$row->trash();
@@ -440,7 +421,7 @@ class Auth{
 		if($type == "activation" && isset($user['active']) && $user['active'] == 1){
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
-		$key = self::getRandomKey(40);
+		$key = $this->Crypto_RandomLib_Factory()->getMediumStrengthGenerator()->generate(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
 		$user['xown'.ucfirst($this->tableRequests)][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$user->store()){
@@ -620,15 +601,7 @@ class Auth{
 		}
 		return self::OK_EMAIL_CHANGED;
 	}
-	static function getRandomKey($length = 40){
-		$chars = "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6";
-		$key = "";
-		for ($i = 0; $i < $length; $i++)
-			$key .= $chars{mt_rand(0, strlen($chars) - 1)};
-		return $key;
-	}
-	
-	private $right;
+
 	function getRight(){
 		if(!isset($this->right))
 			$this->right = $this->User_Session->get('_AUTH_','right');
@@ -638,10 +611,10 @@ class Auth{
 		$this->right = $r;
 	}
 	
-	function isConnected(){
+	function connected(){
 		return !!$this->User_Session->get('_AUTH_');
 	}
-	function isAllowed($d){
+	function allowed($d){
 		return !!($d&$this->getRight());
 	}
 	function allow($d){
@@ -651,12 +624,12 @@ class Auth{
 		return $this->setRight($d^$this->getRight());
 	}
 	
-	function _lock($r,$redirect=true){
-		if($this->isAllowed($r))
+	function lock($r,$redirect=true){
+		if($this->allowed($r))
 			return;
 		HTTP::nocacheHeaders();
 		if($redirect){
-			if($this->isConnected())
+			if($this->connected())
 				$redirect = '403';
 			if($redirect===true)
 				$redirect = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:'403';
@@ -667,7 +640,7 @@ class Auth{
 		}
 		exit;
 	}
-	function _lockServer($r,$redirect=true){
+	function lockServer($r,$redirect=true){
 		return (new AuthServer($this))->htmlLock($r,$redirect);
 	}
 }

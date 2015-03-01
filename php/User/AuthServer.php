@@ -156,9 +156,9 @@ class AuthServer{
 				exit;
 			}
 		}
-		if($this->Auth->isAllowed($r))
+		if($this->Auth->allowed($r))
 			return;
-		if($this->Auth->isConnected()){
+		if($this->Auth->connected()){
 			if($redirect)
 				header('Location: '.$this->Auth->siteUrl.'403',false,302);
 			else

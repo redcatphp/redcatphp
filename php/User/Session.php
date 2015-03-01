@@ -26,6 +26,7 @@ class Session{
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
 	protected $User_SessionHandler;
+	protected $handled;
 	function __construct($name=null,$savePath=null,SessionHandler $sessionHandler=null){
 		if(!$savePath)
 			$savePath = SURIKAT_PATH.'.tmp/sessions/';
@@ -40,7 +41,6 @@ class Session{
 			$this->User_SessionHandler = $sessionHandler;
 		else
 			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
-		$this->handle();
 		$this->garbageCollector();
 	}
 	function handle(){
@@ -61,6 +61,7 @@ class Session{
 		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
+		$this->handled = true;
 	}
 	function garbageCollector(){
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
@@ -107,9 +108,11 @@ class Session{
 			$this->regenerateId();
 		}
 	}
+	function getName(){
+		return $this->name;
+	}
 	function setName($name){
 		$this->name = $name;
-		$this->handle();
 	}
 	function serverFile(){
 		$id = func_num_args()?func_get_arg(0):$this->id;
@@ -147,6 +150,8 @@ class Session{
 		return $ref;
 	}
 	function get(){
+		if(!$this->handled)
+			$this->handle();
 		$args = func_get_args();
 		$ref =& $this->data;
 		foreach($args as $k){
