@@ -26,7 +26,7 @@ class SessionHandler implements User_SessionHandler{
 	}
 	function destroy($id){
 		$file = $this->savePath.$id;
-		if(file_exists($file))
+		if(is_file($file))
 			unlink($file);
 	}
 	function gc($max){

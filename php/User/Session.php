@@ -80,7 +80,8 @@ class Session{
 		return $this->key?$this->key.$this->splitter:'';
 	}
 	function destroy(){
-		$this->User_SessionHandler->destroy($this->getPrefix().$id);
+		if($this->id)
+			$this->User_SessionHandler->destroy($this->getPrefix().$this->id);
 		$this->User_SessionHandler->close();
 		self::removeCookie($this->name);
 	}
