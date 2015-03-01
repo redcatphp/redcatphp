@@ -44,6 +44,7 @@ class Session{
 		$this->garbageCollector();
 	}
 	function handle(){
+		$this->handled = true;
 		$this->User_SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
@@ -61,7 +62,6 @@ class Session{
 		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
-		$this->handled = true;
 	}
 	function garbageCollector(){
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
