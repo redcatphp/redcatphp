@@ -570,7 +570,7 @@ abstract class PARSER{
 			foreach($x as $n)
 				$this->fireElement($n,$attributes);
 		}
-		$this->addToCurrent(strtolower($name),$attributes)->closed();
+		$this->addToCurrent($name,$attributes)->closed();
 	}
 	private function fireStartElement($name,$attributes,&$state=null){
 		if(($pos=strpos($name,'&'))!==false){
@@ -579,7 +579,7 @@ abstract class PARSER{
 			foreach($x as $n)
 				$this->fireStartElement($n,$attributes);
 		}
-		$this->currentTag = $this->addToCurrent(strtolower($name),$attributes);
+		$this->currentTag = $this->addToCurrent($name,$attributes);
 		if($this->currentTag->noParseContent)
 			$state = self::STATE_NOPARSING;
 		if($this->currentTag->selfClosed===true){
