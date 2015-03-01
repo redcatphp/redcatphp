@@ -43,8 +43,17 @@ class Session{
 			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
 		$this->garbageCollector();
 	}
+	function handleReload(){
+		if($this->handled)
+			$this->handle();
+	}
+	function handleOnce(){
+		if(!$this->handled){
+			$this->handled = true;
+			$this->handle();
+		}
+	}
 	function handle(){
-		$this->handled = true;
 		$this->User_SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
@@ -113,6 +122,7 @@ class Session{
 	}
 	function setName($name){
 		$this->name = $name;
+		$this->handleReload();
 	}
 	function serverFile(){
 		$id = func_num_args()?func_get_arg(0):$this->id;
@@ -132,6 +142,7 @@ class Session{
 		$this->cookieLifetime = $time;
 	}
 	function set(){
+		$this->handleOnce();
 		$this->start();
 		$this->modified = true;
 		$args = func_get_args();
@@ -150,8 +161,7 @@ class Session{
 		return $ref;
 	}
 	function get(){
-		if(!$this->handled)
-			$this->handle();
+		$this->handleOnce();
 		$args = func_get_args();
 		$ref =& $this->data;
 		foreach($args as $k){
