@@ -32,7 +32,7 @@ trait Mutator {
 		else{
 			if(!is_array($args))
 				$args = [$args];
-			$rkey = $key.'.'.sha1(serialize($args));
+			$rkey = $key.'.'.spl_object_hash((object)$args);
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry))
 			return $this->__dependenciesRegistry[$rkey];
