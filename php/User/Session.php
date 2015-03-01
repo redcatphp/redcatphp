@@ -141,7 +141,6 @@ class Session{
 	}
 	function serverExist(){
 		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
-		//var_dump($this->serverFile($id));
 		return is_file($this->serverFile($id));
 	}
 	function cookie(){
