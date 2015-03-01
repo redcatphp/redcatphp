@@ -57,12 +57,14 @@ class Session{
 		$this->User_SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
+			$this->key = $this->clientKey();
 			if($this->serverExist()){
 				$this->data = (array)unserialize($this->User_SessionHandler->read($this->getPrefix().$this->id));
 				$this->autoRegenerateId();
 			}
 			else{
 				$this->id = null;
+				$this->key = null;
 				self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
 				$this->checkBlocked();
@@ -76,9 +78,6 @@ class Session{
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
 			$this->User_SessionHandler->gc($this->maxLifetime);
 	}
-	function getPrefix(){
-		return $this->key?$this->key.$this->splitter:'';
-	}
 	function destroy(){
 		if($this->id)
 			$this->User_SessionHandler->destroy($this->getPrefix().$this->id);
@@ -91,7 +90,18 @@ class Session{
 	}
 	function setKey($key=null){
 		$this->destroyKey($key);
-		$this->key = $key;
+		if($this->serverExist()){
+			$old = $this->serverFile();
+			$this->key = $key;
+			$new = $this->serverFile();
+			rename($old,$new);
+		}
+		else{
+			$this->key = $key;
+		}
+		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
+			$this->writeCookie();
+		}
 	}
 	function regenerateId(){
 		$old = $this->serverFile();
@@ -126,18 +136,36 @@ class Session{
 		$this->handleReload();
 	}
 	function serverFile(){
-		$id = func_num_args()?func_get_arg(0):$this->id;
+		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
 		return $id?$this->savePath.$id:false;
 	}
 	function serverExist(){
-		$id = func_num_args()?func_get_arg(0):$this->id;
+		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
+		//var_dump($this->serverFile($id));
 		return is_file($this->serverFile($id));
 	}
+	function cookie(){
+		return self::getCookie($this->name);
+	}
 	function clientId(){
-		return $this->clientExist()?$_COOKIE[$this->name]:null;
+		$cookie = $this->cookie();
+		$pos = strpos($cookie,$this->splitter);
+		if($cookie)
+			return $pos===false?$cookie:substr($cookie,$pos+strlen($this->splitter));
+	}
+	function clientKey(){
+		$cookie = $this->cookie();
+		return $cookie?substr($cookie,0,strpos($cookie,$this->splitter)):null;
+	}
+	function clientPrefix(){
+		$key = $this->clientKey();
+		return $key?$key.$this->splitter:'';
+	}
+	function getPrefix(){
+		return $this->key?$this->key.$this->splitter:'';
 	}
 	function clientExist(){
-		return isset($_COOKIE[$this->name]);
+		return $this->cookie()!==null;
 	}
 	function setCookieLifetime($time){
 		$this->cookieLifetime = $time;
@@ -190,10 +218,9 @@ class Session{
 		if(!$this->id){		
 			$this->id = $this->generateId();
 		}
-		if($this->clientId()!=$this->getPrefix().$this->id){
+		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
 			$this->writeCookie();
 		}
-		return $this->id;
 	}
 	function __destruct(){
 		if($this->modified)
