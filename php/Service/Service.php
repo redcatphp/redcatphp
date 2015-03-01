@@ -2,7 +2,11 @@
 use Surikat\DependencyInjection\Mutator;
 class Service {
 	use Mutator;
-	function __invoke($func){
+	function __invoke($func=null){
+		if(!func_num_args()){
+			$this->getDependency('HTTP')->code('404');
+			return;
+		}
 		$func = str_replace('/','_',$func);
 		list($c,$m) = self::__funcToCm($func);
 		$this->getDependency($c)->$m();
