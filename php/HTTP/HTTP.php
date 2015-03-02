@@ -1,9 +1,9 @@
 <?php namespace Surikat\HTTP;
 use Closure;
-use Surikat\HTTP\Domain;
+use Surikat\DependencyInjection\Container;
 abstract class HTTP{
 	static function reloadLocation(){
-		header('Location: '.Domain::getLocation(),false,302);
+		header('Location: '.Container::get()->HTTP_Domain->getLocation(),false,302);
 	}
 	static function isAjax(){
 		return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';

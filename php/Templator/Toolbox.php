@@ -1,6 +1,5 @@
 <?php namespace Surikat\Templator;
 use I18n\Lang;
-use HTTP\Domain;
 use Surikat\DependencyInjection\MutatorMagic;
 class Toolbox{
 	use MutatorMagic;
@@ -118,12 +117,12 @@ class Toolbox{
 		if($langMap&&isset($langMap[$path])){
 			$xPath = $langMap[$path];
 		}
-		$head->append('<link rel="alternate" href="'.Domain::getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		$head->append('<link rel="alternate" href="'.$this->HTTP_Domain->getSubdomainHref().$xPath.'" hreflang="x-default" />');
 		foreach(glob('langs/*.ini') as $langFile){
 			$lg = pathinfo($langFile,PATHINFO_FILENAME);
 			$langMap = parse_ini_file($langFile);
 			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.Domain::getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+			$head->append('<link rel="alternate" href="'.$this->HTTP_Domain->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
 		}
 	}
 }

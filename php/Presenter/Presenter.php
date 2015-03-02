@@ -3,7 +3,6 @@ use Surikat\Vars\ArrayObject;
 use Surikat\Templator\FILE;
 use Surikat\Templator\TML;
 use Dispatcher\Index;
-use HTTP\Domain;
 class Presenter extends ArrayObject{
 	static function load(TML $tml){
 		if(!$tml->View)
@@ -52,7 +51,7 @@ class Presenter extends ArrayObject{
 		)
 			(new Index())->getController()->error(404);
 		$this->time = time();
-		$this->BASE_HREF = Domain::getBaseHref();
+		$this->BASE_HREF = $this->HTTP_Domain()->getBaseHref();
 		$this->dynamic();
 	}
 	function dynamic(){}

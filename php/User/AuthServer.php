@@ -1,5 +1,4 @@
 <?php namespace Surikat\User;
-use Surikat\HTTP\Domain;
 use Surikat\HTTP\HTTP;
 use Surikat\User\Auth;
 use Surikat\I18n\Lang;
@@ -132,7 +131,7 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = Domain::getLocation();
+		$action = $this->HTTP_Domain->getLocation();
 		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){

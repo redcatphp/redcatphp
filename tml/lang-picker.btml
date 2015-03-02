@@ -24,7 +24,7 @@
 						$lcPath = $k;
 				}
 			}
-			$lcLink = HTTP\Domain::getSubdomainHref($lg!=$lgD?$lg:null);
+			$lcLink = $this->HTTP_Domain()->getSubdomainHref($lg!=$lgD?$lg:null);
 			$lcLink .= $lcPath;
 		?>
 		<li>
