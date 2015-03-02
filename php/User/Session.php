@@ -65,6 +65,7 @@ class Session{
 			else{
 				$this->id = null;
 				$this->key = null;
+				var_dump(__LINE__);exit;
 				self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
 				$this->checkBlocked();
@@ -82,7 +83,7 @@ class Session{
 		if($this->id)
 			$this->User_SessionHandler->destroy($this->getPrefix().$this->id);
 		$this->User_SessionHandler->close();
-		self::removeCookie($this->name);
+		self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 	}
 	function destroyKey($key){
 		foreach(glob($this->savePath.$key.'.*') as $file)
@@ -99,6 +100,8 @@ class Session{
 		else{
 			$this->key = $key;
 		}
+		if(!$this->id)
+			$this->id = $this->generateId();
 		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
 			$this->writeCookie();
 		}
@@ -205,7 +208,7 @@ class Session{
 	}
 	function checkBlocked(){
 		if($s=$this->isBlocked()){
-			self::removeCookie($this->name);
+			self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 			$this->reset();
 			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
 		}
@@ -273,7 +276,8 @@ class Session{
 			$this->cookiePath,
 			$this->cookieDomain,
 			false,
-			true
+			true,
+			false
 		);
 	}
 	
@@ -287,8 +291,11 @@ class Session{
 	static function getCookie($name){
         return isset($_COOKIE[$name])?$_COOKIE[$name]:null;
 	}
-	static function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false){
-        $_COOKIE[$name] = $value;
+	static function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
+		if($expire&&isset($_COOKIE[$name]))
+			self::removeCookie($name, $path, $domain, $secure, $httponly);
+		if($global)
+			$_COOKIE[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
     static function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
