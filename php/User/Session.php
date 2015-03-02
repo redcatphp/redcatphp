@@ -18,6 +18,7 @@ class Session{
 	protected $idLength = 100;
 	protected $data = [];
 	protected $modified;
+	protected $saveRoot;
 	protected $savePath;
 	protected $splitter = '.';
 	protected $gc_probability = 1;
@@ -27,12 +28,13 @@ class Session{
 	protected $regeneratePeriod = 3600; //1 hour
 	protected $User_SessionHandler;
 	protected $handled;
-	function __construct($name=null,$savePath=null,SessionHandler $sessionHandler=null){
-		if(!$savePath)
-			$savePath = SURIKAT_PATH.'.tmp/sessions/';
+	function __construct($name=null,$saveRoot=null,SessionHandler $sessionHandler=null){
+		if(!$saveRoot)
+			$saveRoot = SURIKAT_PATH.'.tmp/sessions/';
 		if($name)
 			$this->name = $name;
-		$this->savePath = rtrim($savePath,'/').'/'.$this->name.'/';
+		$this->saveRoot = rtrim($saveRoot,'/').'/';
+		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
 		$this->cookiePath = '/'.Domain::getSuffixHref();
 		$this->cookieDomain = Domain::getServerHref();
@@ -136,6 +138,7 @@ class Session{
 	}
 	function setName($name){
 		$this->name = $name;
+		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->handleReload();
 	}
 	function serverFile(){

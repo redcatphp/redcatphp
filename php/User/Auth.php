@@ -640,6 +640,6 @@ class Auth{
 		exit;
 	}
 	function lockServer($r,$redirect=true){
-		return (new AuthServer($this))->htmlLock($r,$redirect);
+		return $this->getDependency('User_AuthServer',$this)->htmlLock($r,$redirect);
 	}
 }
