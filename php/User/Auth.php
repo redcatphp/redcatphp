@@ -6,7 +6,6 @@ use Surikat\Model\R;
 use Surikat\Mail\PHPMailer;
 use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\DependencyInjection\Constant;
-use HTTP\Domain;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
@@ -117,7 +116,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = Domain::getBaseHref();
+			$this->siteUrl = $this->HTTP_Domain->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];

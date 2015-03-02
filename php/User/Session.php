@@ -83,6 +83,7 @@ class Session{
 			$this->User_SessionHandler->destroy($this->getPrefix().$this->id);
 		$this->User_SessionHandler->close();
 		self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
+		return true;
 	}
 	function destroyKey($key){
 		foreach(glob($this->savePath.$key.'.*') as $file)
