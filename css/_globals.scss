@@ -1,7 +1,8 @@
 <?
-global $img,$resolutions,$screens;
+global $img,$resolutions,$screens,$relativity;
+$relativity = str_repeat('../',substr_count(ltrim($_SERVER['REQUEST_URI'],'/'),'/'));
 if(!isset($img))
-	$img = '../img/';
+	$img = $relativity.'img/';
 if(!isset($resolutions))
 	$resolutions = array(480,640,768,800,960,1024,1260,1366,1920);
 	$screens = $resolutions;
