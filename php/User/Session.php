@@ -65,7 +65,6 @@ class Session{
 			else{
 				$this->id = null;
 				$this->key = null;
-				var_dump(__LINE__);exit;
 				self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
 				$this->checkBlocked();
