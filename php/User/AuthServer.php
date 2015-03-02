@@ -8,6 +8,7 @@ class AuthServer{
 	use MutatorMagic;
 	protected $messages = [];
 	protected $lastResult;
+	protected $defaultLogoutKey = 'auth-server-logout';
 	function __construct(Auth $auth=null){
 		if(!$auth)
 			$auth = new Auth();
@@ -124,6 +125,69 @@ class AuthServer{
 	function resetpass(){
 		if(isset($_GET['key'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			return $this->Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
+		}
+	}
+	function lougoutAPI($key=null){
+		if(!$key)
+			$key = $this->defaultLogoutKey;
+		if(isset($_POST[$key])){
+			$this->logout();
+			return true;
+		}
+	}
+	function lougoutBTN($key=null,$ret=false){
+		if(!$key)
+			$key = $this->defaultLogoutKey;
+		if($this->lougoutAPI()){
+			$this->HTTP->reloadLocation();
+		}
+		else{
+			$html = '
+			<link href="'.$this->HTTP_Domain->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
+			<style type="text/css">
+				a.auth-logout{
+					background: none repeat scroll 0 0 #fff;
+					border: 1px solid #000;
+					border-radius: 3px;
+					color: #000;
+					padding: 1px 3px 0;
+					position: absolute;
+					right: 0;
+					top: 0;
+					z-index: 1000;
+				}
+				a,
+				a:focus,
+				a:hover,
+				a:link:hover,
+				a:visited:hover{
+					color:#000;
+					text-decoration:none;
+				}
+				a.auth-logout::before{
+					font-family: FontAwesome;
+					font-style: normal;
+					font-size: 16px;
+					font-weight: normal;
+					line-height: normal;
+					-webkit-font-smoothing: antialiased;
+					speak: none;
+					content: "\f011";
+				}
+			</style>
+			<script type="text/javascript" src="'.$this->HTTP_Domain->getBaseHref().'js/post.js"></script>
+			<script type="text/javascript">
+				authServerLogoutCaller = function(){
+					post("'.$this->HTTP_Domain->getLocation().'",{"'.$key.'":1});
+					return false;
+				};
+			</script>
+			';
+			$html .= '<a class="auth-logout" onclick="return authServerLogoutCaller();" href="#"></a>';
+			if($ret)
+				return $html;
+			else
+				echo $html;
 		}
 	}
 	function logout(){
