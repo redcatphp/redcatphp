@@ -114,10 +114,12 @@ class Template {
 	function devRegeneration(){
 		$exist = is_file($this->devCompileFile);
 		if($exist){
-			unlink($this->devCompileFile);
-			FS::rmdir($this->dirCompile);
-			FS::rmdir($this->dirCache);
-			$this->FileSystem_Synaptic()->cleanMini();
+			if(!$this->Dev_Level()->VIEW){
+				unlink($this->devCompileFile);
+				FS::rmdir($this->dirCompile);
+				FS::rmdir($this->dirCache);
+				$this->FileSystem_Synaptic()->cleanMini();
+			}
 		}
 		else{
 			if($this->Dev_Level()->VIEW){
@@ -126,7 +128,7 @@ class Template {
 			}
 			if($this->Dev_Level()->CSS)
 				$this->FileSystem_Synaptic()->cleanMini('css');
-			if($this->Dev_Level()->CSS)
+			if($this->Dev_Level()->JS)
 				$this->FileSystem_Synaptic()->cleanMini('js');
 		}
 	}
