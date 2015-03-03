@@ -2,7 +2,7 @@ $js('jquery',function(){
 	$.fn.reload = function(target){
 		return this.each(function(){
 			var self = $(this);
-			self.find('[data-reload]').each(function(){
+			self.wrap('<div />').find('[data-reload]').each(function(){
 				var load = $(this).attr('data-reload');
 				var t = target;
 				if(target){
