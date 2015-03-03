@@ -463,7 +463,7 @@ class Auth{
 			return self::ERROR_LOGIN_SHORT;
 		elseif (strlen($login) > 30)
 			return self::ERROR_LOGIN_LONG;
-		elseif (!ctype_alnum($login))
+		elseif(!ctype_alnum($login)&&!filter_var($login, FILTER_VALIDATE_EMAIL))
 			return self::ERROR_LOGIN_INVALID;
 	}
 	public function validateDisplayname($login){
