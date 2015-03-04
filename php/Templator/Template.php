@@ -5,6 +5,7 @@ use Surikat\FileSystem\FS;
 use Surikat\SourceCode\PHP;
 use Surikat\Minify\HTML as minHTML;
 use Surikat\Minify\PHP as minPHP;
+use Surikat\Exception\View as ViewException;
 class Template {
 	use MutatorCall;
 	var $forceCompile;
@@ -86,7 +87,7 @@ class Template {
 	}
 	function prepare(){
 		if(!($file=$this->find()))
-			throw new Exception('404');
+			throw new ViewException('404');
 		$node = new TML(file_get_contents($file),$this);
 		ksort($this->compile);
 		foreach($this->compile as $callback)
@@ -131,6 +132,11 @@ class Template {
 			if($this->Dev_Level()->JS)
 				$this->FileSystem_Synaptic()->cleanMini('js');
 		}
+	}
+	function fetch($file=null,$vars=[]){
+		ob_start();
+		$this->display($file,$vars);
+		return ob_get_clean();
 	}
 	function display($file=null,$vars=[]){
 		if(isset($file))
