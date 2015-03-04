@@ -5,7 +5,7 @@ class TML_Extend extends TML {
 	var $_extender;
 	var $_extended;
 	function load(){
-		//if(!$this->View)
+		//if(!$this->Template)
 			//return;
 		$this->remapAttr('file');
 		if(!isset($this->file))

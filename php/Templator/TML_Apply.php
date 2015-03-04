@@ -5,7 +5,7 @@ class TML_Apply extends TML {
 	var $_extender;
 	var $_extended;
 	function load(){
-		//if(!$this->View)
+		//if(!$this->Template)
 			//return;
 		$this->remapAttr('file');
 		if(!$this->_extended){

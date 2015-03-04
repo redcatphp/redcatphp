@@ -20,12 +20,12 @@ class TML extends CORE{
 	
 	private static $loadVarsIndex = 100;
 	function loadVars($v){
-		if(!$this->View)
+		if(!$this->Template)
 			return;
 		$index = uniqid();
 		$this->attr('compileVars',$index);
 		$this->removeAttr('vars');
-		$this->View->onCompile(function($TML)use($v,$index){
+		$this->Template->onCompile(function($TML)use($v,$index){
 			$el = $TML->find("[compileVars=$index]",0);
 			if(!$el)
 				return;

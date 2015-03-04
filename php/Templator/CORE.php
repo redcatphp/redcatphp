@@ -17,7 +17,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	var $namespace;
 	var $namespaceClass;
 	var $_namespaces;
-	var $View;
+	var $Template;
 	
 	protected $hiddenWrap;
 	protected $preventLoad;
@@ -62,16 +62,16 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		call_user_func_array($callback,[&$node,&$break]);
 	}
-	function View(){
-		return $this->View;
+	function Template(){
+		return $this->Template;
 	}
 	function getFile($file,$c=null){
-		if(!is_file($real=$this->View->find($file)))
+		if(!is_file($real=$this->Template->find($file)))
 			$this->throwException('&lt'.$c.' "'.$file.'"> template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
-		if($this->View)
+		if($this->Template)
 			return $this->parse($this->getFile($file,$c),$params);
 	}
 	function __construct(){
@@ -83,21 +83,21 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				if($o instanceof CORE)
 					$this->parent = $o;
 				elseif(is_array($o)){
-					$this->View = array_shift($o);
+					$this->Template = array_shift($o);
 					$this->constructor = array_shift($o);
 				}
 				else{
-					$this->View = $o;
+					$this->Template = $o;
 					$this->constructor = array_shift($args);
 				}
 				if($this->parent)
-					$this->View = $this->parent->View;
+					$this->Template = $this->parent->Template;
 				$this->parse($parse);
 			}
 			else{
 				$this->parent = array_shift($args);
 				if($this->parent)
-					$this->View = $this->parent->View;
+					$this->Template = $this->parent->Template;
 				$this->interpret($args);
 			}
 		}
@@ -110,9 +110,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$code = "$this";
 		$h = sha1($code);
 		if($php)
-			$this->View->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
+			$this->Template->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
 		if($ev)
-			$this->View->cacheV($h,$this->evaluate());
+			$this->Template->cacheV($h,$this->evaluate());
 		$this->clear();
 		$this->head('<?php if($__including=$this->cacheInc(\''.$h.'\''.($extra!==null?(','.(is_string($extra)?"'".str_replace("'","\'",$extra)."'":'unserialize('.serialize($extra).')')):'').'))include $__including;?>');
 	}
@@ -538,7 +538,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 					$str .= $this->indentationTab();
 				}
 				if(is_integer($k)){
-					if($this->View&&$this->View->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+					if($this->Template&&$this->Template->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
 					else
 						$str .= ' '.$v;
@@ -548,7 +548,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				}
 				$lp = is_integer($k)&&($v instanceof PHP);
 			}
-			if($this->selfClosed&&$this->View&&$this->View->isXhtml)
+			if($this->selfClosed&&$this->Template&&$this->Template->isXhtml)
 				$str .= '></'.$this->nodeName;
 			elseif($this->selfClosed>1)
 				$str .= ' /';
@@ -808,7 +808,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 
 	function presentProperty(){
 		if(strpos(func_get_arg(0),'<?')!==false){
-			extract((array)$this->View->present);
+			extract((array)$this->Template->present);
 			return $this->evalue(func_get_arg(0));
 		}
 		return func_get_arg(0);

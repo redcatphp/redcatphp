@@ -4,7 +4,7 @@ class TML_Code extends TML{
 	function load(){
 		$this->remapAttr('file');
 		if($this->file){
-			if($this->View&&($find = $this->View->find($this->file))){
+			if($this->Template&&($find = $this->Template->find($this->file))){
 				$text = file_get_contents($find);
 			}
 			else

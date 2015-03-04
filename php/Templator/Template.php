@@ -153,6 +153,8 @@ class Template {
 				if(strpos($path,'/')===0&&is_file($file=$d.$path))
 					return $file;
 				$local = $d.dirname($this->path).'/'.$path;
+				//var_dump($this->path);
+				//var_dump($local);
 				if(strpos($path,'./')===0)
 					return $local;
 				if($file=realpath($local))

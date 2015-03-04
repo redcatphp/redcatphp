@@ -5,7 +5,7 @@ use Surikat\Model\R;
 class TML_Form extends TML {
 	function loadModelRules($model){
 		$this->__unset('modelRules');
-		if($this->View->present)
+		if($this->Template->present)
 			$model = $this->presentProperty($model);
 		$model = trim($model);
 		$c = R::getModelClass($model);

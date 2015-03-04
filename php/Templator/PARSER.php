@@ -663,12 +663,12 @@ abstract class PARSER{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		if($this->View)
+		if($this->Template)
 			$msg .= $this->exceptionContext();
 		throw new ExceptionTML($msg);
 	}
 	function exceptionContext(){
-		return ' on "'.$this->View->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+		return ' on "'.$this->Template->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 	}
 }
 PARSER::initialize();

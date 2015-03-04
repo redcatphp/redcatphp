@@ -1,7 +1,7 @@
 <?php namespace Surikat\Templator;
 class TML_Eval extends CALL_APL {
 	function load(){
-		$vars = isset($this->View)?$this->View->getVars():null;
+		$vars = isset($this->Template)?$this->Template->getVars():null;
 		$this->replaceWith($this->evalue($this,$vars));
 	}
 	function applyLoad($apply = null){
