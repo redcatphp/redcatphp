@@ -67,7 +67,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function getFile($file,$c=null){
 		if(!is_file($real=$this->Template->find($file)))
-			$this->throwException('&lt'.$c.' "'.$file.'"> template not found ');
+			$this->throwException('&lt;'.$c.' "'.$file.'"&gt; template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){

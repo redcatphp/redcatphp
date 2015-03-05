@@ -16,14 +16,16 @@ class Controller{
 		$this->Router = $Router;
 		if(method_exists($Router,'getDirHook')
 			&&$hook = $Router->getDirHook()){
-			$this->prefixTmlCompile .= '.'.$hook.'/';
+			//$this->prefixTmlCompile .= '.'.$hook.'/';
 			$this->getView()->setDirCwd([
-				SURIKAT_PATH.$hook.'/',
-				SURIKAT_SPATH.$hook.'/',
+				$hook.'/',
+				SURIKAT_LINK.$hook.'/',
 			]);
 		}
 		$v = $this->getView();
 		$v->onCompile(function($TML){
+			if($TML->Template->getParent())
+				return;
 			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
 				$TML->prepend('<Presenter:Presenter uri="static" />');
 			$this->Templator_Toolbox->JsIs($TML);

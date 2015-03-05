@@ -10,6 +10,7 @@ class Template {
 	use MutatorCall;
 	var $forceCompile;
 	var $path;
+	var $parent;
 	var $dirCwd = [];
 	var $dirCompile;
 	var $dirCache;
@@ -24,9 +25,11 @@ class Template {
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
 		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
-		$this->setDirCwd([
-			SURIKAT_PATH.'tml/',
-			SURIKAT_SPATH.'tml/',
+		$this->addDirCwd([
+			//SURIKAT_PATH.'tml/',
+			//SURIKAT_SPATH.'tml/',
+			'tml/',
+			'Surikat/tml/',
 		]);
 		if(isset($file))
 			$this->setPath($file);
@@ -54,6 +57,24 @@ class Template {
 	}
 	function setPath($path){
 		$this->path = $path;
+	}
+	function getAncestor($defaulThis=false){
+		$ancestor = $this;
+		do{
+			$ancestor = $ancestor->parent;
+		}
+		while($ancestor->parent);
+		if(!$ancestor&&$defaulThis)
+			return $this;
+		return $ancestor;
+	}
+	function getParent($defaulThis=false){
+		if(!$this->parent&&$defaulThis)
+			return $this;
+		return $this->parent;
+	}
+	function setParent($Template){
+		$this->parent = $Template;
 	}
 	function setDirCompile($d){
 		$this->dirCompile = rtrim($d,'/').'/';
@@ -104,7 +125,7 @@ class Template {
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
 	}
 	function evalue(){
-		$compileFile = $this->dirCompile.$this->path.'.svar';
+		$compileFile = $this->dirCompile.$this->find().'.svar';
 		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||$this->forceCompile||!is_file($compileFile))
 			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
@@ -142,38 +163,34 @@ class Template {
 		if(isset($file))
 			$this->setPath($file);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->path))
-			$this->compilePHP($this->dirCompile.$this->path,(string)$this->prepare());
+		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->find()))
+			$this->writeCompile();
 		if(!empty($this->vars))
 		$vars = array_merge($this->vars,$vars);
 		if(!empty($vars))
 			extract($vars);
-		include($this->dirCompile.$this->path);
+		include($this->dirCompile.$this->find());
 		return $this;
 	}
-	function find($path=null){
-		if(func_num_args()){
-			if(strpos($path,'/')===0&&is_file($path))
-				return $path;
-			foreach($this->dirCwd as $d){
-				if(strpos($path,'/')===0&&is_file($file=$d.$path))
-					return $file;
-				$local = $d.dirname($this->path).'/'.$path;
-				//var_dump($this->path);
-				//var_dump($local);
-				if(strpos($path,'./')===0)
-					return $local;
-				if($file=realpath($local))
-					return $file;
-				if(is_file($file=$d.$path))
-					return $file;
+	function writeCompile(){
+		$this->compilePHP($this->dirCompile.$this->find(),(string)$this->prepare());
+	}
+	function find(){
+		$path = func_num_args()?func_get_arg(0):$this->path;
+		if(strpos($path,'//')===0&&is_file($path=substr($path,1)))
+			return $path;
+		foreach($this->dirCwd as $d){
+			if(strpos($path,'/')===0&&is_file($file=$d.$path))
+				return $file;
+			$template = $this;
+			do{
+				$local = $d.dirname($template->path).'/'.$path;
+				if(is_file($local))
+					return str_replace('/./','/',$local);
 			}
-		}
-		else{
-			foreach($this->dirCwd as $d){
-				if(is_file($file=$d.$this->path))
-					return $file;
-			}
+			while($template=$template->parent);
+			if(strpos($path,'./')!==0&&is_file($file=$d.$path))
+				return $file;
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
@@ -225,32 +242,8 @@ class Template {
 		}
 		return $v;
 	}
-	function T_FILE($v){
-		return $this->dirCompileToDirCwd($v);
-	}
-	function T_DIR($v){
-		return $this->dirCompileToDirCwd($v);
-	}
-	protected static function phpEmulations($str){
-		$tokens = token_get_all($str);
-		$str = '';
-		foreach($tokens as $token)
-			switch(is_array($token)?$token[0]:null){
-				case T_DIR:
-					$str .= '$this->T_DIR(__DIR__)';
-				break;
-				case T_FILE:
-					$str .= '$this->T_FILE(__FILE__)';
-				break;
-				default:
-					$str .= is_array($token)?$token[1]:$token;
-				break;
-			}
-		return $str;
-	}
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
-		$str = self::phpEmulations($str);
 		if(!$this->Dev_Level()->VIEW)
 			$str = minPHP::minify($str);
 		return file_put_contents($file,$str,LOCK_EX);

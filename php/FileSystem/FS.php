@@ -71,4 +71,27 @@ abstract class FS {
 		}
 		return is_dir($dir);
 	}
+	static function findRelativePath($frompath, $topath){
+		$from = explode('/', $frompath);
+		$to = explode('/', $topath);
+		$relpath = '';
+		$i = 0;
+		while(isset($from[$i])&&isset($to[$i])){
+			if($from[$i]!=$to[$i])
+				break;
+			$i++;
+		}
+		$j = count($from)-2;
+		while($i<=$j){
+			if(!empty($from[$j]))
+				$relpath .= '../';
+			$j--;
+		}
+		while(isset($to[$i])){
+			if(!empty($to[$i]))
+				$relpath .= $to[$i].'/';
+			$i++;
+		}
+		return substr($relpath, 0, -1);
+	}
 }
