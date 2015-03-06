@@ -6,11 +6,8 @@ class DOCTYPE extends CORE{
 	private $contentText = '';
 	private $__compat;
 	var $nodeName = 'DOCTYPE';
-	function __construct($parent,$nodeName,$text,$constructor){
-		$this->parent = $parent;
-		$this->Template = $parent->Template;
-		$text = self::phpImplode($text,$constructor);
-		$this->contentText = $text;
+	function parse($text){
+		$this->contentText = self::phpImplode($text,$this->constructor);
 		$this->__compat = substr($this->contentText,10,-1);
 		if($this->__compat!='html'&&$this->Template)
 			$this->Template->isXhtml = true;

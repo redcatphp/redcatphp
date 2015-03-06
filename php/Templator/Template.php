@@ -109,7 +109,10 @@ class Template {
 	function prepare(){
 		if(!($file=$this->find()))
 			throw new ViewException('404');
-		$node = new TML(file_get_contents($file),$this);
+		$node = new TML();
+		$node->setTemplate($this);
+		//$node->setParent($this);
+		$node->parse(file_get_contents($file));
 		ksort($this->compile);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);

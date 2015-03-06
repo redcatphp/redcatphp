@@ -33,6 +33,38 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	
 	private $selectorService;
 	
+	function __construct($a=null){
+		if(isset($a)){
+			if(is_string($a))
+				$this->parse($a);
+			elseif(is_array($a))
+				$this->interpret($a);
+		}
+	}
+	function setParent($tml){
+		$this->parent = $tml;
+		if($this->parent){
+			if(($prev=end($this->parent->childNodes))){
+				$prev->nextSibling = &$this;
+				$this->previousSibling = &$prev;
+			}
+			if(!$this->Template&&$this->parent->Template){
+				$this->Template = $this->parent->Template;
+			}
+		}
+	}
+	function setBuilder($tml){
+		$this->constructor = $tml;
+		if($this->constructor&&!$this->Template&&$this->constructor->Template){
+			$this->Template = $this->constructor->Template;
+		}
+	}
+	function setTemplate($template){
+		$this->Template = $template;
+	}
+	function setNodeName($nodeName){
+		$this->nodeName = $nodeName;
+	}
 	function recursiveMethod($callback,$node=null,$args=null){
 		if(func_num_args()<2)
 			$node = &$this;
@@ -73,38 +105,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function parseFile($file,$params=null,$c=null){
 		if($this->Template)
 			return $this->parse($this->getFile($file,$c),$params);
-	}
-	function __construct(){
-		$args = func_get_args();
-		if(!empty($args)){
-			if(is_string($args[0])){
-				$parse = array_shift($args);
-				$o = array_shift($args);
-				if($o instanceof CORE)
-					$this->parent = $o;
-				elseif(is_array($o)){
-					$this->Template = array_shift($o);
-					$this->constructor = array_shift($o);
-				}
-				else{
-					$this->Template = $o;
-					$this->constructor = array_shift($args);
-				}
-				if($this->parent)
-					$this->Template = $this->parent->Template;
-				$this->parse($parse);
-			}
-			else{
-				$this->parent = array_shift($args);
-				if($this->parent)
-					$this->Template = $this->parent->Template;
-				$this->interpret($args);
-			}
-		}
-		if($this->parent&&($prev=end($this->parent->childNodes))){
-			$prev->nextSibling = &$this;
-			$this->previousSibling = &$prev;
-		}
 	}
 	protected function cacheForge($extra=null,$php=true,$ev=false){
 		$code = "$this";
@@ -188,14 +188,22 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		foreach(array_keys($this->metaAttribution) as $k){
 			if(self::checkPIOC($this->metaAttribution[$k])){
-				$this->metaAttribution[$k] = new PHP($this,'PHP',$this->metaAttribution[$k],$this->constructor);
+				$phpNode = new PHP();
+				$phpNode->setParent($this);
+				$phpNode->setBuilder($this->constructor);
+				$phpNode->parse($this->metaAttribution[$k]);
+				$this->metaAttribution[$k] = $phpNode;
 				if(!is_integer($k))
 					$this->attributes[$k] = &$this->metaAttribution[$k];
 			}
 			elseif(self::checkPIOC($k)){
 				$v = $this->metaAttribution[$k];
 				unset($this->metaAttribution[$k]);
-				$this->metaAttribution[] = new PHP($this,'PHP',$k.'="'.$v.'"',$this->constructor);
+				$phpNode = new PHP();
+				$phpNode->setParent($this);
+				$phpNode->setBuilder($this->constructor);
+				$phpNode->parse($k.'="'.$v.'"');
+				$this->metaAttribution[] = $phpNode;
 			}
 			elseif(!is_integer($k))
 				$this->attributes[$k] = &$this->metaAttribution[$k];		
@@ -376,8 +384,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $r;
 	}
 	function submerge($node){
-		if(is_scalar($node))
-			$node = new TML($node,$this);
+		if(is_scalar($node)){
+			$str = $node;
+			$node = new TML();
+			$node->setParent($this);
+			$node->parse($str);
+		}
 		foreach($node->childNodes as $n)
 			$this->merge($n);
 	}
@@ -413,8 +425,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$this->append($append);
 	}
 	function append($v,$k=null){
-		if(is_scalar($v))
-			$v = new TML($v,$this);
+		if(is_scalar($v)){
+			$str = $v;
+			$v = new TML();
+			$v->setParent($this);
+			$v->parse($str);
+		}
 		if($k===null)
 			$this->childNodes[] = $v;
 		else
@@ -422,8 +438,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $v;
 	}
 	function prepend($v){
-		if(is_scalar($v))
-			$v = new TML($v,$this);
+		if(is_scalar($v)){
+			$str = $v;
+			$v = new TML();
+			$v->setParent($this);
+			$v->parse($str);
+		}
 		array_unshift($this->childNodes,$v);
 		return $v;
 	}
@@ -434,8 +454,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			if(!is_array($nodes))
 				$nodes = [$nodes];
 			foreach($nodes as $node){
-				if(is_scalar($node))
-					$node = new TML($node,$this);
+				if(is_scalar($node)){
+					$str = $node;
+					$node = new TML();
+					$node->setParent($this);
+					$node->parse($str);
+				}
 				$found = false;
 				foreach($this->childNodes as $n)
 					if($n->isSameNode($node)){
@@ -457,8 +481,12 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return call_user_func($v,$this);
 	}
 	function replaceWith($obj){
-		if(is_scalar($obj))
-			$obj = new TML($obj,$this->parent);
+		if(is_scalar($obj)){
+			$str = $obj;
+			$obj = new TML();
+			$obj->setParent($this->parent);
+			$obj->parse($str);
+		}
 		if(!$this->parent){
 			$this->clean();
 			$this[] = $obj;
@@ -489,14 +517,22 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		TML_Apply::manualLoad($tpl,$this,$params);
 	}
 	function before($arg){
-		if(is_scalar($arg))
-			$arg = new TML($arg,$this->parent);
+		if(is_scalar($arg)){
+			$str = $arg;
+			$arg = new TML();
+			$arg->setParent($this->parent);
+			$arg->parse($str);
+		}
 		array_splice($this->parent->childNodes, $this->getIndex()-1, 0, [$arg]);
 		return $arg;
 	}
 	function after($arg){
-		if(is_scalar($arg))
-			$arg = new TML($arg,$this->parent);
+		if(is_scalar($arg)){
+			$str = $arg;
+			$arg = new TML();
+			$arg->setParent($this->parent);
+			$arg->parse($str);
+		}
 		array_splice($this->parent->childNodes, $this->getIndex()+1, 0, [$arg]);
 		return $arg;
 	}
@@ -749,7 +785,10 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function wrap($arg){
 		if(is_scalar($arg)){
-			$arg = new TML($arg,$this->parent);
+			$str = $arg;
+			$arg = new TML();
+			$arg->setParent($this->parent);
+			$arg->parse($str);
 			if(isset($arg->childNodes[0]))
 				$arg = $arg->childNodes[0];
 			$arg->selfClosed = null;
