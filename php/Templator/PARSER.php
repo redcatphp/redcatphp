@@ -670,7 +670,6 @@ abstract class PARSER{
 	}
 	function make($arg){
 		if(is_string($arg)){
-			//var_dump($arg);exit;
 			$this->parse($arg);
 		}
 		else{
