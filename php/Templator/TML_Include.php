@@ -22,12 +22,6 @@ class TML_Include extends CALL_SUB{
 			$this->throwException('&lt;include "'.$file.'"&gt; template not found ');
 		$Template->writeCompile();
 		
-		/*
-		//absolute (avoided)
-		$find = $Template->dirCompile.$find;
-		$this->innerHead('<?php include \''.$find.'\';?>');
-		*/
-		
 		$r = FS::findRelativePath($this->Template->find(),$find);
 		$relativity = "__DIR__.'/".addslashes($r)."'";
 		$this->innerHead('<?php include '.$relativity.';?>');
