@@ -922,16 +922,23 @@ class Database{
 	}
 
 	/**
-	 * Returns the number of SQL queries executed.
-	 * You need to use startLogging() for this method to
-	 * work. This method just counts the log entries written
-	 * after the invocation of startLogging().
+	 * Resets the Query counter.
+	 *
+	 * @return integer
+	 */
+	public function resetQueryCount()
+	{
+		$this->adapter->getDatabase()->resetCounter();
+	}
+
+	/**
+	 * Returns the number of SQL queries processed.
 	 *
 	 * @return integer
 	 */
 	public function getQueryCount()
 	{
-		return count( $this->getLogs() );
+		return $this->adapter->getDatabase()->getQueryCount();
 	}
 
 	/**

@@ -78,6 +78,11 @@ class RPDO implements Driver
 	 * @var bool
 	 */
 	protected $flagUseStringOnlyBinding = FALSE;
+	
+	/**
+	* @var integer
+	*/
+	protected $queryCounter = 0;
 
 	/**
 	 * @var string
@@ -650,6 +655,27 @@ class RPDO implements Driver
 	public function setEnableLogging( $enable )
 	{
 		$this->loggingEnabled = (boolean) $enable;
+	}
+	
+	/**
+	* Resets the internal Query Counter.
+	*
+	* @return self
+	*/
+	public function resetCounter()
+	{
+		$this->queryCounter = 0;
+		return $this;
+	}
+	
+	/**
+	* Returns the number of SQL queries processed.
+	*
+	* @return integer
+	*/
+	public function getQueryCount()
+	{
+		return $this->queryCounter;
 	}
 	
 	private $debugger;
