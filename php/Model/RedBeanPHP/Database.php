@@ -819,7 +819,7 @@ class Database{
 	 */
 	public static function findCollection( $type, $sql = NULL, $bindings = array() )
 	{
-		return self::$finder->findCollection( $type, $sql, $bindings );
+		return $this->finder->findCollection( $type, $sql, $bindings );
 	}
 
 	function _uniqSetter($type,$values){
@@ -850,6 +850,38 @@ class Database{
 	*/
 	public function aliases( $list ){
 		OODBBean::aliases( $list );
+	}
+	
+	/**
+	 * Tries to find a bean matching a certain type and
+	 * criteria set. If no beans are found a new bean
+	 * will be created, the criteria will be imported into this
+	 * bean and the bean will be stored and returned.
+	 * If multiple beans match the criteria only the first one
+	 * will be returned.
+	 *
+	 * @param string $type type of bean to search for
+	 * @param array  $like criteria set describing the bean to search for
+	 *
+	 * @return OODBBean
+	 */
+	public function findOrCreate( $type, $like = array() )
+	{
+		return $this->finder->findOrCreate( $type, $like );
+	}
+
+	/**
+	 * Tries to find beans matching the specified type and
+	 * criteria set.
+	 *
+	 * @param string $type type of bean to search for
+	 * @param array  $like criteria set describing the bean to search for
+	 *
+	 * @return array
+	 */
+	public function findLike( $type, $like = array() )
+	{
+		return $this->finder->findLike( $type, $like );
 	}
 	
 	function preload($beans, $preload, $closure = NULL){
