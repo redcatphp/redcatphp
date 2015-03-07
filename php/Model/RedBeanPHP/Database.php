@@ -1010,6 +1010,17 @@ class Database{
 		OODBBean::setAutoResolve( (boolean) $automatic );
 	}
 	
+	/**
+	 * Returns the insert ID for databases that support/require this
+	 * functionality. Alias for R::getAdapter()->getInsertID().
+	 *
+	 * @return mixed
+	 */
+	public static function getInsertID()
+	{
+		return self::$adapter->getInsertID();
+	}
+	
 	function preload($beans, $preload, $closure = NULL){
 		$preloader = new Preloader( $this->getToolBox() );
 		return $preloader->load($beans, $preload, $closure);
