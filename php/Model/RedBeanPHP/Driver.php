@@ -48,7 +48,7 @@ interface Driver
 	 *
 	 * @return mixed
 	 */
-	public function GetCell( $sql, $bindings = [] );
+	public function GetOne( $sql, $bindings = [] );
 	
 	/**
 	 * Runs a query and returns results as an associative array

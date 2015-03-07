@@ -417,18 +417,35 @@ class RPDO implements Driver
 	}
 
 	/**
-	 * @see Driver::GetCell
+	 * @see Driver::GetOne
 	 */
-	public function GetCell( $sql, $bindings = [] )
+	public function GetOne( $sql, $bindings = [] )
 	{
 		$arr = $this->GetAll( $sql, $bindings );
-
+		$res = NULL;
+		if ( !is_array( $arr ) ) return NULL;
+		if ( count( $arr ) === 0 ) return NULL;
 		$row1 = array_shift( $arr );
+		if ( !is_array( $row1 ) ) return NULL;
+		if ( count( $row1 ) === 0 ) return NULL;
 		$col1 = array_shift( $row1 );
-
 		return $col1;
 	}
-
+	
+	/**
+	 * Alias for getOne().
+	 * Backward compatibility.
+	 *
+	 * @param string $sql      SQL
+	 * @param array  $bindings bindings
+	 *
+	 * @return mixed
+	 */
+	public function GetCell( $sql, $bindings = array() )
+	{
+		return $this->GetOne( $sql, $bindings );
+	}
+	
 	/**
 	 * @see Driver::GetRow
 	 */
