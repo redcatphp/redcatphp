@@ -239,8 +239,10 @@ class Database{
 		return $types;
 	}
 
-	function trash( $bean ){
-		$this->redbean->trash( $bean );
+	function trash($beanOrType,$id=null){
+		if(is_string($beanOrType))
+			return $this->trash( $this->load( $beanOrType, $id ) );
+		return $this->redbean->trash( $beanOrType );
 	}
 
 	function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
