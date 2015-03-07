@@ -101,7 +101,7 @@ class Database{
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
 		$writerClass = '\\Surikat\\Model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
 		$this->writer      = new $writerClass( $this->adapter, $this, $prefix, $case );
-		$this->redbean     = new OODB( $this->writer );
+		$this->redbean     = new OODB( $this->writer, $frozen );
 		$this->redbean->freeze( ( $frozen === TRUE ) );
 		$this->toolbox = new ToolBox( $this->redbean, $this->adapter, $this->writer, $this );
 		return $this->toolbox;
