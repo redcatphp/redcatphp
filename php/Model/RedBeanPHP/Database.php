@@ -951,7 +951,14 @@ class Database{
 	{
 		return $this->adapter->getDatabase()->getLogger();
 	}
-
+	
+	/**
+	 * Turns on the fancy debugger.
+	 */
+	public function fancyDebug( $toggle )
+	{
+		$this->debug( $toggle, 2 );
+	}
 
 
 	
