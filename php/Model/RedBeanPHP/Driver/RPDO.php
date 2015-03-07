@@ -374,15 +374,6 @@ class RPDO implements Driver
 		return $this->resultArray;
 	}
 	
-	function fetch($sql, $bindings = []){
-		static $statement = null;
-		if(!$statement)
-			$statement = $this->exec($sql, $bindings);
-		$fetch = $statement->fetch();
-		if($fetch===false)
-			$statement = false;
-		return $fetch;
-	}
 	function exec($sql, $bindings = []){
 		return $this->runQuery($sql, $bindings, [
 			'fetchStyle' => false,

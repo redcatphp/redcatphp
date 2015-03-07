@@ -130,10 +130,6 @@ class Database{
 		}
 	}
 	
-	function fetch($sql, $bindings = []){
-		return $this->adapter->fetch( $sql, $bindings );
-	}
-	
 	function exists(){
 		if($this->dbType=='sqlite')
 			return is_file(substr($this->dsn,7));
