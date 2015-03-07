@@ -421,10 +421,6 @@ class Database{
 		return $this->writer->getColumns( $table );
 	}
 
-	function genSlots( $array ){
-		return ( count( $array ) ) ? implode( ',', array_fill( 0, count( $array ), '?' ) ) : '';
-	}
-
 	function nuke(){
 		if ( !$this->redbean->isFrozen() ) {
 			$this->writer->wipeAll();
@@ -978,6 +974,18 @@ class Database{
 		return $result;
 	}
 
+	/**
+	 * Generates question mark slots for an array of values.
+	 *
+	 * @param array  $array    array to generate question mark slots for
+	 *
+	 * @return string
+	 */
+	public function genSlots( $array, $template = NULL )
+	{
+		$str = ( count( $array ) ) ? implode( ',', array_fill( 0, count( $array ), '?' ) ) : '';
+		return ( ( is_null( $template ) || !count( $array ) ) ? $str : sprintf( $template, $str ) );
+	}
 	
 	function preload($beans, $preload, $closure = NULL){
 		$preloader = new Preloader( $this->getToolBox() );
