@@ -384,12 +384,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $r;
 	}
 	function submerge($node){
-		if(is_scalar($node)){
-			$str = $node;
-			$node = new TML();
-			$node->setParent($this);
-			$node->parse($str);
-		}
+		if(is_scalar($node))
+			$node = $this->createChild($node);
 		foreach($node->childNodes as $n)
 			$this->merge($n);
 	}
@@ -425,12 +421,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$this->append($append);
 	}
 	function append($v,$k=null){
-		if(is_scalar($v)){
-			$str = $v;
-			$v = new TML();
-			$v->setParent($this);
-			$v->parse($str);
-		}
+		if(is_scalar($v))
+			$v = $this->createChild($v);
 		if($k===null)
 			$this->childNodes[] = $v;
 		else
@@ -438,12 +430,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $v;
 	}
 	function prepend($v){
-		if(is_scalar($v)){
-			$str = $v;
-			$v = new TML();
-			$v->setParent($this);
-			$v->parse($str);
-		}
+		if(is_scalar($v))
+			$v = $this->createChild($v);
 		array_unshift($this->childNodes,$v);
 		return $v;
 	}
@@ -454,12 +442,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			if(!is_array($nodes))
 				$nodes = [$nodes];
 			foreach($nodes as $node){
-				if(is_scalar($node)){
-					$str = $node;
-					$node = new TML();
-					$node->setParent($this);
-					$node->parse($str);
-				}
+				if(is_scalar($node))
+					$node = $this->createChild($node);
 				$found = false;
 				foreach($this->childNodes as $n)
 					if($n->isSameNode($node)){
@@ -481,12 +465,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return call_user_func($v,$this);
 	}
 	function replaceWith($obj){
-		if(is_scalar($obj)){
-			$str = $obj;
-			$obj = new TML();
-			$obj->setParent($this->parent);
-			$obj->parse($str);
-		}
+		if(is_scalar($obj))
+			$obj = $this->parent->createChild($obj);
 		if(!$this->parent){
 			$this->clean();
 			$this[] = $obj;
@@ -517,22 +497,14 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		TML_Apply::manualLoad($tpl,$this,$params);
 	}
 	function before($arg){
-		if(is_scalar($arg)){
-			$str = $arg;
-			$arg = new TML();
-			$arg->setParent($this->parent);
-			$arg->parse($str);
-		}
+		if(is_scalar($arg))
+			$arg = $this->parent->createChild($arg);
 		array_splice($this->parent->childNodes, $this->getIndex()-1, 0, [$arg]);
 		return $arg;
 	}
 	function after($arg){
-		if(is_scalar($arg)){
-			$str = $arg;
-			$arg = new TML();
-			$arg->setParent($this->parent);
-			$arg->parse($str);
-		}
+		if(is_scalar($arg))
+			$arg = $this->parent->createChild($arg);
 		array_splice($this->parent->childNodes, $this->getIndex()+1, 0, [$arg]);
 		return $arg;
 	}
@@ -785,10 +757,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function wrap($arg){
 		if(is_scalar($arg)){
-			$str = $arg;
-			$arg = new TML();
-			$arg->setParent($this->parent);
-			$arg->parse($str);
+			$arg = $this->parent->createChild($arg);
 			if(isset($arg->childNodes[0]))
 				$arg = $arg->childNodes[0];
 			$arg->selfClosed = null;
@@ -851,5 +820,16 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 			return $this->evalue(func_get_arg(0));
 		}
 		return func_get_arg(0);
+	}
+	function createChild($parse=null,$builder=null){
+		$tml = new TML();
+		$tml->setParent($this);
+		if(isset($builder))
+			$tml->setBuilder($builder);
+		else
+			$tml->setBuilder($this->constructor);
+		if(isset($parse))
+			$tml->parse($parse);
+		return $tml;
 	}
 }
