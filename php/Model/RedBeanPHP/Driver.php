@@ -104,7 +104,17 @@ interface Driver
 	 * @return integer
 	 */
 	public function Affected_Rows();
-
+	
+	/**
+	 * Returns a cursor-like object from the database.
+	 *
+	 * @param string $sql      SQL code to execute
+	 * @param array  $bindings Bindings
+	 *
+	 * @return mixed
+	 */
+	public function GetCursor( $sql, $bindings = array() );
+	
 	/**
 	 * Toggles debug mode. In debug mode the driver will print all
 	 * SQL to the screen together with some information about the

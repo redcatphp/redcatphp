@@ -806,6 +806,21 @@ class Database{
 	{
 		return $this->finder->findLast( $this->writer->adaptCase($type), $sql, $bindings );
 	}
+	
+	/**
+	 * Finds a bean collection.
+	 * Use this for large datasets.
+	 *
+	 * @param string $type     type   the type of bean you are looking for
+	 * @param string $sql      sql    SQL query to find the desired bean, starting right after WHERE clause
+	 * @param array  $bindings values array of values to be bound to parameters in query
+	 *
+	 * @return BeanCollection
+	 */
+	public static function findCollection( $type, $sql = NULL, $bindings = array() )
+	{
+		return self::$finder->findCollection( $type, $sql, $bindings );
+	}
 
 	function _uniqSetter($type,$values){
 		if(is_string($values)){

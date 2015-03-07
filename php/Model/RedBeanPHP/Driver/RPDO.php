@@ -11,6 +11,7 @@ use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
 use Surikat\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
 use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
+use Surikat\Model\RedBeanPHP\Cursor\PDOCursor as PDOCursor;
 
 /**
  *\PDO Driver
@@ -179,6 +180,11 @@ class RPDO implements Driver
 			if ( $statement->columnCount() ) {
 
 				$fetchStyle = ( isset( $options['fetchStyle'] ) ) ? $options['fetchStyle'] : NULL;
+				
+				if ( isset( $options['noFetch'] ) && $options['noFetch'] ) {
+					$this->resultArray = array();
+					return $statement;
+				}
 				
 				if($fetchStyle!==false){
 					$this->resultArray = $statement->fetchAll( $fetchStyle );
@@ -451,6 +457,16 @@ class RPDO implements Driver
 		$this->connect();
 
 		return (int) $this->pdo->lastInsertId();
+	}
+
+	/**
+	 * @see Driver::GetCursor
+	 */
+	public function GetCursor( $sql, $bindings = array() )
+	{
+		$statement = $this->runQuery( $sql, $bindings, array( 'noFetch' => TRUE ) );
+		$cursor = new PDOCursor( $statement, \PDO::FETCH_ASSOC );
+		return $cursor;
 	}
 
 	/**

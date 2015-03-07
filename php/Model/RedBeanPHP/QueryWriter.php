@@ -213,6 +213,20 @@ interface QueryWriter
 	 * @return array
 	 */
 	public function queryRecord( $type, $conditions = [], $addSql = NULL, $bindings = [] );
+	
+	/**
+	 * Selects records from the database and returns a cursor.
+	 * This methods selects the records from the database that match the specified
+	 * type, conditions (optional) and additional SQL snippet (optional).
+	 *
+	 * @param string $type       name of the table you want to query
+	 * @param array  $conditions criteria ( $column => array( $values ) )
+	 * @param string $addSQL     additional SQL snippet
+	 * @param array  $bindings   bindings for SQL snippet
+	 *
+	 * @return Cursor
+	 */
+	public function queryRecordWithCursor( $type, $addSql = NULL, $bindings = array() );
 
 	/**
 	 * Returns records through an intermediate type. This method is used to obtain records using a link table and

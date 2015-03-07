@@ -13,6 +13,8 @@ use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
 use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Model\RedBeanPHP\Cursor as Cursor;
+use Surikat\Model\RedBeanPHP\Cursor\NullCursor as NullCursor;
 
 use Surikat\DependencyInjection\MutatorMagic;
 
@@ -344,6 +346,26 @@ abstract class Repository
 		}
 
 		return [];
+	}
+
+	/**
+	 * Finds a BeanCollection.
+	 *
+	 * @param string $type     type of beans you are looking for
+	 * @param string $sql      SQL to be used in query
+	 * @param array  $bindings whether you prefer to use a WHERE clause or not (TRUE = not)
+	 *
+	 * @return BeanCollection
+	 */
+	public function findCollection( $type, $sql, $bindings = array() )
+	{
+		try {
+			$cursor = $this->writer->queryRecordWithCursor( $type, $sql, $bindings );
+			return new BeanCollection( $type, $this, $cursor );
+		} catch ( SQLException $exception ) {
+			$this->handleException( $exception );
+		}
+		return new BeanCollection( $type, $this, new NullCursor );
 	}
 
 	/**

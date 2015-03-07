@@ -129,6 +129,17 @@ interface Adapter
 	 */
 	public function getAffectedRows();
 
+	
+	/**
+	 * Returns a database agnostic Cursor object.
+	 *
+	 * @param string $sql      SQL
+	 * @param array  $bindings bindings
+	 *
+	 * @return Cursor
+	 */
+	public function getCursor( $sql, $bindings = array() );
+
 	/**
 	 * Returns the original database resource. This is useful if you want to
 	 * perform operations on the driver directly instead of working with the

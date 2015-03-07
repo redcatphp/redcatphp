@@ -172,6 +172,14 @@ class DBAdapter extends Observable implements Adapter
 	}
 	
 	/**
+	 * @see Adapter::getCursor
+	 */
+	public function getCursor( $sql, $bindings = array() )
+	{
+		return $this->db->GetCursor( $sql, $bindings );
+	}
+	
+	/**
 	 * @see Adapter::getInsertID
 	 */
 	public function getInsertID()
