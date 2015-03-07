@@ -6,7 +6,7 @@ use Surikat\Model\RedBeanPHP\Facade as Facade;
  * BeanCan Server.
  * A JSON-RPC/RESTy server for RedBeanPHP.
  *
- * @file    RedBean/BeanCan.php
+ * @file    RedBeanPHP/BeanCan.php
  * @desc    PHP Server Component for RedBean and Fuse.
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

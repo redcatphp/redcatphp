@@ -7,7 +7,7 @@ use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
 /**
  * Preloader.
  *
- * @file    RedBean/Preloader.php
+ * @file    RedBeanPHP/Preloader.php
  * @desc    Used by OODB to facilitate preloading or eager loading
  * @author  Gabor de Mooij and the RedBeanPHP community
  * @license BSD/GPLv2

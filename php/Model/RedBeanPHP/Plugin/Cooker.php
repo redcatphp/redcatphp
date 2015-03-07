@@ -9,7 +9,7 @@ use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
 /**
  * RedBean Cooker
  *
- * @file    RedBean/Cooker.php
+ * @file    RedBeanPHP/Cooker.php
  * @desc    Turns arrays into bean collections for easy persistence.
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

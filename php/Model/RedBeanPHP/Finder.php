@@ -10,7 +10,7 @@ use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
 /**
  * RedBean Finder
  *
- * @file    RedBean/Finder.php
+ * @file    RedBeanPHP/Finder.php
  * @desc    Helper class to harmonize APIs.
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

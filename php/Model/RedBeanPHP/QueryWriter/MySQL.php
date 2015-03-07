@@ -12,7 +12,7 @@ use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 /**
  * RedBean MySQLWriter
  *
- * @file    RedBean/QueryWriter/MySQL.php
+ * @file    RedBeanPHP/QueryWriter/MySQL.php
  * @desc    Represents a MySQL Database to RedBean
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

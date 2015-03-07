@@ -8,7 +8,7 @@ use Surikat\Model\RedBeanPHP\Database;
 /**
  * RedBean Oracle Driver
  *
- * @file               RedBean/QueryWriter/Oracle.php
+ * @file               RedBeanPHP/QueryWriter/Oracle.php
  * @description        Query Writer for Oracle databases.
  *
  * @author             Stephane Gerber

@@ -5,7 +5,7 @@ namespace Surikat\Model\RedBeanPHP;
 /**
  * RedBean Plugin
  *
- * @file    RedBean/Plugin.php
+ * @file    RedBeanPHP/Plugin.php
  * @desc    Marker interface for plugins.
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

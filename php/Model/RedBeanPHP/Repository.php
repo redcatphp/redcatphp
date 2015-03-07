@@ -21,7 +21,7 @@ use Surikat\DependencyInjection\MutatorMagic;
 /**
  * Abstract Repository
  *
- * @file    RedBean/Repository.php
+ * @file    RedBeanPHP/Repository.php
  * @desc    RedBean Object Database
  * @author  Gabor de Mooij and the RedBeanPHP community
  * @license BSD/GPLv2

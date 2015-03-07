@@ -11,7 +11,7 @@ use Surikat\Model\RedBeanPHP\RedException as RedException;
  * BeanCan Server.
  * A RESTy server for RedBeanPHP.
  * 
- * @file    RedBean/BeanCanResty.php
+ * @file    RedBeanPHP/BeanCanResty.php
  * @desc    PHP Server Component for RedBean and Fuse.
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

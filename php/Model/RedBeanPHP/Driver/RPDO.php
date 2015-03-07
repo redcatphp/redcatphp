@@ -14,11 +14,11 @@ use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
 use Surikat\Model\RedBeanPHP\Cursor\PDOCursor as PDOCursor;
 
 /**
- *\PDO Driver
+ * PDO Driver
  * This Driver implements the RedBean Driver API
  *
- * @file    RedBean/PDO.php
- * @desc   \PDO Driver
+ * @file    RedBeanPHP/PDO.php
+ * @desc    RPDO Driver
  * @author  Gabor de Mooij and the RedBeanPHP Community, Desfrenes
  * @license BSD/GPLv2
  *

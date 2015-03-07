@@ -7,7 +7,7 @@ namespace Surikat\Model\RedBeanPHP;
  * Provides a uniform and convenient logging
  * interface throughout RedBeanPHP.
  *
- * @file    RedBean/Logging.php
+ * @file    RedBeanPHP/Logging.php
  * @desc    Logging interface for RedBeanPHP ORM
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

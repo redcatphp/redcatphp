@@ -12,7 +12,7 @@ use Surikat\Model\RedBeanPHP\Database;
 /**
  * OODBBean (Object Oriented DataBase Bean)
  *
- * @file    RedBean/OODBBean.php
+ * @file    RedBeanPHP/OODBBean.php
  * @desc    The Bean class used for passing information
  * @author  Gabor de Mooij and the RedBeanPHP community
  * @license BSD/GPLv2

@@ -10,7 +10,7 @@ use Surikat\Model\RedBeanPHP\Database;
 /**
  * RedBean SQLServerWriter
  *
- * @file    RedBean/QueryWriter/SQLServer.php
+ * @file    RedBeanPHP/QueryWriter/SQLServer.php
  * @desc    Represents a SQLServer Database to RedBean
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2

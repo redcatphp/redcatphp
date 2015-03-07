@@ -5,9 +5,9 @@ namespace Surikat\Model\RedBeanPHP\RedException;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
 
 /**
- * RedBean\Exception SQL
+ * RedBeanPHP\Exception SQL
  *
- * @file       RedBean/Exception/SQL.php
+ * @file       RedBeanPHP/RedException/SQL.php
  * @desc       Represents a generic database exception independent of the underlying driver.
  * @author     Gabor de Mooij and the RedBeanPHP Community
  * @license    BSD/GPLv2

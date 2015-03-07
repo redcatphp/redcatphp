@@ -11,8 +11,8 @@ use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
  * The tag manager offers an easy way to quickly implement basic tagging
  * functionality.
  *
- * @file       RedBean/TagManager.php
- * @desc       RedBean Tag Manager
+ * @file       RedBeanPHP/TagManager.php
+ * @desc       RedBeanPHP Tag Manager
  * @author     Gabor de Mooij and the RedBeanPHP community
  * @license    BSD/GPLv2
  *

@@ -13,7 +13,7 @@ use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 /**
  * RedBean Abstract Query Writer
  *
- * @file    RedBean/QueryWriter/AQueryWriter.php
+ * @file    RedBeanPHP/QueryWriter/AQueryWriter.php
  * @desc    Query Writer (abstract class)
  * @author  Gabor de Mooij and the RedBeanPHP Community
  * @license BSD/GPLv2
