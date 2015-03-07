@@ -43,6 +43,7 @@ class Database{
 	private $labelMaker;
 	private $finder;
 	private $plugins = [];
+	private $logger;
 	private $exportCaseStyle = 'default';
 	
 	private $dbType;
@@ -883,6 +884,69 @@ class Database{
 	{
 		return $this->finder->findLike( $type, $like );
 	}
+	
+	/**
+	 * Starts logging queries.
+	 * Use this method to start logging SQL queries being
+	 * executed by the adapter.
+	 *
+	 * @note you cannot use R::debug and R::startLogging
+	 * at the same time because R::debug is essentially a
+	 * special kind of logging.
+	 *
+	 * @return void
+	 */
+	public function startLogging()
+	{
+		$this->debug( TRUE, RDefault::C_LOGGER_ARRAY );
+	}
+
+	/**
+	 * Stops logging, comfortable method to stop logging of queries.
+	 *
+	 * @return void
+	 */
+	public function stopLogging()
+	{
+		$this->debug( FALSE );
+	}
+
+	/**
+	 * Returns the log entries written after the startLogging.
+	 *
+	 * @return array
+	 */
+	public function getLogs()
+	{
+		return $this->getLogger()->getLogs();
+	}
+
+	/**
+	 * Returns the number of SQL queries executed.
+	 * You need to use startLogging() for this method to
+	 * work. This method just counts the log entries written
+	 * after the invocation of startLogging().
+	 *
+	 * @return integer
+	 */
+	public function getQueryCount()
+	{
+		return count( $this->getLogs() );
+	}
+
+	/**
+	 * Returns the current logger instance being used by the
+	 * database object.
+	 *
+	 * @return Logger
+	 */
+	public function getLogger()
+	{
+		return $this->adapter->getDatabase()->getLogger();
+	}
+
+
+
 	
 	function preload($beans, $preload, $closure = NULL){
 		$preloader = new Preloader( $this->getToolBox() );

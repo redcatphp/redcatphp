@@ -24,6 +24,8 @@ use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 class Debug extends RDefault implements Logger
 {
 	use MutatorMagic;
+	
+	private $strLen = false;
 
 	/**
 	 * Writes a query for logging with all bindings / params filled
@@ -64,6 +66,8 @@ class Debug extends RDefault implements Logger
 			$value = str_replace(',','.',$value);
 		elseif ( $value !== 'NULL')
 			$value = "'".str_replace("'","\'",$value)."'";
+		if($this->strLen && strlen($value)>$this->strLen)
+			$value = substr($value, 0, $this->strLen).'... ';
 		$value = htmlentities($value);
 		return $value;
 	}
@@ -168,5 +172,20 @@ class Debug extends RDefault implements Logger
 	}
 	public function logClose(){
 		echo '</div>';
+	}
+	
+	/**
+	 * Sets the max string length for the parameter output in
+	 * SQL queries. Set this value to a reasonable number to
+	 * keep you SQL queries readable.
+	 *
+	 * @param integer $len string length
+	 *
+	 * @return self
+	 */
+	public function setParamStringLength( $len = false )
+	{
+		$this->strLen = $len;
+		return $this;
 	}
 }
