@@ -462,7 +462,17 @@ class RPDO implements Driver
 
 		return (int) $this->affectedRows;
 	}
-
+	
+	function fetch($sql, $bindings = []){
+		static $statement = null;
+		if(!$statement)
+			$statement = $this->exec($sql, $bindings);
+		$fetch = $statement->fetch();
+		if($fetch===false)
+			$statement = false;
+		return $fetch;
+	}
+	
 	/**
 	 * Toggles debug mode. In debug mode the driver will print all
 	 * SQL to the screen together with some information about the

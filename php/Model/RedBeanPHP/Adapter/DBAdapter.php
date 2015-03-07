@@ -165,7 +165,12 @@ class DBAdapter extends Observable implements Adapter
 
 		return NULL;
 	}
-
+	
+	function fetch( $sql, $bindings = [] ){
+		$this->signal( 'sql_exec', $this );
+		return $this->db->fetch($sql, $bindings);
+	}
+	
 	/**
 	 * @see Adapter::getInsertID
 	 */

@@ -331,6 +331,10 @@ class Database{
 	{
 		return $this->query( 'getAssocRow', $sql, $bindings );
 	}
+	
+	function fetch($sql, $bindings = []){
+		return $this->adapter->fetch( $sql, $bindings );
+	}
 
 	function duplicate( $bean, $filters = array() ){
 		return $this->dup( $bean, array(), FALSE, $filters );
