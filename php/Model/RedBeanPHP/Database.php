@@ -983,8 +983,8 @@ class Database{
 	 */
 	public function genSlots( $array, $template = NULL )
 	{
-		$str = ( count( $array ) ) ? implode( ',', array_fill( 0, count( $array ), '?' ) ) : '';
-		return ( ( is_null( $template ) || !count( $array ) ) ? $str : sprintf( $template, $str ) );
+		$str = count( $array ) ? implode( ',', array_fill( 0, count( $array ), '?' ) ) : '';
+		return ( is_null( $template ) ||  $str === '' ) ? $str : sprintf( $template, $str );
 	}
 	
 	function preload($beans, $preload, $closure = NULL){
