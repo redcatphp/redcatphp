@@ -111,7 +111,6 @@ class Template {
 			throw new ViewException('404');
 		$node = new TML();
 		$node->setTemplate($this);
-		//$node->setParent($this);
 		$node->parse(file_get_contents($file));
 		ksort($this->compile);
 		foreach($this->compile as $callback)
