@@ -961,7 +961,22 @@ class Database{
 	{
 		$this->debug( $toggle, 2 );
 	}
-
+	
+	/**
+	* Flattens a multi dimensional bindings array for use with genSlots().
+	*
+	* @param array $array array to flatten
+	*
+	* @return array
+	*/
+	public function flat( $array, $result = array() )
+	{
+		foreach( $array as $value ) {
+			if ( is_array( $value ) ) $result = $this->flat( $value, $result );
+			else $result[] = $value;
+		}
+		return $result;
+	}
 
 	
 	function preload($beans, $preload, $closure = NULL){
