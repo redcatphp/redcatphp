@@ -10,7 +10,7 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
 use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\OODB as OODB;
 
@@ -325,7 +325,6 @@ abstract class Repository
 	 *
 	 * @return array
 	 *
-	 * @throws SQL
 	 */
 	public function find( $type, $conditions = [], $sql = NULL, $bindings = [] )
 	{
@@ -340,7 +339,7 @@ abstract class Repository
 			$beans = $this->convertToBeans( $type, $this->writer->queryRecord( $type, $conditions, $sql, $bindings ) );
 
 			return $beans;
-		} catch ( SQL $exception ) {
+		} catch ( SQLException $exception ) {
 			$this->handleException( $exception );
 		}
 
@@ -367,7 +366,6 @@ abstract class Repository
 	 *
 	 * @return integer|string
 	 *
-	 * @throws Security
 	 */
 	public function store( $bean )
 	{
@@ -411,7 +409,7 @@ abstract class Repository
 		$collection = [];
 		try {
 			$rows = $this->writer->queryRecord( $type, [ 'id' => $ids ] );
-		} catch ( SQL $e ) {
+		} catch ( SQLException $e ) {
 			$this->handleException( $e );
 			$rows = FALSE;
 		}
@@ -466,7 +464,7 @@ abstract class Repository
 	 *
 	 * @return integer
 	 *
-	 * @throws SQL
+	 * @throws SQLException
 	 */
 	public function count( $type, $addSQL = '', $bindings = [] )
 	{
@@ -477,7 +475,7 @@ abstract class Repository
 
 		try {
 			return (int) $this->writer->queryRecordCount( $type, [], $addSQL, $bindings );
-		} catch ( SQL $exception ) {
+		} catch ( SQLException $exception ) {
 			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), [
 				 QueryWriter::C_SQLSTATE_NO_SUCH_TABLE,
 				 QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN ] ) ) {
@@ -497,7 +495,7 @@ abstract class Repository
 	 *
 	 * @return void
 	 *
-	 * @throws Security
+	 * @throws SQLException
 	 */
 	public function trash( $bean )
 	{
@@ -516,7 +514,7 @@ abstract class Repository
 		}
 		try {
 			$this->writer->deleteRecord( $bean->getMeta( 'type' ), [ 'id' => [ $bean->id ] ], NULL );
-		} catch ( SQL $exception ) {
+		} catch ( SQLException $exception ) {
 			$this->handleException( $exception );
 		}
 		$bean->id = 0;
@@ -545,7 +543,7 @@ abstract class Repository
 	 *
 	 * @return boolean
 	 *
-	 * @throws SQL
+	 * @throws SQLException
 	 */
 	public function wipe( $type )
 	{
@@ -553,7 +551,7 @@ abstract class Repository
 			$this->writer->wipe( $type );
 
 			return TRUE;
-		} catch ( SQL $exception ) {
+		} catch ( SQLException $exception ) {
 			if ( !$this->writer->sqlStateIn( $exception->getSQLState(), [ QueryWriter::C_SQLSTATE_NO_SUCH_TABLE ] ) ) {
 				throw $exception;
 			}

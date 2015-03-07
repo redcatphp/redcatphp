@@ -11,7 +11,7 @@ use Surikat\Model\RedBeanPHP\TagManager as TagManager;
 use Surikat\Model\RedBeanPHP\DuplicationManager as DuplicationManager;
 use Surikat\Model\RedBeanPHP\LabelMaker as LabelMaker;
 use Surikat\Model\RedBeanPHP\Finder as Finder;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 use Surikat\Model\RedBeanPHP\Logger as Logger;
 use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
@@ -111,7 +111,7 @@ class Database{
 		if ( !$this->redbean->isFrozen() ) {
 			try {
 				$rs = $this->adapter->$method( $sql, $bindings );
-			} catch ( SQL $exception ) {
+			} catch ( SQLException $exception ) {
 				if ( $this->writer->sqlStateIn( $exception->getSQLState(),
 					[
 						QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,
@@ -824,6 +824,17 @@ class Database{
 	}
 	function safeColumn($t){
 		return $this->writer->safeColumn($t);
+	}
+	
+	/**
+	* Sets global aliases.
+	*
+	* @param array $list
+	*
+	* @return void
+	*/
+	public function aliases( $list ){
+		OODBBean::aliases( $list );
 	}
 	
 	function preload($beans, $preload, $closure = NULL){

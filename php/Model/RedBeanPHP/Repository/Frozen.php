@@ -11,7 +11,7 @@ use Surikat\Model\RedBeanPHP\RedException as RedException;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
 use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\Repository as Repository;
 
@@ -180,7 +180,7 @@ class Frozen extends Repository
 		} else {
 			try {
 				$rows = $this->writer->queryRecord( $type, [ 'id' => [ $id ] ] );
-			} catch ( SQL $exception ) {
+			} catch ( SQLException $exception ) {
 				if ( $this->writer->sqlStateIn( $exception->getSQLState(),
 					[
 						QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,

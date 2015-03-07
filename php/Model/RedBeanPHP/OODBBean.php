@@ -806,8 +806,10 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 			if ( isset( $this->__info["sys.parentcache.$property"] ) ) {
 				$bean = $this->__info["sys.parentcache.$property"];
 			} else {
-				if ( $this->fetchType ) {
-					$type            = $this->fetchType;
+				if ( isset( self::$aliases[$property] ) ) {
+					$type = self::$aliases[$property];
+				} elseif ( $this->fetchType ) {
+					$type = $this->fetchType;
 					$this->fetchType = NULL;
 				} else {
 					$type = $property;
@@ -818,7 +820,10 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 					//If the IDs dont match, we failed to load, so try autoresolv in that case...
 					if ( $bean->id !== $this->properties[$fieldLink] ) {
 						$type = $this->beanHelper->getToolbox()->getWriter()->inferFetchType( $this->__info['type'], $property );
-						if ( !is_null( $type) ) $bean = $redbean->load( $type, $this->properties[$fieldLink] );
+						if ( !is_null( $type) ){
+							$bean = $redbean->load( $type, $this->properties[$fieldLink] );
+							$this->__info["sys.autoresolved.{$property}"] = $type;
+						}
 					}
 				}
 			}
@@ -1692,4 +1697,22 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 		}
 		return $value;
 	}
+	
+	/**
+	 * @var array
+	 */
+	protected static $aliases = array();
+	
+	/**
+	 * Sets aliases.
+	 *
+	 * @param array $list
+	 *
+	 * @return void
+	 */
+	public static function aliases( $list )
+	{
+		self::$aliases = $list;
+	}
+
 }

@@ -11,7 +11,7 @@ use Surikat\Model\RedBeanPHP\RedException as RedException;
 use Surikat\Model\RedBeanPHP\RedException\Security as Security;
 use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
 use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
 use Surikat\Model\RedBeanPHP\Repository as Repository;
 
@@ -135,8 +135,8 @@ class Fluid extends Repository
 					$result = $this->writer->addFK( $table, $typeof, $columnNoQ, 'id', $isDep );
 					//If this is a link bean and all unique columns have been added already, then apply unique constraint
 					if ( is_array( $isLink ) && !count( array_diff( $isLink, array_keys( $this->writer->getColumns( $table ) ) ) ) ) {
-						 $this->writer->addUniqueConstraint( $table, $bean->moveMeta('sys.is_link') );
-						 $bean->setMeta("sys.typeof.{$destinationColumnNoQ}", NULL);
+						$this->writer->addUniqueConstraint( $table, $bean->moveMeta('sys.is_link') );
+						$bean->setMeta("sys.typeof.{$destinationColumnNoQ}", NULL);
 					}
 				}
 			}
@@ -289,7 +289,7 @@ class Fluid extends Repository
 	 * @param string  $type type of bean you want to load
 	 * @param integer $id   ID of the bean you want to load
 	 *
-	 * @throws SQL
+	 * @throws SQLException
 	 *
 	 * @return OODBBean
 	 *
@@ -302,7 +302,7 @@ class Fluid extends Repository
 		} else {
 			try {
 				$rows = $this->writer->queryRecord( $type, [ 'id' => [ $id ] ] );
-			} catch ( SQL $exception ) {
+			} catch ( SQLException $exception ) {
 				if ( $this->writer->sqlStateIn( $exception->getSQLState(),
 					[
 						QueryWriter::C_SQLSTATE_NO_SUCH_COLUMN,

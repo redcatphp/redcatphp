@@ -7,6 +7,7 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\Database;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 
 /**
  * RedBean SQLiteWriter with support for SQLite types
@@ -343,7 +344,12 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$name  = 'UQ_' . $this->safeTable( $type, TRUE ) . implode( '__', $properties );
 		$t     = $this->getTable( $type );
 		$t['indexes'][$name] = array( 'name' => $name );
-		$this->putTable( $t );
+		try {
+			$this->putTable( $t );
+		} catch( SQLException $e ) {
+			return FALSE;
+		}
+		return TRUE;
 	}
 
 	/**
@@ -376,7 +382,7 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 			$t['indexes'][$name] = array( 'name' => $column );
 			$this->putTable( $t );
 			return TRUE;
-		} catch( \Exception $exception ) {
+		} catch(SQLException $exception ) {
 			return FALSE;
 		}
 	}
@@ -409,12 +415,12 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		foreach ( $this->getTables() as $t ) {
 			try {
 				$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-			} catch (\Exception $e ) {
+			} catch (SQLException $e ) {
 			}
 
 			try {
 				$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-			} catch (\Exception $e ) {
+			} catch (SQLException $e ) {
 			}
 		}
 
@@ -424,11 +430,11 @@ class SQLiteT extends AQueryWriter implements QueryWriter
 		$this->adapter->exec( 'PRAGMA foreign_keys = 0 ' );
 		try {
 			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-		} catch (\Exception $e ) {
+		} catch (SQLException $e ) {
 		}
 		try {
 			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-		} catch (\Exception $e ) {
+		} catch (SQLException $e ) {
 		}
 		$this->adapter->exec( 'PRAGMA foreign_keys = 1 ' );
 	}

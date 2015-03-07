@@ -7,6 +7,7 @@ use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Model\RedBeanPHP\Adapter as Adapter;
 use Surikat\Model\RedBeanPHP\Database;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 
 /**
  * RedBean MySQLWriter
@@ -221,7 +222,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 		try {
 			$sql = "ALTER TABLE $table
 						 ADD UNIQUE INDEX $name (" . implode( ',', $columns ) . ")";
-		} catch ( \Exception $e ) {
+		} catch (SQLException $e ) {
 			//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
 		}
 		$this->adapter->exec( $sql );
@@ -238,7 +239,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 			$column = $this->safeColumn( $property );
 			$this->adapter->exec( "CREATE INDEX $name ON $table ($column) " );
 			return TRUE;
-		} catch ( \Exception $e ) {
+		} catch (SQLException $e ) {
 			return FALSE;
 		}
 	}
@@ -277,7 +278,7 @@ class MySQL extends AQueryWriter implements QueryWriter
 				FOREIGN KEY $fkName ( {$fieldNoQ} ) REFERENCES {$targetTableNoQ}
 				({$targetFieldNoQ}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
 
-		} catch (\Exception $e ) {
+		} catch (SQLException $e ) {
 			// Failure of fk-constraints is not a problem
 		}
 	}
@@ -306,12 +307,12 @@ class MySQL extends AQueryWriter implements QueryWriter
 		foreach ( $this->getTables() as $t ) {
 			try {
 				$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-			} catch (\Exception $e ) {
+			} catch (SQLException $e ) {
 			}
 
 			try {
 				$this->adapter->exec( "DROP VIEW IF EXISTS `$t`" );
-			} catch (\Exception $e ) {
+			} catch (SQLException $e ) {
 			}
 		}
 
@@ -322,12 +323,12 @@ class MySQL extends AQueryWriter implements QueryWriter
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 0;' );
 		try {
 			$this->adapter->exec( "DROP TABLE IF EXISTS `$t`" );
-		} catch (\Exception $e ) {
+		} catch (SQLException $e ) {
 		}
 
 		try {
 			$this->adapter->exec( "DROP VIEW IF EXISTS `$t`" );
-		} catch (\Exception $e ) {
+		} catch (SQLException $e ) {
 		}
 		$this->adapter->exec( 'SET FOREIGN_KEY_CHECKS = 1;' );
 	}

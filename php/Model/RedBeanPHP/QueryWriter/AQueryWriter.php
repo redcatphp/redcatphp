@@ -8,6 +8,7 @@ use Surikat\Model\RedBeanPHP\Adapter\DBAdapter;
 use Surikat\Model\RedBeanPHP\RedException;
 use Surikat\Model\RedBeanPHP\QueryWriter;
 use Surikat\Model\RedBeanPHP\OODBBean;
+use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
 
 /**
  * RedBean Abstract Query Writer
@@ -1202,7 +1203,7 @@ abstract class AQueryWriter { //bracket must be here - otherwise coverage softwa
 		$property = $this->safeColumn( $property, TRUE );
 		try {
 			$map = $this->getKeyMapForType( $type );
-		} catch ( \Exception $e ) {
+		} catch ( SQLException $e ) {
 			return NULL;
 		}
 		foreach( $map as $key ) {
