@@ -1016,9 +1016,9 @@ class Database{
 	 *
 	 * @return mixed
 	 */
-	public static function getInsertID()
+	public function getInsertID()
 	{
-		return self::$adapter->getInsertID();
+		return $this->adapter->getInsertID();
 	}
 	
 	function preload($beans, $preload, $closure = NULL){
