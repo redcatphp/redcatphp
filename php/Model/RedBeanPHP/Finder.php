@@ -211,8 +211,13 @@ class Finder
 	 *
 	 * @return array
 	 */
-	public function findLike( $type, $like = array() )
+	public function findLike( $type, $conditions = array(), $sql = '' )
 	{
-		return $this->redbean->find( $type, $like );
+		if ( count( $conditions ) > 0 ) {
+			foreach( $conditions as $key => $condition ) {
+				if ( !count( $condition ) ) unset( $conditions[$key] );
+			}
+		}
+		return $this->redbean->find( $type, $conditions, $sql );
 	}
 }

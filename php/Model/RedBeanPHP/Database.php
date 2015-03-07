@@ -882,9 +882,9 @@ class Database{
 	 *
 	 * @return array
 	 */
-	public function findLike( $type, $like = array() )
+	public function findLike( $type, $like = array(), $sql = '' )
 	{
-		return $this->finder->findLike( $type, $like );
+		return $this->finder->findLike( $type, $like, $sql );
 	}
 	
 	/**
