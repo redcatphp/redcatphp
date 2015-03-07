@@ -3,7 +3,7 @@ namespace Surikat\Model\RedBeanPHP;
 use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
 use Surikat\Model\RedBeanPHP\RedException as RedException;
 class Facade{
-	const C_REDBEANPHP_VERSION = '4.1.1-Surikat-Forked';
+	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	public static $toolbox;
 	public static $currentDB = 'default';
 	public static $databases = [];
