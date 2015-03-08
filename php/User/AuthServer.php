@@ -24,7 +24,7 @@ class AuthServer{
 	}
 	function action($action=null){
 		if(!func_num_args())
-			$action = isset($_GET['action'])?$_GET['action']:null;
+			$action = isset($_REQUEST['action'])?$_REQUEST['action']:null;
 		if(!$action)
 			return;
 		$r = null;
