@@ -93,7 +93,7 @@ class AuthServer{
 		}
 	}
 	function login(){
-		if(isset($_POST['login'])&&$_POST['login']&&isset($_POST['password'])&&$_POST['password']){
+		if(isset($_POST['login'])&&isset($_POST['password'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
 				switch($_POST['lifetime']){
