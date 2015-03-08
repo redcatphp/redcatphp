@@ -21,8 +21,7 @@ trait Mutator {
 				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 			}
 		}
-		$this->__dependenciesRegistry[$rkey] = $value;
-		return $this;
+		return $this->__dependenciesRegistry[$rkey] = $value;
 	}
 	function getDependency($key,$args=null){
 		$key = Convention::toMethod($key);

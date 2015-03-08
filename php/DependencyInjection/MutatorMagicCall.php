@@ -3,7 +3,7 @@ use BadMethodCallException;
 trait MutatorMagicCall{
 	function __call($f,$args){
 		if(ctype_upper($f{0}))
-			return empty($args)?$this->getDependency($f):$this->setDependency($f,$args[0]);
+			return $this->getDependency($f,$args);
 		elseif(is_callable('parent::__call'))
 			return parent::__call($f,$args);
 		elseif(method_exists($this,'___call'))
