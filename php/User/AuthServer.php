@@ -1,6 +1,6 @@
 <?php namespace Surikat\User;
 use Surikat\HTTP\HTTP;
-use Surikat\User\Auth;
+use Surikat\User\Auth as User_Auth;
 use Surikat\I18n\Lang;
 use Surikat\DependencyInjection\MutatorMagic;
 Lang::initialize();
@@ -9,10 +9,10 @@ class AuthServer{
 	protected $messages = [];
 	protected $lastResult;
 	protected $defaultLogoutKey = 'auth-server-logout';
-	function __construct(Auth $auth=null){
-		if(!$auth)
-			$auth = new Auth();
-		$this->Auth = $auth;
+	function __construct(User_Auth $Auth=null){
+		if($Auth)
+			$this->User_Auth = $Auth;
+		$this->User_Session = $this->User_Auth->User_Session;
 	}
 	function getResultMessage($widget=false){
 		if($this->lastResult&&!is_bool($this->lastResult)){
@@ -33,13 +33,13 @@ class AuthServer{
 			$ajax = HTTP::isAjax();
 			if(!is_bool($r)){
 				switch($r){
-					case Auth::OK_LOGGED_IN:
+					case User_Auth::OK_LOGGED_IN:
 						if(!$ajax){
 							$this->User_Session->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
 						}
 					break;
-					case Auth::OK_REGISTER_SUCCESS:
+					case User_Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
 							$this->User_Session->set('Auth','result',$action,$r);
 							HTTP::reloadLocation();
@@ -57,17 +57,17 @@ class AuthServer{
 			$email = $_POST['email'];
 			$login = trim($_POST['login'])?$_POST['login']:$email;
 			$this->User_Session->set('Auth','email',$email);
-			return $this->Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
+			return $this->User_Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
 		if($email=$this->User_Session->get('Auth','email')){
-			return $this->Auth->resendActivation($email);
+			return $this->User_Auth->resendActivation($email);
 		}
 	}
 	function activate(){
 		if(isset($_GET['key'])){
-			return $this->Auth->activate($_GET['key']);
+			return $this->User_Auth->activate($_GET['key']);
 		}
 	}
 	function loginPersona(){
@@ -89,7 +89,7 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->Auth->loginPersona($email, $lifetime);
+			return $this->User_Auth->loginPersona($email, $lifetime);
 		}
 	}
 	function login(){
@@ -111,7 +111,7 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->Auth->login($_POST['login'], $_POST['password'], $lifetime);
+			return $this->User_Auth->login($_POST['login'], $_POST['password'], $lifetime);
 		}
 		elseif(isset($_POST['email'])&&$_POST['email']){
 			return $this->loginPersona();
@@ -119,12 +119,12 @@ class AuthServer{
 	}
 	function resetreq(){
 		if(isset($_POST['email'])){
-			return $this->Auth->requestReset($_POST['email']);
+			return $this->User_Auth->requestReset($_POST['email']);
 		}
 	}
 	function resetpass(){
 		if(isset($_GET['key'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
-			return $this->Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
+			return $this->User_Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function lougoutAPI($key=null){
@@ -191,7 +191,7 @@ class AuthServer{
 		}
 	}
 	function logout(){
-		return $this->Auth->logout();
+		return $this->User_Auth->logout();
 	}
 	
 	function htmlLock($r,$redirect=true){
@@ -214,16 +214,16 @@ class AuthServer{
 					break;
 				}
 			}
-			if($this->Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
+			if($this->User_Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}
 		}
-		if($this->Auth->allowed($r))
+		if($this->User_Auth->allowed($r))
 			return;
-		if($this->Auth->connected()){
+		if($this->User_Auth->connected()){
 			if($redirect)
-				header('Location: '.$this->Auth->siteUrl.'403',false,302);
+				header('Location: '.$this->User_Auth->siteUrl.'403',false,302);
 			else
 				HTTP::code(403);
 			exit;
@@ -250,7 +250,7 @@ class AuthServer{
 		</style>
 		</head><body>';
 		if($seconds=$this->User_Session->isBlocked()){
-			echo $this->Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
+			echo $this->User_Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">
 			<label for="__login__">Login</label><input type="text" id="__login__" name="__login__" placeholder="Login"><br>

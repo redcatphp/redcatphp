@@ -3,6 +3,7 @@ use Surikat\Config\Config;
 use Surikat\FileSystem\FS;
 use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
+use Surikat\User\Session as User_Session;
 use Surikat\Mail\PHPMailer;
 use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\DependencyInjection\Constant;
@@ -82,29 +83,10 @@ class Auth{
 	protected $algo;
 	protected $superRoot = 'root';
 	protected $config = [];
-	
-	function sendMail($email, $type, $key, $login){
-		$config = Config::mailer();
-				
-		$fromName = isset($config['fromName'])?$config['fromName']:null;
-		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
-		$replyName = isset($config['replyName'])?$config['replyName']:null;
-		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
-		$siteLoginUri = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:null;
-		$siteActivateUri = isset($this->config['siteActivateUri'])?$this->config['siteActivateUri']:null;
-		$siteResetUri = isset($this->config['siteResetUri'])?$this->config['siteResetUri']:null;
-		
-		if($type=="activation"){
-			$subject = "{$fromName} - Account Activation";
-			$message = "Account activation required : <strong><a href=\"{$this->siteUrl}{$siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
-		}
-		else{
-			$subject = "{$fromName} - Password reset request";
-			$message = "Password reset request : <strong><a href=\"{$this->siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
-		}
-		return PHPMailer::mail([$email=>$login],$subject,$message);
-	}
-	public function __construct(){
+	public function __construct(User_Session $User_Session=null){
+		if($User_Session)
+			$this->User_Session = $User_Session;
+
 		$this->config = Config::auth();
 		$dbm = 'db';
 		if(isset($this->config['db'])&&$this->config['db'])
@@ -126,6 +108,27 @@ class Auth{
 			$this->algo = $this->config['algo'];
 		else
 			$this->algo = PASSWORD_DEFAULT;
+	}
+	function sendMail($email, $type, $key, $login){
+		$config = Config::mailer();
+				
+		$fromName = isset($config['fromName'])?$config['fromName']:null;
+		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
+		$replyName = isset($config['replyName'])?$config['replyName']:null;
+		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
+		$siteLoginUri = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:null;
+		$siteActivateUri = isset($this->config['siteActivateUri'])?$this->config['siteActivateUri']:null;
+		$siteResetUri = isset($this->config['siteResetUri'])?$this->config['siteResetUri']:null;
+		
+		if($type=="activation"){
+			$subject = "{$fromName} - Account Activation";
+			$message = "Account activation required : <strong><a href=\"{$this->siteUrl}{$siteActivateUri}?action=activate&key={$key}\">Activate my account</a></strong>";
+		}
+		else{
+			$subject = "{$fromName} - Password reset request";
+			$message = "Password reset request : <strong><a href=\"{$this->siteUrl}{$siteResetUri}?action=resetpass&key={$key}\">Reset my password</a></strong>";
+		}
+		return PHPMailer::mail([$email=>$login],$subject,$message);
 	}
 	public function loginRoot($password,$lifetime=0){
 		$pass = $this->config['root'];
