@@ -8,8 +8,10 @@
 /Surikat
 *.min.css
 *.min.js
+*.log
 *~
 *.lock
 *.DS_Store
+Thumbs.db
 *.swp
 *.out
