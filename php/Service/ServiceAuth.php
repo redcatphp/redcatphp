@@ -17,7 +17,6 @@ class ServiceAuth {
 		echo json_encode($this->User_Session->get('_AUTH_','email'));
 	}
 	function persona(){
-		$response = '';
 		if(isset($_POST['assertion'])){
 			$assertion = $_POST['assertion'];
 			$audience = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']==='on'?'https://':'http://').$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'];
@@ -33,6 +32,9 @@ class ServiceAuth {
 			curl_close($ch);
 			if(($js = json_decode($response))&&$js->status==='okay'&&$js->email)
 				$this->User_Session->set('email',$js->email);
+		}
+		else{
+			$response = json_encode($this->User_Session->get('email'));
 		}
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
