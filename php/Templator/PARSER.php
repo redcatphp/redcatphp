@@ -540,7 +540,7 @@ abstract class PARSER{
 	protected $lineNumber = 1;
 	protected $characterNumber = 1;
 	
-	private function addToCurrent($name,$attributes){
+	private function addToCurrent($name,$attributes,$class=null){
 		if(!$this->currentTag)
 			$this->currentTag = $this;
 		if(($pos=strpos($name,'+'))!==false){
@@ -568,7 +568,9 @@ abstract class PARSER{
 				$node->selfClosed = true;
 		}
 		else{
-			$c = self::getClass($name);
+			if($class===true)
+				$class = 'Templator\\'.$name;
+			$c = $class?$class:self::getClass($name);
 			$node = new $c();
 			$node->setBuilder($this);
 			$node->setParent($this->currentTag);
@@ -621,22 +623,23 @@ abstract class PARSER{
 			$this->currentTag = $this->currentTag->parent;
 	}
 	private function fireDTD($doctype){
-		$this->addToCurrent('DOCTYPE',$doctype);
+		$this->addToCurrent('DOCTYPE',$doctype,true);
 	}
 	private function fireComment($comment){
-		$this->addToCurrent('COMMENT',$comment);
+		$this->addToCurrent('COMMENT',$comment,true);
 	}
 	private function fireCharacterData($text){
 		if(trim($text))
-			$this->addToCurrent('TEXT',$text);
+			$this->addToCurrent('TEXT',$text,true);
 	}
 	private function fireCDataSection($text){
-		$this->addToCurrent('CDATA',$text);
+		$this->addToCurrent('CDATA',$text,true);
 	}
 
 	protected static function getClass($n){
 		if($p=strpos($n,':'))
 			$n = substr($n,0,$p);
+		$n = strtolower($n);
 		$n = str_replace('-','_',$n);
 		if(class_exists($c='Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
 			return $c;
