@@ -18,8 +18,8 @@
 	</nav>
 	<main></main>
 	<footer>
-		<include "surikat-powered.btml">
+		<incorpore "surikat-powered.btml">
 	</footer>
-	<include "scriptLazyJS.btml">
+	<incorpore "scriptLazyJS.btml">
 </body>
 </html>
