@@ -781,7 +781,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		$dom = $this->closest()->find('body',0);
 		if(!$dom)
 			return;
-		$src = trim($js->src?$js->src:($js->href?$js->href:key($js->attributes)));
+		$src = trim($js->src);
 		if($src){
 			$script = $dom->find('script:not([src]):last',0);
 			if(!$script){
