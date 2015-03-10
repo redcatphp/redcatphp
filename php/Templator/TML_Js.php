@@ -7,6 +7,7 @@ class TML_Js extends CALL_APL{
 	var $selector = false;
 	function load(){
 		$this->remapAttr('src');
+		$this->remapAttr('async',1);
 		if($this->closest('extend')){
 			$o = $this;
 			$this->closest()->onLoaded(function()use($o){
