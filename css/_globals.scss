@@ -1,6 +1,6 @@
 <?
 global $img,$resolutions,$screens,$relativity;
-$relativity = str_repeat('../',substr_count(ltrim($_SERVER['REQUEST_URI'],'/'),'/'));
+$relativity = str_repeat('../',substr_count(ltrim(@$_SERVER['PATH_INFO'],'/'),'/'));
 if(!isset($img))
 	$img = $relativity.'img/';
 if(!isset($resolutions))

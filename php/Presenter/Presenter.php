@@ -1,12 +1,13 @@
 <?php namespace Surikat\Presenter;
 use Surikat\Vars\ArrayObject;
-use Surikat\Templator\FILE;
 use Surikat\Templator\TML;
-use Dispatcher\Index;
+use Surikat\DependencyInjection\MutatorCall;
 class Presenter extends ArrayObject{
+	use MutatorCall;
 	static function load(TML $tml){
 		if(!$tml->Template)
 			return;
+		$tml->remapAttr('uri');
 		$c = get_called_class();
 		$o = new $c();
 		$o->merge([
@@ -35,24 +36,26 @@ class Presenter extends ArrayObject{
 	}
 	function assign(){}
 	function execute(){	
-		if(
-			isset($this->presentAttributes->uri)
-			&&$this->presentAttributes->uri=='static'
-			&&(
-				!empty($_GET)||
-				(
-					($r = $this->getView())
-					&&($r = $r->getController())
-					&&($r = $r->getRouter())
-					&&(method_exists($r,'getParams'))
-					&&count($r->getParams())>1
-				)
-			)
-		)
-			(new Index())->getController()->error(404);
+		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'){
+			if(!empty($_GET)){
+				$this->notFound();
+			}
+			elseif(($r = $this->getView())&&($r = $r->getController())&&($r = $r->getRouter())){
+				if((method_exists($r,'getParams'))&&count($r->getParams())>1){
+					$this->notFound();
+				}
+				//elseif(0){
+					//$this->haveParameters();
+				//}
+				//var_dump($_SERVER['PATH_INFO'],$_GET,$r->getPath());
+			}
+		}
 		$this->time = time();
 		$this->BASE_HREF = $this->HTTP_Domain()->getBaseHref();
 		$this->dynamic();
 	}
 	function dynamic(){}
+	function notFound(){
+		$this->Dispatcher_Index()->getController()->error(404);
+	}
 }

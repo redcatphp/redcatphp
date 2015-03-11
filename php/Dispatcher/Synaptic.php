@@ -6,7 +6,8 @@ class Synaptic extends Dispatcher{
 		if(!empty($this->pathFS))
 			$this->pathFS .= '/';
 	}
-	function __invoke($filename,$file){
+	function __invoke(){
+		list($filename,$file) = func_get_args();
 		$this->FileSystem_Synaptic->load($this->pathFS.$file);
 	}
 }

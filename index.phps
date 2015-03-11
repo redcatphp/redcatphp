@@ -2,20 +2,24 @@
 if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
 use DependencyInjection\Container;
-//Container::get('Dev\Level')->PHP();
-//Container::get('Dev\Level')->CONTROL();
-//Container::get('Dev\Level')->VIEW();
-//Container::get('Dev\Level')->PRESENT();
-//Container::get('Dev\Level')->MODEL();
-//Container::get('Dev\Level')->DB();
-//Container::get('Dev\Level')->DBSPEED();
-//Container::get('Dev\Level')->SQL();
-//Container::get('Dev\Level')->ROUTE();
-//Container::get('Dev\Level')->I18N();
-//Container::get('Dev\Level')->IMG();
-//Container::get('Dev\Level')->SERVER();
-//Container::get('Dev\Level')->NAV();
-Container::get('Dev\Level')->STD();
-Container::get('Dev\Level')->CSS();
-Container::get('Dev\Level')->JS();
-(new Controller\Application())->run(@$_SERVER['PATH_INFO']);
+global $SURIKAT;
+
+$SURIKAT = Container::get();
+//$SURIKAT->Dev_Level->PHP();
+//$SURIKAT->Dev_Level->CONTROL();
+//$SURIKAT->Dev_Level->VIEW();
+//$SURIKAT->Dev_Level->PRESENT();
+//$SURIKAT->Dev_Level->MODEL();
+//$SURIKAT->Dev_Level->DB();
+//$SURIKAT->Dev_Level->DBSPEED();
+//$SURIKAT->Dev_Level->SQL();
+//$SURIKAT->Dev_Level->ROUTE();
+//$SURIKAT->Dev_Level->I18N();
+//$SURIKAT->Dev_Level->IMG();
+//$SURIKAT->Dev_Level->SERVER();
+//$SURIKAT->Dev_Level->NAV();
+$SURIKAT->Dev_Level->STD();
+$SURIKAT->Dev_Level->CSS();
+$SURIKAT->Dev_Level->JS();
+
+$SURIKAT->Dispatcher_Index->runFromGlobals();

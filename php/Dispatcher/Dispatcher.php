@@ -4,10 +4,8 @@ use Surikat\DependencyInjection\MutatorMagic;
 class Dispatcher {
 	use MutatorMagic;
 	protected $routes = [];
-	static function runner($uri){
-		$dispatcher = new static();
-		return $dispatcher->run($uri);
-	}
+	protected $questionMark;
+	protected $parameters;
 	function append($pattern,$callback,$index=0){
 		return $this->route($pattern,$callback,$index);
 	}
@@ -32,6 +30,9 @@ class Dispatcher {
 			array_push($this->routes[$index],$route);
 		return $this;
 	}
+	function __invoke(){
+		return $this->run(func_get_arg(0));
+	}
 	function run($uri){
 		$uri = ltrim($uri,'/');
 		ksort($this->routes);
@@ -53,6 +54,19 @@ class Dispatcher {
 			}
 		}
 		return false;
+	}
+	function runFromGlobals(){
+		//$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
+		$s = strlen($_SERVER['CWD'])-1;
+		$p = strpos($_SERVER['REQUEST_URI'],'?');
+		$e = (int)$p-$s;
+		$path = substr($_SERVER['REQUEST_URI'],$s,$e);
+		$this->questionMark = !!$p;
+		$this->parameters = &$_GET;
+		$this->run($path);
+	}
+	function haveParameters(){
+		return $this->questionMark||!empty($this->parameters);
 	}
 	private static $reflectionRegistry = [];
 	private static function reflectionRegistry($c){
