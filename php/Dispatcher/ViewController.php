@@ -5,7 +5,7 @@ class ViewController extends Dispatcher{
 	protected $Controller;
 	protected $View;
 	function __invoke(){
-		return call_user_func_array([$this,'getController'],func_get_args());
+		return call_user_func_array($this->getController(),func_get_args());
 	}
 	function setController($Controller){
 		$this->Controller = $Controller;

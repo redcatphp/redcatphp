@@ -4,6 +4,9 @@ class Backoffice extends ViewController{
 	function __construct(){
 		$this->setHooks();
 	}
+	function __invoke(){
+		return $this->run(func_get_arg(0));
+	}
 	function setHooks(){
 		$this->User_Session->setName('surikat_backoffice');
 		$this
@@ -11,7 +14,7 @@ class Backoffice extends ViewController{
 						['Dispatcher_Synaptic',$this->pathFS])
 			->append(['Route_ByTml','',$this->pathFS],function(){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
-				return call_user_func_array($this,func_get_args());
+				return call_user_func_array($this->getController(),func_get_args());
 			})
 			->append(['Route_ByPhpX','',$this->pathFS],function($paths){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
