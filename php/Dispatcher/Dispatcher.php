@@ -1,6 +1,7 @@
 <?php namespace Surikat\Dispatcher;
 use ReflectionClass;
 use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\Route\Route;
 class Dispatcher {
 	use MutatorMagic;
 	protected $routes = [];
@@ -84,6 +85,9 @@ class Dispatcher {
 			else{
 				$a = $this->getDependency(array_shift($a),$a);
 			}
+		}
+		if($a instanceof Route){
+			$a->setDependency('Dispatcher_Dispatcher',$this);
 		}
 	}
 }
