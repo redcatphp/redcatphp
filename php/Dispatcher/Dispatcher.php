@@ -56,13 +56,15 @@ class Dispatcher {
 		return false;
 	}
 	function runFromGlobals(){
-		//$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
+		$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
 		$s = strlen($_SERVER['CWD'])-1;
 		$p = strpos($_SERVER['REQUEST_URI'],'?');
-		$e = (int)$p-$s;
-		$path = substr($_SERVER['REQUEST_URI'],$s,$e);
+		if($p===false)
+			$path = substr($_SERVER['REQUEST_URI'],$s);
+		else
+			$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
 		$this->questionMark = !!$p;
-		$this->parameters = &$_GET;
+		$this->parameters = &$_GET;		
 		$this->run($path);
 	}
 	function haveParameters(){
