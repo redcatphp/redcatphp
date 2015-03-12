@@ -1,5 +1,5 @@
 <?php namespace Surikat\Route;
-class Extension{
+class Extension extends Route{
 	private $match;
 	private $extension;
 	function __construct($match){

@@ -1,6 +1,6 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
-class Faceted implements ArrayAccess{
+class Faceted extends Route implements ArrayAccess{
 	protected $separatorAnd = '+';
 	protected $separatorEq = ':';
 	protected $separatorOr = '&';

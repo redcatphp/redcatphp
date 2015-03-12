@@ -1,5 +1,5 @@
 <?php namespace Surikat\Route;
-class Suffix{
+class Suffix extends Route{
 	private $match;
 	function __construct($match){
 		$this->match = ltrim($match,'/');

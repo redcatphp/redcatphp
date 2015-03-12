@@ -1,5 +1,5 @@
 <?php namespace Surikat\Route;
-class Regex{
+class Regex extends Route{
 	private $match;
 	function __construct($match){
 		$this->match = $match;

@@ -1,6 +1,6 @@
 <?php namespace Surikat\Route;
 use Route\Faceted;
-class ByPhp {
+class ByPhp extends Route{
 	protected $dir = '';
 	protected $dirFS = '';
 	function __construct($dir=null,$dirFS=null){
