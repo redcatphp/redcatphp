@@ -56,7 +56,7 @@ class Dispatcher {
 		return false;
 	}
 	function runFromGlobals(){
-		$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
+		//$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
 		$s = strlen($_SERVER['CWD'])-1;
 		$p = strpos($_SERVER['REQUEST_URI'],'?');
 		if($p===false)
@@ -77,28 +77,18 @@ class Dispatcher {
 		return self::$reflectionRegistry[$c];
 	}
 	private function objectify(&$a){
-		$c = null;
-		$d = null;
 		if(is_array($a)&&isset($a[0])&&is_string($a[0])){
 			if($a[0]=='new'){
 				array_shift($a);
 				$c = array_shift($a);
-			}
-			elseif(strpos($a[0],'new::')===0){
-				$c = substr(array_shift($a),5);
+				if(empty($a))
+					$a = new $c();
+				else
+					$a = self::reflectionRegistry($c)->newInstanceArgs($a);
 			}
 			else{
-				$d = array_shift($a);
+				$a = $this->getDependency(array_shift($a),$a);
 			}
-		}
-		if($c){
-			if(empty($a))
-				$a = new $c();
-			else
-				$a = self::reflectionRegistry($c)->newInstanceArgs($a);
-		}
-		elseif($d){
-			$a = $this->getDependency($d,$a);
 		}
 	}
 }
