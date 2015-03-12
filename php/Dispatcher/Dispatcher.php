@@ -70,12 +70,6 @@ class Dispatcher {
 	function haveParameters(){
 		return $this->questionMark||!empty($this->parameters);
 	}
-	private static $reflectionRegistry = [];
-	private static function reflectionRegistry($c){
-		if(!isset(self::$reflectionRegistry[$c]))
-			self::$reflectionRegistry[$c] = new ReflectionClass($c);
-		return self::$reflectionRegistry[$c];
-	}
 	private function objectify(&$a){
 		if(is_array($a)&&isset($a[0])&&is_string($a[0])){
 			if($a[0]=='new'){
@@ -84,7 +78,8 @@ class Dispatcher {
 				if(empty($a))
 					$a = new $c();
 				else
-					$a = self::reflectionRegistry($c)->newInstanceArgs($a);
+					//$a = (new ReflectionClass($c))->newInstanceArgs($a);
+					$a = $this->ReflectionClass($c)->newInstanceArgs($a);
 			}
 			else{
 				$a = $this->getDependency(array_shift($a),$a);
