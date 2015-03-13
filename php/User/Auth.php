@@ -1,7 +1,6 @@
 <?php namespace Surikat\User;
 use Surikat\Config\Config;
 use Surikat\FileSystem\FS;
-use Surikat\HTTP\HTTP;
 use Surikat\Model\R;
 use Surikat\User\Session as User_Session;
 use Surikat\Mail\PHPMailer;
@@ -629,7 +628,7 @@ class Auth{
 	function lock($r,$redirect=true){
 		if($this->allowed($r))
 			return;
-		HTTP::nocacheHeaders();
+		$this->HTTP_Request->nocacheHeaders();
 		if($redirect){
 			if($this->connected())
 				$redirect = '403';
@@ -638,7 +637,7 @@ class Auth{
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{
-			HTTP::code(403);
+			$this->HTTP_Request->code(403);
 		}
 		exit;
 	}

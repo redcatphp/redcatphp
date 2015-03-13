@@ -1,5 +1,4 @@
 <?php namespace Surikat\User;
-use Surikat\HTTP\HTTP;
 use Surikat\User\Auth as User_Auth;
 use Surikat\I18n\Lang;
 use Surikat\DependencyInjection\MutatorMagic;
@@ -30,19 +29,19 @@ class AuthServer{
 		$r = null;
 		if(method_exists($this,$action)){
 			$r = $this->$action();
-			$ajax = HTTP::isAjax();
+			$ajax = $this->HTTP_Request->isAjax();
 			if(!is_bool($r)){
 				switch($r){
 					case User_Auth::OK_LOGGED_IN:
 						if(!$ajax){
 							$this->User_Session->set('Auth','result',$action,$r);
-							HTTP::reloadLocation();
+							$this->HTTP_Request->reloadLocation();
 						}
 					break;
 					case User_Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
 							$this->User_Session->set('Auth','result',$action,$r);
-							HTTP::reloadLocation();
+							$this->HTTP_Request->reloadLocation();
 						}
 					break;
 				}
@@ -225,7 +224,7 @@ class AuthServer{
 			if($redirect)
 				header('Location: '.$this->User_Auth->siteUrl.'403',false,302);
 			else
-				HTTP::code(403);
+				$this->HTTP_Request->code(403);
 			exit;
 		}
 		echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Authentication</title>

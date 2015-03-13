@@ -1,6 +1,5 @@
 <?php namespace Surikat\SyntaxedCSS;
 use Surikat\FileSystem\FS;
-use Surikat\HTTP\HTTP;
 use Surikat\DependencyInjection\MutatorMagic;
 use Exception;
 class SCSSCServer{
@@ -72,7 +71,7 @@ class SCSSCServer{
 	function cachingHeader($output){
 		if(!is_file($output))
 			return;
-		HTTP::fileCache($output);
+		$this->HTTP_Request->fileCache($output);
 	}
 	function __construct(){
 		$this->scss = $this->SyntaxedCSS_SCSSC;

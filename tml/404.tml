@@ -1,7 +1,6 @@
 <Presenter:Presenter />
 <?
-use HTTP\HTTP;
-HTTP::code(404);
+$this->HTTP_Request()->code(404);
 if(in_array(strtolower(pathinfo(@$_SERVER['PATH_INFO'],PATHINFO_EXTENSION)),array(
 	'js','css','png','jpg','jpeg','gif','svg','ttf','otf','woff','eot',
 )))

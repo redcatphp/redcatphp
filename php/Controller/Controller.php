@@ -1,5 +1,4 @@
 <?php namespace Surikat\Controller;
-use Surikat\HTTP\HTTP;
 use HTTP\Domain;
 use Surikat\Vars\ArrayObject;
 use Surikat\Templator\Template;
@@ -71,7 +70,7 @@ class Controller{
 			$v->display($c.'.tml');
 		}
 		catch(\Surikat\Exception\View $e){
-			HTTP::code($e->getMessage());
+			$this->HTTP_Request->code($e->getMessage());
 		}
 		exit;
 	}

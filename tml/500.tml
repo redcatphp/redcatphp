@@ -1,7 +1,6 @@
 <Presenter:Presenter />
 <?
-use HTTP\HTTP;
-HTTP::code(500);
+$this->HTTP_Request()->code(500);
 ?>
 <extend>
 	<attr selector="main" addClass="not-found">

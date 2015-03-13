@@ -1,5 +1,4 @@
 <?php namespace Surikat\HTTP;
-use Surikat\HTTP\HTTP;
 abstract class AuthDigest{
 	static $defaultRealm = 'Restricted area';
 	static function start($realm=null){
@@ -8,7 +7,7 @@ abstract class AuthDigest{
 		if(empty($_SERVER['PHP_AUTH_DIGEST'])) {
 			header('HTTP/1.1 401 Unauthorized');
 			header('WWW-Authenticate: Digest realm="'.$realm.'",qop="auth",nonce="'.uniqid().'",opaque="'.md5($realm).'"');
-			HTTP::code(403);
+			$this->HTTP_Request->code(403);
 			exit;
 		}
 	}

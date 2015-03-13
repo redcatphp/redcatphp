@@ -1,14 +1,20 @@
 <?php namespace Surikat\HTTP;
-use Closure;
-use Surikat\DependencyInjection\Container;
-abstract class HTTP{
-	static function reloadLocation(){
-		header('Location: '.Container::get()->HTTP_URL->getLocation(),false,302);
+use Surikat\DependencyInjection\MutatorProperty;
+class Request{
+	use MutatorProperty;
+	protected $server;
+	function __construct($server=null){
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
 	}
-	static function isAjax(){
+	function reloadLocation(){
+		header('Location: '.$this->HTTP_URL->getLocation(),false,302);
+	}
+	function isAjax(){
 		return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';
 	}
-	static function getallheaders(){ //for ngix compatibility
+	function getallheaders(){ //for ngix compatibility
 		if(function_exists('getallheaders')){
 			return call_user_func_array('getallheaders',func_get_args());
 		}
@@ -25,24 +31,24 @@ abstract class HTTP{
 			return $headers;
 		}
 	}
-	static function fileCache($output){
+	function fileCache($output){
 		$mtime = filemtime($output);
-		$etag = HTTP::FileEtag($output);
+		$etag = $this->HTTP_Request->FileEtag($output);
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mtime).' GMT', true);
 		header('Etag: '.$etag);
-		if(!HTTP::isModified($mtime,$etag)){
-			HTTP::code(304);
+		if(!$this->HTTP_Request->isModified($mtime,$etag)){
+			$this->HTTP_Request->code(304);
 			exit;
 		}
 	}
-	static function isModified($mtime,$etag){
+	function isModified($mtime,$etag){
 		return !((isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$mtime)
 			||(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH'] == $etag));
 	}
-	static function getRealIpAddr(){
+	function getRealIpAddr(){
 		return !empty($_SERVER['HTTP_CLIENT_IP'])?$_SERVER['HTTP_CLIENT_IP']:(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])?$_SERVER['HTTP_X_FORWARDED_FOR']:$_SERVER['REMOTE_ADDR']);
 	}
-	static function nocacheHeaders(){
+	function nocacheHeaders(){
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); 
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s" ) . " GMT" );
 		header("Pragma: no-cache");
@@ -51,7 +57,7 @@ abstract class HTTP{
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Cache-Control: no-store, no-cache, must-revalidate");
 	}
-	static function fix_magic_quotes(){
+	function fix_magic_quotes(){
 		if(get_magic_quotes_gpc()){
 			$strip_slashes_deep = function ($value) use (&$strip_slashes_deep) {
 				return is_array($value) ? array_map($strip_slashes_deep, $value) : stripslashes($value);
@@ -62,7 +68,7 @@ abstract class HTTP{
 			$_REQUEST = array_map($strip_slashes_deep, $_REQUEST);
 		}
 	}
-	static $codes = [
+	protected $codes = [
 		505=>'HTTP Version Not Supported',
 		504=>'Gateway Timeout',
 		503=>'Service Unavailable',
@@ -104,14 +110,14 @@ abstract class HTTP{
 		101=>'Switching Protocols',
 		100=>'Continue',
 	];
-	static function code($n=505){
+	function code($n=505){
 		if(headers_sent()) return false;
-		if(!isset(self::$codes[$n])) $n = 500;
-		header($_SERVER['SERVER_PROTOCOL'].' '.$n.' '.self::$codes[$n]);
+		if(!isset($this->codes[$n])) $n = 500;
+		header($_SERVER['SERVER_PROTOCOL'].' '.$n.' '.$this->codes[$n]);
 		return true;
 
 	}
-	static function verifPlageIP($IP,$PlageIP){
+	function verifPlageIP($IP,$PlageIP){
 		$result=TRUE;
 		$tabIP=explode(".",$IP);
 		if(is_array($PlageIP)){
@@ -135,7 +141,7 @@ abstract class HTTP{
 		return ($result);		
 	}
 
-	static function startNewHTTPHeader(){
+	function startNewHTTPHeader(){
 		ob_end_clean();
 		header("Connection: close \r\n");
 		header("Content-Encoding: none\r\n");
@@ -146,21 +152,21 @@ abstract class HTTP{
 	Ends the header (and so the connection) setup with the user.
 	All HTTP and echo'd text will not be sent after calling this.
 	This allows you to continue performing processing on server side. */
-	static function endHTTPHeader(){
+	function endHTTPHeader(){
 		header('Content-Length: '.ob_get_length());
 		ob_end_flush();
 		flush();
 		ob_end_clean();
 	}
 	
-	static function stripWWW(){
+	function stripWWW(){
 		if(preg_match('/^www.(.+)$/i', $_SERVER['HTTP_HOST'], $matches)){
 			header("Status: 301 Move permanently", false, 301);
 			header('Location: http://'.$matches[1].$_SERVER['REQUEST_URI']);
 			exit;
 		}
 	}
-	static function forceSSL($ssl=true){
+	function forceSSL($ssl=true){
 		if($ssl){
 			if(!isset($_SERVER['HTTPS'])||$_SERVER['HTTPS']!='on'){
 				header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
@@ -174,18 +180,18 @@ abstract class HTTP{
 			}
 		}
 	}
-	static function requestheader($key){
-		$headers = self::getallheaders();
+	function requestheader($key){
+		$headers = $this->getallheaders();
 		if(func_num_args()>1)
 			return isset($headers[$key])&&$headers[$key]==func_get_arg(1);
 		else
 			return isset($headers[$key])?$headers[$key]:false;
 	}
-	static function FileEtag($file){
+	function FileEtag($file){
 		$s = stat($file);
 		return sprintf('%x-%s', $s['size'], base_convert(str_pad($s['mtime'], 16, "0"),10,16));
 	}
-	static function reArrange(&$arr){
+	function reArrange(&$arr){
 		$new = [];
 		if(
 			isset($arr['name'])
@@ -224,32 +230,32 @@ abstract class HTTP{
 		}
 		else{
 			foreach($arr as &$a){
-				$new = array_merge($new,self::reArrange($a));
+				$new = array_merge($new,$this->reArrange($a));
 			}
 		}
 		return $new;
 	}
-	static function gzipSupport(){
+	function gzipSupport(){
 		if(isset($_SERVER['HTP_ACCEPT_ENCODING'])&&strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip')!==false)
 			return 'x-gzip';
 		elseif(isset($_SERVER['HTTP_ACCEPT_ENCODING'])&&strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false)
 			return 'gzip';
 	}
-	static function filterDotDotSlash($val){
+	function filterDotDotSlash($val){
 		if(is_integer($val))
 			return $val;
 		elseif(is_array($val)){
 			foreach(array_keys($val) as $k){
 				if(!is_integer($k)){
 					$tmp = $k;
-					$k = self::filterDotDotSlash($k);
+					$k = $this->filterDotDotSlash($k);
 					if($k!=$tmp){
 						$val[$k] = $val[$tmp];
 						unset($val[$tmp]);
 					}
 				
 				}
-				$val[$k] = self::filterDotDotSlash($val[$k]);
+				$val[$k] = $this->filterDotDotSlash($val[$k]);
 			}
 			return $val;
 		}

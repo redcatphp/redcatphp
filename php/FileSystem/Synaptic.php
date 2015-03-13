@@ -1,5 +1,4 @@
 <?php namespace Surikat\FileSystem;
-use Surikat\HTTP\HTTP;
 use Surikat\FileSystem\FS;
 use Surikat\Minify\JS;
 use Surikat\Minify\CSS;
@@ -11,7 +10,7 @@ class Synaptic {
 	function load($k){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
 		if(!in_array($extension,$this->allowedExtensions)){
-			HTTP::code(403);
+			$this->HTTP_Request->code(403);
 			exit;
 		}
 		switch($extension){
@@ -19,7 +18,7 @@ class Synaptic {
 				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: application/javascript; charset:utf-8');
-					HTTP::fileCache($f);
+					$this->HTTP_Request->fileCache($f);
 					readfile($f);
 				}
 				elseif(substr($k,-7,-3)=='.min'){
@@ -27,14 +26,14 @@ class Synaptic {
 					$this->minifyJS($kv,$k);
 				}
 				else{
-					HTTP::code(404);
+					$this->HTTP_Request->code(404);
 				}
 			break;
 			case 'css':
 				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: text/css; charset:utf-8');
-					HTTP::fileCache($f);
+					$this->HTTP_Request->fileCache($f);
 					readfile($f);
 				}
 				elseif(substr($k,-8,-4)=='.min')
@@ -44,11 +43,11 @@ class Synaptic {
 					||(($key=basename(SURIKAT_SPATH).'/'.$key)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
 				){
 					if($this->scss($key)===false){
-						HTTP::code(404);
+						$this->HTTP_Request->code(404);
 					}
 				}
 				else{
-					HTTP::code(404);
+					$this->HTTP_Request->code(404);
 				}
 			break;
 			case 'png':
@@ -57,16 +56,16 @@ class Synaptic {
 			case 'gif':
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
 				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
-					HTTP::fileCache($f);
+					$this->HTTP_Request->fileCache($f);
 					readfile($f);
 				}
 				elseif(is_file($f=SURIKAT_PATH.'img/404.png')||is_file($f=SURIKAT_SPATH.'img/404.png')){
-					HTTP::code(404);
-					HTTP::fileCache($f);
+					$this->HTTP_Request->code(404);
+					$this->HTTP_Request->fileCache($f);
 					readfile($f);
 				}
 				else{
-					HTTP::code(404);
+					$this->HTTP_Request->code(404);
 				}
 			break;
 		}

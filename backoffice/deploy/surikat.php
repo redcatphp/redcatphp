@@ -1,9 +1,8 @@
 <?php
-use Surikat\HTTP\HTTP;
 use Surikat\Git\GitDeploy\GitDeploy;
 
 set_time_limit(0);
-HTTP::nocacheHeaders();
+$this->HTTP_Request()->nocacheHeaders();
 ob_implicit_flush(true);
 @ob_end_flush();
 
