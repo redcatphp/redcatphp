@@ -15,7 +15,7 @@ class Convention{
 			else
 				$value .= substr($value,strrpos($value,'\\'));
 		}
-		if(strpos($value,'\\')===false)
+		if(strpos($value,'\\')===false&&!class_exists($value))
 			$value = $value.'\\'.$value;
 		return $value;
 	}
