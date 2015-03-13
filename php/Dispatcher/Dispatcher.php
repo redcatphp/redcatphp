@@ -65,7 +65,7 @@ class Dispatcher {
 		else
 			$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
 		$this->questionMark = !!$p;
-		$this->parameters = &$_GET;		
+		$this->parameters = &$_GET;
 		$this->run($path);
 	}
 	function haveParameters(){
