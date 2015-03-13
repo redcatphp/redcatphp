@@ -1,19 +1,25 @@
 <?php namespace Surikat\HTTP;
-class Domain {
+class URL {
 	protected $baseHref;
 	protected $suffixHref;
+	protected $server;
+	function __construct($server=null){
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
+	}
 	function setBaseHref($href){
 		$this->baseHref = $href;
 	}
 	function getProtocolHref(){
-		return 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://';
+		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
 	}
 	function getServerHref(){
-		return $_SERVER['SERVER_NAME'];
+		return $this->server['SERVER_NAME'];
 	}
 	function getPortHref(){
-		$ssl = @$_SERVER["HTTPS"]=="on";
-		return @$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
+		$ssl = @$this->server["HTTPS"]=="on";
+		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
 	}
 	function getBaseHref(){
 		if(!isset($this->baseHref)){
@@ -26,12 +32,12 @@ class Domain {
 	}
 	function getSuffixHref(){
 		if(!isset($this->suffixHref)){
-			if(isset($_SERVER['CWD'])){
-				$this->suffixHref = ltrim($_SERVER['CWD'],'/');				
+			if(isset($this->server['CWD'])){
+				$this->suffixHref = ltrim($this->server['CWD'],'/');				
 			}
 			else{
-				$docRoot = $_SERVER['DOCUMENT_ROOT'].'/';
-				//$docRoot = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+				$docRoot = $this->server['DOCUMENT_ROOT'].'/';
+				//$docRoot = dirname($this->server['SCRIPT_FILENAME']).'/';
 				if($docRoot!=SURIKAT_PATH&&strpos(SURIKAT_PATH,$docRoot)===0)
 					$this->suffixHref = substr(SURIKAT_PATH,strlen($docRoot));
 			}
@@ -57,6 +63,6 @@ class Domain {
 			return null;
 	}
 	function getLocation(){
-		return $this->getBaseHref().ltrim($_SERVER['REQUEST_URI'],'/');
+		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
 	}
 }

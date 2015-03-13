@@ -51,7 +51,7 @@ class Presenter extends ArrayObject{
 			}
 		}
 		$this->time = time();
-		$this->BASE_HREF = $this->HTTP_Domain()->getBaseHref();
+		$this->BASE_HREF = $this->HTTP_URL()->getBaseHref();
 		$this->dynamic();
 	}
 	function dynamic(){}

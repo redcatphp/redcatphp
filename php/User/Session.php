@@ -35,8 +35,8 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
-		$this->cookiePath = '/'.$this->HTTP_Domain()->getSuffixHref();
-		$this->cookieDomain = $this->HTTP_Domain()->getServerHref();
+		$this->cookiePath = '/'.$this->HTTP_URL()->getSuffixHref();
+		$this->cookieDomain = $this->HTTP_URL()->getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->User_SessionHandler = $sessionHandler;

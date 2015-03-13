@@ -18,7 +18,7 @@ class I18n extends Faceted {
 	protected function i18nBySubdomain($path){
 		$templatePath = $path;
 		$langMap = false;
-		if($lang=$this->HTTP_Domain->getSubdomainLang()){
+		if($lang=$this->HTTP_URL->getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
 				if(isset($langMap[$path]))

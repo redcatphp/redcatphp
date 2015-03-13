@@ -143,7 +143,7 @@ class AuthServer{
 		}
 		else{
 			$html = '
-			<link href="'.$this->HTTP_Domain->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
+			<link href="'.$this->HTTP_URL->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
 			<style type="text/css">
 				a.auth-logout{
 					background: none repeat scroll 0 0 #fff;
@@ -175,10 +175,10 @@ class AuthServer{
 					content: "\f011";
 				}
 			</style>
-			<script type="text/javascript" src="'.$this->HTTP_Domain->getBaseHref().'js/post.js"></script>
+			<script type="text/javascript" src="'.$this->HTTP_URL->getBaseHref().'js/post.js"></script>
 			<script type="text/javascript">
 				authServerLogoutCaller = function(){
-					post("'.$this->HTTP_Domain->getLocation().'",{"'.$key.'":1});
+					post("'.$this->HTTP_URL->getLocation().'",{"'.$key.'":1});
 					return false;
 				};
 			</script>
@@ -195,7 +195,7 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = $this->HTTP_Domain->getLocation();
+		$action = $this->HTTP_URL->getLocation();
 		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){

@@ -98,7 +98,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = $this->HTTP_Domain->getBaseHref();
+			$this->siteUrl = $this->HTTP_URL->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
