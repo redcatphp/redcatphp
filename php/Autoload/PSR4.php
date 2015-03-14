@@ -55,4 +55,7 @@ class PSR4{
 	function __invoke($class){
 		return $this->classLoad($class);
 	}
+	function splRegister(){
+		spl_autoload_register($this);
+	}
 }
