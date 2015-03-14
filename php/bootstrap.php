@@ -23,7 +23,8 @@ require __DIR__.'/constants.php';
 
 global $SURIKAT;
 $SURIKAT = Container::get();
-$SURIKAT->Autoload = new SuperNamespace();
-$SURIKAT->Autoload->addNamespace('',SURIKAT_PATH.'php');
-$SURIKAT->Autoload->addSuperNamespace('Surikat',SURIKAT_SPATH.'php');
-$SURIKAT->Autoload->splRegister();
+$SURIKAT->Autoload = (new SuperNamespace())
+	->addNamespace('',SURIKAT_PATH.'php')
+	->addSuperNamespace('Surikat',SURIKAT_SPATH.'php')
+	->splRegister()
+;

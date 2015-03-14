@@ -12,6 +12,7 @@ class PSR4{
 			array_unshift($this->namespaces[$prefix], $base_dir);
 		else
 			array_push($this->namespaces[$prefix], $base_dir);
+		return $this;
 	}
 	protected function loadFile($file,$class){
 		if(file_exists($file)){
@@ -57,5 +58,6 @@ class PSR4{
 	}
 	function splRegister(){
 		spl_autoload_register($this);
+		return $this;
 	}
 }

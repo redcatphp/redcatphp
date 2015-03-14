@@ -37,6 +37,7 @@ class SuperNamespace extends PSR4{
 			array_unshift($this->superNamespaces[$prefix], $base_dir);
 		else
 			array_push($this->superNamespaces[$prefix], $base_dir);
+		return $this;
 	}
 	protected function extendSuperClass($c){
 		$pos = strrpos($c,'\\');
