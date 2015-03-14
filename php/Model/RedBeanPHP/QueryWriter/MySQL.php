@@ -159,7 +159,9 @@ class MySQL extends AQueryWriter implements QueryWriter
 		if ( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' ) {
 			return self::C_DATATYPE_BOOL;
 		}
-
+		
+		if ( is_float( $value ) ) return self::C_DATATYPE_DOUBLE;
+		
 		if ( !$this->startsWithZeros( $value ) ) {
 
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 ) {

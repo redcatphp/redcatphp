@@ -170,21 +170,22 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 			if ( preg_match( '/^\-?(\$|€|¥|£)[\d,\.]+$/', $value ) )
 				return PostgreSQL::C_DATATYPE_SPECIAL_MONEY;
 		}
-		if($this->startsWithZeros($value))
-			return self::C_DATATYPE_TEXT;
-
-		if ( $value === NULL || ( $value instanceof NULL ) || $value === TRUE || $value === FALSE)
-			return self::C_DATATYPE_INTEGER;
 		
-		if ( is_numeric( $value )){
-			if(floor( $value )==$value){
-				if($value < 2147483648 && $value > -2147483648)
-					return self::C_DATATYPE_INTEGER;
-				return self::C_DATATYPE_BIGINT;
-			}
+		if ( is_float( $value ) ) return self::C_DATATYPE_DOUBLE;
+
+		if ( $this->startsWithZeros( $value ) ) return self::C_DATATYPE_TEXT;
+		
+		if ( $value === FALSE || $value === TRUE || $value === NULL || ( is_numeric( $value )
+				&& AQueryWriter::canBeTreatedAsInt( $value )
+				&& $value < 2147483648
+				&& $value > -2147483648 )
+		) {
+			return self::C_DATATYPE_INTEGER;
+		} elseif ( is_numeric( $value ) ) {
 			return self::C_DATATYPE_DOUBLE;
+		} else {
+			return self::C_DATATYPE_TEXT;
 		}
-		return self::C_DATATYPE_TEXT;
 	}
 
 	/**
