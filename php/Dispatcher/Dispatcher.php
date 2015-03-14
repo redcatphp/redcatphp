@@ -79,7 +79,6 @@ class Dispatcher {
 				if(empty($a))
 					$a = new $c();
 				else
-					//$a = (new ReflectionClass($c))->newInstanceArgs($a);
 					$a = $this->ReflectionClass($c)->newInstanceArgs($a);
 			}
 			else{
