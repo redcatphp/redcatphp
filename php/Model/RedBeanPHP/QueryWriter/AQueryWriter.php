@@ -176,7 +176,7 @@ abstract class AQueryWriter {
 		return self::camelCase($str);
 	}
 	static function snakeCase($str){
-        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $str))); 
+        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $str)));
 		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $str ));
 	}
 	static function camelCase($str){

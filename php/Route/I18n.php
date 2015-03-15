@@ -1,5 +1,4 @@
 <?php namespace Surikat\Route;
-use ArrayAccess;
 use Surikat\Config\Config;
 use I18n\Lang;
 use Surikat\DependencyInjection\MutatorMagic;

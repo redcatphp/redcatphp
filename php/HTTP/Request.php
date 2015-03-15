@@ -2,12 +2,6 @@
 use Surikat\DependencyInjection\MutatorProperty;
 class Request{
 	use MutatorProperty;
-	protected $server;
-	function __construct($server=null){
-		if(!$server)
-			$server = &$_SERVER;
-		$this->server = $server;
-	}
 	function reloadLocation(){
 		header('Location: '.$this->HTTP_URL->getLocation(),false,302);
 	}
