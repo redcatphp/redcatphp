@@ -52,11 +52,11 @@ class AuthServer{
 		return $this->lastResult = $r;
 	}
 	function register(){
-		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
-			$email = $_POST['email'];
-			$login = trim($_POST['login'])?$_POST['login']:$email;
+		if(isset($this->HTTP_Post['email'])&&isset($this->HTTP_Post['login'])&&isset($this->HTTP_Post['password'])&&isset($this->HTTP_Post['confirm'])){
+			$email = $this->HTTP_Post['email'];
+			$login = trim($this->HTTP_Post['login'])?$this->HTTP_Post['login']:$email;
 			$this->User_Session->set('Auth','email',$email);
-			return $this->User_Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
+			return $this->User_Auth->register($email, $login, $this->HTTP_Post['password'], $this->HTTP_Post['confirm']);
 		}
 	}
 	function resendactivate(){
@@ -65,15 +65,15 @@ class AuthServer{
 		}
 	}
 	function activate(){
-		if(isset($_GET['key'])){
-			return $this->User_Auth->activate($_GET['key']);
+		if(isset($this->HTTP_Get['key'])){
+			return $this->User_Auth->activate($this->HTTP_Get['key']);
 		}
 	}
 	function loginPersona(){
-		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->User_Session->get('email'))){
+		if(isset($this->HTTP_Post['email'])&&$this->HTTP_Post['email']&&$this->HTTP_Post['email']==($email=$this->User_Session->get('email'))){
 			$lifetime = 0;
-			if(isset($_POST['login'])){
-				switch($_POST['lifetime']){
+			if(isset($this->HTTP_Post['login'])){
+				switch($this->HTTP_Post['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -92,10 +92,10 @@ class AuthServer{
 		}
 	}
 	function login(){
-		if(isset($_POST['login'])&&isset($_POST['password'])){
+		if(isset($this->HTTP_Post['login'])&&isset($this->HTTP_Post['password'])){
 			$lifetime = 0;
-			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
-				switch($_POST['lifetime']){
+			if(isset($this->HTTP_Post['remember'])&&$this->HTTP_Post['remember']&&isset($this->HTTP_Post['lifetime'])){
+				switch($this->HTTP_Post['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -110,26 +110,26 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->User_Auth->login($_POST['login'], $_POST['password'], $lifetime);
+			return $this->User_Auth->login($this->HTTP_Post['login'], $this->HTTP_Post['password'], $lifetime);
 		}
-		elseif(isset($_POST['email'])&&$_POST['email']){
+		elseif(isset($this->HTTP_Post['email'])&&$this->HTTP_Post['email']){
 			return $this->loginPersona();
 		}
 	}
 	function resetreq(){
-		if(isset($_POST['email'])){
-			return $this->User_Auth->requestReset($_POST['email']);
+		if(isset($this->HTTP_Post['email'])){
+			return $this->User_Auth->requestReset($this->HTTP_Post['email']);
 		}
 	}
 	function resetpass(){
-		if(isset($_GET['key'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
-			return $this->User_Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
+		if(isset($this->HTTP_Get['key'])&&isset($this->HTTP_Post['password'])&&isset($this->HTTP_Post['confirm'])){
+			return $this->User_Auth->resetPass($this->HTTP_Get['key'], $this->HTTP_Post['password'], $this->HTTP_Post['confirm']);
 		}
 	}
 	function lougoutAPI($key=null){
 		if(!$key)
 			$key = $this->defaultLogoutKey;
-		if(isset($_POST[$key])){
+		if(isset($this->HTTP_Post[$key])){
 			$this->logout();
 			return true;
 		}
@@ -195,10 +195,10 @@ class AuthServer{
 	
 	function htmlLock($r,$redirect=true){
 		$action = $this->HTTP_URL->getLocation();
-		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
+		if(isset($this->HTTP_Post['__login__'])&&isset($this->HTTP_Post['__password__'])){
 			$lifetime = 0;
-			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
-				switch($_POST['lifetime']){
+			if(isset($this->HTTP_Post['remember'])&&$this->HTTP_Post['remember']&&isset($this->HTTP_Post['lifetime'])){
+				switch($this->HTTP_Post['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -213,7 +213,7 @@ class AuthServer{
 					break;
 				}
 			}
-			if($this->User_Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
+			if($this->User_Auth->login($this->HTTP_Post['__login__'],$this->HTTP_Post['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}

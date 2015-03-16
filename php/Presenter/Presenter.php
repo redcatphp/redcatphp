@@ -37,7 +37,7 @@ class Presenter extends ArrayObject{
 	function assign(){}
 	function execute(){	
 		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'){
-			if(!empty($_GET)){
+			if(count($this->HTTP_Get())){
 				$this->notFound();
 			}
 			elseif(($r = $this->getView())&&($r = $r->getController())&&($r = $r->getRouter())){
@@ -47,7 +47,6 @@ class Presenter extends ArrayObject{
 				//elseif(0){
 					//$this->haveParameters();
 				//}
-				//var_dump($_SERVER['PATH_INFO'],$_GET,$r->getPath());
 			}
 		}
 		$this->time = time();

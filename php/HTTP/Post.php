@@ -1,7 +1,6 @@
 <?php
 namespace Surikat\HTTP;
-use ArrayAccess;
-class Post implements ArrayAccess{
+class Post implements \IteratorAggregate,\ArrayAccess,\Countable{
 	protected $data;
 	function __construct($data=null){
 		if(!$data)
@@ -33,6 +32,12 @@ class Post implements ArrayAccess{
 	}
 	function __set($k,$v){
 		$this->data[$k] = $v;
+	}
+	function count(){
+		return count($this->data);
+	}
+	function getIterator(){
+		return new \ArrayIterator($this->data);
 	}
 	function overrideGlobal(){
 		foreach($this->data as $k=>$v){

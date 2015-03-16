@@ -6,7 +6,6 @@ class Dispatcher {
 	use MutatorMagic;
 	protected $routes = [];
 	protected $questionMark;
-	protected $parameters;
 	function append($pattern,$callback,$index=0){
 		return $this->route($pattern,$callback,$index);
 	}
@@ -65,11 +64,10 @@ class Dispatcher {
 		else
 			$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
 		$this->questionMark = !!$p;
-		$this->parameters = &$_GET;
 		$this->run($path);
 	}
 	function haveParameters(){
-		return $this->questionMark||!empty($this->parameters);
+		return $this->questionMark||count($this->HTTP_Get);
 	}
 	private function objectify(&$a){
 		if(is_array($a)&&isset($a[0])&&is_string($a[0])){
