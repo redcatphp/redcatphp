@@ -1,9 +1,13 @@
 <?php namespace Surikat\FileSystem;
+use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\FileSystem\FS;
 use Surikat\Image\Images;
-use Surikat\Exception\Upload as Upload;
-abstract class Uploader{
-	static function image($conf){
+class Uploader{
+	use MutatorMagic;
+	public $extensionRewrite = [
+		'jpeg'=>'jpg',
+	];
+	function image($conf){
 		$conf = array_merge([
 			'dir'=>'',
 			'key'=>'image',
@@ -16,7 +20,7 @@ abstract class Uploader{
 		],$conf);
 		extract($conf);
 		$func = 'file'.($multi?'s':'');
-		return self::$func($dir,$key,'image/',function($file)use($width,$height,$rename,$conversion){
+		return $this->$func($dir,$key,'image/',function($file)use($width,$height,$rename,$conversion){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 			if($conversion&&$ext!=$conversion&&($imgFormat=exif_imagetype($file))!=constant('IMAGETYPE_'.strtoupper($conversion))){
 				switch($imgFormat){
@@ -30,7 +34,7 @@ abstract class Uploader{
 						$img = imagecreatefrompng($file);
 					break;
 					default:
-						throw new ExceptionUpload('image format conversion not supported');
+						throw $this->Exception_Upload('image format conversion not supported');
 					break;
 				}
 				$file = substr($file,0,-1*strlen($ext)).$conversion;
@@ -41,7 +45,7 @@ abstract class Uploader{
 			if($rename){
 				if($rename===true)
 					$rename = 'image';
-				$rename = self::formatFilename($rename);
+				$rename = $this->formatFilename($rename);
 				rename($file,dirname($file).'/'.$rename.'.'.$ext);
 			}
 			if(($width||$height)&&in_array($ext,Images::$extensions_resizable)){
@@ -51,28 +55,25 @@ abstract class Uploader{
 		},function($file){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 			if(!in_array($ext,(array)$extensions))
-				throw new ExceptionUpload('extension');
+				throw $this->Exception_Upload('extension');
 		});
 	}
-	protected static $extensionRewrite = [
-		'jpeg'=>'jpg',
-	];
-	static function formatFilename($name){
+	function formatFilename($name){
 		$name = filter_var(str_replace([' ','_',',','?'],'-',$name),FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$e = strtolower(pathinfo($name,PATHINFO_EXTENSION));
-		if(isset(static::$extensionRewrite[$e]))
-			$name = substr($name,0,-1*strlen($e)).static::$extensionRewrite[$e];
+		if(isset($this->extensionRewrite[$e]))
+			$name = substr($name,0,-1*strlen($e)).$this->extensionRewrite[$e];
 		return $name;
 	}
-	static function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null,$maxFileSize=null){
+	function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null,$maxFileSize=null){
 		if($file['error']!==UPLOAD_ERR_OK)
-			throw new ExceptionUpload($file['error']);
+			throw $this->Exception_Upload($file['error']);
 		if($mime&&stripos($file['type'],$mime)!==0)
-			throw new ExceptionUpload('type');
+			throw $this->Exception_Upload('type');
 		if($maxFileSize&&filesize($file['tmp_name'])>$maxFileSize)
-			throw new ExceptionUpload(UPLOAD_ERR_FORM_SIZE);
+			throw $this->Exception_Upload(UPLOAD_ERR_FORM_SIZE);
 		FS::mkdir($dir);
-		$name = self::formatFilename($file['name']);
+		$name = $this->formatFilename($file['name']);
 		if($nooverw){
 			$i = 2;
 			while(is_file($dir.$name))
@@ -82,47 +83,47 @@ abstract class Uploader{
 		if($precallback)
 			$precallback($dir.$name);
 		if(!move_uploaded_file($file['tmp_name'],$dir.$name))
-			throw new ExceptionUpload('move_uploaded_file');
+			throw $this->Exception_Upload('move_uploaded_file');
 		if($callback)
 			$callback($dir.$name);
 	}
-	static function file($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($_FILES[$k])){
-			if($_FILES[$k]['name'])
-				self::uploadFile($_FILES[$k],$dir,$mime,$callback,false,true,$maxFileSize);
+	function file($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
+		if(isset($this->HTTP_Files[$k])){
+			if($this->HTTP_Files[$k]['name'])
+				$this->uploadFile($this->HTTP_Files[$k],$dir,$mime,$callback,false,true,$maxFileSize);
 			return true;
 		}
 	}
-	static function files($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($_FILES[$k])){
-			$files =& $_FILES[$k];
+	function files($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
+		if(isset($this->HTTP_Files[$k])){
+			$files =& $this->HTTP_Files[$k];
 			for($i=0;count($files['name'])>$i;$i++){
 				$file = [];
 				foreach(array_keys($files) as $prop)
 					$file[$prop] =& $files[$prop][$i];
 				if($file['name'])
-					self::uploadFile($file,$dir,$mime,$callback,false,true,$maxFileSize);
+					$this->uploadFile($file,$dir,$mime,$callback,false,true,$maxFileSize);
 			}
 			return true;
 		}
 	}
 	
-	static function file_upload_max_size() {
+	function file_upload_max_size() {
 		static $max_size = -1;
 		if ($max_size < 0) {
 			// Start with post_max_size.
-			$max_size = self::parse_size(ini_get('post_max_size'));
+			$max_size = $this->parse_size(ini_get('post_max_size'));
 
 			// If upload_max_size is less, then reduce. Except if upload_max_size is
 			// zero, which indicates no limit.
-			$upload_max = self::parse_size(ini_get('upload_max_filesize'));
+			$upload_max = $this->parse_size(ini_get('upload_max_filesize'));
 			if ($upload_max > 0 && $upload_max < $max_size) {
 				$max_size = $upload_max;
 			}
 		}
 		return $max_size;
 	}
-	static function parse_size($size) {
+	function parse_size($size) {
 		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
 		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
 		if ($unit) {
