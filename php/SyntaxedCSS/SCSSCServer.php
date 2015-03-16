@@ -71,7 +71,7 @@ class SCSSCServer{
 	function cachingHeader($output){
 		if(!is_file($output))
 			return;
-		$this->HTTP_Request->fileCache($output);
+		$this->Http_Request->fileCache($output);
 	}
 	function __construct(){
 		$this->scss = $this->SyntaxedCSS_SCSSC;

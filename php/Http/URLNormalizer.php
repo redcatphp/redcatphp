@@ -1,4 +1,4 @@
-<?php namespace Surikat\HTTP;
+<?php namespace Surikat\Http;
 /* Syntax based normalization of URI's - @author Glen Scott <glen@glenscott.co.uk>
  * This normalises URI's based on the specification RFC 3986 http://www.apps.ietf.org/rfc/rfc3986.html
  * $url = 'eXAMPLE://a/./b/../b/%63/%7bfoo%7d';

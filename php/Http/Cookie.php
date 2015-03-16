@@ -1,10 +1,11 @@
 <?php
-namespace Surikat\HTTP;
-class Files implements \IteratorAggregate,\ArrayAccess,\Countable{
+namespace Surikat\Http;
+use ArrayAccess;
+class Cookie implements ArrayAccess{
 	protected $data;
 	function __construct($data=null){
 		if(!$data)
-			$data = $_FILES;
+			$data = $_COOKIE;
 		$this->data = $data;
 	}
 	function offsetExists($k){
@@ -33,15 +34,9 @@ class Files implements \IteratorAggregate,\ArrayAccess,\Countable{
 	function __set($k,$v){
 		$this->data[$k] = $v;
 	}
-	function count(){
-		return count($this->data);
-	}
-	function getIterator(){
-		return new \ArrayIterator($this->data);
-	}
 	function overrideGlobal(){
 		foreach($this->data as $k=>$v){
-			$_FILES[$k] = $v;
+			$_COOKIE[$k] = $v;
 		}
 	}
 }

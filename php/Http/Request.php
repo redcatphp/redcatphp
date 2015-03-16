@@ -1,9 +1,9 @@
-<?php namespace Surikat\HTTP;
+<?php namespace Surikat\Http;
 use Surikat\DependencyInjection\MutatorProperty;
 class Request{
 	use MutatorProperty;
 	function reloadLocation(){
-		header('Location: '.$this->HTTP_URL->getLocation(),false,302);
+		header('Location: '.$this->Http_Url->getLocation(),false,302);
 	}
 	function isAjax(){
 		return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';
@@ -27,11 +27,11 @@ class Request{
 	}
 	function fileCache($output){
 		$mtime = filemtime($output);
-		$etag = $this->HTTP_Request->FileEtag($output);
+		$etag = $this->Http_Request->FileEtag($output);
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mtime).' GMT', true);
 		header('Etag: '.$etag);
-		if(!$this->HTTP_Request->isModified($mtime,$etag)){
-			$this->HTTP_Request->code(304);
+		if(!$this->Http_Request->isModified($mtime,$etag)){
+			$this->Http_Request->code(304);
 			exit;
 		}
 	}

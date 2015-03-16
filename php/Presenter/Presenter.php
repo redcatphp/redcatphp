@@ -37,7 +37,7 @@ class Presenter extends ArrayObject{
 	function assign(){}
 	function execute(){	
 		if(isset($this->presentAttributes->uri)&&$this->presentAttributes->uri=='static'){
-			if(count($this->HTTP_Get())){
+			if(count($this->Http_Get())){
 				$this->notFound();
 			}
 			elseif(($r = $this->getView())&&($r = $r->getController())&&($r = $r->getRouter())){
@@ -50,7 +50,7 @@ class Presenter extends ArrayObject{
 			}
 		}
 		$this->time = time();
-		$this->BASE_HREF = $this->HTTP_URL()->getBaseHref();
+		$this->BASE_HREF = $this->Http_Url()->getBaseHref();
 		$this->dynamic();
 	}
 	function dynamic(){}

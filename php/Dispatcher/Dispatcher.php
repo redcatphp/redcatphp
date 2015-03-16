@@ -67,7 +67,7 @@ class Dispatcher {
 		$this->run($path);
 	}
 	function haveParameters(){
-		return $this->questionMark||count($this->HTTP_Get);
+		return $this->questionMark||count($this->Http_Get);
 	}
 	private function objectify(&$a){
 		if(is_array($a)&&isset($a[0])&&is_string($a[0])){

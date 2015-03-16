@@ -117,12 +117,12 @@ class Toolbox{
 		if($langMap&&isset($langMap[$path])){
 			$xPath = $langMap[$path];
 		}
-		$head->append('<link rel="alternate" href="'.$this->HTTP_URL->getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		$head->append('<link rel="alternate" href="'.$this->Http_Url->getSubdomainHref().$xPath.'" hreflang="x-default" />');
 		foreach(glob('langs/*.ini') as $langFile){
 			$lg = pathinfo($langFile,PATHINFO_FILENAME);
 			$langMap = parse_ini_file($langFile);
 			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.$this->HTTP_URL->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+			$head->append('<link rel="alternate" href="'.$this->Http_Url->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
 		}
 	}
 }

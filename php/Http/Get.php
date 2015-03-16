@@ -1,11 +1,10 @@
 <?php
-namespace Surikat\HTTP;
-use ArrayAccess;
-class Server implements ArrayAccess{
+namespace Surikat\Http;
+class Get implements \IteratorAggregate,\ArrayAccess,\Countable{
 	protected $data;
 	function __construct($data=null){
 		if(!$data)
-			$data = $_SERVER;
+			$data = $_GET;
 		$this->data = $data;
 	}
 	function offsetExists($k){
@@ -22,23 +21,27 @@ class Server implements ArrayAccess{
 		$this->data[$k] = $v;
 	}
 	function __isset($k){
-		return $this->offsetExists($this->_dolphin($k));
+		return isset($this->data[$k]);
 	}
 	function __unset($k){
-		return $this->offsetUnset($this->_dolphin($k));
+		if(isset($this->data[$k]))
+			unset($this->data[$k]);
 	}
 	function __get($k){
-		return $this->offsetGet($this->_dolphin($k));
+		return isset($this->data[$k])?$this->data[$k]:null;
 	}
 	function __set($k,$v){
-		return $this->offsetSet($this->_dolphin($k));
+		$this->data[$k] = $v;
+	}
+	function count(){
+		return count($this->data);
+	}
+	function getIterator(){
+		return new \ArrayIterator($this->data);
 	}
 	function overrideGlobal(){
 		foreach($this->data as $k=>$v){
-			$_SERVER[$k] = $v;
+			$_GET[$k] = $v;
 		}
-	}
-	private function _dolphin($k){
-		return strtoupper(str_replace(' ', '_', preg_replace('/([a-z])([A-Z])/', '$1 $2', $k)));
 	}
 }

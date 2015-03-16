@@ -17,8 +17,8 @@ class ServiceAuth {
 		echo json_encode($this->User_Session->get('_AUTH_','email'));
 	}
 	function persona(){
-		if(isset($this->HTTP_Post['assertion'])){
-			$assertion = $this->HTTP_Post['assertion'];
+		if(isset($this->Http_Post['assertion'])){
+			$assertion = $this->Http_Post['assertion'];
 			$audience = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']==='on'?'https://':'http://').$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'];
 			$postdata = 'assertion='.urlencode($assertion).'&audience='.urlencode($audience);
 			$ch = curl_init();

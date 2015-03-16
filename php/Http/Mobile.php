@@ -1,4 +1,4 @@
-<?php namespace Surikat\HTTP;
+<?php namespace Surikat\Http;
 abstract class Mobile{
 	//Mobile Device Detect - This code have been made by Simon Boudrias ( http://simonboudrias.com ) It's inspire by a code by Andy Moore ( http://detectmobilebrowsers.mobi/ ) So, that's its. No license, and do whatever you want. There's no garantee whatsoever this code gonna work.
 	static function redirect($settings){

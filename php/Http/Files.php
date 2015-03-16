@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\HTTP;
-class Get implements \IteratorAggregate,\ArrayAccess,\Countable{
+namespace Surikat\Http;
+class Files implements \IteratorAggregate,\ArrayAccess,\Countable{
 	protected $data;
 	function __construct($data=null){
 		if(!$data)
-			$data = $_GET;
+			$data = $_FILES;
 		$this->data = $data;
 	}
 	function offsetExists($k){
@@ -41,7 +41,7 @@ class Get implements \IteratorAggregate,\ArrayAccess,\Countable{
 	}
 	function overrideGlobal(){
 		foreach($this->data as $k=>$v){
-			$_GET[$k] = $v;
+			$_FILES[$k] = $v;
 		}
 	}
 }

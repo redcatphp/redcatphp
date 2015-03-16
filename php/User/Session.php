@@ -36,14 +36,14 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = SURIKAT_PATH.'.tmp/attempts/';
-		$this->cookiePath = '/'.$this->HTTP_URL()->getSuffixHref();
-		$this->cookieDomain = $this->HTTP_URL()->getServerHref();
+		$this->cookiePath = '/'.$this->Http_Url()->getSuffixHref();
+		$this->cookieDomain = $this->Http_Url()->getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->User_SessionHandler = $sessionHandler;
 		else
 			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
-		$this->HTTP_Cookie = $this->HTTP_Cookie();
+		$this->Http_Cookie = $this->Http_Cookie();
 		$this->garbageCollector();
 	}
 	function handleReload(){
@@ -151,7 +151,7 @@ class Session{
 		return is_file($this->serverFile($id));
 	}
 	function cookie(){
-		return $this->HTTP_Cookie[$this->name];
+		return $this->Http_Cookie[$this->name];
 	}
 	function clientId(){
 		$cookie = $this->cookie();
@@ -292,14 +292,14 @@ class Session{
 		return $this->data[$k];
 	}
 	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
-		if($expire&&isset($this->HTTP_Cookie[$name]))
+		if($expire&&isset($this->Http_Cookie[$name]))
 			$this->removeCookie($name, $path, $domain, $secure, $httponly);
 		if($global)
-			$this->HTTP_Cookie[$name] = $value;
+			$this->Http_Cookie[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
     function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
-        unset($this->HTTP_Cookie[$name]);
+        unset($this->Http_Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
 }

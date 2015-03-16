@@ -1,5 +1,5 @@
-<?php namespace Surikat\HTTP;
-class URL {
+<?php namespace Surikat\Http;
+class Url {
 	protected $baseHref;
 	protected $suffixHref;
 	protected $server;

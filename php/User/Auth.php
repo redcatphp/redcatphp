@@ -97,7 +97,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = $this->HTTP_URL->getBaseHref();
+			$this->siteUrl = $this->Http_Url->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
@@ -628,7 +628,7 @@ class Auth{
 	function lock($r,$redirect=true){
 		if($this->allowed($r))
 			return;
-		$this->HTTP_Request->nocacheHeaders();
+		$this->Http_Request->nocacheHeaders();
 		if($redirect){
 			if($this->connected())
 				$redirect = '403';
@@ -637,7 +637,7 @@ class Auth{
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{
-			$this->HTTP_Request->code(403);
+			$this->Http_Request->code(403);
 		}
 		exit;
 	}

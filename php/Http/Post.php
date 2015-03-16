@@ -1,11 +1,10 @@
 <?php
-namespace Surikat\HTTP;
-use ArrayAccess;
-class Cookie implements ArrayAccess{
+namespace Surikat\Http;
+class Post implements \IteratorAggregate,\ArrayAccess,\Countable{
 	protected $data;
 	function __construct($data=null){
 		if(!$data)
-			$data = $_COOKIE;
+			$data = $_POST;
 		$this->data = $data;
 	}
 	function offsetExists($k){
@@ -34,9 +33,15 @@ class Cookie implements ArrayAccess{
 	function __set($k,$v){
 		$this->data[$k] = $v;
 	}
+	function count(){
+		return count($this->data);
+	}
+	function getIterator(){
+		return new \ArrayIterator($this->data);
+	}
 	function overrideGlobal(){
 		foreach($this->data as $k=>$v){
-			$_COOKIE[$k] = $v;
+			$_POST[$k] = $v;
 		}
 	}
 }

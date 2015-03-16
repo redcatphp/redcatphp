@@ -88,15 +88,15 @@ class Uploader{
 			$callback($dir.$name);
 	}
 	function file($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($this->HTTP_Files[$k])){
-			if($this->HTTP_Files[$k]['name'])
-				$this->uploadFile($this->HTTP_Files[$k],$dir,$mime,$callback,false,true,$maxFileSize);
+		if(isset($this->Http_Files[$k])){
+			if($this->Http_Files[$k]['name'])
+				$this->uploadFile($this->Http_Files[$k],$dir,$mime,$callback,false,true,$maxFileSize);
 			return true;
 		}
 	}
 	function files($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($this->HTTP_Files[$k])){
-			$files =& $this->HTTP_Files[$k];
+		if(isset($this->Http_Files[$k])){
+			$files =& $this->Http_Files[$k];
 			for($i=0;count($files['name'])>$i;$i++){
 				$file = [];
 				foreach(array_keys($files) as $prop)

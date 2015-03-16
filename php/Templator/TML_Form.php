@@ -21,7 +21,7 @@ class TML_Form extends TML {
 		$type = $type->value;
 		$fid = 'crud'.md5(serialize($this));
 		$code = '<?php $'.$fid.' = function(){
-			if(@$this->HTTP_Post()->type]!=\''.$type.'\') return;
+			if(@$this->Http_Post()->type]!=\''.$type.'\') return;
 		';
 		foreach($this('input,select,textarea') as $el){
 			if(!$this->name||$this->name=='type')
@@ -38,7 +38,7 @@ class TML_Form extends TML {
 				case 'input':
 					switch($el->type){
 						case 'hidden':
-							$code .= ' $this->HTTP_Post()->'.$n.' = "'.str_replace('"','\\"',$el->value).'"; ';
+							$code .= ' $this->Http_Post()->'.$n.' = "'.str_replace('"','\\"',$el->value).'"; ';
 						break;
 						case 'file':
 							if($el->multiple){
@@ -116,18 +116,18 @@ class TML_Form extends TML {
 						continue;
 					switch($a){
 						case 'filter':
-							$code .= ' $this->HTTP_Post()->'.$n.' = Validation\\Filter::'.$b.'($this->HTTP_Post()->'.$n.','.($v?','.var_export($v,true):'').'); ';
+							$code .= ' $this->Http_Post()->'.$n.' = Validation\\Filter::'.$b.'($this->Http_Post()->'.$n.','.($v?','.var_export($v,true):'').'); ';
 							$el->$k = null;
 						break;
 						case 'ruler':
-							$code .= ' if(($r=Validation\\Ruler::'.$b.'($this->HTTP_Post()->'.$n.($v?','.var_export($v,true):'').'))!==true) return $r; ';
+							$code .= ' if(($r=Validation\\Ruler::'.$b.'($this->Http_Post()->'.$n.($v?','.var_export($v,true):'').'))!==true) return $r; ';
 							$el->$k = null;
 						break;
 					}
 				}
 			}
 		}
-		$code .= 'return R::create($this->HTTP_Post());};if(count($this->HTTP_Post()))$form_'.$type.'=$'.$fid.'();?>';
+		$code .= 'return R::create($this->Http_Post());};if(count($this->Http_Post()))$form_'.$type.'=$'.$fid.'();?>';
 		array_unshift($this->childNodes,$code);
 	}
 	*/

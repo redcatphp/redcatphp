@@ -1,4 +1,4 @@
-<?php namespace Surikat\HTTP;
+<?php namespace Surikat\Http;
 abstract class AuthDigest{
 	static $defaultRealm = 'Restricted area';
 	static function start($realm=null){

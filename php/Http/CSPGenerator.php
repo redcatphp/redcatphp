@@ -1,4 +1,4 @@
-<?php namespace Surikat\HTTP;
+<?php namespace Surikat\Http;
 /*
 Copyright (c) 2014-2015, Tom
 All rights reserved.
