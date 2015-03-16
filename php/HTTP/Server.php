@@ -33,6 +33,11 @@ class Server implements ArrayAccess{
 	function __set($k,$v){
 		return $this->offsetSet($this->_dolphin($k));
 	}
+	function overrideGlobal(){
+		foreach($this->data as $k=>$v){
+			$_SERVER[$k] = $v;
+		}
+	}
 	private function _dolphin($k){
 		return strtoupper(str_replace(' ', '_', preg_replace('/([a-z])([A-Z])/', '$1 $2', $k)));
 	}
