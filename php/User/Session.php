@@ -26,6 +26,7 @@ class Session{
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
 	protected $User_SessionHandler;
+	protected $HTTP_Cookie;
 	protected $handled;
 	function __construct($name=null,$saveRoot=null,SessionHandler $sessionHandler=null){
 		if(!$saveRoot)
@@ -42,6 +43,7 @@ class Session{
 			$this->User_SessionHandler = $sessionHandler;
 		else
 			$this->User_SessionHandler = $this->getDependency('User_SessionHandler');
+		$this->HTTP_Cookie = $this->HTTP_Cookie();
 		$this->garbageCollector();
 	}
 	function handleReload(){
@@ -66,7 +68,7 @@ class Session{
 			else{
 				$this->id = null;
 				$this->key = null;
-				self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
+				$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
 				$this->checkBlocked();
 			}
@@ -83,7 +85,7 @@ class Session{
 		if($this->id)
 			$this->User_SessionHandler->destroy($this->getPrefix().$this->id);
 		$this->User_SessionHandler->close();
-		self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
+		$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 		return true;
 	}
 	function destroyKey($key){
@@ -149,7 +151,7 @@ class Session{
 		return is_file($this->serverFile($id));
 	}
 	function cookie(){
-		return self::getCookie($this->name);
+		return $this->HTTP_Cookie[$this->name];
 	}
 	function clientId(){
 		$cookie = $this->cookie();
@@ -210,7 +212,7 @@ class Session{
 	}
 	function checkBlocked(){
 		if($s=$this->isBlocked()){
-			self::removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
+			$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 			$this->reset();
 			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
 		}
@@ -271,7 +273,7 @@ class Session{
 		return is_file($this->attemptsPath.$ip)&&unlink($this->attemptsPath.$ip);
 	}
 	function writeCookie(){
-		self::setCookie(
+		$this->setCookie(
 			$this->name,
 			$this->getPrefix().$this->id,
 			($this->cookieLifetime?time()+$this->cookieLifetime:0),
@@ -289,19 +291,15 @@ class Session{
 	function __get($k){
 		return $this->data[$k];
 	}
-	
-	static function getCookie($name){
-        return isset($_COOKIE[$name])?$_COOKIE[$name]:null;
-	}
-	static function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
-		if($expire&&isset($_COOKIE[$name]))
-			self::removeCookie($name, $path, $domain, $secure, $httponly);
+	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
+		if($expire&&isset($this->HTTP_Cookie[$name]))
+			$this->removeCookie($name, $path, $domain, $secure, $httponly);
 		if($global)
-			$_COOKIE[$name] = $value;
+			$this->HTTP_Cookie[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
-    static function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
-        unset($_COOKIE[$name]);
+    function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
+        unset($this->HTTP_Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
 }
