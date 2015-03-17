@@ -26,7 +26,7 @@ class Session{
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
 	protected $User_SessionHandler;
-	protected $HTTP_Cookie;
+	protected $Http_Cookie;
 	protected $handled;
 	function __construct($name=null,$saveRoot=null,SessionHandler $sessionHandler=null){
 		if(!$saveRoot)
