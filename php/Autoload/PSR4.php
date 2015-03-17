@@ -18,7 +18,7 @@ class PSR4{
 		if(file_exists($file)){
 			require $file;
 			if(!class_exists($class,false)&&!interface_exists($class,false)&&!trait_exists($class,false))
-				throw new Exception('Class "'.$class.'" not found as expected in "'.$file.'"');
+				throw new Exception(sprintf('Class "%s" not found as expected in "%s"',$class,$file));
 			$this->checked[] = $class;
 			return true;
 		}
