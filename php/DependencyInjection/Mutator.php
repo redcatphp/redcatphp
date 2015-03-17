@@ -37,6 +37,8 @@ trait Mutator {
 			return $this->__dependenciesRegistry[$rkey];
 		if(method_exists($this,$key))
 			$value = $this->$key($args);
+		elseif(method_exists($this,'_'.$key))
+			$value = $this->{'_'.$key}($args);
 		else
 			$value = $this->defaultDependency($key,$args);
 		$this->setDependency($key,$value,$rkey);
@@ -44,8 +46,10 @@ trait Mutator {
 	}
 	function getNew($key,$args=null){
 		$key = Convention::toMethod($key);
-		if(method_exists($this,$key))
+		if(method_exists($this,'_'.$key))
 			return $this->$key($args);
+		elseif(method_exists($this,'_'.$key))
+			$value = $this->{'_'.$key}($args);
 		else
 			return $this->defaultNew($key,$args);
 	}
