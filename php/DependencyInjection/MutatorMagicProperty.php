@@ -3,7 +3,10 @@ trait MutatorMagicProperty{
 	private $__metaRegistry = [];
 	function &__get($k){
 		if(ctype_upper($k{0})){
-			$r = $this->getDependency($k);
+			if(strpos($k,'__')!==false)
+				$r = $this->treeDependency($k);
+			else
+				$r = $this->getDependency($k);
 			return $r;
 		}
 		elseif(is_callable('parent::__get')){
@@ -17,11 +20,17 @@ trait MutatorMagicProperty{
 		}
 	}
 	function __set($k,$v){
-		if(ctype_upper($k{0}))
-			$this->setDependency($k,$v);
-		elseif(is_callable('parent::__set'))
+		if(ctype_upper($k{0})){
+			if(strpos($k,'__')!==false)
+				$this->treeDependency($k,null,$v);
+			else
+				$this->setDependency($k,$v);
+		}
+		elseif(is_callable('parent::__set')){
 			parent::__set($k,$v);
-		else
+		}
+		else{
 			$this->__metaRegistry[$k] = $v;
+		}
 	}
 }

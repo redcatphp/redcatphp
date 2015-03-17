@@ -68,4 +68,23 @@ trait Mutator {
 	function Dependency_Container(){
 		return Container::get();
 	}
+	function treeDependency($key,$args=null){
+		if(is_string($key))
+			$key = str_replace('__',':',explode(':',$key));
+		$r = $this;
+		$c = count($key)-1;
+		foreach($key as $i=>$k){
+			if($i<$c){
+				$r = $r->getDependency($k);
+			}
+			elseif(func_num_args()>2){
+				$r->setDependency($k,func_get_arg(2));
+				$r = func_get_arg(2);
+			}
+			else{
+				$r = $r->getDependency($k,$args);
+			}
+		}
+		return $r;
+	}
 }

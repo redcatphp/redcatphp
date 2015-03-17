@@ -2,13 +2,20 @@
 use BadMethodCallException;
 trait MutatorMagicCall{
 	function __call($f,$args){
-		if(ctype_upper($f{0}))
-			return $this->getDependency($f,$args);
-		elseif(is_callable('parent::__call'))
+		if(ctype_upper($f{0})){
+			if(strpos($f,'__')!==false)
+				return $this->treeDependency($f,$args);
+			else
+				return $this->getDependency($f,$args);
+		}
+		elseif(is_callable('parent::__call')){
 			return parent::__call($f,$args);
-		elseif(method_exists($this,'___call'))
+		}
+		elseif(method_exists($this,'___call')){
 			return parent::___call($f,$args);
-		else
+		}
+		else{
 			throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()',get_class($this),$f));
+		}
 	}
 }
