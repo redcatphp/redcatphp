@@ -1,7 +1,7 @@
 <?php namespace Surikat\Model;
 use Surikat\Model\RedBeanPHP\QueryWriter\PostgreSQL;
 use Surikat\Model\RedBeanPHP\QueryWriter\MySQL;
-use Surikat\Geo\Geocoding;
+use Surikat\Geocoding\Geocoding;
 use Surikat\Validation\Ruler;
 trait Mixin_Geopoint{
 	static $columnPointCast	= 'point';
