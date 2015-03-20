@@ -1,4 +1,4 @@
-<?php namespace Surikat\Dispatcher;
+<?php namespace Surikat\UriDispatcher;
 class Index extends ViewController{
 	protected $useConvention = true;
 	protected $i18nConvention;
@@ -17,7 +17,7 @@ class Index extends ViewController{
 	}
 	function convention(){
 		$this->append('service/',['Service']);
-		$this->append(['Route_Extension','css|js|png|jpg|jpeg|gif'], ['Dispatcher_Synaptic']);
+		$this->append(['Route_Extension','css|js|png|jpg|jpeg|gif'], ['UriDispatcher_Synaptic']);
 		$this->append(['Route_ByTml','plugin'],$this);
 		$this->append(['Route_ByTml'],$this);
 		if($this->i18nConvention)
@@ -25,7 +25,7 @@ class Index extends ViewController{
 		if($this->backoffice){
 			if($this->backoffice===true)
 				$this->backoffice = 'backoffice/';
-			$this->prepend($this->backoffice,['Dispatcher_Backoffice']);
+			$this->prepend($this->backoffice,['UriDispatcher_Backoffice']);
 		}
 	}
 	function run($path){

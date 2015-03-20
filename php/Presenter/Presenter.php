@@ -55,6 +55,6 @@ class Presenter extends ArrayObject{
 	}
 	function dynamic(){}
 	function notFound(){
-		$this->Dispatcher_Index()->getController()->error(404);
+		$this->UriDispatcher_Index()->getController()->error(404);
 	}
 }

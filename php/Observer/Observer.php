@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Event;
+namespace Surikat\Observer;
 trait Observer{
 	function update($subject,$event=null){
 		$method = 'on'.str_replace(' ', '', ucwords(str_replace('.', ' ', $event)));

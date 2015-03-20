@@ -1,7 +1,7 @@
-<?php namespace Surikat\Dispatcher;
+<?php namespace Surikat\UriDispatcher;
 use Surikat\Templator\Template;
 use Controller\Controller;
-class ViewController extends Dispatcher{
+class ViewController extends UriDispatcher{
 	protected $Controller;
 	protected $View;
 	function __invoke(){
