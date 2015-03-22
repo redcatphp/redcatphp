@@ -1,8 +1,14 @@
 <?php namespace Surikat\Autoload;
-use Exception;
-class PSR4{
+class Psr4{
 	protected $namespaces = [];
 	protected $checked = [];
+	function __construct(){
+		foreach(func_get_args() as $a){
+			foreach($a as $prefix=>$base_dir){
+				$this->addNamespace($prefix,$base_dir);
+			}
+		}
+	}
 	function addNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';
 		$base_dir = rtrim($base_dir, '/').'/';
@@ -18,7 +24,7 @@ class PSR4{
 		if(file_exists($file)){
 			require $file;
 			if(!class_exists($class,false)&&!interface_exists($class,false)&&!trait_exists($class,false))
-				throw new Exception(sprintf('Class "%s" not found as expected in "%s"',$class,$file));
+				throw new \Exception(sprintf('Class "%s" not found as expected in "%s"',$class,$file));
 			$this->checked[] = $class;
 			return true;
 		}
@@ -51,7 +57,6 @@ class PSR4{
 			if($this->findClass($class,$relative_class,$prefix))
 				return;
 		}
-		$this->extendSuperClass($class);
 	}
 	function __invoke($class){
 		return $this->classLoad($class);

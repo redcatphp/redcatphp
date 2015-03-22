@@ -1,5 +1,4 @@
 <?php namespace Surikat\Route;
-use Route\Faceted;
 class ByTml extends Faceted{
 	protected $match;
 	protected $dir = 'tml';

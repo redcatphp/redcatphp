@@ -1,6 +1,12 @@
 <?php namespace Surikat\Route;
 use ArrayAccess;
 class Faceted extends Route implements ArrayAccess{
+	protected $separatorWord = '-';
+	protected $forbiddenChrParam = [
+		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
+		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
+		';','.'
+	];
 	protected $separatorAnd = '+';
 	protected $separatorEq = ':';
 	protected $separatorOr = '&';
@@ -53,12 +59,6 @@ class Faceted extends Route implements ArrayAccess{
 	function getPath(){
 		return $this->path;
 	}
-	protected $separatorWord = '-';
-	protected $forbiddenChrParam = [
-		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
-		'{','(','_','$','@',')',']','}','=','+','$','£','*','µ','§','/',
-		';','.'
-	];
 	function filterParam($s){
 		$s = trim($s);
 		$s = strip_tags($s);

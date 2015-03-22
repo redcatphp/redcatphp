@@ -43,10 +43,8 @@ trait Mutator {
 		}
 		$key = $prefix.$key;
 		$c = str_replace('_','\\',$key);
-		if(interface_exists($c)){
-			if(!Container::get('Autoload')->instanceOfNS($value,$c)){
-				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
-			}
+		if(interface_exists($c)&&!($value instanceof $c)){
+			throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 		}
 		return $this->__dependenciesRegistry[$rkey] = $value;
 	}

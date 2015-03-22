@@ -569,7 +569,7 @@ abstract class PARSER{
 		}
 		else{
 			if($class===true)
-				$class = 'Templator\\'.$name;
+				$class = 'Surikat\\Templator\\'.$name;
 			$c = $class?$class:self::getClass($name);
 			$node = new $c();
 			$node->setBuilder($this);
@@ -641,9 +641,9 @@ abstract class PARSER{
 			$n = substr($n,0,$p);
 		$n = strtolower($n);
 		$n = str_replace('-','_',$n);
-		if(class_exists($c='Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
+		if(class_exists($c='Surikat\\Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
 			return $c;
-		return 'Templator\\TML';
+		return 'Surikat\\Templator\\TML';
 	}
 	function evalue($v,$vars=null){
 		if(isset($vars))

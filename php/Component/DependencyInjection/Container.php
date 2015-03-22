@@ -1,11 +1,7 @@
 <?php namespace Surikat\DependencyInjection;
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\DependencyInjection\Facade;
 class Container{
-	use MutatorMagic,Facade{
-		Facade::__call insteadof MutatorMagic;
-		MutatorMagic::__call as ___call;
-	}
+	use MutatorMagic;
+	use Registry;
 	static function get(){
 		$args = func_get_args();
 		if(empty($args))
