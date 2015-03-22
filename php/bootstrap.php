@@ -7,7 +7,6 @@
 use Surikat\DependencyInjection\Container;
 use Surikat\Autoload\SuperNamespace;
 
-require __DIR__.'/Component/DependencyInjection/Convention.php';
 require __DIR__.'/Component/DependencyInjection/Mutator.php';
 require __DIR__.'/Component/DependencyInjection/MutatorMagicProperty.php';
 require __DIR__.'/Component/DependencyInjection/MutatorProperty.php';

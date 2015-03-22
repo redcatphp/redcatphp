@@ -1,5 +1,4 @@
 <?php namespace Surikat\DependencyInjection;
-use ReflectionClass;
 use Surikat\DependencyInjection\MutatorMagic;
 use Surikat\DependencyInjection\Facade;
 class Container{
@@ -17,19 +16,7 @@ class Container{
 	static function set($key,$value){
 		return static::getStatic()->setDependency($key,$value);
 	}
-	static function factory($value){
-		$value = Convention::toClassMixed($value);
-		if($value&&!is_object($value)){
-			if(is_array($value)&&!empty($value)){
-				$value = (new ReflectionClass(array_shift($value)))->newInstanceArgs($value);
-			}
-			else{
-				$value = new $value();
-			}
-		}
-		return $value;
-	}
 	function defaultDependency($key,$args=null){
-		return $this->defaultNew($key,$args);
+		return $this->factoryDependency($key,$args);
 	}
 }

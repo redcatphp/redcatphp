@@ -160,7 +160,7 @@ class RPDO implements Driver
 			$this->bindParams( $statement, $bindings );
 
 			if($this->Dev_Level->DBSPEED)
-				$Chrono = $this->getNew('Dev\Chrono');
+				$Chrono = $this->newDependency('Dev\Chrono');
 			$statement->execute();
 			if($this->Dev_Level->DBSPEED){
 				$this->debugger()->log('<span style="color:#d00;">'.$Chrono->display().'</span>');

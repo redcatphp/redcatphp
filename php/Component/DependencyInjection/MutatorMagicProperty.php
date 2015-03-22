@@ -1,8 +1,8 @@
 <?php namespace Surikat\DependencyInjection;
 trait MutatorMagicProperty{
-	private $__metaRegistry = [];
+	private $__legacyRegistry = [];
 	function &__get($k){
-		if(ctype_upper($k{0})){
+		if(ctype_upper($k{0})||($k{0}=='_'&&ctype_upper($k{1}))){
 			if(strpos($k,'__')!==false)
 				$r = $this->treeDependency($k);
 			else
@@ -14,13 +14,13 @@ trait MutatorMagicProperty{
 			return $r;
 		}
 		else{
-			if(!isset($this->__metaRegistry[$k]))
-				$this->__metaRegistry[$k] = null;
-			return $this->__metaRegistry[$k];
+			if(!isset($this->__legacyRegistry[$k]))
+				$this->__legacyRegistry[$k] = null;
+			return $this->__legacyRegistry[$k];
 		}
 	}
 	function __set($k,$v){
-		if(ctype_upper($k{0})){
+		if(ctype_upper($k{0})||($k{0}=='_'&&ctype_upper($k{1}))){
 			if(strpos($k,'__')!==false)
 				$this->treeDependency($k,null,$v);
 			else
@@ -30,7 +30,7 @@ trait MutatorMagicProperty{
 			parent::__set($k,$v);
 		}
 		else{
-			$this->__metaRegistry[$k] = $v;
+			$this->__legacyRegistry[$k] = $v;
 		}
 	}
 }

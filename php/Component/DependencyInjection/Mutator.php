@@ -1,9 +1,10 @@
 <?php namespace Surikat\DependencyInjection;
 use Exception;
-use Surikat\DependencyInjection\Convention;
+use ReflectionClass;
 use Surikat\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
+	private $__dependenciesPrefix = 'Surikat\\';
 	function setDependency($key,$value=null,$rkey=null){
 		if(!isset($rkey))
 			$rkey = $key;
@@ -12,10 +13,36 @@ trait Mutator {
 				$value = $key;
 			$key = get_class($key);
 		}
-		$key = Convention::toMethod($key);
-		if(!is_object($value))
-			$value = $this->getDependency('Dependency_Container')->factory($value);
-		$c = Convention::toClass($key);
+		$key = str_replace('\\','_',$key);
+		if(!is_object($value)&&$value){
+			if(is_array($value)){
+				$args = $value;
+				$value = array_shift($args);
+			}
+			if($value{0}=='_'){
+				$value = substr($value,1);
+				$prefix = '';
+			}
+			else{
+				$prefix = $this->__dependenciesPrefix;
+			}
+			$value = self::__interfaceSubstitutionDefaultClass($prefix.$value);
+			if(isset($args)&&!empty($args)){
+				$value = (new ReflectionClass($value))->newInstanceArgs($args);
+			}
+			else{
+				$value = new $value();
+			}
+		}
+		if($key{0}=='_'){
+			$key = substr($key,1);
+			$prefix = '';
+		}
+		else{
+			$prefix = $this->__dependenciesPrefix;
+		}
+		$key = $prefix.$key;
+		$c = str_replace('_','\\',$key);
 		if(interface_exists($c)){
 			if(!Container::get('Autoload')->instanceOfNS($value,$c)){
 				throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
@@ -24,7 +51,7 @@ trait Mutator {
 		return $this->__dependenciesRegistry[$rkey] = $value;
 	}
 	function getDependency($key,$args=null){
-		$key = Convention::toMethod($key);
+		$key = str_replace('\\','_',$key);
 		if(empty($args)){
 			$rkey = $key;
 		}
@@ -44,23 +71,33 @@ trait Mutator {
 		$this->setDependency($key,$value,$rkey);
 		return $this->getDependency($key,$args);
 	}
-	function getNew($key,$args=null){
-		$key = Convention::toMethod($key);
+	function newDependency($key,$args=null){
+		$key = str_replace('\\','_',$key);
 		if(method_exists($this,'_'.$key))
 			return $this->$key($args);
 		elseif(method_exists($this,'_'.$key))
 			$value = $this->{'_'.$key}($args);
 		else
-			return $this->defaultNew($key,$args);
+			return $this->factoryDependency($key,$args);
 	}
-	function defaultNew($key,$args=null){
-		if(!empty($args)){
-			if(!is_array($args))
-				$args = [$args];
-			array_unshift($args,$key);
-			$key = $args;
+	function factoryDependency($key,$args=null){
+		if($key{0}=='_'){
+			$key = substr($key,1);
+			$prefix = '';
 		}
-		return $this->getDependency('Dependency_Container')->factory($key);
+		else{
+			$prefix = $this->__dependenciesPrefix;
+		}
+		$key = self::__interfaceSubstitutionDefaultClass($prefix.$key);
+		if(is_array($args)&&!empty($args)){
+			return (new ReflectionClass($key))->newInstanceArgs($args);
+		}
+		else{
+			return new $key();
+		}
+	}
+	function setDependencyPrefix($prefix){
+		$this->__dependenciesPrefix = $prefix;
 	}
 	function defaultDependency($key,$args=null){
 		return $this->getDependency('Dependency_Container')->getDependency($key,$args);
@@ -86,5 +123,18 @@ trait Mutator {
 			}
 		}
 		return $r;
+	}
+	private static function __interfaceSubstitutionDefaultClass($value){
+		$value = str_replace('_','\\',$value);
+		if(interface_exists($value)){
+			$pos = strrpos($value,'\\');
+			if($pos===false)
+				$value .= '\\'.$value;
+			else
+				$value .= substr($value,strrpos($value,'\\'));
+		}
+		if(strpos($value,'\\')===false&&!class_exists($value))
+			$value = $value.'\\'.$value;
+		return $value;
 	}
 }
