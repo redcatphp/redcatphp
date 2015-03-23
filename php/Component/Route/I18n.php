@@ -15,6 +15,7 @@ class I18n extends Faceted {
 		$uri = $this->buildPath();
 	}
 	protected function i18nBySubdomain($path){
+		$path = urldecode($path);
 		$templatePath = $path;
 		$langMap = false;
 		if($lang=$this->Http_Url->getSubdomainLang()){
