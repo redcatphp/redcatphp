@@ -1,6 +1,4 @@
 <?php namespace Surikat\Component\DependencyInjection;
-use Exception;
-use ReflectionClass;
 use Surikat\Component\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
@@ -28,7 +26,7 @@ trait Mutator {
 			}
 			$value = self::__interfaceSubstitutionDefaultClass($prefix.$value);
 			if(isset($args)&&!empty($args)){
-				$value = (new ReflectionClass($value))->newInstanceArgs($args);
+				$value = (new \ReflectionClass($value))->newInstanceArgs($args);
 			}
 			else{
 				$value = new $value();
@@ -44,7 +42,7 @@ trait Mutator {
 		$key = $prefix.$key;
 		$c = str_replace('_','\\',$key);
 		if(interface_exists($c)&&!($value instanceof $c)){
-			throw new Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
+			throw new \Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 		}
 		return $this->__dependenciesRegistry[$rkey] = $value;
 	}
@@ -88,7 +86,7 @@ trait Mutator {
 		}
 		$key = self::__interfaceSubstitutionDefaultClass($prefix.$key);
 		if(is_array($args)&&!empty($args)){
-			return (new ReflectionClass($key))->newInstanceArgs($args);
+			return (new \ReflectionClass($key))->newInstanceArgs($args);
 		}
 		else{
 			return new $key();
