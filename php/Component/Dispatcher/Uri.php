@@ -1,8 +1,8 @@
-<?php namespace Surikat\Component\UriDispatcher;
+<?php namespace Surikat\Component\Dispatcher;
 use ReflectionClass;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 use Surikat\Component\Route\Route;
-class UriDispatcher {
+class Uri {
 	use MutatorMagic;
 	protected $routes = [];
 	protected $questionMark;
@@ -84,7 +84,7 @@ class UriDispatcher {
 			}
 		}
 		if($a instanceof Route){
-			$a->setDependency('UriDispatcher_UriDispatcher',$this);
+			$a->setDependency('Dispatcher_Uri',$this);
 		}
 	}
 }

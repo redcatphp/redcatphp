@@ -1,5 +1,6 @@
-<?php namespace Surikat\Component\UriDispatcher;
-class Synaptic extends UriDispatcher{
+<?php namespace Surikat\Package\Cms\DispatcherUri;
+use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
+class Synaptic extends Dispatcher_Uri{
 	protected $pathFS;
 	function __construct($pathFS=''){
 		$this->pathFS = rtrim($pathFS,'/');

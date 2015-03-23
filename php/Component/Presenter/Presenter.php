@@ -55,6 +55,6 @@ class Presenter extends ArrayObject{
 	}
 	function dynamic(){}
 	function notFound(){
-		$this->UriDispatcher_Index()->getController()->error(404);
+		$this->_Surikat_Package_Cms_DispatcherUri_Index()->getController()->error(404);
 	}
 }

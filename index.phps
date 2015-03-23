@@ -19,4 +19,4 @@ $SURIKAT->Dev_Level->STD();
 $SURIKAT->Dev_Level->CSS();
 $SURIKAT->Dev_Level->JS();
 
-$SURIKAT->UriDispatcher_Index->runFromGlobals();
+$SURIKAT->_Surikat_Package_Cms_DispatcherUri_Index->runFromGlobals();

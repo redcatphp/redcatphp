@@ -5,9 +5,9 @@ use Surikat\Component\DependencyInjection\MutatorMagic;
 class I18n extends Faceted {
 	use MutatorMagic;
 	
-	protected $UriDispatcher;
-	function __construct($UriDispatcher){
-		$this->UriDispatcher = $UriDispatcher;
+	protected $DispatcherUri;
+	function __construct($DispatcherUri){
+		$this->DispatcherUri = $DispatcherUri;
 	}
 	function __invoke(&$uri){
 		parent::__invoke($uri);
@@ -31,7 +31,7 @@ class I18n extends Faceted {
 		else
 			$lang = Config::langs('default');
 		Lang::set($lang);
-		$ctrl = $this->UriDispatcher->getController();
+		$ctrl = $this->DispatcherUri->getController();
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');		
 		$ctrl->getView()->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templator_Toolbox->i18nGettext($TML);

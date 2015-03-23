@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\Component\EventDispatcher;
+namespace Surikat\Component\Dispatcher;
 use Surikat\Component\DependencyInjection\Mutator;
-class EventDispatcher{
+class Event{
 	use Mutator;
 	protected $events = [];
 	function append($event,$listener,$index=0){

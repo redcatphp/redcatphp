@@ -1,4 +1,4 @@
-<?php namespace Surikat\Component\UriDispatcher;
+<?php namespace Surikat\Package\Cms\DispatcherUri;
 class Backoffice extends ViewController{
 	protected $pathFS = 'backoffice';
 	function __construct(){
@@ -11,7 +11,7 @@ class Backoffice extends ViewController{
 		$this->User_Session->setName('surikat_backoffice');
 		$this
 			->append(['Route_Extension','css|js|png|jpg|jpeg|gif'],
-						['UriDispatcher_Synaptic',$this->pathFS])
+						['_Surikat_Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Route_ByTml','',$this->pathFS],function(){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
 				return call_user_func_array($this->getController(),func_get_args());
