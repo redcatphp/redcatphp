@@ -1,11 +1,11 @@
 <?php namespace Translator;
-use Surikat\FileSystem\FS;
-use Surikat\I18n\msgfmt;
-use Surikat\I18n\getTextExtractorTML;
-use Surikat\I18n\getTextExtractorPHP;
-use Surikat\I18n\Gettext\Extractors\Po;
-use Surikat\Model\R;
-use Surikat\Model\Query;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\I18n\msgfmt;
+use Surikat\Component\I18n\getTextExtractorTML;
+use Surikat\Component\I18n\getTextExtractorPHP;
+use Surikat\Component\I18n\Gettext\Extractors\Po;
+use Surikat\Component\Model\R;
+use Surikat\Component\Model\Query;
 class MessageService {
 	var $potfile = 'langs/messages.pot';
 	private $db;

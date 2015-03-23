@@ -1,9 +1,9 @@
-<?php namespace Surikat\Service; 
-use Surikat\FileSystem\FS;
-use Surikat\Vars\JSON;
-use Surikat\Minify\PHP as minPHP;
-use Surikat\Minify\JS as minJS;
-use Surikat\Minify\CSS as minCSS;
+<?php namespace Surikat\Component\Service; 
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\Vars\JSON;
+use Surikat\Component\Minify\PHP as minPHP;
+use Surikat\Component\Minify\JS as minJS;
+use Surikat\Component\Minify\CSS as minCSS;
 use ReflectionClass;
 use ReflectionMethod;
 use ZipArchive;
