@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\Route;
 use Surikat\Component\Config\Config;
-use I18n\Lang;
+use Surikat\Component\I18n\Lang;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class I18n extends Faceted {
 	use MutatorMagic;

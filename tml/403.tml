@@ -1,6 +1,6 @@
 <Presenter:Presenter />
 <?
-$this->HTTP_Request()->code(403);
+$this->Http_Request()->code(403);
 ?>
 <extend>
 	<attr selector="main" addClass="not-found">

@@ -1,16 +1,15 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
 class Index extends ViewController{
 	protected $useConvention = true;
-	protected $i18nConvention;
+	public $i18nConvention;
 	//protected $backoffice = true;
-	protected $backoffice = 'backend/';
-	function __construct(){
+	public $backoffice = 'backend/';
+	function __construct($config=[]){
+		foreach($config as $k=>$v){
+			$this->$k = $v;
+		}
 		if($this->useConvention)
 			$this->convention();
-		$this->setHooks();
-	}
-	function setHooks(){
-		
 	}
 	function __invoke(){
 		return call_user_func_array([$this,'getController'],func_get_args());

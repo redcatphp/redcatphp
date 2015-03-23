@@ -91,7 +91,7 @@ namespace Surikat\Component\I18n{
 			self::$current = self::factory($locale,$domain);
 			self::$current->bind();
 		}
-		private function __construct($locale=null,$domain=null){
+		function __construct($locale=null,$domain=null){
 			$this->localesRoot = static::$defaultLocalesRoot;
 			$this->originLocale = $locale;
 			$this->locale = $locale;

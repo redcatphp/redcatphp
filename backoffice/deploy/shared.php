@@ -2,7 +2,7 @@
 use Surikat\Component\Git\GitDeploy\GitDeploy;
 
 set_time_limit(0);
-$this->HTTP_Request()->nocacheHeaders();
+$this->Http_Request()->nocacheHeaders();
 ob_implicit_flush(true);
 @ob_end_flush();
 

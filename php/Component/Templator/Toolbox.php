@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Templator;
-use I18n\Lang;
+use Surikat\Component\I18n\Lang;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class Toolbox{
 	use MutatorMagic;

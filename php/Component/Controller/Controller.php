@@ -2,7 +2,6 @@
 use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Templator\Template;
 use Surikat\Component\Templator\TML;
-use Surikat\Component\I18n\Lang;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class Controller{
 	use MutatorMagic;
