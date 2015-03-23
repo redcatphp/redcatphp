@@ -11,7 +11,7 @@
 	 * @uses ffmpeg http://ffmpeg.sourceforge.net/
 	 */
 	 
-	namespace Surikat\Video\PHPVideoToolkit;
+	namespace Surikat\Component\Video\PHPVideoToolkit;
 
 	/**
 	 * This class provides generic data parsing for the output from FFmpeg from specific

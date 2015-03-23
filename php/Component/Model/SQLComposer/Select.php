@@ -1,5 +1,5 @@
-<?php namespace Surikat\Model\SQLComposer;
-use Surikat\Model\SQLComposer;
+<?php namespace Surikat\Component\Model\SQLComposer;
+use Surikat\Component\Model\SQLComposer;
 class Select extends Where {
 	protected $distinct = false;
 	protected $offset = null;

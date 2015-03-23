@@ -1,4 +1,4 @@
-<?php namespace Surikat\Route;
+<?php namespace Surikat\Component\Route;
 use ArrayAccess;
 class Faceted extends Route implements ArrayAccess{
 	protected $separatorWord = '-';

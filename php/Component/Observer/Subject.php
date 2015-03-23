@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Observer;
+namespace Surikat\Component\Observer;
 use SplObjectStorage;
 trait Subject{
 	private $__observers;

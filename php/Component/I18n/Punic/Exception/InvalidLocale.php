@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an invalid locale specification has been hit
  */
-class InvalidLocale extends \Surikat\I18n\Punic\Exception
+class InvalidLocale extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $locale;
 
@@ -22,7 +22,7 @@ class InvalidLocale extends \Surikat\I18n\Punic\Exception
         } else {
             $message = "A valid locale should be a string, $type received";
         }
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::INVALID_LOCALE, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::INVALID_LOCALE, $previous);
     }
 
     /**

@@ -1,6 +1,6 @@
-<?php namespace Surikat\Route;
+<?php namespace Surikat\Component\Route;
 use Route\Faceted;
-use Surikat\Route\ByPhp;
+use Surikat\Component\Route\ByPhp;
 class ByPhpX extends ByPhp {
 	function __invoke($uri){
 		if($this->dir&&strpos($uri,$this->dir)!==0)

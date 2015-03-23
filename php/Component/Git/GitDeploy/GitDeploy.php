@@ -1,6 +1,6 @@
-<?php namespace Surikat\Git\GitDeploy;
-use Surikat\Config\INI as ConfigINI;
-use Surikat\Vars\Arrays;
+<?php namespace Surikat\Component\Git\GitDeploy;
+use Surikat\Component\Config\INI as ConfigINI;
+use Surikat\Component\Vars\Arrays;
 class GitDeploy{
 	static function factory($repoPath=null){
 		return new self($repoPath);

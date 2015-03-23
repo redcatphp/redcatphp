@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
     
     /**
      * Aids in the building of a Process.

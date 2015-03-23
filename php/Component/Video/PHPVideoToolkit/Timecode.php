@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
      
     /**
      * A class that is utilised by PHPVideoToolkit to manipulate and control timecode strings.

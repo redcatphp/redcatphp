@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 use ArrayIterator;
 class Iterator implements \ArrayAccess,\IteratorAggregate{
 	private $__dataNodes;

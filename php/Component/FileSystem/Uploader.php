@@ -1,7 +1,7 @@
-<?php namespace Surikat\FileSystem;
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\FileSystem\FS;
-use Surikat\Image\Images;
+<?php namespace Surikat\Component\FileSystem;
+use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\Image\Images;
 class Uploader{
 	use MutatorMagic;
 	public $extensionRewrite = [

@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\I18n\Gettext\Generators;
+namespace Surikat\Component\I18n\Gettext\Generators;
 
-use Surikat\I18n\Gettext\Translations;
+use Surikat\Component\I18n\Gettext\Translations;
 
 class PhpArray extends Generator implements GeneratorInterface
 {

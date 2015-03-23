@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 class TML_Eval extends CALL_APL {
 	function load(){
 		$vars = isset($this->Template)?$this->Template->getVars():null;

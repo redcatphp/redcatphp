@@ -1,35 +1,35 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
-use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\AssociationManager as AssociationManager;
-use Surikat\Model\RedBeanPHP\TagManager as TagManager;
-use Surikat\Model\RedBeanPHP\DuplicationManager as DuplicationManager;
-use Surikat\Model\RedBeanPHP\LabelMaker as LabelMaker;
-use Surikat\Model\RedBeanPHP\Finder as Finder;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-use Surikat\Model\RedBeanPHP\Logger as Logger;
-use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
-use Surikat\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
-use Surikat\Model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
-use Surikat\Model\RedBeanPHP\Adapter as Adapter;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\BeanHelper\SimpleBeanHelper as SimpleBeanHelper;
-use Surikat\Model\RedBeanPHP\Driver\RPDO as RPDO;
+use Surikat\Component\Model\RedBeanPHP\ToolBox as ToolBox;
+use Surikat\Component\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter as QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\AssociationManager as AssociationManager;
+use Surikat\Component\Model\RedBeanPHP\TagManager as TagManager;
+use Surikat\Component\Model\RedBeanPHP\DuplicationManager as DuplicationManager;
+use Surikat\Component\Model\RedBeanPHP\LabelMaker as LabelMaker;
+use Surikat\Component\Model\RedBeanPHP\Finder as Finder;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\Model\RedBeanPHP\Logger as Logger;
+use Surikat\Component\Model\RedBeanPHP\Logger\RDefault as RDefault;
+use Surikat\Component\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\SimpleModel as SimpleModel;
+use Surikat\Component\Model\RedBeanPHP\SimpleModelHelper as SimpleModelHelper;
+use Surikat\Component\Model\RedBeanPHP\Adapter as Adapter;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\BeanHelper\SimpleBeanHelper as SimpleBeanHelper;
+use Surikat\Component\Model\RedBeanPHP\Driver\RPDO as RPDO;
 
-use Surikat\Model\Table;
-use Surikat\Model\Query;
+use Surikat\Component\Model\Table;
+use Surikat\Component\Model\Query;
 
-use Surikat\Model\RedBeanPHP\Plugin\Preloader;
-use Surikat\Model\RedBeanPHP\Plugin\Cooker;
+use Surikat\Component\Model\RedBeanPHP\Plugin\Preloader;
+use Surikat\Component\Model\RedBeanPHP\Plugin\Cooker;
 
 class Database{
 	private $name;
@@ -100,7 +100,7 @@ class Database{
 		];
 		$wkey = trim( strtolower( $this->dbType ) );
 		if ( !isset( $writers[$wkey] ) ) trigger_error( 'Unsupported DSN: '.$wkey );
-		$writerClass = '\\Surikat\\Model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
+		$writerClass = '\\Surikat\\Component\\Model\\RedBeanPHP\\QueryWriter\\'.$writers[$wkey];
 		$this->writer      = new $writerClass( $this->adapter, $this, $prefix, $case );
 		$this->redbean     = new OODB( $this->writer, $frozen );
 		$this->redbean->freeze( ( $frozen === TRUE ) );

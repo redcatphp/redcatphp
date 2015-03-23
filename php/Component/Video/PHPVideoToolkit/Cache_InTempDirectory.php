@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
 
     /**
      * PHPVideoToolkit's caching driver for storing the cache inside the specified temp directory.

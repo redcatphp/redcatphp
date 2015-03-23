@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\HttpAdapter;
+namespace Surikat\Component\Geocoding\Geocoder\HttpAdapter;
 
 use Buzz\Browser;
 

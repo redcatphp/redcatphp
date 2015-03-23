@@ -1,4 +1,4 @@
-<?php namespace Surikat\Mail\PHPMailer;
+<?php namespace Surikat\Component\Mail\PHPMailer;
 /*
  * ntlm_sasl_client.php
  *

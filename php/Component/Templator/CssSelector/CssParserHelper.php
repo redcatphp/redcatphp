@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Templator\CssSelector\Parser;
+namespace Surikat\Component\Templator\CssSelector\Parser;
 class CssParserHelper{	
 	static function select($node, $query){
 		$p = new CssParser($node, $query);

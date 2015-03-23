@@ -36,16 +36,16 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Spellcheck as SpellcheckComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\Spellcheck as SpellcheckResult;
-use Surikat\Model\Solarium\QueryType\Select\Result\Spellcheck\Result;
-use Surikat\Model\Solarium\QueryType\Select\Result\Spellcheck\Collation;
-use Surikat\Model\Solarium\QueryType\Select\Result\Spellcheck\Suggestion;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Spellcheck as SpellcheckComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Spellcheck as SpellcheckResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Spellcheck\Result;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Spellcheck\Collation;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Spellcheck\Suggestion;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
 
 /**
  * Parse select component Highlighting result from the data

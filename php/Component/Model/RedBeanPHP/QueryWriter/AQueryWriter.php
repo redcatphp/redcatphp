@@ -1,14 +1,14 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\QueryWriter;
+namespace Surikat\Component\Model\RedBeanPHP\QueryWriter;
 
-use Surikat\Model\RedBeanPHP\Adapter;
-use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter;
-use Surikat\Model\RedBeanPHP\RedException;
-use Surikat\Model\RedBeanPHP\QueryWriter;
-use Surikat\Model\RedBeanPHP\OODBBean;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\Adapter;
+use Surikat\Component\Model\RedBeanPHP\Database;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\RedException;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\OODBBean;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
 
 /**
  * RedBean Abstract Query Writer

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto;
+<?php namespace Surikat\Component\Crypto;
 class Image {
     var $Canvas;
     var $Name = '';

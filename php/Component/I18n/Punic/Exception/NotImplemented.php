@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class NotImplemented extends \Surikat\I18n\Punic\Exception
+class NotImplemented extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $function;
     /**
@@ -16,7 +16,7 @@ class NotImplemented extends \Surikat\I18n\Punic\Exception
     {
         $this->function = $function;
         $message = "$function is not implemented";
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::NOT_IMPLEMENTED, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::NOT_IMPLEMENTED, $previous);
     }
 
     /**

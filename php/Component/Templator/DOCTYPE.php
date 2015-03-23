@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator;
-use Surikat\Templator\TML;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\TML;
 class DOCTYPE extends CORE{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

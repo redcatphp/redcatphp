@@ -1,4 +1,4 @@
-<?php namespace Surikat\Geocoding;
+<?php namespace Surikat\Component\Geocoding;
 /**
  * Geohash generation class
  * http://blog.dixo.net/downloads/

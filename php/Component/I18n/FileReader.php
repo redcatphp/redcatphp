@@ -1,4 +1,4 @@
-<?php namespace Surikat\I18n;
+<?php namespace Surikat\Component\I18n;
 class FileReader {
   var $_pos;
   var $_fd;

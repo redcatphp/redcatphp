@@ -1,4 +1,4 @@
-<?php namespace Surikat\UriDispatcher;
+<?php namespace Surikat\Component\UriDispatcher;
 class Backoffice extends ViewController{
 	protected $pathFS = 'backoffice';
 	function __construct(){

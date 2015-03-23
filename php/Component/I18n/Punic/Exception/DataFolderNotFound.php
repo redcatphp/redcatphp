@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data folder has not been found
  */
-class DataFolderNotFound extends \Surikat\I18n\Punic\Exception
+class DataFolderNotFound extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $locale;
     protected $fallbackLocale;
@@ -24,7 +24,7 @@ class DataFolderNotFound extends \Surikat\I18n\Punic\Exception
         } else {
             $message = "Unable to find the specified locale folder, neither for '$locale' nor for '$fallbackLocale'";
         }
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::DATA_FOLDER_NOT_FOUND, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::DATA_FOLDER_NOT_FOUND, $previous);
     }
 
     /**

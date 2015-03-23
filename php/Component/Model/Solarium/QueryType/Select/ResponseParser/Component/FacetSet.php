@@ -36,23 +36,23 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\FacetSet as QueryFacetSet;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Field as QueryFacetField;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as QueryFacetQuery;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\MultiQuery as QueryFacetMultiQuery;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Range as QueryFacetRange;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Pivot as QueryFacetPivot;
-use Surikat\Model\Solarium\QueryType\Select\Result\FacetSet as ResultFacetSet;
-use Surikat\Model\Solarium\QueryType\Select\Result\Facet\Field as ResultFacetField;
-use Surikat\Model\Solarium\QueryType\Select\Result\Facet\Query as ResultFacetQuery;
-use Surikat\Model\Solarium\QueryType\Select\Result\Facet\MultiQuery as ResultFacetMultiQuery;
-use Surikat\Model\Solarium\QueryType\Select\Result\Facet\Range as ResultFacetRange;
-use Surikat\Model\Solarium\QueryType\Select\Result\Facet\Pivot\Pivot as ResultFacetPivot;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\FacetSet as QueryFacetSet;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Field as QueryFacetField;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as QueryFacetQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\MultiQuery as QueryFacetMultiQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Range as QueryFacetRange;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Pivot as QueryFacetPivot;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\FacetSet as ResultFacetSet;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\Field as ResultFacetField;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\Query as ResultFacetQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\MultiQuery as ResultFacetMultiQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\Range as ResultFacetRange;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\Pivot\Pivot as ResultFacetPivot;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
 
 /**
  * Parse select component FacetSet result from the data

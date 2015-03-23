@@ -37,9 +37,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\MoreLikeThis;
+namespace Surikat\Component\Model\Solarium\QueryType\MoreLikeThis;
 
-use Surikat\Model\Solarium\QueryType\Select\ResponseParser\ResponseParser as SelectResponseParser;
+use Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\ResponseParser as SelectResponseParser;
 
 /**
  * Parse MoreLikeThis response data

@@ -1,4 +1,4 @@
-<?php namespace Surikat\I18n;
+<?php namespace Surikat\Component\I18n;
 use Templator\TML;
 class getTextExtractorTML extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){

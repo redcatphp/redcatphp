@@ -36,21 +36,21 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Update\Query;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
-use Surikat\Model\Solarium\QueryType\Update\RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Update\ResponseParser;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Command;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Add as AddCommand;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Commit as CommitCommand;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Delete as DeleteCommand;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Optimize as OptimizeCommand;
-use Surikat\Model\Solarium\QueryType\Update\Query\Command\Rollback as RollbackCommand;
-use Surikat\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\QueryType\Update\RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Update\ResponseParser;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Command;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Add as AddCommand;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Commit as CommitCommand;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Delete as DeleteCommand;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Optimize as OptimizeCommand;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Command\Rollback as RollbackCommand;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
 
 /**
  * Update query

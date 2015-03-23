@@ -11,7 +11,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Surikat\Crypto\SecurityLib;
+namespace Surikat\Component\Crypto\SecurityLib;
 
 /**
  * A class for arbitrary precision math functions
@@ -33,11 +33,11 @@ abstract class BigMath {
     public static function createFromServerConfiguration() {
         //@codeCoverageIgnoreStart
         if (extension_loaded('gmp')) {
-            return new \Surikat\Crypto\SecurityLib\BigMath\GMP();
+            return new \Surikat\Component\Crypto\SecurityLib\BigMath\GMP();
         } elseif (extension_loaded('bcmath')) {
-            return new \Surikat\Crypto\SecurityLib\BigMath\BCMath();
+            return new \Surikat\Component\Crypto\SecurityLib\BigMath\BCMath();
         } else {
-            return new \Surikat\Crypto\SecurityLib\BigMath\PHPMath();
+            return new \Surikat\Component\Crypto\SecurityLib\BigMath\PHPMath();
         }
         //@codeCoverageIgnoreEnd
     }

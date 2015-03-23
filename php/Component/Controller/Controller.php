@@ -1,9 +1,9 @@
-<?php namespace Surikat\Controller;
-use Surikat\Vars\ArrayObject;
-use Surikat\Templator\Template;
-use Surikat\Templator\TML;
-use Surikat\I18n\Lang;
-use Surikat\DependencyInjection\MutatorMagic;
+<?php namespace Surikat\Component\Controller;
+use Surikat\Component\Vars\ArrayObject;
+use Surikat\Component\Templator\Template;
+use Surikat\Component\Templator\TML;
+use Surikat\Component\I18n\Lang;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 class Controller{
 	use MutatorMagic;
 	protected $Router;
@@ -58,7 +58,7 @@ class Controller{
 		try{
 			$v->display($file);
 		}
-		catch(\Surikat\Exception\View $e){
+		catch(\Surikat\Component\Exception\View $e){
 			$this->error($e->getMessage());
 		}
 	}
@@ -68,7 +68,7 @@ class Controller{
 			$v->set('URI',$this->getRouter());
 			$v->display($c.'.tml');
 		}
-		catch(\Surikat\Exception\View $e){
+		catch(\Surikat\Component\Exception\View $e){
 			$this->Http_Request->code($e->getMessage());
 		}
 		exit;

@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
      
     /**
      * This is a container class for determining which ffmpeg parser class to use to be able to correctly parser the data 

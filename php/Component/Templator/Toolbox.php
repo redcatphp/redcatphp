@@ -1,6 +1,6 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 use I18n\Lang;
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 class Toolbox{
 	use MutatorMagic;
 	function JsIs($TML,$href='css/is.'){

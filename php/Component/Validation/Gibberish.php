@@ -1,4 +1,4 @@
-<?php namespace Surikat\Validation;
+<?php namespace Surikat\Component\Validation;
 
 //  Copyright Oliver Lillie 2011
 //  $Id: Whitechars.php 1938 2011-06-09 13:25:22Z buggedcom $ $Rev: 1938 $

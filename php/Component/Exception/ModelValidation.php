@@ -1,6 +1,6 @@
-<?php namespace Surikat\Exception;
+<?php namespace Surikat\Component\Exception;
 use Traversable;
-class ModelValidation extends \Surikat\Exception\Exception{
+class ModelValidation extends \Surikat\Component\Exception\Exception{
 	function getFlattenData($glue='.'){
 		$data = [];
 		foreach($this->getData() as $k=>$v){

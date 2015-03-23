@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update\Query\Document;
+namespace Surikat\Component\Model\Solarium\QueryType\Update\Query\Document;
 
 /**
  * Solr update document interface

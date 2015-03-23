@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Formatter;
+namespace Surikat\Component\Geocoding\Geocoder\Formatter;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

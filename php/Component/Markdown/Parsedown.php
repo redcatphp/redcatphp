@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Markdown;
+namespace Surikat\Component\Markdown;
 #
 #
 # Parsedown

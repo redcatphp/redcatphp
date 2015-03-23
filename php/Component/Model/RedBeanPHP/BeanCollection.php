@@ -1,9 +1,9 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
-use Surikat\Model\RedBeanPHP\Cursor as Cursor;
-use Surikat\Model\RedBeanPHP\Repository as Repository;
+use Surikat\Component\Model\RedBeanPHP\Cursor as Cursor;
+use Surikat\Component\Model\RedBeanPHP\Repository as Repository;
 
 /**
  * BeanCollection

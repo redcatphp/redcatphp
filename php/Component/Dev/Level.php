@@ -1,5 +1,5 @@
-<?php namespace Surikat\Dev;
-use Surikat\DependencyInjection\Mutator;
+<?php namespace Surikat\Component\Dev;
+use Surikat\Component\DependencyInjection\Mutator;
 class Level{
 	use Mutator;
 	private $phpDev;

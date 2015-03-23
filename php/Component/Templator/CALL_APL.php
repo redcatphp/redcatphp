@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 abstract class CALL_APL extends CORE{
 	protected $hiddenWrap = true;
 	protected $callback;

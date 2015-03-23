@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query;
+namespace Surikat\Component\Model\Solarium\Core\Query;
 
-use Surikat\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
 
 /**
  * Class for building Solarium client requests

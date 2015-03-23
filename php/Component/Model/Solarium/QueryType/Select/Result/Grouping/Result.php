@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Grouping;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping;
 
 /**
  * Select component grouping result

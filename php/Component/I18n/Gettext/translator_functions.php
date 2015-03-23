@@ -1,5 +1,5 @@
 <?php
-use Surikat\I18n\Gettext\Translator;
+use Surikat\Component\I18n\Gettext\Translator;
 
 /**
  * Returns the translation of a string

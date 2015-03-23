@@ -1,6 +1,6 @@
 <?php
-namespace Surikat\Templator\CssSelector\Filter;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterPseudo;
+namespace Surikat\Component\Templator\CssSelector\Filter;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterPseudo;
 class CssParserFilterPseudoNthChild extends CssParserFilterPseudo{
 	private $_position;
 	function __construct($input){

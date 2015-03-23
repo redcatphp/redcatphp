@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query\Result;
+namespace Surikat\Component\Model\Solarium\Core\Query\Result;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface;
-use Surikat\Model\Solarium\Exception\UnexpectedValueException;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface;
+use Surikat\Component\Model\Solarium\Exception\UnexpectedValueException;
 
 /**
  * QueryType result

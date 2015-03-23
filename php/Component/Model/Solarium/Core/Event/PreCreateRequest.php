@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Event;
+namespace Surikat\Component\Model\Solarium\Core\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
-use Surikat\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
 
 /**
  * PreCreateRequest event, see Events for details

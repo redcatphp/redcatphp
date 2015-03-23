@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
 
     /**
      * Small wrapper for creating a cacher driver based on the given config settings.

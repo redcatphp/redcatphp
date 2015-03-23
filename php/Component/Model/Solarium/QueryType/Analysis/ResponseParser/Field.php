@@ -36,15 +36,15 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\ResponseParser;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\ResponseParser;
 
-use Surikat\Model\Solarium\Core\Query\Result\Result;
-use Surikat\Model\Solarium\QueryType\Analysis\Result as AnalysisResult;
-use Surikat\Model\Solarium\QueryType\Analysis\Result\ResultList;
-use Surikat\Model\Solarium\QueryType\Analysis\Result\Item;
-use Surikat\Model\Solarium\QueryType\Analysis\Result\Types;
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
+use Surikat\Component\Model\Solarium\Core\Query\Result\Result;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Result as AnalysisResult;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Result\ResultList;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Result\Item;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Result\Types;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
 
 /**
  * Parse document analysis response data

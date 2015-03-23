@@ -1,9 +1,9 @@
-<?php namespace Surikat\User;
-use Surikat\FileSystem\FS;
-use Surikat\Exception\Exception;
-use Surikat\Exception\Security as ExceptionSecurity;
-use Surikat\DependencyInjection\MutatorCall;
-use Surikat\User\SessionHandler;
+<?php namespace Surikat\Component\User;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\Exception\Exception;
+use Surikat\Component\Exception\Security as ExceptionSecurity;
+use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\User\SessionHandler;
 class Session{
 	use MutatorCall;
 	private $id;

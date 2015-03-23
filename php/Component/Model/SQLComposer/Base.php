@@ -1,4 +1,4 @@
-<?php namespace Surikat\Model\SQLComposer;
+<?php namespace Surikat\Component\Model\SQLComposer;
 /* SQLComposerBase - The base class that all query classes should extend.
  * @package SQLComposer
  * @author Shane Smith

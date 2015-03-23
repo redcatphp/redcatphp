@@ -8,12 +8,12 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Provider;
+namespace Surikat\Component\Geocoding\Geocoder\Provider;
 
-use Surikat\Geocoding\Geocoder\Exception\InvalidCredentialsException;
-use Surikat\Geocoding\Geocoder\Exception\NoResultException;
-use Surikat\Geocoding\Geocoder\Exception\UnsupportedException;
-use Surikat\Geocoding\Geocoder\HttpAdapter\HttpAdapterInterface;
+use Surikat\Component\Geocoding\Geocoder\Exception\InvalidCredentialsException;
+use Surikat\Component\Geocoding\Geocoder\Exception\NoResultException;
+use Surikat\Component\Geocoding\Geocoder\Exception\UnsupportedException;
+use Surikat\Component\Geocoding\Geocoder\HttpAdapter\HttpAdapterInterface;
 
 /**
  * @author Giovanni Pirrotta <giovanni.pirrotta@gmail.com>

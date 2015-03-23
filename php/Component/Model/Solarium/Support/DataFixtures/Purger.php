@@ -1,8 +1,8 @@
 <?php
 
-namespace Surikat\Model\Solarium\Support\DataFixtures;
+namespace Surikat\Component\Model\Solarium\Support\DataFixtures;
 
-use Surikat\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
 
 class Purger
 {

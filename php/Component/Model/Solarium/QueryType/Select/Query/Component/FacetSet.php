@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component\FacetSet as RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component\FacetSet as ResponseParser;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Facet;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component\FacetSet as RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component\FacetSet as ResponseParser;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Facet;
 
 /**
  * MoreLikeThis component

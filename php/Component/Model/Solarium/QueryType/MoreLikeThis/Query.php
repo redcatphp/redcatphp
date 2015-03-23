@@ -39,12 +39,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\MoreLikeThis;
+namespace Surikat\Component\Model\Solarium\QueryType\MoreLikeThis;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\QueryType\MoreLikeThis\ResponseParser as ResponseParser;
-use Surikat\Model\Solarium\QueryType\MoreLikeThis\RequestBuilder as RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\QueryType\MoreLikeThis\ResponseParser as ResponseParser;
+use Surikat\Component\Model\Solarium\QueryType\MoreLikeThis\RequestBuilder as RequestBuilder;
 
 /**
  * MoreLikeThis Query

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Mail\PHPMailer;
+<?php namespace Surikat\Component\Mail\PHPMailer;
 use Exception;
 /**
  * PHPMailer POP-Before-SMTP Authentication Class.

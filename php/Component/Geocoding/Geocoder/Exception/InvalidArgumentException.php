@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Exception;
+namespace Surikat\Component\Geocoding\Geocoder\Exception;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

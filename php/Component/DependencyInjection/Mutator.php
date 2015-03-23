@@ -1,10 +1,10 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 use Exception;
 use ReflectionClass;
-use Surikat\DependencyInjection\Container;
+use Surikat\Component\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
-	private $__dependenciesPrefix = 'Surikat\\';
+	private $__dependenciesPrefix = 'Surikat\\Component\\';
 	function setDependency($key,$value=null,$rkey=null){
 		if(!isset($rkey))
 			$rkey = $key;

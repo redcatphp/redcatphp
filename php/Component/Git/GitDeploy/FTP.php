@@ -1,4 +1,4 @@
-<?php namespace Surikat\Git\GitDeploy;
+<?php namespace Surikat\Component\Git\GitDeploy;
 class FTP extends Server{
     function getConnection($server){
 		return @ftp_connect($server['host'], $server['port'], 30);

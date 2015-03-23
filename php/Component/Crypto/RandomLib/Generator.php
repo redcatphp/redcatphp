@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\Crypto\RandomLib;
+namespace Surikat\Component\Crypto\RandomLib;
 
-use Surikat\Crypto\SecurityLib\BaseConverter;
+use Surikat\Component\Crypto\SecurityLib\BaseConverter;
 
 /**
  * The Random Number Generator Class

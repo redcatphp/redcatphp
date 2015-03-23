@@ -1,11 +1,11 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\Plugin; 
-use Surikat\Model\RedBeanPHP\AssociationManager as AssociationManager;
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
+namespace Surikat\Component\Model\RedBeanPHP\Plugin; 
+use Surikat\Component\Model\RedBeanPHP\AssociationManager as AssociationManager;
+use Surikat\Component\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\ToolBox as ToolBox;
 /**
  * RedBean Cooker
  *

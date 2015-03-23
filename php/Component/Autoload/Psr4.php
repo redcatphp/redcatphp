@@ -1,4 +1,4 @@
-<?php namespace Surikat\Autoload;
+<?php namespace Surikat\Component\Autoload;
 class Psr4{
 	protected $namespaces = [];
 	protected $checked = [];

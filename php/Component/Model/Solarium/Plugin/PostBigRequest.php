@@ -36,13 +36,13 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin;
+namespace Surikat\Component\Model\Solarium\Plugin;
 
-use Surikat\Model\Solarium\Client;
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Event\Events;
-use Surikat\Model\Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
+use Surikat\Component\Model\Solarium\Client;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Event\Events;
+use Surikat\Component\Model\Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
 
 /**
  * PostBigRequest plugin

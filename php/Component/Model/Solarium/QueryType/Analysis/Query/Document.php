@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\Query;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\QueryType\Analysis\ResponseParser\Document as ResponseParser;
-use Surikat\Model\Solarium\QueryType\Analysis\RequestBuilder\Document as RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface as ReadOnlyDocumentInterface;
-use Surikat\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface as DocumentInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\ResponseParser\Document as ResponseParser;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\RequestBuilder\Document as RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface as ReadOnlyDocumentInterface;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface as DocumentInterface;
 
 /**
  * Analysis document query

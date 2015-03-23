@@ -1,5 +1,5 @@
-<?php namespace Surikat\Exception;
-class Upload extends \Surikat\Exception\Exception{
+<?php namespace Surikat\Component\Exception;
+class Upload extends \Surikat\Component\Exception\Exception{
     public function __construct($code){
         parent::__construct($this->codeToMessage($code));
     }

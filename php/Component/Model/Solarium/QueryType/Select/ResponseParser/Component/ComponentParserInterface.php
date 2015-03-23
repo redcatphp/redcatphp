@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
 
 interface ComponentParserInterface
 {

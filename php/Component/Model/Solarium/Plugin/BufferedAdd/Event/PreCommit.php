@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\BufferedAdd\Event;
+namespace Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
 
 /**
  * PreCommit event, see Events for details

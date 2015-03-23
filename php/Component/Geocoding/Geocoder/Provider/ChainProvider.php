@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Provider;
+namespace Surikat\Component\Geocoding\Geocoder\Provider;
 
-use Surikat\Geocoding\Geocoder\Exception\InvalidCredentialsException;
-use Surikat\Geocoding\Geocoder\Exception\ChainNoResultException;
+use Surikat\Component\Geocoding\Geocoder\Exception\InvalidCredentialsException;
+use Surikat\Component\Geocoding\Geocoder\Exception\ChainNoResultException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

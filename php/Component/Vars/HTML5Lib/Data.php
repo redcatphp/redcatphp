@@ -1,4 +1,4 @@
-<?php namespace Surikat\Vars\HTML5Lib;
+<?php namespace Surikat\Component\Vars\HTML5Lib;
 
 // warning: this file is encoded in UTF-8!
 

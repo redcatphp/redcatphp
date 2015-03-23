@@ -1,5 +1,5 @@
-<?php namespace Surikat\Model\SQLComposer;
-use Surikat\Model\SQLComposer;
+<?php namespace Surikat\Component\Model\SQLComposer;
+use Surikat\Component\Model\SQLComposer;
 /**
  * SQLComposerUpdate
  *

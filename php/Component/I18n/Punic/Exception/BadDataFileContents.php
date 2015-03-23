@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data file contains malformed data
  */
-class BadDataFileContents extends \Surikat\I18n\Punic\Exception
+class BadDataFileContents extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $dataFilePath;
 
@@ -21,7 +21,7 @@ class BadDataFileContents extends \Surikat\I18n\Punic\Exception
         $this->dataFilePath = $dataFilePath;
         $this->dataFileContents = $dataFileContents;
         $message = "The file '$dataFilePath' contains malformed data";
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::BAD_DATA_FILE_CONTENTS, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::BAD_DATA_FILE_CONTENTS, $previous);
     }
 
     /**

@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\MinimumScoreFilter;
+namespace Surikat\Component\Model\Solarium\Plugin\MinimumScoreFilter;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Minimum score filter query result document

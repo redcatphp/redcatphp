@@ -1,6 +1,6 @@
-<?php namespace Surikat\Model;
-use Surikat\Model\R;
-use Surikat\Model\CsvIterator;
+<?php namespace Surikat\Component\Model;
+use Surikat\Component\Model\R;
+use Surikat\Component\Model\CsvIterator;
 class CsvImporter{
 	private $debug;
 	private $utf8_encode;

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto\PhpSecLib;
+<?php namespace Surikat\Component\Crypto\PhpSecLib;
 
 /**
  * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.

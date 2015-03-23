@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Provider;
+namespace Surikat\Component\Geocoding\Geocoder\Provider;
 
 interface LocaleAwareProviderInterface extends ProviderInterface
 {

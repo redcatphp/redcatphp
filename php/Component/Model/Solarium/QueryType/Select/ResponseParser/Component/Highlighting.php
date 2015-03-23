@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Highlighting\Highlighting as HighlightingComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\Highlighting\Highlighting as HighlightingResult;
-use Surikat\Model\Solarium\QueryType\Select\Result\Highlighting\Result;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Highlighting\Highlighting as HighlightingComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Highlighting\Highlighting as HighlightingResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Highlighting\Result;
 
 /**
  * Parse select component Highlighting result from the data

@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component;
 
-use Surikat\Model\Solarium\Core\Configurable;
-use Surikat\Model\Solarium\Core\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component\ComponentParserInterface;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component\ComponentRequestBuilderInterface;
+use Surikat\Component\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component\ComponentParserInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component\ComponentRequestBuilderInterface;
 
 /**
  * Query component base class

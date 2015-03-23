@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\Loadbalancer;
+namespace Surikat\Component\Model\Solarium\Plugin\Loadbalancer;
 
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Weighted random choice class

@@ -38,15 +38,15 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Client\Adapter;
+namespace Surikat\Component\Model\Solarium\Core\Client\Adapter;
 
-use Surikat\Model\Solarium\Core\Configurable;
-use Surikat\Model\Solarium\Core\Client;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
-use Surikat\Model\Solarium\Exception\HttpException;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
 
 /**
  * Adapter that uses a Zend_Http_Client

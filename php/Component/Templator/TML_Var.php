@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Var extends TML{
 	protected $hiddenWrap = true;
 	function load(){

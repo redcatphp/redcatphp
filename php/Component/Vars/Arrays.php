@@ -1,4 +1,4 @@
-<?php namespace Surikat\Vars;
+<?php namespace Surikat\Component\Vars;
 abstract class Arrays{
 	static function merge_recursive(){
 		$args = func_get_args();

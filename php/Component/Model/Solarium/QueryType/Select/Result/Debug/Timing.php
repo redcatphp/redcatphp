@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Debug;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug;
 
 /**
  * Select component debug timing result

@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Ping;
+namespace Surikat\Component\Model\Solarium\QueryType\Ping;
 
-use Surikat\Model\Solarium\Core\Query\Result\Result as BaseResult;
+use Surikat\Component\Model\Solarium\Core\Query\Result\Result as BaseResult;
 
 /**
  * Ping query result

@@ -1,10 +1,10 @@
 <?php 
 
-namespace Surikat\Model\RedBeanPHP\Logger;
+namespace Surikat\Component\Model\RedBeanPHP\Logger;
 
-use Surikat\Model\RedBeanPHP\Logger as Logger;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\Model\RedBeanPHP\Logger as Logger;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
 
 /**
  * Logger. Provides a basic logging function for RedBeanPHP.

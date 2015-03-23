@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Facet base class

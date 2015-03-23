@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update\Query\Command;
+namespace Surikat\Component\Model\Solarium\QueryType\Update\Query\Command;
 
-use Surikat\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
-use Surikat\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Update query add command

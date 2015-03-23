@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
  * Select query result

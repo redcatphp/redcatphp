@@ -1,8 +1,8 @@
 <?php
-namespace Surikat\I18n\Gettext\Utils;
+namespace Surikat\Component\I18n\Gettext\Utils;
 
 use Exception;
-use Surikat\I18n\Gettext\Translations;
+use Surikat\Component\I18n\Gettext\Translations;
 
 abstract class FunctionsScanner
 {

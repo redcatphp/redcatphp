@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core;
+namespace Surikat\Component\Model\Solarium\Core;
 
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
 
 /**
  * Base class for configurable classes

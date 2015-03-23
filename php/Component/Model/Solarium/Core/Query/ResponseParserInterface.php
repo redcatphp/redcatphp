@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query;
+namespace Surikat\Component\Model\Solarium\Core\Query;
 
 /**
  * Interface for response parsers

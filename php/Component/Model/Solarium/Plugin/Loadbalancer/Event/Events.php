@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\Loadbalancer\Event;
+namespace Surikat\Component\Model\Solarium\Plugin\Loadbalancer\Event;
 
 /**
  * Event definitions

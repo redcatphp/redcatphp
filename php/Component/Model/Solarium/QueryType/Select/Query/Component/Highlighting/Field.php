@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Highlighting;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Highlighting;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Highlighting per-field settings

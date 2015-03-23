@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Punic;
+namespace Surikat\Component\I18n\Punic;
 
 /**
  * Language-related stuff
@@ -10,7 +10,7 @@ class Language
      * Return all the languages
      * @param bool $excludeCountrySpecific = false Set to false (default) to include also Country-specific languages (eg 'U.S. English' in addition to 'English'), set to true to exclude them
      * @param bool $excludeScriptSpecific = false Set to false (default) to include also script-specific languages (eg 'Simplified Chinese' in addition to 'Chinese'), set to true to exclude them
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array Return an array, sorted by values, whose keys are the language IDs and the values are the localized language names
      */
     public static function getAll($excludeCountrySpecific = false, $excludeScriptSpecific = false, $locale = '')
@@ -45,7 +45,7 @@ class Language
     /**
      * Retrieve the name of a language
      * @param string $languageCode The language code. If it contails also a terrotory code (eg: 'en-US'), the result will contain also the territory code (eg 'English (United States)')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns the localized language name (returns $languageCode if not found)
      */
     public static function getName($languageCode, $locale = '')

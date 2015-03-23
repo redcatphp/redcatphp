@@ -1,8 +1,8 @@
-<?php namespace Surikat\Templator;
-use Surikat\Templator\TML;
-use Surikat\Templator\TML_Apply;
-use Surikat\Templator\CssSelector;
-use Surikat\DependencyInjection\MutatorCall;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\TML;
+use Surikat\Component\Templator\TML_Apply;
+use Surikat\Component\Templator\CssSelector;
+use Surikat\Component\DependencyInjection\MutatorCall;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	use MutatorCall;
 	

@@ -1,7 +1,7 @@
 <?php 
-namespace Surikat\Model\RedBeanPHP\Plugin; 
-use Surikat\Model\RedBeanPHP\ModelHelper as ModelHelper;
-use Surikat\Model\RedBeanPHP\Facade as Facade;
+namespace Surikat\Component\Model\RedBeanPHP\Plugin; 
+use Surikat\Component\Model\RedBeanPHP\ModelHelper as ModelHelper;
+use Surikat\Component\Model\RedBeanPHP\Facade as Facade;
 /**
  * BeanCan Server.
  * A JSON-RPC/RESTy server for RedBeanPHP.

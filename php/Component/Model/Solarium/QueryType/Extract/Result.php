@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Extract;
+namespace Surikat\Component\Model\Solarium\QueryType\Extract;
 
-use Surikat\Model\Solarium\QueryType\Update\Result as UpdateResult;
+use Surikat\Component\Model\Solarium\QueryType\Update\Result as UpdateResult;
 
 /**
  * An extract result is similar to an update result, but we do want to return a query specific result class instead of

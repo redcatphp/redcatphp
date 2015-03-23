@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Event;
+namespace Surikat\Component\Model\Solarium\Core\Event;
 
 /**
  * Event definitions

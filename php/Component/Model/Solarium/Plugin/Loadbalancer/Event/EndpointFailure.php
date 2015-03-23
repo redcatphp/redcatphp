@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\Loadbalancer\Event;
+namespace Surikat\Component\Model\Solarium\Plugin\Loadbalancer\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
-use Surikat\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
 
 /**
  * EndpointFailure event, see Events for details

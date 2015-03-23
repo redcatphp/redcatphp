@@ -36,13 +36,13 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\RequestBuilder;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\RequestBuilder;
 
-use Surikat\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\QueryType\Analysis\Query\Query;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Query\Query;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
 
 /**
  * Build an analysis request

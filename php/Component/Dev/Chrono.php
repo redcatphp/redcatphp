@@ -1,4 +1,4 @@
-<?php namespace Surikat\Dev;
+<?php namespace Surikat\Component\Dev;
 class Chrono {
 	private $sizeFactors = 'BKMGTP';
 	private $start;

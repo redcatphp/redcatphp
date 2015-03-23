@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class ValueNotInList extends \Surikat\I18n\Punic\Exception
+class ValueNotInList extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $value;
 
@@ -20,7 +20,7 @@ class ValueNotInList extends \Surikat\I18n\Punic\Exception
         $this->value = $value;
         $this->allowedValues = $allowedValues;
         $message = "'$value' is not valid. Acceptable values are: '" . implode("', '", $allowedValues) . "'";
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::VALUE_NOT_IN_LIST, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::VALUE_NOT_IN_LIST, $previous);
     }
 
     /**

@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Exception;
+namespace Surikat\Component\Model\Solarium\Exception;
 
 /**
  * Solarium client HTTP exception

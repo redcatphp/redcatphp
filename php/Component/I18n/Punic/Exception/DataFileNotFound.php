@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data file has not been found
  */
-class DataFileNotFound extends \Surikat\I18n\Punic\Exception
+class DataFileNotFound extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $identifier;
     protected $locale;
@@ -33,7 +33,7 @@ class DataFileNotFound extends \Surikat\I18n\Punic\Exception
                 $message = "Unable to find the data file '$identifier', neither for '$locale' nor for '$fallbackLocale'";
             }
         }
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::DATA_FILE_NOT_FOUND, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::DATA_FILE_NOT_FOUND, $previous);
     }
 
     /**

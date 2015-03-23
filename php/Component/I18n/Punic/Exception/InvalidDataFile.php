@@ -1,11 +1,11 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data file has been hit
  */
 
-class InvalidDataFile extends \Surikat\I18n\Punic\Exception
+class InvalidDataFile extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $identifier;
 
@@ -23,7 +23,7 @@ class InvalidDataFile extends \Surikat\I18n\Punic\Exception
         } else {
             $message = "A valid identifier should be a string, $type received";
         }
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::INVALID_DATAFILE, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::INVALID_DATAFILE, $previous);
     }
 
     /**

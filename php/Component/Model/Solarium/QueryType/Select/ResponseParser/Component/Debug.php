@@ -36,16 +36,16 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Debug as DebugComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\Result;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\DocumentSet;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\Timing;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\Detail;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\Document;
-use Surikat\Model\Solarium\QueryType\Select\Result\Debug\TimingPhase;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Debug as DebugComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\Result;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\DocumentSet;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\Timing;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\Detail;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\Document;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Debug\TimingPhase;
 
 /**
  * Parse select component Debug result from the data

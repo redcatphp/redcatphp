@@ -1,4 +1,4 @@
-<?php namespace Surikat\Zip;
+<?php namespace Surikat\Component\Zip;
 /**
  * Class to create zip file, aimed at large files, or even large target zip file.
  * This class will stream the generated zip file directly to the HTTP client as the content is added.

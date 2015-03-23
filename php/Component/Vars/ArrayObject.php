@@ -1,5 +1,5 @@
-<?php namespace Surikat\Vars;
-use Surikat\DependencyInjection\MutatorCall;
+<?php namespace Surikat\Component\Vars;
+use Surikat\Component\DependencyInjection\MutatorCall;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
 	use MutatorCall;
 	function __construct($a=[]){

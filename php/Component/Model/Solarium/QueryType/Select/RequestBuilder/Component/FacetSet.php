@@ -36,17 +36,17 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component;
 
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\FacetSet as FacetsetComponent;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Field as FacetField;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\MultiQuery as FacetMultiQuery;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as FacetQuery;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Range as FacetRange;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Pivot as FacetPivot;
-use Surikat\Model\Solarium\Exception\UnexpectedValueException;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\FacetSet as FacetsetComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Field as FacetField;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\MultiQuery as FacetMultiQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as FacetQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Range as FacetRange;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Pivot as FacetPivot;
+use Surikat\Component\Model\Solarium\Exception\UnexpectedValueException;
 
 /**
  * Add select component FacetSet to the request

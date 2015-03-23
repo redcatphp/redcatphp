@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\Templator\CssSelector;
-use Surikat\Templator\CssSelector\TextParserException;
-use Surikat\Templator\CssSelector\TextTokenizer;
+namespace Surikat\Component\Templator\CssSelector;
+use Surikat\Component\Templator\CssSelector\TextParserException;
+use Surikat\Component\Templator\CssSelector\TextTokenizer;
 abstract class TextParser extends TextTokenizer{
 	const UNGREEDY = 0x4;
 	private $_target;

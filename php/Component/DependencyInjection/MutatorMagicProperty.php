@@ -1,4 +1,4 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 trait MutatorMagicProperty{
 	private $__legacyRegistry = [];
 	function &__get($k){

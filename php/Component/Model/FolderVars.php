@@ -1,4 +1,4 @@
-<?php namespace Surikat\Model;
+<?php namespace Surikat\Component\Model;
 class FolderVars{
 	protected static $factory = [];
 	static function factory($dir){

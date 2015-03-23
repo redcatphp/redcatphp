@@ -36,29 +36,29 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Client;
+namespace Surikat\Component\Model\Solarium\Core\Client;
 
-use Surikat\Model\Solarium\Core\Configurable;
-use Surikat\Model\Solarium\Core\Plugin\PluginInterface;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
-use Surikat\Model\Solarium\Core\Query\Result\ResultInterface;
-use Surikat\Model\Solarium\Core\Client\Adapter\AdapterInterface;
-use Surikat\Model\Solarium\Core\Query\RequestBuilderInterface;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
-use Surikat\Model\Solarium\Exception\UnexpectedValueException;
+use Surikat\Component\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Plugin\PluginInterface;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Query\Result\ResultInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Adapter\AdapterInterface;
+use Surikat\Component\Model\Solarium\Core\Query\RequestBuilderInterface;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\Exception\UnexpectedValueException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Surikat\Model\Solarium\Core\Event\Events;
-use Surikat\Model\Solarium\Core\Event\PreCreateRequest as PreCreateRequestEvent;
-use Surikat\Model\Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
-use Surikat\Model\Solarium\Core\Event\PreCreateQuery as PreCreateQueryEvent;
-use Surikat\Model\Solarium\Core\Event\PostCreateQuery as PostCreateQueryEvent;
-use Surikat\Model\Solarium\Core\Event\PreCreateResult as PreCreateResultEvent;
-use Surikat\Model\Solarium\Core\Event\PostCreateResult as PostCreateResultEvent;
-use Surikat\Model\Solarium\Core\Event\PreExecute as PreExecuteEvent;
-use Surikat\Model\Solarium\Core\Event\PostExecute as PostExecuteEvent;
-use Surikat\Model\Solarium\Core\Event\PreExecuteRequest as PreExecuteRequestEvent;
-use Surikat\Model\Solarium\Core\Event\PostExecuteRequest as PostExecuteRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Event\Events;
+use Surikat\Component\Model\Solarium\Core\Event\PreCreateRequest as PreCreateRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PreCreateQuery as PreCreateQueryEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PostCreateQuery as PostCreateQueryEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PreCreateResult as PreCreateResultEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PostCreateResult as PostCreateResultEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PreExecute as PreExecuteEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PostExecute as PostExecuteEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PreExecuteRequest as PreExecuteRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PostExecuteRequest as PostExecuteRequestEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**

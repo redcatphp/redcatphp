@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Suggester\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Suggester\Result;
 
-use Surikat\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
+use Surikat\Component\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
  * Suggester query result

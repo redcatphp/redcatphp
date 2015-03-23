@@ -1,4 +1,4 @@
-<?php namespace Surikat\Vars;
+<?php namespace Surikat\Component\Vars;
 class JSON{
 	const VAL_TEXT= 12001;
 	const VAL_STRING= 12002;

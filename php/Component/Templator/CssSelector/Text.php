@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Templator\CssSelector;
+namespace Surikat\Component\Templator\CssSelector;
 abstract class Text{
 	static function isEmpty($str){
 		return $str === null || is_string($str) && strlen($str) == 0;

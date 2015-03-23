@@ -1,4 +1,4 @@
-<?php namespace Surikat\Mail\PHPMailer;
+<?php namespace Surikat\Component\Mail\PHPMailer;
 /**
  * PHPMailer RFC821 SMTP email transport class.
  * PHP Version 5

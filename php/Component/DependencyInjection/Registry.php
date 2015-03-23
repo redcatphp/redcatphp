@@ -1,4 +1,4 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 trait Registry{
 	protected static $__instances = [];
 	protected static $__instance;

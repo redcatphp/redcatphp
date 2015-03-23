@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Facet\Pivot;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Facet\Pivot;
 
 /**
  * Select field pivot result

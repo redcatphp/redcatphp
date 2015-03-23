@@ -1,7 +1,7 @@
-<?php namespace Surikat\UriDispatcher;
+<?php namespace Surikat\Component\UriDispatcher;
 use ReflectionClass;
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\Route\Route;
+use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\Route\Route;
 class UriDispatcher {
 	use MutatorMagic;
 	protected $routes = [];

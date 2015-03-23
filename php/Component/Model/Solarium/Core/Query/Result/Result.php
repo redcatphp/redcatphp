@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query\Result;
+namespace Surikat\Component\Model\Solarium\Core\Query\Result;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Exception\HttpException;
-use Surikat\Model\Solarium\Core\Query\Query;
-use Surikat\Model\Solarium\Exception\UnexpectedValueException;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Core\Query\Query;
+use Surikat\Component\Model\Solarium\Exception\UnexpectedValueException;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Query result

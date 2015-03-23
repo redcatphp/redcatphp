@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Dumper;
+namespace Surikat\Component\Geocoding\Geocoder\Dumper;
 
-use Surikat\Geocoding\Geocoder\Geocoder;
-use Surikat\Geocoding\Geocoder\Result\ResultInterface;
+use Surikat\Component\Geocoding\Geocoder\Geocoder;
+use Surikat\Component\Geocoding\Geocoder\Result\ResultInterface;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

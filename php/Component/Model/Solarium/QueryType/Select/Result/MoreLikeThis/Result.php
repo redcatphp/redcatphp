@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\MoreLikeThis;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\MoreLikeThis;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
 
 /**
  * Select component morelikethis result item

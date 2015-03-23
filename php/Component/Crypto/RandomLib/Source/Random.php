@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\Crypto\RandomLib\Source;
+namespace Surikat\Component\Crypto\RandomLib\Source;
 
-use Surikat\Crypto\SecurityLib\Strength;
+use Surikat\Component\Crypto\SecurityLib\Strength;
 
 /**
  * The Random Random Number Source

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Exception;
+<?php namespace Surikat\Component\Exception;
 class Exception extends \Exception{
     private $_data;
     function __construct($message, $code = 0, Exception $previous = null, $data = null){

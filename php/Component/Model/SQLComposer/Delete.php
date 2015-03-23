@@ -1,4 +1,4 @@
-<?php namespace Surikat\Model\SQLComposer;
+<?php namespace Surikat\Component\Model\SQLComposer;
 /**
  * SQLComposerDelete
  *

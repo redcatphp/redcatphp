@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Result;
+namespace Surikat\Component\Geocoding\Geocoder\Result;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

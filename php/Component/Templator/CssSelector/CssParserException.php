@@ -1,4 +1,4 @@
 <?php
-namespace Surikat\Templator\CssSelector;
+namespace Surikat\Component\Templator\CssSelector;
 use Exception;
 class CssParserException extends Exception{}

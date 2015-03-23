@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
      
     /**
      * Abstract class based upon Parser to server as a base class for creating FFmpeg parser classes from differing sources.

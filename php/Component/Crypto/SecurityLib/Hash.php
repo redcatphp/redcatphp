@@ -16,7 +16,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Surikat\Crypto\SecurityLib;
+namespace Surikat\Component\Crypto\SecurityLib;
 
 /**
  * A hash utility data mapper class

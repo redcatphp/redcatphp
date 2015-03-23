@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Dismax as DismaxComponent;
-use Surikat\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Dismax as DismaxComponent;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
 
 /**
  * Add select component dismax to the request

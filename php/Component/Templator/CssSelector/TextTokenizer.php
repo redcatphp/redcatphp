@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Templator\CssSelector;
+namespace Surikat\Component\Templator\CssSelector;
 class TextTokenizer{
 	const OFFSET_CAPTURE = 0x1;
 	const CASE_SENSITIVE = 0x4;

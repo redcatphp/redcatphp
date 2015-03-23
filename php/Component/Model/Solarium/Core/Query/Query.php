@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query;
+namespace Surikat\Component\Model\Solarium\Core\Query;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Base class for all query types, not intended for direct usage

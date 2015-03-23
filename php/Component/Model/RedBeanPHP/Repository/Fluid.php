@@ -1,19 +1,19 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\Repository;
+namespace Surikat\Component\Model\RedBeanPHP\Repository;
 
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\Observable as Observable;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
-use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use Surikat\Model\RedBeanPHP\Repository as Repository;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\Observable as Observable;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter as QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\Model\RedBeanPHP\SimpleModel as SimpleModel;
+use Surikat\Component\Model\RedBeanPHP\BeanHelper as BeanHelper;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use Surikat\Component\Model\RedBeanPHP\Repository as Repository;
 
 /**
  * Fluid Repository
@@ -258,7 +258,7 @@ class Fluid extends Repository
 	{
 		$beans = [];
 		for ( $i = 0; $i < $number; $i++ ) {
-			$OODBBEAN = defined( 'REDBEAN_OODBBEAN_CLASS' ) ? REDBEAN_OODBBEAN_CLASS : 'Surikat\Model\RedBeanPHP\OODBBean';
+			$OODBBEAN = defined( 'REDBEAN_OODBBEAN_CLASS' ) ? REDBEAN_OODBBEAN_CLASS : 'Surikat\Component\Model\RedBeanPHP\OODBBean';
 			$bean = new $OODBBEAN($this->writer->getDatabase());
 			$bean->initializeForDispense( $type, $this->oodb->getBeanHelper() );
 			$this->check( $bean );

@@ -1,6 +1,6 @@
 <?php
-namespace Surikat\Templator\CssSelector;
-use Surikat\Templator\CssSelector\TextParser;
+namespace Surikat\Component\Templator\CssSelector;
+use Surikat\Component\Templator\CssSelector\TextParser;
 use Exception;
 class TextParserException extends Exception{
 	private $_parser;

@@ -1,17 +1,17 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\QueryWriter;
+namespace Surikat\Component\Model\RedBeanPHP\QueryWriter;
 
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\Adapter as Adapter;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter as QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\Adapter as Adapter;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
 
-use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\R;
-use Surikat\Model\Table;
-use Surikat\Model\Query;
+use Surikat\Component\Model\RedBeanPHP\Database;
+use Surikat\Component\Model\R;
+use Surikat\Component\Model\Table;
+use Surikat\Component\Model\Query;
 
 /**
  * RedBean PostgreSQL Query Writer

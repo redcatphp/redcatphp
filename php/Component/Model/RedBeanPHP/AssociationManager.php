@@ -1,16 +1,16 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
-use Surikat\Model\RedBeanPHP\Observable as Observable;
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
-use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
+use Surikat\Component\Model\RedBeanPHP\Observable as Observable;
+use Surikat\Component\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter as QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\ToolBox as ToolBox;
 
 /**
  * Association Manager

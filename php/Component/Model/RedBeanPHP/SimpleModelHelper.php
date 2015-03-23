@@ -1,10 +1,10 @@
 <?php 
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
-use Surikat\Model\RedBeanPHP\Observer as Observer;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\Observable as Observable;
+use Surikat\Component\Model\RedBeanPHP\Observer as Observer;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\Observable as Observable;
 
 /**
  * RedBean Model Helper

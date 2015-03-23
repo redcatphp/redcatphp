@@ -37,10 +37,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Terms;
+namespace Surikat\Component\Model\Solarium\QueryType\Terms;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
 
 /**
  * Parse Terms response data

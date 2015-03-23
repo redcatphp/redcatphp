@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\Crypto\RandomLib;
+namespace Surikat\Component\Crypto\RandomLib;
 
 /**
  * The Random Number Source interface.

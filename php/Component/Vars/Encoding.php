@@ -1,4 +1,4 @@
-<?php namespace Surikat\Vars;
+<?php namespace Surikat\Component\Vars;
 /**
  * @author   "Sebastián Grignoli" <grignoli@framework2.com.ar>
  * @package  Encoding

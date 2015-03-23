@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Loop extends TML{
 	protected $hiddenWrap = true;
 	protected $loop = [];
@@ -65,7 +65,7 @@ class TML_Loop extends TML{
 		return "glob($file.'*')";
 	}
 	private function methodFileJson($file){
-		return 'Surikat\\K\\JSON::decode(file_get_contents($file),true)';
+		return 'Surikat\\Component\\K\\JSON::decode(file_get_contents($file),true)';
 	}
 	private function methodFileSvar($file){
 		return "unserialize(file_get_contents('$file'))";

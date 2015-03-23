@@ -1,22 +1,22 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\Observable as Observable;
-use Surikat\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
-use Surikat\Model\RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
-use Surikat\Model\RedBeanPHP\QueryWriter as QueryWriter;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
-use Surikat\Model\RedBeanPHP\SimpleModel as SimpleModel;
-use Surikat\Model\RedBeanPHP\BeanHelper as BeanHelper;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQLException;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\Cursor as Cursor;
-use Surikat\Model\RedBeanPHP\Cursor\NullCursor as NullCursor;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\Observable as Observable;
+use Surikat\Component\Model\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
+use Surikat\Component\Model\RedBeanPHP\BeanHelper\FacadeBeanHelper as FacadeBeanHelper;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter as QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\Model\RedBeanPHP\SimpleModel as SimpleModel;
+use Surikat\Component\Model\RedBeanPHP\BeanHelper as BeanHelper;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQLException;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use Surikat\Component\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Component\Model\RedBeanPHP\Cursor as Cursor;
+use Surikat\Component\Model\RedBeanPHP\Cursor\NullCursor as NullCursor;
 
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 
 /**
  * Abstract Repository

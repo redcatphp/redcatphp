@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\HttpAdapter;
+namespace Surikat\Component\Geocoding\Geocoder\HttpAdapter;
 
-use Surikat\Geocoding\Geocoder\Exception\InvalidArgumentException;
-use Surikat\Geocoding\Geocoder\Exception\UnsupportedException;
+use Surikat\Component\Geocoding\Geocoder\Exception\InvalidArgumentException;
+use Surikat\Component\Geocoding\Geocoder\Exception\UnsupportedException;
 use GeoIp2\ProviderInterface;
 
 /**

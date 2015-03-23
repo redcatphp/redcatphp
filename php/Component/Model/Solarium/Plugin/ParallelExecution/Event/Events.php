@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\ParallelExecution\Event;
+namespace Surikat\Component\Model\Solarium\Plugin\ParallelExecution\Event;
 
 /**
  * Event definitions

@@ -1,4 +1,4 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 class Container{
 	use MutatorMagic;
 	use Registry;

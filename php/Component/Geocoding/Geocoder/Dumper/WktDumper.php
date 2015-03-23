@@ -8,9 +8,9 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Dumper;
+namespace Surikat\Component\Geocoding\Geocoder\Dumper;
 
-use Surikat\Geocoding\Geocoder\Result\ResultInterface;
+use Surikat\Component\Geocoding\Geocoder\Result\ResultInterface;
 
 /**
  * @author Jan Sorgalla <jsorgalla@googlemail.com>

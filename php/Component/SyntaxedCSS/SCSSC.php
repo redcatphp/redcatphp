@@ -1,8 +1,8 @@
 <?php
-namespace Surikat\SyntaxedCSS;
+namespace Surikat\Component\SyntaxedCSS;
 use stdClass;
 use Exception;
-use Surikat\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 //+surikat addon for php Mixin/Include special support
 //		sass with superpower of php for complex and plainly maitrised advanced syntax function
 /**

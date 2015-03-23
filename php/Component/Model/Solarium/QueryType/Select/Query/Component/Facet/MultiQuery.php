@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\FacetSet;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as FacetQuery;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\FacetSet;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet\Query as FacetQuery;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
 
 /**
  * Facet MultiQuery

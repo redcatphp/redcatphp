@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Exception;
+namespace Surikat\Component\Model\Solarium\Exception;
 
 /**
  * OutOfBoundsException exception for Solarium classes

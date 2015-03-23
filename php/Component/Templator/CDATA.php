@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class CDATA extends CORE{
 	var $nodeName = 'CDATA';
 	protected $hiddenWrap = true;

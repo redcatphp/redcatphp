@@ -1,5 +1,5 @@
-<?php namespace Surikat\Service;
-use Surikat\DependencyInjection\Mutator;
+<?php namespace Surikat\Component\Service;
+use Surikat\Component\DependencyInjection\Mutator;
 class Service {
 	use Mutator;
 	function __invoke($func=null){

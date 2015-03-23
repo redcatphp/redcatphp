@@ -1,4 +1,4 @@
-<?php namespace Surikat\I18n;
+<?php namespace Surikat\Component\I18n;
 class getTextExtractor{
 	static function parse($sources,$sourceDir=null){
 		$msg = '';

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Else extends TML {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

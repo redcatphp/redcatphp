@@ -36,17 +36,17 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\ParallelExecution;
+namespace Surikat\Component\Model\Solarium\Plugin\ParallelExecution;
 
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
-use Surikat\Model\Solarium\Exception\HttpException;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Query\Query;
-use Surikat\Model\Solarium\Core\Query\Result;
-use Surikat\Model\Solarium\Plugin\ParallelExecution\Event\Events;
-use Surikat\Model\Solarium\Plugin\ParallelExecution\Event\ExecuteStart as ExecuteStartEvent;
-use Surikat\Model\Solarium\Plugin\ParallelExecution\Event\ExecuteEnd as ExecuteEndEvent;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Query\Query;
+use Surikat\Component\Model\Solarium\Core\Query\Result;
+use Surikat\Component\Model\Solarium\Plugin\ParallelExecution\Event\Events;
+use Surikat\Component\Model\Solarium\Plugin\ParallelExecution\Event\ExecuteStart as ExecuteStartEvent;
+use Surikat\Component\Model\Solarium\Plugin\ParallelExecution\Event\ExecuteEnd as ExecuteEndEvent;
 
 /**
  * ParallelExecution plugin

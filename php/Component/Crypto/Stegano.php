@@ -1,5 +1,5 @@
-<?php namespace Surikat\Crypto;
-use Surikat\Crypto\Image;
+<?php namespace Surikat\Component\Crypto;
+use Surikat\Component\Crypto\Image;
 /*
 exemple:
 

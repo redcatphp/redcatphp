@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto;
+<?php namespace Surikat\Component\Crypto;
 abstract class Hash{
 	static function apr1_md5($plainpasswd) {
 		$salt = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8);

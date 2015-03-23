@@ -39,11 +39,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\MoreLikeThis;
+namespace Surikat\Component\Model\Solarium\QueryType\MoreLikeThis;
 
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder as SelectRequestBuilder;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder as SelectRequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
 
 /**
  * Build a MoreLikeThis request

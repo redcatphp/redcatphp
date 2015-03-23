@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Graph_erm extends TML{
 	function load(){
 		foreach($this->children('table') as $t){

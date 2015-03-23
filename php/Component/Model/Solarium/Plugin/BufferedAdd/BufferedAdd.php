@@ -36,19 +36,19 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\BufferedAdd;
+namespace Surikat\Component\Model\Solarium\Plugin\BufferedAdd;
 
-use Surikat\Model\Solarium\Client;
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\QueryType\Update\Result as UpdateResult;
-use Surikat\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\Events;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\PreFlush as PreFlushEvent;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\PostFlush as PostFlushEvent;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\PreCommit as PreCommitEvent;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\PostCommit as PostCommitEvent;
-use Surikat\Model\Solarium\Plugin\BufferedAdd\Event\AddDocument as AddDocumentEvent;
+use Surikat\Component\Model\Solarium\Client;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\QueryType\Update\Result as UpdateResult;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\Events;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\PreFlush as PreFlushEvent;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\PostFlush as PostFlushEvent;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\PreCommit as PreCommitEvent;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\PostCommit as PostCommitEvent;
+use Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event\AddDocument as AddDocumentEvent;
 
 /**
  * Buffered add plugin

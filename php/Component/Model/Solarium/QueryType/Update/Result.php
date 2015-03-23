@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update;
+namespace Surikat\Component\Model\Solarium\QueryType\Update;
 
-use Surikat\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
+use Surikat\Component\Model\Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
  * Update result

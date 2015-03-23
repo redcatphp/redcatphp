@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Stats\Stats as StatsComponent;
-use Surikat\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Stats\Stats as StatsComponent;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
 
 /**
  * Add select component stats to the request

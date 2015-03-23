@@ -1,4 +1,4 @@
-<?php namespace Surikat\Mail\PHPMailer;
+<?php namespace Surikat\Component\Mail\PHPMailer;
 /**
  * EasyPeasyICS Simple ICS/vCal data generator.
  * @author Marcus Bointon <phpmailer@synchromedia.co.uk>

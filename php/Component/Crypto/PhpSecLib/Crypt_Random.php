@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto\PhpSecLib;
+<?php namespace Surikat\Component\Crypto\PhpSecLib;
 class Crypt_Random{
 	static function crypt_random_string($length){
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {

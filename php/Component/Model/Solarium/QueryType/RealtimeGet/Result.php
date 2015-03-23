@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\RealtimeGet;
+namespace Surikat\Component\Model\Solarium\QueryType\RealtimeGet;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\Result as BaseResult;
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Result as BaseResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
 
 /**
  * RealtimeGet query results

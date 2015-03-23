@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Grouping as GroupingComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\Grouping\Result;
-use Surikat\Model\Solarium\QueryType\Select\Result\Grouping\ValueGroup;
-use Surikat\Model\Solarium\QueryType\Select\Result\Grouping\QueryGroup;
-use Surikat\Model\Solarium\QueryType\Select\Result\Grouping\FieldGroup;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Grouping as GroupingComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping\Result;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping\ValueGroup;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping\QueryGroup;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping\FieldGroup;
 
 /**
  * Parse select component Grouping result from the data

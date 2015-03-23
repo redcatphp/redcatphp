@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
      
     /**
      * The very lowest base class in PHPVideoToolkit. It is the exec() wrapper than can determine if a call to exec fails or completes successfully.

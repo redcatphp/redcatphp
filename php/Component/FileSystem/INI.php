@@ -1,4 +1,4 @@
-<?php namespace Surikat\FileSystem;
+<?php namespace Surikat\Component\FileSystem;
 abstract class INI{
 	static function arrayToStr($assoc_arr,$has_sections=true,$quotes=false){
 		$content = ""; 

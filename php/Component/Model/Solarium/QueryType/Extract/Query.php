@@ -41,12 +41,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Extract;
+namespace Surikat\Component\Model\Solarium\QueryType\Extract;
 
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\QueryType\Update\ResponseParser as UpdateResponseParser;
-use Surikat\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\QueryType\Update\ResponseParser as UpdateResponseParser;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Document\DocumentInterface;
 
 /**
  * Extract query

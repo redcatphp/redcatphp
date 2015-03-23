@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator;
-use Surikat\Templator\COMMENT;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\COMMENT;
 class TML_Apply extends TML {
 	protected $hiddenWrap = true;
 	var $_extender;

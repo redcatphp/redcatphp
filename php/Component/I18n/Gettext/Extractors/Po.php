@@ -1,8 +1,8 @@
 <?php
-namespace Surikat\I18n\Gettext\Extractors;
+namespace Surikat\Component\I18n\Gettext\Extractors;
 
-use Surikat\I18n\Gettext\Translations;
-use Surikat\I18n\Gettext\Translation;
+use Surikat\Component\I18n\Gettext\Translations;
+use Surikat\Component\I18n\Gettext\Translation;
 
 /**
  * Class to get gettext strings from php files returning arrays

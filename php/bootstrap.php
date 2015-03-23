@@ -10,8 +10,8 @@ require __DIR__.'/Component/DependencyInjection/Container.php';
 require __DIR__.'/Component/Autoload/Psr4.php';
 require __DIR__.'/constants.php';
 global $SURIKAT;
-$SURIKAT = Surikat\DependencyInjection\Container::get();
+$SURIKAT = Surikat\Component\DependencyInjection\Container::get();
 $SURIKAT->Autoload_Psr4([
 	''			=> getcwd().'/php',
-	'Surikat'	=> __DIR__.'/Component',
+	'Surikat'	=> __DIR__,
 ])->splRegister();

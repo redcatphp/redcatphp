@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-     namespace Surikat\Video\PHPVideoToolkit;
+     namespace Surikat\Component\Video\PHPVideoToolkit;
 
     /**
      * Automatically sets the required codecs and formats for the acc audio format.

@@ -1,7 +1,7 @@
-<?php namespace Surikat\Templator;
-use Surikat\Templator\CDATA;
-use Surikat\Model;
-use Surikat\Model\R;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\CDATA;
+use Surikat\Component\Model;
+use Surikat\Component\Model\R;
 class TML_Form extends TML {
 	function loadModelRules($model){
 		$this->__unset('modelRules');

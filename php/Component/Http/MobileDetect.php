@@ -1,4 +1,4 @@
-<?php namespace Surikat\Http;
+<?php namespace Surikat\Component\Http;
 /**
  * Mobile Detect Library
  * =====================

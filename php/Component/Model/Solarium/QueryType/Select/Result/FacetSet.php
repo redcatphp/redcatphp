@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result;
 
 /**
  * Select component facetset result

@@ -1,9 +1,9 @@
 <?php
-namespace Surikat\I18n\Gettext\Extractors;
+namespace Surikat\Component\I18n\Gettext\Extractors;
 
 use Exception;
 use InvalidArgumentException;
-use Surikat\I18n\Gettext\Translations;
+use Surikat\Component\I18n\Gettext\Translations;
 
 abstract class Extractor
 {

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 abstract class CALL_SUB extends CORE{
 	function extendLoad($extend = null){ #untested
 		if($extend || ($extend = $this->closest('extend')))

@@ -1,17 +1,17 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\Driver;
+namespace Surikat\Component\Model\RedBeanPHP\Driver;
 
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\Model\SqlFormatter;
-use Surikat\Model\RedBeanPHP\Driver as Driver;
-use Surikat\Model\RedBeanPHP\Logger as Logger;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
-use Surikat\Model\RedBeanPHP\RedException\SQL as SQL;
-use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
-use Surikat\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
-use Surikat\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
-use Surikat\Model\RedBeanPHP\Cursor\PDOCursor as PDOCursor;
+use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\Model\SqlFormatter;
+use Surikat\Component\Model\RedBeanPHP\Driver as Driver;
+use Surikat\Component\Model\RedBeanPHP\Logger as Logger;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWriter;
+use Surikat\Component\Model\RedBeanPHP\RedException\SQL as SQL;
+use Surikat\Component\Model\RedBeanPHP\Logger\RDefault as RDefault;
+use Surikat\Component\Model\RedBeanPHP\Logger\RDefault\Debug as Debug;
+use Surikat\Component\Model\RedBeanPHP\PDOCompatible as PDOCompatible;
+use Surikat\Component\Model\RedBeanPHP\Cursor\PDOCursor as PDOCursor;
 
 /**
  * PDO Driver

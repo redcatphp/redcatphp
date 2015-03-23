@@ -1,11 +1,11 @@
 <?php
-namespace Surikat\Model\RedBeanPHP\Logger\RDefault;
+namespace Surikat\Component\Model\RedBeanPHP\Logger\RDefault;
 
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\Model\RedBeanPHP\Logger as Logger;
-use Surikat\Model\RedBeanPHP\Logger\RDefault as RDefault;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
-use Surikat\Model\RedBeanPHP\RedException\Security as Security;
+use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\Model\RedBeanPHP\Logger as Logger;
+use Surikat\Component\Model\RedBeanPHP\Logger\RDefault as RDefault;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\RedException\Security as Security;
 /**
  * Debug logger.
  * A special logger for debugging purposes.

@@ -1,5 +1,5 @@
-<?php namespace Surikat\Http;
-use Surikat\DependencyInjection\MutatorProperty;
+<?php namespace Surikat\Component\Http;
+use Surikat\Component\DependencyInjection\MutatorProperty;
 class Request{
 	use MutatorProperty;
 	function reloadLocation(){

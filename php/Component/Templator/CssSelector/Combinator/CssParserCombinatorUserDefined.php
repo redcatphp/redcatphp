@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\Templator\CssSelector\Combinator;
-use Surikat\Templator\CssSelector\CssParserException;
-use Surikat\Templator\CssSelector\Combinator\CssParserCombinator;
+namespace Surikat\Component\Templator\CssSelector\Combinator;
+use Surikat\Component\Templator\CssSelector\CssParserException;
+use Surikat\Component\Templator\CssSelector\Combinator\CssParserCombinator;
 class CssParserCombinatorUserDefined extends CssParserCombinator{
 	private $_userDefFunction;
 	function __construct($userDefFunction){

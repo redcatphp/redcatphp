@@ -36,15 +36,15 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Select\ResponseParser\ResponseParser;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Component as AbstractComponent;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\ResponseParser;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Component as AbstractComponent;
 
 /**
  * Select Query

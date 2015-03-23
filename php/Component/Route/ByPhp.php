@@ -1,4 +1,4 @@
-<?php namespace Surikat\Route;
+<?php namespace Surikat\Component\Route;
 use Route\Faceted;
 class ByPhp extends Route{
 	protected $dir = '';

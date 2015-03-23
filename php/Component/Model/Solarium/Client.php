@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium;
+namespace Surikat\Component\Model\Solarium;
 
-use Surikat\Model\Solarium\Core\Client\Client as CoreClient;
+use Surikat\Component\Model\Solarium\Core\Client\Client as CoreClient;
 
 /**
  * This class makes the client easier to use (shorter class name) and adds

@@ -1,12 +1,12 @@
 <?php 
-namespace Surikat\Model\RedBeanPHP\Plugin; 
-use Surikat\Model\RedBeanPHP\OODB as OODB;
-use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
-use Surikat\Model\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Model\RedBeanPHP\Finder as Finder;
-use Surikat\Model\RedBeanPHP\Facade as Facade;
-use Surikat\Model\RedBeanPHP\Plugin\BeanCan as BeanCan; 
-use Surikat\Model\RedBeanPHP\RedException as RedException;
+namespace Surikat\Component\Model\RedBeanPHP\Plugin; 
+use Surikat\Component\Model\RedBeanPHP\OODB as OODB;
+use Surikat\Component\Model\RedBeanPHP\ToolBox as ToolBox;
+use Surikat\Component\Model\RedBeanPHP\OODBBean as OODBBean;
+use Surikat\Component\Model\RedBeanPHP\Finder as Finder;
+use Surikat\Component\Model\RedBeanPHP\Facade as Facade;
+use Surikat\Component\Model\RedBeanPHP\Plugin\BeanCan as BeanCan; 
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
 /**
  * BeanCan Server.
  * A RESTy server for RedBeanPHP.

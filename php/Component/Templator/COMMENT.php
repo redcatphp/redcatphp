@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class COMMENT extends CORE{
 	protected $hiddenWrap = true;
 	private $contentText = '';

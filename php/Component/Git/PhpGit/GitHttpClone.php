@@ -1,4 +1,4 @@
-<?php namespace Surikat\Git\PhpGit;
+<?php namespace Surikat\Component\Git\PhpGit;
 /**
  *  GitHttpClone
  *

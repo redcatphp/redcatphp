@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Provider;
+namespace Surikat\Component\Geocoding\Geocoder\Provider;
 
-use Surikat\Geocoding\Geocoder\Geocoder;
-use Surikat\Geocoding\Geocoder\HttpAdapter\HttpAdapterInterface;
+use Surikat\Component\Geocoding\Geocoder\Geocoder;
+use Surikat\Component\Geocoding\Geocoder\HttpAdapter\HttpAdapterInterface;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

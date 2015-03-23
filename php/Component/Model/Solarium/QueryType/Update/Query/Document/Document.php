@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update\Query\Document;
+namespace Surikat\Component\Model\Solarium\QueryType\Update\Query\Document;
 
-use Surikat\Model\Solarium\Core\Query\Helper;
-use Surikat\Model\Solarium\QueryType\Select\Result\AbstractDocument;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Core\Query\Helper;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\AbstractDocument;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Read/Write Solr document

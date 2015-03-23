@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update;
+namespace Surikat\Component\Model\Solarium\QueryType\Update;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface;
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
 
 /**
  * Parse update response data

@@ -1,8 +1,8 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\RedException;
+namespace Surikat\Component\Model\RedBeanPHP\RedException;
 
-use Surikat\Model\RedBeanPHP\RedException as RedException;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
 
 /**
  * RedBeanPHP\Exception SQL

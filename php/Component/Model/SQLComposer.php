@@ -1,10 +1,10 @@
-<?php namespace Surikat\Model;
-use Surikat\Model\SQLComposer\Exception as SQLComposerException;
-use Surikat\Model\SQLComposer\Select as SQLComposerSelect;
-use Surikat\Model\SQLComposer\Insert as SQLComposerInsert;
-use Surikat\Model\SQLComposer\Update as SQLComposerUpdate;
-use Surikat\Model\SQLComposer\Replace as SQLComposerReplace;
-use Surikat\Model\SQLComposer\Delete as SQLComposerDelete;
+<?php namespace Surikat\Component\Model;
+use Surikat\Component\Model\SQLComposer\Exception as SQLComposerException;
+use Surikat\Component\Model\SQLComposer\Select as SQLComposerSelect;
+use Surikat\Component\Model\SQLComposer\Insert as SQLComposerInsert;
+use Surikat\Component\Model\SQLComposer\Update as SQLComposerUpdate;
+use Surikat\Component\Model\SQLComposer\Replace as SQLComposerReplace;
+use Surikat\Component\Model\SQLComposer\Delete as SQLComposerDelete;
 /**
  * SQLComposer
  *

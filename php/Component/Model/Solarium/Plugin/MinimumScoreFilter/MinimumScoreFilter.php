@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\MinimumScoreFilter;
+namespace Surikat\Component\Model\Solarium\Plugin\MinimumScoreFilter;
 
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
 
 /**
  * MinimumScoreFilter plugin

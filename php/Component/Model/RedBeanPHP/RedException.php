@@ -1,6 +1,6 @@
 <?php 
 
-namespace Surikat\Model\RedBeanPHP;
+namespace Surikat\Component\Model\RedBeanPHP;
 
 /**
  * RedBeanPHP\Exception Base

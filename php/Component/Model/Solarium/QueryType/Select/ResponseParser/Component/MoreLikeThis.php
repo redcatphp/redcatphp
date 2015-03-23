@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\MoreLikeThis as MoreLikeThisComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\MoreLikeThis\Result;
-use Surikat\Model\Solarium\QueryType\Select\Result\MoreLikeThis\MoreLikeThis as MoreLikeThisResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\MoreLikeThis as MoreLikeThisComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\MoreLikeThis\Result;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\MoreLikeThis\MoreLikeThis as MoreLikeThisResult;
 
 /**
  * Parse select component MoreLikeThis result from the data

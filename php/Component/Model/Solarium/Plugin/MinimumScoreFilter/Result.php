@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\MinimumScoreFilter;
+namespace Surikat\Component\Model\Solarium\Plugin\MinimumScoreFilter;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
 
 /**
  * Minimumscore filter query result

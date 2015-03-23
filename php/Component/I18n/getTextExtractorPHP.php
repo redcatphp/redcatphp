@@ -1,5 +1,5 @@
-<?php namespace Surikat\I18n;
-use Surikat\I18n\Gettext\Extractors\PhpCode;
+<?php namespace Surikat\Component\I18n;
+use Surikat\Component\I18n\Gettext\Extractors\PhpCode;
 class getTextExtractorPHP extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		if($sourceDir){

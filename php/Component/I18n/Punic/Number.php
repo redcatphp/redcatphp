@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Punic;
+namespace Surikat\Component\I18n\Punic;
 
 /**
  * Numbers helpers
@@ -10,7 +10,7 @@ class Number
     /**
      * Check if a variable contains a valid number for the specified locale
      * @param string $value The string value to check
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return bool
      */
     public static function isNumeric($value, $locale = '')
@@ -21,7 +21,7 @@ class Number
     /**
      * Check if a variable contains a valid integer number for the specified locale
      * @param string $value The string value to check
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return bool
      */
     public static function isInteger($value, $locale = '')
@@ -43,7 +43,7 @@ class Number
      * Localize a number representation (for instance, converts 1234.5 to '1,234.5' in case of English and to '1.234,5' in case of Italian)
      * @param numeric $value The string value to convert
      * @param int|null $precision The wanted precision (well use {@link http://php.net/manual/function.round.php})
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string $value is not a number, otherwise returns the localized representation of the number
      */
     public static function format($value, $precision = null, $locale = '')
@@ -75,7 +75,7 @@ class Number
             if (!is_null($precision)) {
                 $value = round($value, $precision);
             }
-            $data = \Surikat\I18n\Punic\Data::get('numbers', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('numbers', $locale);
             $decimal = $data['symbols']['decimal'];
             $groupLength = (array_key_exists('groupLength', $data) && is_numeric($data['groupLength'])) ? intval($data['groupLength']) : 3;
             if ($value < 0) {
@@ -111,7 +111,7 @@ class Number
     /**
      * Convert a localized representation of a number to a number (for instance, converts the string '1,234' to 1234 in case of English and to 1.234 in case of Italian)
      * @param string $value The string value to convert
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return int|float|null Returns null if $value is not valid, the numeric value otherwise
      */
     public static function unformat($value, $locale = '')
@@ -120,7 +120,7 @@ class Number
         if (is_int($value) || is_float($value)) {
             $result = $value;
         } elseif (is_string($value) && strlen($value)) {
-            $data = \Surikat\I18n\Punic\Data::get('numbers', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('numbers', $locale);
             $plus = $data['symbols']['plusSign'];
             $plusQ = preg_quote($plus);
             $minus = $data['symbols']['minusSign'];

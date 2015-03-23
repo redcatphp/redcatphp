@@ -1,6 +1,6 @@
-<?php namespace Surikat\Vars;
+<?php namespace Surikat\Component\Vars;
 use DOMDocument;
-use Surikat\Vars\HTML5Lib\Parser;
+use Surikat\Component\Vars\HTML5Lib\Parser;
 class Truncating {
 	static function truncatehtml($html,$lenght='20',$elipsis ='...'){
 		return self::truncate($html, $lenght, ['length_in_chars' => true, 'ellipsis' => $elipsis, 'xml' => true]);

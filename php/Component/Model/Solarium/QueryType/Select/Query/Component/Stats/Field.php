@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Stats;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Stats;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Stats component field class

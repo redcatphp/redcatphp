@@ -1,6 +1,6 @@
 <?php
 
-namespace Surikat\Model\Solarium\Support\DataFixtures;
+namespace Surikat\Component\Model\Solarium\Support\DataFixtures;
 
 /**
  * This class is just a convenience wrapper around the fixture loading process.

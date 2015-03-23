@@ -37,11 +37,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\MoreLikeThis;
+namespace Surikat\Component\Model\Solarium\QueryType\MoreLikeThis;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\Document as ReadOnlyDocument;
-use Surikat\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
-use Surikat\Model\Solarium\Exception\UnexpectedValueException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Document as ReadOnlyDocument;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
+use Surikat\Component\Model\Solarium\Exception\UnexpectedValueException;
 
 /**
  * MoreLikeThis query result

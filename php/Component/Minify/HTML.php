@@ -1,4 +1,4 @@
-<?php namespace Surikat\Minify; 
+<?php namespace Surikat\Component\Minify; 
 #modified by surikat
 /*
  Compress HTML
@@ -15,8 +15,8 @@ class HTML {
     protected $_replacementHash = null;
     protected $_placeholders = [];
 	protected $_html;
-	protected $_cssMinifier = ['Surikat\\Minify\\CSS','minify'];
-	protected $_jsMinifier = ['Surikat\\Minify\\JS','minify'];
+	protected $_cssMinifier = ['Surikat\\Component\\Minify\\CSS','minify'];
+	protected $_jsMinifier = ['Surikat\\Component\\Minify\\JS','minify'];
 	static $singleton;
     public static function minify($html) {
         if(!isset(self::$singleton))

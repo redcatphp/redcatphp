@@ -1,7 +1,7 @@
-<?php namespace Surikat\User;
-use Surikat\User\Auth as User_Auth;
-use Surikat\I18n\Lang;
-use Surikat\DependencyInjection\MutatorMagic;
+<?php namespace Surikat\Component\User;
+use Surikat\Component\User\Auth as User_Auth;
+use Surikat\Component\I18n\Lang;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 Lang::initialize();
 class AuthServer{
 	use MutatorMagic;

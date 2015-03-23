@@ -1,4 +1,4 @@
-<?php namespace Surikat\I18n;
+<?php namespace Surikat\Component\I18n;
 /*
    Copyright (c) 2003, 2009 Danilo Segan <danilo@kvota.net>.
    Copyright (c) 2005 Nico Kaiser <nico@siriux.net>

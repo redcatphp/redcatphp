@@ -1,5 +1,5 @@
-<?php namespace Surikat\Git\GitDeploy;
-use Surikat\FileSystem\FS;
+<?php namespace Surikat\Component\Git\GitDeploy;
+use Surikat\Component\FileSystem\FS;
 abstract class Server {
     var $connection;
     var $current_commit;

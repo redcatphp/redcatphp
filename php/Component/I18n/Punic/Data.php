@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Punic;
+namespace Surikat\Component\I18n\Punic;
 
 /**
  * Common data helper stuff
@@ -53,7 +53,7 @@ class Data
     /**
      * Set the current default locale and language
      * @param string $locale
-     * @throws \Surikat\I18n\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
+     * @throws \Surikat\Component\I18n\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
      */
     public static function setDefaultLocale($locale)
     {
@@ -86,7 +86,7 @@ class Data
     /**
      * Set the current fallback locale and language
      * @param string $locale
-     * @throws \Surikat\I18n\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
+     * @throws \Surikat\Component\I18n\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
      */
     public static function setFallbackLocale($locale)
     {
@@ -104,7 +104,7 @@ class Data
      * @param string $identifier The data identifier
      * @param string $locale ='' The locale identifier (if empty we'll use the current default locale)
      * @return array
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @internal
      */
     public static function get($identifier, $locale = '')

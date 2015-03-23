@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Grouping;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
 
 /**
  * Select component grouping query group result

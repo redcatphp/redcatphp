@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Event;
+namespace Surikat\Component\Model\Solarium\Core\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Core\Query\Result\ResultInterface;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Core\Query\Result\ResultInterface;
 
 /**
  * PostCreateResult event, see Events for details

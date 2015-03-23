@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update\Query\Command;
+namespace Surikat\Component\Model\Solarium\QueryType\Update\Query\Command;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Update query command base class

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto\PhpSecLib;
+<?php namespace Surikat\Component\Crypto\PhpSecLib;
 
 /**
  * Pure-PHP PKCS#1 (v2.1) compliant implementation of RSA.

@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Terms;
+namespace Surikat\Component\Model\Solarium\QueryType\Terms;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
 
 /**
  * Terms query

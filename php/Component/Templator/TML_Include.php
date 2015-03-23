@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator; 
-use Surikat\FileSystem\FS;
+<?php namespace Surikat\Component\Templator; 
+use Surikat\Component\FileSystem\FS;
 class TML_Include extends CALL_SUB{
 	protected $selfClosed = true;
 	

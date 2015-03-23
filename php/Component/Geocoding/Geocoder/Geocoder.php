@@ -8,11 +8,11 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder;
+namespace Surikat\Component\Geocoding\Geocoder;
 
-use Surikat\Geocoding\Geocoder\Provider\ProviderInterface;
-use Surikat\Geocoding\Geocoder\Result\ResultFactoryInterface;
-use Surikat\Geocoding\Geocoder\Result\DefaultResultFactory;
+use Surikat\Component\Geocoding\Geocoder\Provider\ProviderInterface;
+use Surikat\Component\Geocoding\Geocoder\Result\ResultFactoryInterface;
+use Surikat\Component\Geocoding\Geocoder\Result\DefaultResultFactory;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Query\Result;
+namespace Surikat\Component\Model\Solarium\Core\Query\Result;
 
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Core\Query\Query;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Core\Query\Query;
 
 /**
  * Query result interface

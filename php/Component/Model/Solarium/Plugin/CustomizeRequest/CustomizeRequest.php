@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\CustomizeRequest;
+namespace Surikat\Component\Model\Solarium\Plugin\CustomizeRequest;
 
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\Core\Event\Events;
-use Surikat\Model\Solarium\Core\Event\preExecuteRequest as preExecuteRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Core\Event\Events;
+use Surikat\Component\Model\Solarium\Core\Event\preExecuteRequest as preExecuteRequestEvent;
 
 /**
  * CustomizeRequest plugin

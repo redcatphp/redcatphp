@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Exception;
+namespace Surikat\Component\Geocoding\Geocoder\Exception;
 
 /**
  * @author Antoine Corcy <contact@sbin.dk>

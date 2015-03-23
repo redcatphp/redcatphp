@@ -8,12 +8,12 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\Provider;
+namespace Surikat\Component\Geocoding\Geocoder\Provider;
 
-use Surikat\Geocoding\Geocoder\Exception\NoResultException;
-use Surikat\Geocoding\Geocoder\Exception\InvalidArgumentException;
-use Surikat\Geocoding\Geocoder\Exception\RuntimeException;
-use Surikat\Geocoding\Geocoder\Exception\UnsupportedException;
+use Surikat\Component\Geocoding\Geocoder\Exception\NoResultException;
+use Surikat\Component\Geocoding\Geocoder\Exception\InvalidArgumentException;
+use Surikat\Component\Geocoding\Geocoder\Exception\RuntimeException;
+use Surikat\Component\Geocoding\Geocoder\Exception\UnsupportedException;
 
 class MaxMindBinaryProvider extends AbstractProvider implements ProviderInterface
 {

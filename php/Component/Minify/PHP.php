@@ -1,4 +1,4 @@
-<?php namespace Surikat\Minify; 
+<?php namespace Surikat\Component\Minify; 
 class PHP {
 	var $minifyHTML;
 	private $tokens = [];

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 class TML_Attrprepend extends CALL_APL {
 	protected $selfClosed = true;
 	function extendLoad(){

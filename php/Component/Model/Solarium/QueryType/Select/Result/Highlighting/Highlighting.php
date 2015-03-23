@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Highlighting;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Highlighting;
 
 /**
  * Select component highlighting result

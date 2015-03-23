@@ -1,1 +1,1 @@
-<?php namespace Surikat\Templator; class TML_Premerge extends CALL_APL {}
+<?php namespace Surikat\Component\Templator; class TML_Premerge extends CALL_APL {}

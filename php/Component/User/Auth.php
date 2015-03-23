@@ -1,11 +1,11 @@
-<?php namespace Surikat\User;
-use Surikat\Config\Config;
-use Surikat\FileSystem\FS;
-use Surikat\Model\R;
-use Surikat\User\Session as User_Session;
-use Surikat\Mail\PHPMailer;
-use Surikat\DependencyInjection\MutatorMagic;
-use Surikat\DependencyInjection\Constant;
+<?php namespace Surikat\Component\User;
+use Surikat\Component\Config\Config;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\Model\R;
+use Surikat\Component\User\Session as User_Session;
+use Surikat\Component\Mail\PHPMailer;
+use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\Constant;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';

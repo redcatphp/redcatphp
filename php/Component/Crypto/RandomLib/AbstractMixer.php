@@ -12,7 +12,7 @@
  * @version   Build @@version@@
  */
 
-namespace Surikat\Crypto\RandomLib;
+namespace Surikat\Component\Crypto\RandomLib;
 
 /**
  * An abstract mixer to implement a common mixing strategy
@@ -22,7 +22,7 @@ namespace Surikat\Crypto\RandomLib;
  * @package  Random
  * @author   Anthony Ferrara <ircmaxell@ircmaxell.com>
  */
-abstract class AbstractMixer implements \Surikat\Crypto\RandomLib\Mixer {
+abstract class AbstractMixer implements \Surikat\Component\Crypto\RandomLib\Mixer {
 
     /**
      * Get the block size (the size of the individual blocks used for the mixing)

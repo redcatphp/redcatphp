@@ -1,4 +1,4 @@
-<?php namespace Surikat\Zip;
+<?php namespace Surikat\Component\Zip;
 class Zipper extends \ZipArchive {   
 	public $forbidden_dirs = [];
 	public $forbidden_files = [];

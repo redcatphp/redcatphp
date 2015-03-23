@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Http;
+namespace Surikat\Component\Http;
 class Post implements \IteratorAggregate,\ArrayAccess,\Countable{
 	protected $data;
 	function __construct($data=null){

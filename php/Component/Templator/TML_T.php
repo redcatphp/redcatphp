@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_T extends TML{
 	function load(){
 		$this->attr('tmp-wrap',1);

@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Http;
+namespace Surikat\Component\Http;
 use ArrayAccess;
 class Server implements ArrayAccess{
 	protected $data;

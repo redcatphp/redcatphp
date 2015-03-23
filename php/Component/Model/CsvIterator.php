@@ -1,4 +1,4 @@
-<?php namespace Surikat\Model;
+<?php namespace Surikat\Component\Model;
 use Iterator;
 class CsvIterator implements Iterator{
     private $row_size;

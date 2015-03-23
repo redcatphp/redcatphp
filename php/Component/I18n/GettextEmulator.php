@@ -1,7 +1,7 @@
-<?php namespace Surikat\I18n;
-use Surikat\I18n\FileReader;
-use Surikat\I18n\domain;
-use Surikat\I18n\gettext_reader;
+<?php namespace Surikat\Component\I18n;
+use Surikat\Component\I18n\FileReader;
+use Surikat\Component\I18n\domain;
+use Surikat\Component\I18n\gettext_reader;
 if (!defined('LC_MESSAGES'))
 	define('LC_MESSAGES',5);
 class GettextEmulator{

@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\ResponseParser;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\ResponseParser;
 
-use Surikat\Model\Solarium\QueryType\Analysis\Result\ResultList;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Result\ResultList;
 
 /**
  * Parse document analysis response data

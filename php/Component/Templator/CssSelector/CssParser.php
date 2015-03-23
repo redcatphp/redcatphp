@@ -1,20 +1,20 @@
 <?php
-namespace Surikat\Templator\CssSelector;
+namespace Surikat\Component\Templator\CssSelector;
 use ArrayObject;
-use Surikat\Templator\CssSelector\Combinator\CssParserCombinator;
-use Surikat\Templator\CssSelector\Combinator\CssParserCombinatorFactory;
-use Surikat\Templator\CssSelector\Filter\CssParserFilter;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterAttr;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterClass;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterId;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterPseudo;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterPseudoFactory;
-use Surikat\Templator\CssSelector\Model\CssParserModelElement;
-use Surikat\Templator\CssSelector\Model\CssParserModelFactor;
-use Surikat\Templator\CssSelector\Model\CssParserModelSelector;
-use Surikat\Templator\CssSelector\TextParserException;
-use Surikat\Templator\CssSelector\TextParser;
-use Surikat\Vars\Arrays;
+use Surikat\Component\Templator\CssSelector\Combinator\CssParserCombinator;
+use Surikat\Component\Templator\CssSelector\Combinator\CssParserCombinatorFactory;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilter;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterAttr;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterClass;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterId;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterPseudo;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterPseudoFactory;
+use Surikat\Component\Templator\CssSelector\Model\CssParserModelElement;
+use Surikat\Component\Templator\CssSelector\Model\CssParserModelFactor;
+use Surikat\Component\Templator\CssSelector\Model\CssParserModelSelector;
+use Surikat\Component\Templator\CssSelector\TextParserException;
+use Surikat\Component\Templator\CssSelector\TextParser;
+use Surikat\Component\Vars\Arrays;
  
 /**
  * selectorList			  = selector {"," selector}

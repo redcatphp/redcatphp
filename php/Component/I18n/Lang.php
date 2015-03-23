@@ -1,8 +1,8 @@
 <?php
-namespace Surikat\I18n{
-	use Surikat\DependencyInjection\MutatorMagic;
-	use Surikat\Config\Config;
-	use Surikat\I18n\GettextEmulator;
+namespace Surikat\Component\I18n{
+	use Surikat\Component\DependencyInjection\MutatorMagic;
+	use Surikat\Component\Config\Config;
+	use Surikat\Component\I18n\GettextEmulator;
 	class Lang {
 		use MutatorMagic;
 		
@@ -236,7 +236,7 @@ namespace Surikat\I18n{
 	Lang::initialize();
 }
 namespace{
-	use Surikat\I18n\Lang;
+	use Surikat\Component\I18n\Lang;
 	function __($msgid,$lang=null,$domain=null){
 		return Lang::__($msgid,$lang,$domain);
 	}

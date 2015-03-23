@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Gettext\Utils;
+namespace Surikat\Component\I18n\Gettext\Utils;
 
 class JsFunctionsScanner extends FunctionsScanner
 {

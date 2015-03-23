@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Client;
+namespace Surikat\Component\Model\Solarium\Core\Client;
 
-use Surikat\Model\Solarium\Core\Configurable;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Class for describing a request

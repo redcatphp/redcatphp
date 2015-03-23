@@ -1,4 +1,4 @@
-<?php namespace Surikat\Mail\PHPMailer;
+<?php namespace Surikat\Component\Mail\PHPMailer;
 use Exception;
 /**
  * PHPMailer - PHP email creation and transport class.

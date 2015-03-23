@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\I18n\Gettext\Extractors;
+namespace Surikat\Component\I18n\Gettext\Extractors;
 
-use Surikat\I18n\Gettext\Translations;
+use Surikat\Component\I18n\Gettext\Translations;
 
 /**
  * Class to get gettext strings from json files

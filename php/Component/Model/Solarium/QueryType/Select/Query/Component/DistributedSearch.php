@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component\DistributedSearch as RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component\DistributedSearch as RequestBuilder;
 
 /**
  * Distributed Search (sharding) component

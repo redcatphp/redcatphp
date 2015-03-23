@@ -1,4 +1,4 @@
-<?php namespace Surikat\Route;
+<?php namespace Surikat\Component\Route;
 class Extension extends Route{
 	private $match;
 	private $extension;

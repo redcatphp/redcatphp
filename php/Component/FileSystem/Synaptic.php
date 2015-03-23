@@ -1,8 +1,8 @@
-<?php namespace Surikat\FileSystem;
-use Surikat\FileSystem\FS;
-use Surikat\Minify\JS;
-use Surikat\Minify\CSS;
-use Surikat\DependencyInjection\MutatorMagic;
+<?php namespace Surikat\Component\FileSystem;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\Minify\JS;
+use Surikat\Component\Minify\CSS;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 class Synaptic {
 	use MutatorMagic;
 	protected $expires = 2592000;

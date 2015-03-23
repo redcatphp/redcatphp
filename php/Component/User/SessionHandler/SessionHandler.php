@@ -1,5 +1,5 @@
-<?php namespace Surikat\User\SessionHandler;
-use Surikat\User\SessionHandler as User_SessionHandler;
+<?php namespace Surikat\Component\User\SessionHandler;
+use Surikat\Component\User\SessionHandler as User_SessionHandler;
 class SessionHandler implements User_SessionHandler{
 	protected $name;
 	protected $savePath;

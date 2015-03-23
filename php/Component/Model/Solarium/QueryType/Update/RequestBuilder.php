@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Update;
+namespace Surikat\Component\Model\Solarium\QueryType\Update;
 
-use Surikat\Model\Solarium\Client;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
-use Surikat\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use Surikat\Component\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Build an update request

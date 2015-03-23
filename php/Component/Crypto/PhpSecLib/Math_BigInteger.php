@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto\PhpSecLib;
+<?php namespace Surikat\Component\Crypto\PhpSecLib;
 
 /**
  * Pure-PHP arbitrary precision integer arithmetic library.

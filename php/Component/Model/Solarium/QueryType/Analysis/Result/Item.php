@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\Result;
 
 /**
  * Analysis item

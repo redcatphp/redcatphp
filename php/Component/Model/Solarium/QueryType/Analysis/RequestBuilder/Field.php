@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\RequestBuilder;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\RequestBuilder;
 
-use Surikat\Model\Solarium\QueryType\Analysis\Query\Field as QueryField;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\Query\Field as QueryField;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
 
 /**
  * Build a field analysis request

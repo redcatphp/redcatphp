@@ -12,7 +12,7 @@
  * @version    Build @@version@@
  */
 
-namespace Surikat\Crypto\SecurityLib;
+namespace Surikat\Component\Crypto\SecurityLib;
 
 /**
  * The strength FlyweightEnum class

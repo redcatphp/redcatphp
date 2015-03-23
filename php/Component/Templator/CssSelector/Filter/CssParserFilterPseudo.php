@@ -1,4 +1,4 @@
 <?php
-namespace Surikat\Templator\CssSelector\Filter;
-use Surikat\Templator\CssSelector\Filter\CssParserFilter;
+namespace Surikat\Component\Templator\CssSelector\Filter;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilter;
 abstract class CssParserFilterPseudo extends CssParserFilter{}

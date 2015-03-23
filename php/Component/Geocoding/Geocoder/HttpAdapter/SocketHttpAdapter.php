@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\HttpAdapter;
+namespace Surikat\Component\Geocoding\Geocoder\HttpAdapter;
 
-use Surikat\Geocoding\Geocoder\Exception\HttpException;
-use Surikat\Geocoding\Geocoder\Exception\ExtensionNotLoadedException;
+use Surikat\Component\Geocoding\Geocoder\Exception\HttpException;
+use Surikat\Component\Geocoding\Geocoder\Exception\ExtensionNotLoadedException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

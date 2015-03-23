@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator; 
-use Surikat\Templator\CALL_APL;
+<?php namespace Surikat\Component\Templator; 
+use Surikat\Component\Templator\CALL_APL;
 class TML_Js extends CALL_APL{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

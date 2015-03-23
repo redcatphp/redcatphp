@@ -1,4 +1,4 @@
-<?php namespace Surikat\UriDispatcher;
+<?php namespace Surikat\Component\UriDispatcher;
 class Index extends ViewController{
 	protected $useConvention = true;
 	protected $i18nConvention;

@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class BadArgumentType extends \Surikat\I18n\Punic\Exception
+class BadArgumentType extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $argumentValue;
 
@@ -39,7 +39,7 @@ class BadArgumentType extends \Surikat\I18n\Punic\Exception
                 break;
         }
         $message = "Can't convert $shownName to a $destinationTypeDescription";
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::BAD_ARGUMENT_TYPE, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::BAD_ARGUMENT_TYPE, $previous);
     }
 
     /**

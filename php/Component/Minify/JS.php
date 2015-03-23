@@ -1,4 +1,4 @@
-<?php namespace Surikat\Minify; 
+<?php namespace Surikat\Component\Minify; 
 /**
  * JSMin.php - modified PHP implementation of Douglas Crockford's JSMin.
  *

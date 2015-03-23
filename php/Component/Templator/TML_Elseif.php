@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Elseif extends TML_If {
 	protected $selfClosed = true;
 	function load(){

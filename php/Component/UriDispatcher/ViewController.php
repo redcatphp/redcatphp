@@ -1,6 +1,6 @@
-<?php namespace Surikat\UriDispatcher;
-use Surikat\Templator\Template;
-use Surikat\Controller\Controller;
+<?php namespace Surikat\Component\UriDispatcher;
+use Surikat\Component\Templator\Template;
+use Surikat\Component\Controller\Controller;
 class ViewController extends UriDispatcher{
 	protected $Controller;
 	protected $View;

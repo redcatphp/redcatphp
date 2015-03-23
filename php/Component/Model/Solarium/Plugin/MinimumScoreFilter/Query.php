@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\MinimumScoreFilter;
+namespace Surikat\Component\Model\Solarium\Plugin\MinimumScoreFilter;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
 
 
 /**

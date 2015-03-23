@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Gettext;
+namespace Surikat\Component\I18n\Gettext;
 
 /**
  * Class to manage a translation string

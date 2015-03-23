@@ -1,4 +1,4 @@
-<?php namespace Surikat\Crypto\PhpSecLib;
+<?php namespace Surikat\Component\Crypto\PhpSecLib;
 
 /**
  * SFTP Stream Wrapper

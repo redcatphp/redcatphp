@@ -12,9 +12,9 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Surikat\Crypto\SecurityLib\BigMath;
+namespace Surikat\Component\Crypto\SecurityLib\BigMath;
 
-use Surikat\Crypto\SecurityLib\BaseConverter;
+use Surikat\Component\Crypto\SecurityLib\BaseConverter;
 
 /**
  * A class for arbitrary precision math functions implemented in PHP
@@ -23,7 +23,7 @@ use Surikat\Crypto\SecurityLib\BaseConverter;
  * @package    Core
  * @subpackage BigMath
  */
-class PHPMath extends \Surikat\Crypto\SecurityLib\BigMath {
+class PHPMath extends \Surikat\Component\Crypto\SecurityLib\BigMath {
 
     /**
      * Add two numbers together

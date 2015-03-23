@@ -1,4 +1,4 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 use BadMethodCallException;
 trait MutatorMagicCall{
 	function __call($f,$args){

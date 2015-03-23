@@ -1,6 +1,6 @@
 <?php
 
-namespace Surikat\Model\Solarium\Support\DataFixtures;
+namespace Surikat\Component\Model\Solarium\Support\DataFixtures;
 
 /**
  * @author Baldur Rensch <brensch@gmail.com>

@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class TML_Code extends TML{
 	protected $noParseContent = true;
 	function load(){

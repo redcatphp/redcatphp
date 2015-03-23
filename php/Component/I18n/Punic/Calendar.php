@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Punic;
+namespace Surikat\Component\I18n\Punic;
 
 /*
  * Comments marked as @TZWS have been added because it seems than PHP does
@@ -20,20 +20,20 @@ class Calendar
      * @param string|\DateTimeZone $toTimezone The timezone to set; leave empty to use the value of $fromTimezone (if it's empty we'll use the default timezone or the timezone associated to $value if it's already a <code>\DateTime</code>).
      * @param string|\DateTimeZone $fromTimezone The original timezone of $value; leave empty to use the default timezone (or the timezone associated to $value if it's already a <code>\DateTime</code>).
      * @return \DateTime|null Returns null if $value is empty, a <code>\DateTime</code> instance otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws an exception if $value is not empty and can't be converted to a <code>\DateTime</code> instance or if $toTimezone is not empty and is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws an exception if $value is not empty and can't be converted to a <code>\DateTime</code> instance or if $toTimezone is not empty and is not valid.
      * @example
      * Convert a Unix timestamp to a \DateTime instance with the current time zone:<br>
-     * \Surikat\I18n\Punic\Calendar::toDateTime(1409648286);<br>
+     * \Surikat\Component\I18n\Punic\Calendar::toDateTime(1409648286);<br>
      * <br>
      * Convert a Unix timestamp to a \DateTime instance with a specific time zone:<br>
-     * \Surikat\I18n\Punic\Calendar::toDateTime(1409648286, 'Europe/Rome');<br>
-     * \Surikat\I18n\Punic\Calendar::toDateTime(1409648286, new \DateTimeZone('Europe/Rome'));<br>
+     * \Surikat\Component\I18n\Punic\Calendar::toDateTime(1409648286, 'Europe/Rome');<br>
+     * \Surikat\Component\I18n\Punic\Calendar::toDateTime(1409648286, new \DateTimeZone('Europe/Rome'));<br>
      * <br>
      * Convert a string to a \DateTime instance with the current time zone:<br>
-     * \Surikat\I18n\Punic\Calendar::toDateTime('2014-03-07 13:30');<br>
+     * \Surikat\Component\I18n\Punic\Calendar::toDateTime('2014-03-07 13:30');<br>
      * <br>
      * Convert a string to a \DateTime instance with a specific time zone:<br>
-     * \Surikat\I18n\Punic\Calendar::toDateTime('2014-03-07 13:30', 'Europe/Rome');<br>
+     * \Surikat\Component\I18n\Punic\Calendar::toDateTime('2014-03-07 13:30', 'Europe/Rome');<br>
      * Please remark that in this case '2014-03-07 13:30' is converted to a \DateTime instance with the current timezone, and <u>after</u> we change the timezone.<br>
      * So, if your system default timezone is 'America/Los_Angeles' (GMT -8), the resulting date/time will be '2014-03-07 22:30 GMT+1' since it'll be converted to 'Europe/Rome' (GMT +1)
      */
@@ -175,11 +175,11 @@ class Calendar
      * Get the name of an era.
      * @param number|\DateTime $value The year number or the \DateTime instance for which you want the name of the era.
      * @param string $width = 'abbreviated' The format name; it can be 'wide' (eg 'Before Christ'), 'abbreviated' (eg 'BC') or 'narrow' (eg 'B').
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @return string Returns an empty string if $value is empty, the name of the era otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
-     * @throws \Surikat\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
      */
     public static function getEraName($value, $width = 'abbreviated', $locale = '')
     {
@@ -200,7 +200,7 @@ class Calendar
             if (is_null($year)) {
                 throw new Exception\BadArgumentType($value, 'year number');
             }
-            $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
             $data = $data['eras'];
             if (!array_key_exists($width, $data)) {
                 throw new Exception\ValueNotInList($width, array_keys($data));
@@ -215,12 +215,12 @@ class Calendar
      * Get the name of a month.
      * @param number|\DateTime $value The month number (1-12) or a \DateTime instance for which you want the name of the month.
      * @param string $width = 'wide' The format name; it can be 'wide' (eg 'January'), 'abbreviated' (eg 'Jan') or 'narrow' (eg 'J').
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @param bool $standAlone = false Set to true to return the form used independently (such as in calendar header), set to false if the month name will be part of a date.
      * @return string Returns an empty string if $value is empty, the name of the month otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
-     * @throws \Surikat\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
      */
     public static function getMonthName($value, $width = 'wide', $locale = '', $standAlone = false)
     {
@@ -241,7 +241,7 @@ class Calendar
             if (is_null($month) || (($month < 1) || ($month > 12))) {
                 throw new Exception\BadArgumentType($value, 'month number');
             }
-            $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
             $data = $data['months'][$standAlone ? 'stand-alone' : 'format'];
             if (!array_key_exists($width, $data)) {
                 throw new Exception\ValueNotInList($width, array_keys($data));
@@ -256,12 +256,12 @@ class Calendar
      * Get the name of a week day.
      * @param number|\DateTime $value A week day number (from 0-Sunday to 6-Saturnday) or a \DateTime instance for which you want the name of the day of the week.
      * @param string $width = 'wide' The format name; it can be 'wide' (eg 'Sunday'), 'abbreviated' (eg 'Sun'), 'short' (eg 'Su') or 'narrow' (eg 'S').
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @param bool $standAlone = false Set to true to return the form used independently (such as in calendar header), set to false if the week day name will be part of a date.
      * @return string Returns an empty string if $value is empty, the name of the week day name otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
-     * @throws \Surikat\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
      */
     public static function getWeekdayName($value, $width = 'wide', $locale = '', $standAlone = false)
     {
@@ -284,7 +284,7 @@ class Calendar
                 throw new Exception\BadArgumentType($value, 'weekday number');
             }
             $weekday = $dictionary[$weekday];
-            $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
             $data = $data['days'][$standAlone ? 'stand-alone' : 'format'];
             if (!array_key_exists($width, $data)) {
                 throw new Exception\ValueNotInList($width, array_keys($data));
@@ -299,12 +299,12 @@ class Calendar
      * Get the name of a quarter.
      * @param number|\DateTime $value A quarter number (from 1 to 4) or a \DateTime instance for which you want the name of the day of the quarter.
      * @param string $width = 'wide' The format name; it can be 'wide' (eg '1st quarter'), 'abbreviated' (eg 'Q1') or 'narrow' (eg '1').
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @param bool $standAlone = false Set to true to return the form used independently (such as in calendar header), set to false if the quarter name will be part of a date.
      * @return string Returns an empty string if $value is empty, the name of the quarter name otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
-     * @throws \Surikat\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
      */
     public static function getQuarterName($value, $width = 'wide', $locale = '', $standAlone = false)
     {
@@ -325,7 +325,7 @@ class Calendar
             if (is_null($quarter) || (($quarter < 1) || ($quarter > 4))) {
                 throw new Exception\BadArgumentType($value, 'quarter number');
             }
-            $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
             $data = $data['quarters'][$standAlone ? 'stand-alone' : 'format'];
             if (!array_key_exists($width, $data)) {
                 throw new Exception\ValueNotInList($width, array_keys($data));
@@ -340,12 +340,12 @@ class Calendar
      * Get the name of a day period (AM/PM).
      * @param number|string|\DateTime $value An hour (from 0 to 23), a standard period name ('am' or 'pm', lower or upper case) a \DateTime instance for which you want the name of the day period.
      * @param string $width = 'wide' The format name; it can be 'wide' (eg 'AM'), 'abbreviated' (eg 'AM') or 'narrow' (eg 'a').
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @param bool $standAlone = false Set to true to return the form used independently (such as in calendar header), set to false if the day period name will be part of a date.
      * @return string Returns an empty string if $value is empty, the name of the day period name otherwise.
-     * @throws \Surikat\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
-     * @throws \Surikat\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception\BadArgumentType Throws a BadArgumentType exception if $value is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception\ValueNotInList Throws a ValueNotInList exception if $width is not valid.
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of other problems (for instance if you specify an invalid locale).
      */
     public static function getDayperiodName($value, $width = 'wide', $locale = '', $standAlone = false)
     {
@@ -376,7 +376,7 @@ class Calendar
             if (is_null($dayperiod)) {
                 throw new Exception\BadArgumentType($value, 'day period');
             }
-            $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
             $data = $data['dayPeriods'][$standAlone ? 'stand-alone' : 'format'];
             if (!array_key_exists($width, $data)) {
                 throw new Exception\ValueNotInList($width, array_keys($data));
@@ -392,9 +392,9 @@ class Calendar
      * @param string|\DateTime|\DateTimeZone $value The php name of a timezone, or a \DateTime instance or a \DateTimeZone instance for which you want the localized timezone name.
      * @param string $width = 'long' The format name; it can be 'long' (eg 'Greenwich Mean Time') or 'short' (eg 'GMT').
      * @param string $kind = '' Set to 'daylight' to retrieve the daylight saving time name, set to 'standard' to retrieve the standard time, set to 'generic' to retrieve the generic name, set to '' to determine automatically the dst (if $value is \DateTime) or the generic (otherwise).
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\I18n\Punic\Data::setDefaultLocale()}.
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set with {@link \Surikat\Component\I18n\Punic\Data::setDefaultLocale()}.
      * @return string Returns an empty string if the timezone has not been found (maybe we don't have the data in the specified $width), the timezone name otherwise.
-     * @throws \Surikat\I18n\Punic\Exception Throws a generic exception in case of problems (for instance if you specify an invalid locale).
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws a generic exception in case of problems (for instance if you specify an invalid locale).
      */
     public static function getTimezoneNameNoLocationSpecific($value, $width = 'long', $kind = '', $locale = '')
     {
@@ -419,7 +419,7 @@ class Calendar
             }
             if (strlen($receivedPhpName)) {
                 $metazoneCode = '';
-                $data = \Surikat\I18n\Punic\Data::getGeneric('metaZones');
+                $data = \Surikat\Component\I18n\Punic\Data::getGeneric('metaZones');
                 $phpNames = static::getTimezonesAliases($receivedPhpName);
                 if (!strlen($metazoneCode)) {
                     foreach ($phpNames as $phpName) {
@@ -471,7 +471,7 @@ class Calendar
                     $metazoneCode = $receivedPhpName;
                 }
                 if (strlen($metazoneCode)) {
-                    $data = \Surikat\I18n\Punic\Data::get('timeZoneNames', $locale);
+                    $data = \Surikat\Component\I18n\Punic\Data::get('timeZoneNames', $locale);
                     if (array_key_exists('metazone', $data)) {
                         $data = $data['metazone'];
                         if (array_key_exists($metazoneCode, $data)) {
@@ -511,13 +511,13 @@ class Calendar
      * Returns the localized name of an exemplar city for a specific timezone
      * @param string|\DateTime|\DateTimeZone $value The php name of a timezone, or a \DateTime instance or a \DateTimeZone instance
      * @param bool $returnUnknownIfNotFound true If the exemplar city is not found, shall we return the translation of 'Unknown City'?
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if the exemplar city hasn't been found and $returnUnknownIfNotFound is false
      */
     public static function getTimezoneExemplarCity($value, $returnUnknownIfNotFound = true, $locale = '')
     {
         $result = '';
-        $locale = empty($locale) ? \Surikat\I18n\Punic\Data::getDefaultLocale() : $locale;
+        $locale = empty($locale) ? \Surikat\Component\I18n\Punic\Data::getDefaultLocale() : $locale;
         if (!empty($value)) {
             $receivedPhpName = '';
             if (is_string($value)) {
@@ -529,7 +529,7 @@ class Calendar
             }
             if (strlen($receivedPhpName)) {
                 $phpNames = static::getTimezonesAliases($receivedPhpName);
-                $timeZoneNames = \Surikat\I18n\Punic\Data::get('timeZoneNames', $locale);
+                $timeZoneNames = \Surikat\Component\I18n\Punic\Data::get('timeZoneNames', $locale);
                 foreach ($phpNames as $phpName) {
                     $chunks = array_merge(array('zone'), explode('/', $phpName));
                     $data = $timeZoneNames;
@@ -563,14 +563,14 @@ class Calendar
 
     /**
      * Returns true if a locale has a 12-hour clock, false if 24-hour clock
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return bool
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      */
     public static function has12HoursClock($locale = '')
     {
         static $cache = array();
-        $locale = empty($locale) ? \Surikat\I18n\Punic\Data::getDefaultLocale() : $locale;
+        $locale = empty($locale) ? \Surikat\Component\I18n\Punic\Data::getDefaultLocale() : $locale;
         if (!array_key_exists($locale, $cache)) {
             $format = static::getTimeFormat('short', $locale);
             $format = str_replace("''", '', $format);
@@ -582,17 +582,17 @@ class Calendar
 
     /**
      * Retrieve the first weekday for a specific locale (from 0-Sunday to 6-Saturnday)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return int Returns a number from 0 (Sunday) to 7 (Saturnday)
      */
     public static function getFirstWeekday($locale = '')
     {
         static $cache = array();
-        $locale = empty($locale) ? \Surikat\I18n\Punic\Data::getDefaultLocale() : $locale;
+        $locale = empty($locale) ? \Surikat\Component\I18n\Punic\Data::getDefaultLocale() : $locale;
         if (!array_key_exists($locale, $cache)) {
             $result = 0;
-            $data = \Surikat\I18n\Punic\Data::getGeneric('weekData');
-            $i = \Surikat\I18n\Punic\Data::getTerritoryNode($data['firstDay'], $locale);
+            $data = \Surikat\Component\I18n\Punic\Data::getGeneric('weekData');
+            $i = \Surikat\Component\I18n\Punic\Data::getTerritoryNode($data['firstDay'], $locale);
             if (is_int($i)) {
                 $result = $i;
             }
@@ -606,7 +606,7 @@ class Calendar
      * Returns the sorted list of weekdays, starting from {@link getFirstWeekday}
      * @param string|false $namesWidth If false you'll get only the list of weekday identifiers (for instance: [0, 1, 2, 3, 4, 5, 6]),
      * If it's a string it must be one accepted by {@link getWeekdayName}, and you'll get an array like this: [{id: 0, name: 'Monday', ..., {id: 6, name: 'Sunday'}]
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array
      */
     public static function getSortedWeekdays($namesWidth = false, $locale = '')
@@ -635,7 +635,7 @@ class Calendar
     /**
      * Get the ISO format for a date
      * @param string $width The format name; it can be 'full' (eg 'EEEE, MMMM d, y' - 'Wednesday, August 20, 2014'), 'long' (eg 'MMMM d, y' - 'August 20, 2014'), 'medium' (eg 'MMM d, y' - 'August 20, 2014') or 'short' (eg 'M/d/yy' - '8/20/14')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns the requested ISO format
      * @throws Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
@@ -644,7 +644,7 @@ class Calendar
      */
     public static function getDateFormat($width, $locale = '')
     {
-        $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
         $data = $data['dateFormats'];
         if (!array_key_exists($width, $data)) {
             throw new Exception\ValueNotInList($width, array_keys($data));
@@ -656,16 +656,16 @@ class Calendar
     /**
      * Get the ISO format for a time
      * @param string $width The format name; it can be 'full' (eg 'h:mm:ss a zzzz' - '11:42:13 AM GMT+2:00'), 'long' (eg 'h:mm:ss a z' - '11:42:13 AM GMT+2:00'), 'medium' (eg 'h:mm:ss a' - '11:42:13 AM') or 'short' (eg 'h:mm a' - '11:42 AM')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns the requested ISO format
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
      */
     public static function getTimeFormat($width, $locale = '')
     {
-        $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
         $data = $data['timeFormats'];
         if (!array_key_exists($width, $data)) {
             throw new Exception\ValueNotInList($width, array_keys($data));
@@ -677,9 +677,9 @@ class Calendar
     /**
      * Get the ISO format for a date/time
      * @param string $width The format name; it can be 'full', 'long', 'medium', 'short' or a combination for date+time like 'full|short' or a combination for format+date+time like 'full|full|short'
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns the requested ISO format
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -727,7 +727,7 @@ class Calendar
             default:
                 throw new Exception\BadArgumentType($width, 'pipe-separated list of strings (from 1 to 3 chunks)');
         }
-        $data = \Surikat\I18n\Punic\Data::get('calendar', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('calendar', $locale);
         $data = $data['dateTimeFormats'];
         if (!array_key_exists($wholeWidth, $data)) {
             throw new Exception\ValueNotInList($wholeWidth, array_keys($data));
@@ -775,7 +775,7 @@ class Calendar
      * @param \DateTime|null $dateStart The final date (if it has a timezone different than $dateEnd, we'll use the one of $dateEnd)
      * @param int $maxParts = 2 The maximim parts (eg with 2 you may have '2 days and 4 hours', with 3 '2 days, 4 hours and 24 minutes')
      * @param string $width = 'short' The format name; it can be 'long' (eg '3 seconds'), 'short' (eg '3 s') or 'narrow' (eg '3s')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string
      * @throws Exception\BadArgumentType
      */
@@ -799,7 +799,7 @@ class Calendar
         $dateStartUTC = new \DateTime($dateStart->format('Y-m-d H:i:s'), $utc);
 
         $parts = array();
-        $data = \Surikat\I18n\Punic\Data::get('dateFields', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('dateFields', $locale);
         if ($dateEndUTC->getTimestamp() == $dateStartUTC->getTimestamp()) {
             $parts[] = $data['second']['relative-type-0'];
         } else {
@@ -807,37 +807,37 @@ class Calendar
             $mostFar = 0;
             $maxDistance = 3;
             if (($mostFar < $maxDistance) && ($diff->y > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->y, 'duration/year', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->y, 'duration/year', $width, $locale);
                 $mostFar = 0;
             } elseif (!empty($parts)) {
                 $mostFar++;
             }
             if (($mostFar < $maxDistance) && ($diff->m > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->m, 'duration/month', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->m, 'duration/month', $width, $locale);
                 $mostFar = 0;
             } elseif (!empty($parts)) {
                 $mostFar++;
             }
             if (($mostFar < $maxDistance) && ($diff->d > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->d, 'duration/day', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->d, 'duration/day', $width, $locale);
                 $mostFar = 0;
             } elseif (!empty($parts)) {
                 $mostFar++;
             }
             if (($mostFar < $maxDistance) && ($diff->h > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->h, 'duration/hour', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->h, 'duration/hour', $width, $locale);
                 $mostFar = 0;
             } elseif (!empty($parts)) {
                 $mostFar++;
             }
             if (($mostFar < $maxDistance) && ($diff->i > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->i, 'duration/minute', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->i, 'duration/minute', $width, $locale);
                 $mostFar = 0;
             } elseif (!empty($parts)) {
                 $mostFar++;
             }
             if (empty($parts) || ($diff->s > 0)) {
-                $parts[] = \Surikat\I18n\Punic\Unit::format($diff->s, 'duration/second', $width, $locale);
+                $parts[] = \Surikat\Component\I18n\Punic\Unit::format($diff->s, 'duration/second', $width, $locale);
             }
             if (count($parts) > $maxParts) {
                 $parts = array_slice($parts, 0, $maxParts);
@@ -846,10 +846,10 @@ class Calendar
         switch ($width) {
             case 'narrow':
             case 'short':
-                $joined = \Surikat\I18n\Punic\Misc::joinUnits($parts, $width, $locale);
+                $joined = \Surikat\Component\I18n\Punic\Misc::joinUnits($parts, $width, $locale);
                 break;
             default:
-                $joined = \Surikat\I18n\Punic\Misc::join($parts, $locale);
+                $joined = \Surikat\Component\I18n\Punic\Misc::join($parts, $locale);
                 break;
         }
 
@@ -861,9 +861,9 @@ class Calendar
      * @param \DateTime $value The \DateTime instance for which you want the localized textual representation
      * @param string $width The format name; it can be 'full' (eg 'EEEE, MMMM d, y' - 'Wednesday, August 20, 2014'), 'long' (eg 'MMMM d, y' - 'August 20, 2014'), 'medium' (eg 'MMM d, y' - 'August 20, 2014') or 'short' (eg 'M/d/yy' - '8/20/14').
      *                      You can also append a caret ('^') or an asterisk ('*') to $width. If so, special day names may be used (like 'Today', 'Yesterday', 'Tomorrow' with '^' and 'today', 'yesterday', 'tomorrow' width '*') instead of the date.
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -892,9 +892,9 @@ class Calendar
      * @param string $width The format name; it can be 'full' (eg 'EEEE, MMMM d, y' - 'Wednesday, August 20, 2014'), 'long' (eg 'MMMM d, y' - 'August 20, 2014'), 'medium' (eg 'MMM d, y' - 'August 20, 2014') or 'short' (eg 'M/d/yy' - '8/20/14')
      *                      You can also append a caret ('^') or an asterisk ('*') to $width. If so, special day names may be used (like 'Today', 'Yesterday', 'Tomorrow' with '^' and 'today', 'yesterday', 'tomorrow' width '*') instead of the date.
      * @param string|\DateTimeZone $toTimezone The timezone to set; leave empty to use the default timezone (or the timezone associated to $value if it's already a \DateTime)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @see toDateTime()
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
@@ -913,9 +913,9 @@ class Calendar
      * Format a time
      * @param \DateTime $value The \DateTime instance for which you want the localized textual representation
      * @param string $width The format name; it can be 'full' (eg 'h:mm:ss a zzzz' - '11:42:13 AM GMT+2:00'), 'long' (eg 'h:mm:ss a z' - '11:42:13 AM GMT+2:00'), 'medium' (eg 'h:mm:ss a' - '11:42:13 AM') or 'short' (eg 'h:mm a' - '11:42 AM')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -934,9 +934,9 @@ class Calendar
      * @param number|\DateTime|string $value An Unix timestamp, a <code>\DateTime</code> instance or a string accepted by {@link http://php.net/manual/function.strtotime.php strtotime}.
      * @param string $width The format name; it can be 'full' (eg 'h:mm:ss a zzzz' - '11:42:13 AM GMT+2:00'), 'long' (eg 'h:mm:ss a z' - '11:42:13 AM GMT+2:00'), 'medium' (eg 'h:mm:ss a' - '11:42:13 AM') or 'short' (eg 'h:mm a' - '11:42 AM')
      * @param string|\DateTimeZone $toTimezone The timezone to set; leave empty to use the default timezone (or the timezone associated to $value if it's already a \DateTime)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @see toDateTime()
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
@@ -956,9 +956,9 @@ class Calendar
      * @param \DateTime $value The \DateTime instance for which you want the localized textual representation
      * @param string $width The format name; it can be 'full', 'long', 'medium', 'short' or a combination for date+time like 'full|short' or a combination for format+date+time like 'full|full|short'
      *                      You can also append an asterisk ('*') to the date parh of $width. If so, special day names may be used (like 'Today', 'Yesterday', 'Tomorrow') instead of the date part.
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -1001,9 +1001,9 @@ class Calendar
      * @param string $width The format name; it can be 'full', 'long', 'medium', 'short' or a combination for date+time like 'full|short' or a combination for format+date+time like 'full|full|short'
      *                      You can also append an asterisk ('*') to the date parh of $width. If so, special day names may be used (like 'Today', 'Yesterday', 'Tomorrow') instead of the date part.
      * @param string|\DateTimeZone $toTimezone The timezone to set; leave empty to use the default timezone (or the timezone associated to $value if it's already a \DateTime)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @see toDateTime()
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
@@ -1022,9 +1022,9 @@ class Calendar
      * Format a date and/or time
      * @param \DateTime $value The \DateTime instance for which you want the localized textual representation
      * @param string $format The ISO format that specify how to render the date/time
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -1078,7 +1078,7 @@ class Calendar
             if ($length === 0) {
                 throw new Exception\BadArgumentType($format, 'date/time ISO format');
             }
-            $cacheKey = empty($locale) ? \Surikat\I18n\Punic\Data::getDefaultLocale() : $locale;
+            $cacheKey = empty($locale) ? \Surikat\Component\I18n\Punic\Data::getDefaultLocale() : $locale;
             if (!array_key_exists($cacheKey, $decodeCache)) {
                 $decodeCache[$cacheKey] = array();
             }
@@ -1134,9 +1134,9 @@ class Calendar
      * @param number|\DateTime|string $value An Unix timestamp, a <code>\DateTime</code> instance or a string accepted by {@link http://php.net/manual/function.strtotime.php strtotime}.
      * @param string $format The ISO format that specify how to render the date/time
      * @param string|\DateTimeZone $toTimezone The timezone to set; leave empty to use the default timezone (or the timezone associated to $value if it's already a \DateTime)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns an empty string if $value is empty, the localized textual representation otherwise
-     * @throws \Surikat\I18n\Punic\Exception Throws an exception in case of problems
+     * @throws \Surikat\Component\I18n\Punic\Exception Throws an exception in case of problems
      * @link http://cldr.unicode.org/translation/date-time-patterns
      * @link http://cldr.unicode.org/translation/date-time
      * @link http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
@@ -1154,21 +1154,21 @@ class Calendar
      * Retrieve the relative day name (eg 'yesterday', 'tomorrow'), if available
      * @param \DateTime $datetime The date for which you want the relative day name
      * @param bool $ucFirst = false Force first letter to be upper case?
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return Returns the relative name if available, otherwise returns an empty string
      */
     public static function getDateRelativeName($datetime, $ucFirst = false, $locale = '')
     {
         $result = '';
         $deltaDays = static::getDeltaDays($datetime);
-        $data = \Surikat\I18n\Punic\Data::get('dateFields', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('dateFields', $locale);
         if (array_key_exists('day', $data)) {
             $data = $data['day'];
             $key = "relative-type-$deltaDays";
             if (array_key_exists($key, $data)) {
                 $result = $data[$key];
                 if ($ucFirst) {
-                    $result = \Surikat\I18n\Punic\Misc::fixCase($result, 'titlecase-firstword');
+                    $result = \Surikat\Component\I18n\Punic\Misc::fixCase($result, 'titlecase-firstword');
                 }
             }
         }
@@ -1378,7 +1378,7 @@ class Calendar
         $hours = intval(floor($seconds / 3600));
         $seconds -= $hours * 3600;
         $minutes = intval(floor($seconds / 60));
-        $data = \Surikat\I18n\Punic\Data::get('timeZoneNames', $locale);
+        $data = \Surikat\Component\I18n\Punic\Data::get('timeZoneNames', $locale);
         $format = array_key_exists('gmtFormat', $data) ? $data['gmtFormat'] : 'GMT%1$s';
         switch ($count) {
             case 1:
@@ -1546,7 +1546,7 @@ class Calendar
             case 3:
                 return implode('', $partsMaybeWithSeconds);
             case 4:
-                $data = \Surikat\I18n\Punic\Data::get('timeZoneNames', $locale);
+                $data = \Surikat\Component\I18n\Punic\Data::get('timeZoneNames', $locale);
                 $format = array_key_exists('gmtFormat', $data) ? $data['gmtFormat'] : 'GMT%1$s';
 
                 return sprintf($format, implode(':', $partsWithoutSeconds));

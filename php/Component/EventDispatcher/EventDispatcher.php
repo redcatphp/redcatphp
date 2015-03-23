@@ -1,6 +1,6 @@
 <?php
-namespace Surikat\EventDispatcher;
-use Surikat\DependencyInjection\Mutator;
+namespace Surikat\Component\EventDispatcher;
+use Surikat\Component\DependencyInjection\Mutator;
 class EventDispatcher{
 	use Mutator;
 	protected $events = [];

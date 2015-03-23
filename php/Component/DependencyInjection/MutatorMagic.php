@@ -1,6 +1,6 @@
-<?php namespace Surikat\DependencyInjection;
-use Surikat\DependencyInjection\MutatorCall;
-use Surikat\DependencyInjection\MutatorProperty;
+<?php namespace Surikat\Component\DependencyInjection;
+use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\DependencyInjection\MutatorProperty;
 trait MutatorMagic{
 	use Mutator;
 	use MutatorMagicProperty;

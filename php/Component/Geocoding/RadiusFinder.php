@@ -1,12 +1,12 @@
-<?php namespace Surikat\Geocoding;
-use Surikat\Geocoding\Geocoder\Geocoder;
-use Surikat\Geocoding\Geocoder\HttpAdapter\CurlHttpAdapter;
-use Surikat\Geocoding\Geocoder\Provider\ChainProvider;
-use Surikat\Geocoding\Geocoder\Provider\FreeGeoIpProvider;
-use Surikat\Geocoding\Geocoder\Provider\HostIpProvider;
-use Surikat\Geocoding\Geocoder\Provider\GoogleMapsProvider;
-use Surikat\Geocoding\Geocoder\Provider\NominatimProvider;
-use Surikat\Geocoding\Geocoder\Provider\OpenStreetMapProvider;
+<?php namespace Surikat\Component\Geocoding;
+use Surikat\Component\Geocoding\Geocoder\Geocoder;
+use Surikat\Component\Geocoding\Geocoder\HttpAdapter\CurlHttpAdapter;
+use Surikat\Component\Geocoding\Geocoder\Provider\ChainProvider;
+use Surikat\Component\Geocoding\Geocoder\Provider\FreeGeoIpProvider;
+use Surikat\Component\Geocoding\Geocoder\Provider\HostIpProvider;
+use Surikat\Component\Geocoding\Geocoder\Provider\GoogleMapsProvider;
+use Surikat\Component\Geocoding\Geocoder\Provider\NominatimProvider;
+use Surikat\Component\Geocoding\Geocoder\Provider\OpenStreetMapProvider;
 
 class RadiusFinder{
 	static function byAddress($val,&$lat=null,&$lon=null,$debug=false){
@@ -26,7 +26,7 @@ class RadiusFinder{
 		try{
 			$geocode = $geocoder->geocode($val);
 		}
-		catch(\Surikat\Geocoding\Geocoder\Exception\ChainNoResultException $e){
+		catch(\Surikat\Component\Geocoding\Geocoder\Exception\ChainNoResultException $e){
 			if($debug)
 				echo $e->getMessage()."\r\n";
 			return 0;

@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Client\Adapter;
+namespace Surikat\Component\Model\Solarium\Core\Client\Adapter;
 
-use Surikat\Model\Solarium\Core\ConfigurableInterface;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Core\ConfigurableInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
 
 /**
  * Interface for client adapters

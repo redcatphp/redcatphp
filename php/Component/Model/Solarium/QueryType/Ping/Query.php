@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Ping;
+namespace Surikat\Component\Model\Solarium\QueryType\Ping;
 
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\QueryType\Ping\RequestBuilder as RequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\QueryType\Ping\RequestBuilder as RequestBuilder;
 
 /**
  * Ping query

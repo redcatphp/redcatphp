@@ -36,14 +36,14 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin;
+namespace Surikat\Component\Model\Solarium\Plugin;
 
-use Surikat\Model\Solarium\Client;
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
-use Surikat\Model\Solarium\QueryType\Select\Result\DocumentInterface;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Client;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Result as SelectResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\DocumentInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
 
 /**
  * Prefetch plugin

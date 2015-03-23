@@ -1,6 +1,6 @@
-<?php namespace Surikat\SyntaxedCSS;
-use Surikat\FileSystem\FS;
-use Surikat\DependencyInjection\MutatorMagic;
+<?php namespace Surikat\Component\SyntaxedCSS;
+use Surikat\Component\FileSystem\FS;
+use Surikat\Component\DependencyInjection\MutatorMagic;
 use Exception;
 class SCSSCServer{
 	use MutatorMagic;

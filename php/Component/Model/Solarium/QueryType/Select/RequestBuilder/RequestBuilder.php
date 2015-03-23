@@ -36,12 +36,12 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\RequestBuilder;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
 
 /**
  * Build a select request

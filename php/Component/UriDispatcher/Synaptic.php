@@ -1,4 +1,4 @@
-<?php namespace Surikat\UriDispatcher;
+<?php namespace Surikat\Component\UriDispatcher;
 class Synaptic extends UriDispatcher{
 	protected $pathFS;
 	function __construct($pathFS=''){

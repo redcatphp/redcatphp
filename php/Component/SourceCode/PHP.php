@@ -1,4 +1,4 @@
-<?php namespace Surikat\SourceCode;
+<?php namespace Surikat\Component\SourceCode;
 abstract class PHP{
 	static function extractCode($text){
 		$tokens = token_get_all($text);
@@ -35,7 +35,7 @@ abstract class PHP{
 	static function namespacedConcat(&$str,$surikat=null){
 		if($useS=self::namespacedCodeUsed($str,$surikat)){
 			$str = strpos($str,'<?php ')===0?substr($str,5):'?>'.$str;
-			$str = '<?php use '.($surikat?'\\Surikat\\':'').implode(';use '.($surikat?'\\Surikat\\':''),$useS).'; '.$str;
+			$str = '<?php use '.($surikat?'\\Surikat\\Component\\':'').implode(';use '.($surikat?'\\Surikat\\Component\\':''),$useS).'; '.$str;
 		}
 		return $str;
 	}
@@ -71,7 +71,7 @@ abstract class PHP{
 		if($surikat){
 			$useS = [];
 			foreach($used as $use)
-				if(strpos(ltrim($use,'\\'),'Surikat\\')!==0&&class_exists($use)&&!is_file(SURIKAT_PATH.str_replace('\\','/',$use.'.php')))
+				if(strpos(ltrim($use,'\\'),'Surikat\\Component\\')!==0&&class_exists($use)&&!is_file(SURIKAT_PATH.str_replace('\\','/',$use.'.php')))
 					$useS[] = ltrim($use,'\\');
 			return $useS;
 		}

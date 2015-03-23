@@ -37,11 +37,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Suggester;
+namespace Surikat\Component\Model\Solarium\QueryType\Suggester;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
-use Surikat\Model\Solarium\QueryType\Suggester\Result\Result;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
+use Surikat\Component\Model\Solarium\QueryType\Suggester\Result\Result;
 
 /**
  * Parse Suggester response data

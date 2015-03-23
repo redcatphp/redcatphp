@@ -36,23 +36,23 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\Loadbalancer;
+namespace Surikat\Component\Model\Solarium\Plugin\Loadbalancer;
 
-use Surikat\Model\Solarium\Core\Plugin\Plugin;
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\Core\Client\Endpoint;
-use Surikat\Model\Solarium\Core\Query\Query;
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Client\Response;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
-use Surikat\Model\Solarium\Exception\OutOfBoundsException;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\Exception\HttpException;
-use Surikat\Model\Solarium\Plugin\Loadbalancer\Event\Events;
-use Surikat\Model\Solarium\Plugin\Loadbalancer\Event\EndpointFailure as EndpointFailureEvent;
-use Surikat\Model\Solarium\Core\Event\Events as CoreEvents;
-use Surikat\Model\Solarium\Core\Event\PreCreateRequest as PreCreateRequestEvent;
-use Surikat\Model\Solarium\Core\Event\PreExecuteRequest as PreExecuteRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Plugin\Plugin;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\Client\Endpoint;
+use Surikat\Component\Model\Solarium\Core\Query\Query;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Client\Response;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\Exception\OutOfBoundsException;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Plugin\Loadbalancer\Event\Events;
+use Surikat\Component\Model\Solarium\Plugin\Loadbalancer\Event\EndpointFailure as EndpointFailureEvent;
+use Surikat\Component\Model\Solarium\Core\Event\Events as CoreEvents;
+use Surikat\Component\Model\Solarium\Core\Event\PreCreateRequest as PreCreateRequestEvent;
+use Surikat\Component\Model\Solarium\Core\Event\PreExecuteRequest as PreExecuteRequestEvent;
 
 /**
  * Loadbalancer plugin

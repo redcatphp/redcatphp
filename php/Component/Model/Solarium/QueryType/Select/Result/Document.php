@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result;
 
-use Surikat\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
 
 /**
  * Read-only Solr document

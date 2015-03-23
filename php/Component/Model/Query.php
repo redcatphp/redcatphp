@@ -1,14 +1,14 @@
-<?php namespace Surikat\Model;
+<?php namespace Surikat\Component\Model;
 use ArrayAccess;
 use BadMethodCallException;
-use Surikat\Vars\ArrayObject;
-use Surikat\Vars\Arrays;
-use Surikat\Model\SqlFormatter;
-use Surikat\Model;
-use Surikat\Model\R;
-use Surikat\Model\RedBeanPHP\Database;
-use Surikat\Model\RedBeanPHP\QueryWriter;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
+use Surikat\Component\Vars\ArrayObject;
+use Surikat\Component\Vars\Arrays;
+use Surikat\Component\Model\SqlFormatter;
+use Surikat\Component\Model;
+use Surikat\Component\Model\R;
+use Surikat\Component\Model\RedBeanPHP\Database;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter;
 class Query {
 	protected $table;
 	protected $pxTable;

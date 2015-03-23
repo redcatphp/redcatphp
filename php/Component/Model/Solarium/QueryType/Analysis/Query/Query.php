@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\Query;
 
-use Surikat\Model\Solarium\Core\Query\Query as BaseQuery;
+use Surikat\Component\Model\Solarium\Core\Query\Query as BaseQuery;
 
 /**
  * Base class for Analysis queries

@@ -1,6 +1,6 @@
-<?php namespace Surikat\Git\GitDeploy;
-use Surikat\Crypto\PhpSecLib\Net_SFTP;
-use Surikat\Crypto\PhpSecLib\Crypt_RSA;
+<?php namespace Surikat\Component\Git\GitDeploy;
+use Surikat\Component\Crypto\PhpSecLib\Net_SFTP;
+use Surikat\Component\Crypto\PhpSecLib\Crypt_RSA;
 class SFTP extends Server {
     function connect($server) {
         $this->connection = new Net_SFTP($server['host'], $server['port'], 10);

@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\MinimumScoreFilter;
+namespace Surikat\Component\Model\Solarium\Plugin\MinimumScoreFilter;
 
-use Surikat\Model\Solarium\QueryType\Select\Result\Grouping\ValueGroup as StandardValueGroup;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Grouping\ValueGroup as StandardValueGroup;
 
 class ValueGroupResult extends StandardValueGroup
 {

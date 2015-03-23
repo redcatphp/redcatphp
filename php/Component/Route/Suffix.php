@@ -1,4 +1,4 @@
-<?php namespace Surikat\Route;
+<?php namespace Surikat\Component\Route;
 class Suffix extends Route{
 	private $match;
 	function __construct($match){

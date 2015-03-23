@@ -12,7 +12,7 @@
  * @version   Build @@version@@
  */
 
-namespace Surikat\Crypto\SecurityLib;
+namespace Surikat\Component\Crypto\SecurityLib;
 
 /**
  * The base abstract factory used by all PasswordLib factories

@@ -1,8 +1,8 @@
 <?php
 
-namespace Surikat\Model\RedBeanPHP\Cursor;
+namespace Surikat\Component\Model\RedBeanPHP\Cursor;
 
-use Surikat\Model\RedBeanPHP\Cursor as Cursor;
+use Surikat\Component\Model\RedBeanPHP\Cursor as Cursor;
 
 /**
  * PDO Database Cursor

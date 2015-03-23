@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\CustomizeRequest;
+namespace Surikat\Component\Model\Solarium\Plugin\CustomizeRequest;
 
-use Surikat\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Configurable;
 
 /**
  * Customization value object

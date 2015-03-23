@@ -1,7 +1,7 @@
-<?php namespace Surikat\Presenter;
-use Surikat\Vars\ArrayObject;
-use Surikat\Templator\TML;
-use Surikat\DependencyInjection\MutatorCall;
+<?php namespace Surikat\Component\Presenter;
+use Surikat\Component\Vars\ArrayObject;
+use Surikat\Component\Templator\TML;
+use Surikat\Component\DependencyInjection\MutatorCall;
 class Presenter extends ArrayObject{
 	use MutatorCall;
 	static function load(TML $tml){

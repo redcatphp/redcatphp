@@ -1,5 +1,5 @@
-<?php namespace Surikat\Config;
-use Surikat\Vars\Arrays;
+<?php namespace Surikat\Component\Config;
+use Surikat\Component\Vars\Arrays;
 class Config {
 	private static $registry = [];
 	protected static $directory = 'config';

@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Facet;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Facet;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\FacetSet;
-use Surikat\Model\Solarium\Core\Query\Helper;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\FacetSet;
+use Surikat\Component\Model\Solarium\Core\Query\Helper;
 
 /**
  * Facet query

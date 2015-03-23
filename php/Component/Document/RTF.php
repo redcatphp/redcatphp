@@ -1,4 +1,4 @@
-<?php namespace Surikat\Document;
+<?php namespace Surikat\Component\Document;
 
 /*
  * **************************

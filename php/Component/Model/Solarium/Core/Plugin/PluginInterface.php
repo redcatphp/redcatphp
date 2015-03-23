@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Plugin;
+namespace Surikat\Component\Model\Solarium\Core\Plugin;
 
-use Surikat\Model\Solarium\Core\ConfigurableInterface;
-use Surikat\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\Core\ConfigurableInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
 
 /**
  * Interface for plugins

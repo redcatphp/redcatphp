@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator; 
+<?php namespace Surikat\Component\Templator; 
 class PHP extends CORE{
 	protected $hiddenWrap = true;
 	var $nodeName = 'PHP';

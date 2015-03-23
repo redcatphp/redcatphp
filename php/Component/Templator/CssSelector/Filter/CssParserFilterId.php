@@ -1,6 +1,6 @@
 <?php
-namespace Surikat\Templator\CssSelector\Filter;
-use Surikat\Templator\CssSelector\Filter\CssParserFilter;
+namespace Surikat\Component\Templator\CssSelector\Filter;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilter;
 class CssParserFilterId extends CssParserFilter{
 	private $_id;
 	function __construct($id){

@@ -1,10 +1,10 @@
 <?php
-namespace Surikat\I18n\Punic\Exception;
+namespace Surikat\Component\I18n\Punic\Exception;
 
 /**
  * An exception raised when an data file was not read
  */
-class DataFileNotReadable extends \Surikat\I18n\Punic\Exception
+class DataFileNotReadable extends \Surikat\Component\I18n\Punic\Exception
 {
     protected $dataFilePath;
 
@@ -17,7 +17,7 @@ class DataFileNotReadable extends \Surikat\I18n\Punic\Exception
     {
         $this->dataFilePath = $dataFilePath;
         $message = "Unable to read from the data file '$dataFilePath'";
-        parent::__construct($message, \Surikat\I18n\Punic\Exception::DATA_FILE_NOT_READABLE, $previous);
+        parent::__construct($message, \Surikat\Component\I18n\Punic\Exception::DATA_FILE_NOT_READABLE, $previous);
     }
 
     /**

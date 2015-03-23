@@ -36,13 +36,13 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query\Component\Stats;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Stats;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Component;
-use Surikat\Model\Solarium\QueryType\Select\RequestBuilder\Component\Stats as RequestBuilder;
-use Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component\Stats as ResponseParser;
-use Surikat\Model\Solarium\Exception\InvalidArgumentException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Component;
+use Surikat\Component\Model\Solarium\QueryType\Select\RequestBuilder\Component\Stats as RequestBuilder;
+use Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component\Stats as ResponseParser;
+use Surikat\Component\Model\Solarium\Exception\InvalidArgumentException;
 
 /**
  * Stats component

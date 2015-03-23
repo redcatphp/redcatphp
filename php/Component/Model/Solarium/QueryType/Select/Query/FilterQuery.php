@@ -36,10 +36,10 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Query;
 
-use Surikat\Model\Solarium\Core\Configurable;
-use Surikat\Model\Solarium\Core\Query\Helper;
+use Surikat\Component\Model\Solarium\Core\Configurable;
+use Surikat\Component\Model\Solarium\Core\Query\Helper;
 
 /**
  * Filterquery

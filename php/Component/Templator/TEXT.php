@@ -1,6 +1,6 @@
-<?php namespace Surikat\Templator;
-use Surikat\Templator\TML;
-use Surikat\Vars\STR;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\TML;
+use Surikat\Component\Vars\STR;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;

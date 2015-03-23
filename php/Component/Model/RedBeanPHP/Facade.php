@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\Model\RedBeanPHP;
-use Surikat\Model\RedBeanPHP\ToolBox as ToolBox;
-use Surikat\Model\RedBeanPHP\RedException as RedException;
+namespace Surikat\Component\Model\RedBeanPHP;
+use Surikat\Component\Model\RedBeanPHP\ToolBox as ToolBox;
+use Surikat\Component\Model\RedBeanPHP\RedException as RedException;
 class Facade{
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	public static $toolbox;

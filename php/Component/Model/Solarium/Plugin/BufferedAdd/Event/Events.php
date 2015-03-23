@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Plugin\BufferedAdd\Event;
+namespace Surikat\Component\Model\Solarium\Plugin\BufferedAdd\Event;
 
 /**
  * Event definitions

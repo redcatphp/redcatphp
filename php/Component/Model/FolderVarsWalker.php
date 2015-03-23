@@ -1,5 +1,5 @@
-<?php namespace Surikat\Model;
-use Surikat\Model\FolderVars;
+<?php namespace Surikat\Component\Model;
+use Surikat\Component\Model\FolderVars;
 class FolderVarsWalker{
 	protected $document = null;
 	protected $dirs = [];

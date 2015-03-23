@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\I18n\Punic;
+namespace Surikat\Component\I18n\Punic;
 
 /**
  * Territory-related stuff
@@ -9,7 +9,7 @@ class Territory
     /**
      * Retrieve the name of a territory (country, continent, ...)
      * @param string $territoryCode The territory code
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return string Returns the localized territory name (returns $territoryCode if not found)
      */
     public static function getName($territoryCode, $locale = '')
@@ -28,7 +28,7 @@ class Territory
 
     /**
      * Return the list of continents in the form of an array with key=ID, value=name
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array
      */
     public static function getContinents($locale = '')
@@ -38,7 +38,7 @@ class Territory
 
     /**
      * Return the list of countries in the form of an array with key=ID, value=name
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array
      */
     public static function getCountries($locale = '')
@@ -70,7 +70,7 @@ class Territory
      * }
      * </code>
      * The arrays are sorted by territory name
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array
      */
     public static function getContinentsAndCountries($locale = '')
@@ -90,7 +90,7 @@ class Territory
      * If only one level is specified you'll get a flat list (like the one returned by {@link getContinents}).
      * If one or more levels are specified, you'll get a structured list (like the one returned by {@link getContinentsAndCountries}).
      * @param string $levels A string with one or more of the characters: 'W' (for world), 'C' (for continents), 'S' (for sub-continents), 'c' (for countries)
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\I18n\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \Surikat\Component\I18n\Punic\Data
      * @return array
      * @link http://www.unicode.org/cldr/charts/latest/supplemental/territory_containment_un_m_49.html
      */
@@ -112,7 +112,7 @@ class Territory
             }
         }
         if (count($decodedLevels) === 0) {
-            throw new \Surikat\I18n\Punic\Exception\BadArgumentType($levels, "list of territory kinds: it should be a list of one or more of the codes '" . implode("', '", array_keys($levelMap)) . "'");
+            throw new \Surikat\Component\I18n\Punic\Exception\BadArgumentType($levels, "list of territory kinds: it should be a list of one or more of the codes '" . implode("', '", array_keys($levelMap)) . "'");
         }
         $struct = self::filterStructure(self::getStructure(), $decodedLevels, 0);
         $flatList = (count($decodedLevels) > 1) ? false : true;

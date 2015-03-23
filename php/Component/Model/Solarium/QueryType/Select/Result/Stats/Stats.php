@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\Result\Stats;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\Result\Stats;
 
 /**
  * Select component stats result

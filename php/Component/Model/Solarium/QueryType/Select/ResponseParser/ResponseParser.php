@@ -36,13 +36,13 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser;
 
-use Surikat\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
-use Surikat\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
-use Surikat\Model\Solarium\QueryType\Select\Result\Result;
-use Surikat\Model\Solarium\Exception\RuntimeException;
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParser as ResponseParserAbstract;
+use Surikat\Component\Model\Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Result;
+use Surikat\Component\Model\Solarium\Exception\RuntimeException;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
 
 /**
  * Parse select response data

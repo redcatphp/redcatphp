@@ -1,4 +1,4 @@
-<?php namespace Surikat\Templator;
+<?php namespace Surikat\Component\Templator;
 use ReflectionClass;
 class TML_Dev extends TML{
 	protected $hiddenWrap = true;

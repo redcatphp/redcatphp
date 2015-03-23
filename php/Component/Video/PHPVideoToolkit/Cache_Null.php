@@ -11,7 +11,7 @@
      * @uses ffmpeg http://ffmpeg.sourceforge.net/
      */
      
-    namespace Surikat\Video\PHPVideoToolkit;
+    namespace Surikat\Component\Video\PHPVideoToolkit;
 
     /**
      * PHPVideoToolkit's caching driver for a blackhole cache driver. Meaning that the cache functionality can be used but nothing ever stored.

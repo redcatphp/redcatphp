@@ -36,7 +36,7 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Suggester\Result;
+namespace Surikat\Component\Model\Solarium\QueryType\Suggester\Result;
 
 /**
  * Suggester query term result

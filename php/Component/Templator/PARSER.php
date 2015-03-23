@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator;
-use Surikat\Exception\ViewTML as ExceptionTML;
+<?php namespace Surikat\Component\Templator;
+use Surikat\Component\Exception\ViewTML as ExceptionTML;
 abstract class PARSER{
 	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;
@@ -569,7 +569,7 @@ abstract class PARSER{
 		}
 		else{
 			if($class===true)
-				$class = 'Surikat\\Templator\\'.$name;
+				$class = 'Surikat\\Component\\Templator\\'.$name;
 			$c = $class?$class:self::getClass($name);
 			$node = new $c();
 			$node->setBuilder($this);
@@ -641,9 +641,9 @@ abstract class PARSER{
 			$n = substr($n,0,$p);
 		$n = strtolower($n);
 		$n = str_replace('-','_',$n);
-		if(class_exists($c='Surikat\\Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
+		if(class_exists($c='Surikat\\Component\\Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
 			return $c;
-		return 'Surikat\\Templator\\TML';
+		return 'Surikat\\Component\\Templator\\TML';
 	}
 	function evalue($v,$vars=null){
 		if(isset($vars))

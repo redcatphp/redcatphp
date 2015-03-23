@@ -1,5 +1,5 @@
-<?php namespace Surikat\Templator\CssSelector\Filter;
-use Surikat\Templator\CssSelector\Filter\CssParserFilterPseudo;
+<?php namespace Surikat\Component\Templator\CssSelector\Filter;
+use Surikat\Component\Templator\CssSelector\Filter\CssParserFilterPseudo;
 class CssParserFilterPseudoHasnt extends CssParserFilterPseudo{
 	private $_items;
 	function __construct($input){

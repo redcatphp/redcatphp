@@ -1,4 +1,4 @@
-<?php namespace Surikat\Geocoding;
+<?php namespace Surikat\Component\Geocoding;
 class Geocoding{
 	static $earthRadiusTypes = [
 		'km'=>6371,

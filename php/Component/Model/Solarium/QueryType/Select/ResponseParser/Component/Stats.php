@@ -36,13 +36,13 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Select\ResponseParser\Component;
+namespace Surikat\Component\Model\Solarium\QueryType\Select\ResponseParser\Component;
 
-use Surikat\Model\Solarium\QueryType\Select\Query\Query;
-use Surikat\Model\Solarium\QueryType\Select\Query\Component\Stats\Stats as StatsComponent;
-use Surikat\Model\Solarium\QueryType\Select\Result\Stats\Stats as ResultStats;
-use Surikat\Model\Solarium\QueryType\Select\Result\Stats\Result as ResultStatsResult;
-use Surikat\Model\Solarium\QueryType\Select\Result\Stats\FacetValue as ResultStatsFacetValue;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Query;
+use Surikat\Component\Model\Solarium\QueryType\Select\Query\Component\Stats\Stats as StatsComponent;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Stats\Stats as ResultStats;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Stats\Result as ResultStatsResult;
+use Surikat\Component\Model\Solarium\QueryType\Select\Result\Stats\FacetValue as ResultStatsFacetValue;
 
 /**
  * Parse select component Stats result from the data

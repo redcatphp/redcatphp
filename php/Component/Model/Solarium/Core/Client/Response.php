@@ -36,9 +36,9 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\Core\Client;
+namespace Surikat\Component\Model\Solarium\Core\Client;
 
-use Surikat\Model\Solarium\Exception\HttpException;
+use Surikat\Component\Model\Solarium\Exception\HttpException;
 
 /**
  * Class for describing a response

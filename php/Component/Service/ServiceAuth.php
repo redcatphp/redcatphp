@@ -1,5 +1,5 @@
-<?php namespace Surikat\Service;
-use Surikat\DependencyInjection\MutatorProperty;
+<?php namespace Surikat\Component\Service;
+use Surikat\Component\DependencyInjection\MutatorProperty;
 class ServiceAuth {
 	use MutatorProperty;
 	function infos(){

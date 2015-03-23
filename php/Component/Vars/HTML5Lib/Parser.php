@@ -1,4 +1,4 @@
-<?php namespace Surikat\Vars\HTML5Lib;
+<?php namespace Surikat\Component\Vars\HTML5Lib;
 
 /**
  * Outwards facing interface for HTML5.

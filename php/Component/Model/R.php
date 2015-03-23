@@ -1,7 +1,7 @@
-<?php namespace Surikat\Model;
-use Surikat\DependencyInjection\Container;
-use Surikat\Config\Config;
-use Surikat\Vars\STR;
+<?php namespace Surikat\Component\Model;
+use Surikat\Component\DependencyInjection\Container;
+use Surikat\Component\Config\Config;
+use Surikat\Component\Vars\STR;
 class R extends RedBeanPHP\Facade{
 	static function loadDB($key){
 		$getter = 'db';

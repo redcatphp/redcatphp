@@ -1,7 +1,7 @@
 <?php
-namespace Surikat\I18n\Gettext;
+namespace Surikat\Component\I18n\Gettext;
 
-use Surikat\I18n\Gettext\Generators\PhpArray;
+use Surikat\Component\I18n\Gettext\Generators\PhpArray;
 
 class Translator
 {

@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Suggester;
+namespace Surikat\Component\Model\Solarium\QueryType\Suggester;
 
-use Surikat\Model\Solarium\Core\Client\Request;
-use Surikat\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
-use Surikat\Model\Solarium\Core\Query\QueryInterface;
+use Surikat\Component\Model\Solarium\Core\Client\Request;
+use Surikat\Component\Model\Solarium\Core\Query\RequestBuilder as BaseRequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Query\QueryInterface;
 
 /**
  * Build a Suggester query request

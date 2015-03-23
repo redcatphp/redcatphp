@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-namespace Surikat\Geocoding\Geocoder\HttpAdapter;
+namespace Surikat\Component\Geocoding\Geocoder\HttpAdapter;
 
 /**
  * @author William Durand <william.durand1@gmail.com>

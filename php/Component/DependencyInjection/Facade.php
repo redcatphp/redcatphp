@@ -1,4 +1,4 @@
-<?php namespace Surikat\DependencyInjection;
+<?php namespace Surikat\Component\DependencyInjection;
 trait Facade{	
 	use Registry;
 	function __call($f,$args){

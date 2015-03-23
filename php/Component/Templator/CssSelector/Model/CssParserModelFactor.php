@@ -1,5 +1,5 @@
 <?php
-namespace Surikat\Templator\CssSelector\Model;
+namespace Surikat\Component\Templator\CssSelector\Model;
 class CssParserModelFactor{
 	const DESCENDANT_OPERATOR = "";
 	const CHILD_OPERATOR = ">";

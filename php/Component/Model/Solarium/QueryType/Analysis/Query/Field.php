@@ -36,11 +36,11 @@
 /**
  * @namespace
  */
-namespace Surikat\Model\Solarium\QueryType\Analysis\Query;
+namespace Surikat\Component\Model\Solarium\QueryType\Analysis\Query;
 
-use Surikat\Model\Solarium\Core\Client\Client;
-use Surikat\Model\Solarium\QueryType\Analysis\ResponseParser\Field as ResponseParser;
-use Surikat\Model\Solarium\QueryType\Analysis\RequestBuilder\Field as RequestBuilder;
+use Surikat\Component\Model\Solarium\Core\Client\Client;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\ResponseParser\Field as ResponseParser;
+use Surikat\Component\Model\Solarium\QueryType\Analysis\RequestBuilder\Field as RequestBuilder;
 
 /**
  * Analysis document query

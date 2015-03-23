@@ -1,4 +1,4 @@
-<?php namespace Surikat\Model;
+<?php namespace Surikat\Component\Model;
 /*
 
 Surikat		RedBean			Model FUSE				 CRUD		HTTP	SQL
@@ -20,11 +20,11 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
-use Surikat\Model\RedBeanPHP\OODBBean;
-use Surikat\Model\RedBeanPHP\SimpleModel;
-use Surikat\Model\RedBeanPHP\QueryWriter\AQueryWriter;
-use Surikat\Vars\JSON;
-use Surikat\Cache\Sync;
+use Surikat\Component\Model\RedBeanPHP\OODBBean;
+use Surikat\Component\Model\RedBeanPHP\SimpleModel;
+use Surikat\Component\Model\RedBeanPHP\QueryWriter\AQueryWriter;
+use Surikat\Component\Vars\JSON;
+use Surikat\Component\Cache\Sync;
 use BadMethodCallException;
 use Exception\ModelValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook
 class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{

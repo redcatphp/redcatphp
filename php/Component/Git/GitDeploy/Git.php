@@ -1,4 +1,4 @@
-<?php namespace Surikat\Git\GitDeploy;
+<?php namespace Surikat\Component\Git\GitDeploy;
 class Git {
     static $git_executable_path = "git";
     var $repo_path;
