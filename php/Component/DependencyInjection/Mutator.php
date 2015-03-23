@@ -17,6 +17,9 @@ trait Mutator {
 				$args = $value;
 				$value = array_shift($args);
 			}
+			else{
+				$args = null;
+			}
 			if($value{0}=='_'){
 				$value = substr($value,1);
 				$prefix = '';
@@ -25,12 +28,7 @@ trait Mutator {
 				$prefix = $this->__dependenciesPrefix;
 			}
 			$value = self::__interfaceSubstitutionDefaultClass($prefix.$value);
-			if(isset($args)&&!empty($args)){
-				$value = (new \ReflectionClass($value))->newInstanceArgs($args);
-			}
-			else{
-				$value = new $value();
-			}
+			$value = self::__factoryDependency($value,$args);
 		}
 		if($key{0}=='_'){
 			$key = substr($key,1);
@@ -85,11 +83,19 @@ trait Mutator {
 			$prefix = $this->__dependenciesPrefix;
 		}
 		$key = self::__interfaceSubstitutionDefaultClass($prefix.$key);
-		if(is_array($args)&&!empty($args)){
-			return (new \ReflectionClass($key))->newInstanceArgs($args);
-		}
-		else{
-			return new $key();
+		return self::__factoryDependency($key,$args);
+	}
+	function __factoryDependency($c,$args=null){
+		static $reflectors = [];
+		if(class_exists($c)){
+			if(is_array($args)&&!empty($args)){
+				if(!isset($reflectors[$c]))
+					$reflectors[$c] = new \ReflectionClass($c);
+				return $reflectors[$c]->newInstanceArgs($args);
+			}
+			else{
+				return new $c();
+			}
 		}
 	}
 	function setDependencyPrefix($prefix){
