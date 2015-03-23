@@ -2,7 +2,6 @@
 class Index extends ViewController{
 	protected $useConvention = true;
 	public $i18nConvention;
-	//protected $backoffice = true;
 	public $backoffice = 'backend/';
 	function __construct($config=[]){
 		foreach($config as $k=>$v){
@@ -21,11 +20,8 @@ class Index extends ViewController{
 		$this->append(['Route_ByTml'],$this);
 		if($this->i18nConvention)
 			$this->prepend(['Route_I18n',$this],$this);
-		if($this->backoffice){
-			if($this->backoffice===true)
-				$this->backoffice = 'backoffice/';
+		if($this->backoffice)
 			$this->prepend($this->backoffice,['_Surikat_Package_Cms_DispatcherUri_Backoffice']);
-		}
 	}
 	function run($path){
 		if(!parent::run($path)){
