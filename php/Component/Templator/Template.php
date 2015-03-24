@@ -26,8 +26,6 @@ class Template {
 		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
 		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
 		$this->addDirCwd([
-			//SURIKAT_PATH.'tml/',
-			//SURIKAT_SPATH.'tml/',
 			'tml/',
 			'Surikat/tml/',
 		]);
