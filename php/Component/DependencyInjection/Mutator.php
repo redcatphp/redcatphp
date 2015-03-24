@@ -43,7 +43,6 @@ trait Mutator {
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry))
 			return $this->__dependenciesRegistry[$rkey];
-		//var_dump($method);
 		if(method_exists($this,$method))
 			$value = $this->$method($args);
 		elseif(method_exists($this,$method='_'.$method))
