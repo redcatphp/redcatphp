@@ -2,7 +2,7 @@
 trait MutatorMagicProperty{
 	private $__legacyRegistry = [];
 	function &__get($k){
-		if(ctype_upper($k{0})||($k{0}=='_'&&$k{1}=='_'&&ctype_upper($k{2}))||($k{0}=='_'&&ctype_upper($k{1}))){
+		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})||($k{1}=='_'&&ctype_upper($k{2}))))){
 			if(strpos($k,'__'))
 				$r = $this->treeDependency($k);
 			else
@@ -22,7 +22,7 @@ trait MutatorMagicProperty{
 		return $r;
 	}
 	function __set($k,$v){
-		if(ctype_upper($k{0})||($k{0}=='_'&&$k{1}=='_'&&ctype_upper($k{2}))||($k{0}=='_'&&ctype_upper($k{1}))){
+		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})||($k{1}=='_'&&ctype_upper($k{2}))))){
 			if(strpos($k,'__'))
 				$this->treeDependency($k,null,$v);
 			else
