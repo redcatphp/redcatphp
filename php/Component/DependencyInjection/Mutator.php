@@ -4,13 +4,12 @@ trait Mutator {
 	private $__dependenciesRegistry = [];
 	private $__dependenciesPrefix = 'Surikat\\Component';
 	function setDependency($key,$value=null,$rkey=null){
-		$key = $this->__prefixClassName($key);
 		if(is_object($key)){
 			if(!isset($value))
 				$value = $key;
 			$key = get_class($key);
-			$key = str_replace('\\','_',$key);
 		}
+		$key = $this->__prefixClassName($key);
 		if(!isset($rkey))
 			$rkey = $key;
 		if(!is_object($value)&&$value){
@@ -25,7 +24,6 @@ trait Mutator {
 			$value = self::__interfaceSubstitutionDefaultClass($value);
 			$value = self::__factoryDependency($value,$args);
 		}
-		$key = $this->__prefixClassName($key);
 		$c = str_replace('_','\\',$key);
 		if(interface_exists($c)&&!($value instanceof $c)){
 			throw new \Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
@@ -33,6 +31,7 @@ trait Mutator {
 		return $this->__dependenciesRegistry[$rkey] = $value;
 	}
 	function getDependency($key,$args=null){
+		$method = str_replace('\\','_',$key);
 		$key = $this->__prefixClassName($key);
 		if(empty($args)){
 			$rkey = $key;
@@ -44,22 +43,22 @@ trait Mutator {
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry))
 			return $this->__dependenciesRegistry[$rkey];
-
-		if(method_exists($this,$key))
-			$value = $this->$key($args);
-		elseif(method_exists($this,'_'.$key))
-			$value = $this->{'_'.$key}($args);
+		//var_dump($method);
+		if(method_exists($this,$method))
+			$value = $this->$method($args);
+		elseif(method_exists($this,$method='_'.$method))
+			$value = $this->$method($args);
 		else
-			$value = $this->defaultDependency($key,$args);
+			$value = $this->defaultDependency(func_get_arg(0),$args);
 		$this->setDependency($key,$value,$rkey);
 		return $this->getDependency($key,$args);
 	}
 	function newDependency($key,$args=null){
-		$key = str_replace('\\','_',$key);
-		if(method_exists($this,'_'.$key))
-			return $this->$key($args);
-		elseif(method_exists($this,'_'.$key))
-			$value = $this->{'_'.$key}($args);
+		$method = str_replace('\\','_',$key);
+		if(method_exists($this,$method))
+			return $this->$method($args);
+		elseif(method_exists($this,$method='_'.$method))
+			$value = $this->$method($args);
 		else
 			return $this->factoryDependency($key,$args);
 	}
@@ -72,7 +71,6 @@ trait Mutator {
 		$this->__dependenciesPrefix = $prefix;
 	}
 	function defaultDependency($key,$args=null){
-		$key = $this->__prefixClassName($key);
 		return Container::get()->getDependency($key,$args);
 	}
 	function treeDependency($key,$args=null){
