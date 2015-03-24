@@ -2,16 +2,17 @@
 use Surikat\Component\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
-	private $__dependenciesPrefix = 'Surikat\\Component\\';
+	private $__dependenciesPrefix = 'Surikat\\Component';
 	function setDependency($key,$value=null,$rkey=null){
-		if(!isset($rkey))
-			$rkey = $key;
+		$key = $this->__prefixClassName($key);
 		if(is_object($key)){
 			if(!isset($value))
 				$value = $key;
 			$key = get_class($key);
+			$key = str_replace('\\','_',$key);
 		}
-		$key = str_replace('\\','_',$key);
+		if(!isset($rkey))
+			$rkey = $key;
 		if(!is_object($value)&&$value){
 			if(is_array($value)){
 				$args = $value;
@@ -20,24 +21,11 @@ trait Mutator {
 			else{
 				$args = null;
 			}
-			if($value{0}=='_'){
-				$value = substr($value,1);
-				$prefix = '';
-			}
-			else{
-				$prefix = $this->__dependenciesPrefix;
-			}
-			$value = self::__interfaceSubstitutionDefaultClass($prefix.$value);
+			$value = $this->__prefixClassName($value);
+			$value = self::__interfaceSubstitutionDefaultClass($value);
 			$value = self::__factoryDependency($value,$args);
 		}
-		if($key{0}=='_'){
-			$key = substr($key,1);
-			$prefix = '';
-		}
-		else{
-			$prefix = $this->__dependenciesPrefix;
-		}
-		$key = $prefix.$key;
+		$key = $this->__prefixClassName($key);
 		$c = str_replace('_','\\',$key);
 		if(interface_exists($c)&&!($value instanceof $c)){
 			throw new \Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
@@ -45,7 +33,7 @@ trait Mutator {
 		return $this->__dependenciesRegistry[$rkey] = $value;
 	}
 	function getDependency($key,$args=null){
-		$key = str_replace('\\','_',$key);
+		$key = $this->__prefixClassName($key);
 		if(empty($args)){
 			$rkey = $key;
 		}
@@ -56,6 +44,7 @@ trait Mutator {
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry))
 			return $this->__dependenciesRegistry[$rkey];
+
 		if(method_exists($this,$key))
 			$value = $this->$key($args);
 		elseif(method_exists($this,'_'.$key))
@@ -75,40 +64,19 @@ trait Mutator {
 			return $this->factoryDependency($key,$args);
 	}
 	function factoryDependency($key,$args=null){
-		if($key{0}=='_'){
-			$key = substr($key,1);
-			$prefix = '';
-		}
-		else{
-			$prefix = $this->__dependenciesPrefix;
-		}
-		$key = self::__interfaceSubstitutionDefaultClass($prefix.$key);
+		$key = $this->__prefixClassName($key);
+		$key = self::__interfaceSubstitutionDefaultClass($key);
 		return self::__factoryDependency($key,$args);
-	}
-	function __factoryDependency($c,$args=null){
-		static $reflectors = [];
-		if(class_exists($c)){
-			if(is_array($args)&&!empty($args)){
-				if(!isset($reflectors[$c]))
-					$reflectors[$c] = new \ReflectionClass($c);
-				return $reflectors[$c]->newInstanceArgs($args);
-			}
-			else{
-				return new $c();
-			}
-		}
 	}
 	function setDependencyPrefix($prefix){
 		$this->__dependenciesPrefix = $prefix;
 	}
 	function defaultDependency($key,$args=null){
-		return $this->getDependency('Dependency_Container')->getDependency($key,$args);
-	}
-	function Dependency_Container(){
-		return Container::get();
+		$key = $this->__prefixClassName($key);
+		return Container::get()->getDependency($key,$args);
 	}
 	function treeDependency($key,$args=null){
-		if(is_string($key))
+		if(is_string($key)&&strpos($key,'__'))
 			$key = str_replace('__',':',explode(':',$key));
 		$r = $this;
 		$c = count($key)-1;
@@ -126,6 +94,27 @@ trait Mutator {
 		}
 		return $r;
 	}
+	
+	private function __prefixClassName($value){
+		if($value{0}=='_'){
+			if($value{1}=='_'){
+				$value = substr($value,2);
+				$c = get_class($this);
+				$prefix = substr($c, 0, strrpos($c, '\\'));
+			}
+			else{
+				$value = substr($value,1);
+				$prefix = '';
+			}
+		}
+		else{
+			$prefix = $this->__dependenciesPrefix;
+		}
+		if($prefix){
+			$prefix = str_replace('\\','_',$prefix).'_';
+		}
+		return '_'.$prefix.$value;
+	}
 	private static function __interfaceSubstitutionDefaultClass($value){
 		$value = str_replace('_','\\',$value);
 		if(interface_exists($value)){
@@ -138,5 +127,18 @@ trait Mutator {
 		if(strpos($value,'\\')===false&&!class_exists($value))
 			$value = $value.'\\'.$value;
 		return $value;
+	}
+	private static function __factoryDependency($c,$args=null){
+		static $reflectors = [];
+		if(class_exists($c)){
+			if(is_array($args)&&!empty($args)){
+				if(!isset($reflectors[$c]))
+					$reflectors[$c] = new \ReflectionClass($c);
+				return $reflectors[$c]->newInstanceArgs($args);
+			}
+			else{
+				return new $c();
+			}
+		}
 	}
 }
