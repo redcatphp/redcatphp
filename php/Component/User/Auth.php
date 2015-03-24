@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\User;
 use Surikat\Component\Config\Config;
 use Surikat\Component\FileSystem\FS;
-use Surikat\Component\Model\R;
+use Surikat\Component\Database\R;
 use Surikat\Component\User\Session as __Session;
 use Surikat\Component\Mail\PHPMailer;
 use Surikat\Component\DependencyInjection\MutatorMagic;
