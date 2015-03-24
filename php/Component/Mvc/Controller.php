@@ -1,4 +1,4 @@
-<?php namespace Surikat\Component\Controller;
+<?php namespace Surikat\Component\Mvc;
 use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Templator\Template;
 use Surikat\Component\Templator\TML;

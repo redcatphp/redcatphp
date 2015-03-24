@@ -1,6 +1,6 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
 use Surikat\Component\Templator\Template;
-use Surikat\Component\Controller\Controller;
+use Surikat\Component\Mvc\Controller;
 use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
 class ViewController extends Dispatcher_Uri{
 	protected $Controller;
