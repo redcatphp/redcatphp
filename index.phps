@@ -2,21 +2,23 @@
 if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
 
-//$SURIKAT->Dev_Level->PHP();
-//$SURIKAT->Dev_Level->CONTROL();
-//$SURIKAT->Dev_Level->VIEW();
-//$SURIKAT->Dev_Level->PRESENT();
-//$SURIKAT->Dev_Level->MODEL();
-//$SURIKAT->Dev_Level->DB();
-//$SURIKAT->Dev_Level->DBSPEED();
-//$SURIKAT->Dev_Level->SQL();
-//$SURIKAT->Dev_Level->ROUTE();
-//$SURIKAT->Dev_Level->I18N();
-//$SURIKAT->Dev_Level->IMG();
-//$SURIKAT->Dev_Level->SERVER();
-//$SURIKAT->Dev_Level->NAV();
-$SURIKAT->Dev_Level->STD();
-$SURIKAT->Dev_Level->CSS();
-$SURIKAT->Dev_Level->JS();
+$SURIKAT->Dev_Level
+	->PHP()
+	//->CONTROL()
+	//->VIEW()
+	//->PRESENT()
+	//->MODEL()
+	//->DB()
+	//->DBSPEED()
+	//->SQL()
+	//->ROUTE()
+	//->I18N()
+	//->IMG()
+	//->SERVER()
+	//->NAV()
+	->STD()
+	->CSS()
+	->JS()
+;
 
 $SURIKAT->_Surikat_Package_Cms_DispatcherUri_Index->runFromGlobals();
