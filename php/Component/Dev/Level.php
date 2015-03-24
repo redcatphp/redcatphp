@@ -72,6 +72,7 @@ class Level{
 	}
 	function __call($f,$args){
 		$this->__set($f,empty($args)?true:$args[0]);
+		return $this;
 	}
 	function level($l=null){
 		$oldLevel = $this->level;
