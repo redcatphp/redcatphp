@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\Mvc;
 use Surikat\Component\Vars\ArrayObject;
-use Surikat\Component\Templator\Template;
+use Surikat\Component\Mvc\View;
 use Surikat\Component\Templator\TML;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class Controller{
@@ -41,7 +41,7 @@ class Controller{
 	}
 	function getView(){
 		if(!isset($this->View)){
-			$this->setView(new Template());
+			$this->setView(new View());
 			$this->View->setController($this);
 		}
 		return $this->View;

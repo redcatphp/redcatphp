@@ -1,5 +1,5 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
-use Surikat\Component\Templator\Template;
+use Surikat\Component\Mvc\View;
 use Surikat\Component\Mvc\Controller;
 use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
 class ViewController extends Dispatcher_Uri{
@@ -26,7 +26,7 @@ class ViewController extends Dispatcher_Uri{
 	}
 	function getView(){
 		if(!isset($this->View)){
-			$this->setView(new Template());
+			$this->setView(new View());
 			if(isset($this->Controller)){
 				$this->View->setController($this->Controller);
 				$this->Controller->setView($this->View);
