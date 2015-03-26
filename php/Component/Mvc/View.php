@@ -2,6 +2,7 @@
 use Surikat\Component\Templator\Template;
 class View{
 	private $__engine;
+	private $__callbacks;
 	function __construct($engine=null){
 		if(!$engine)
 			$engine = new Template();
@@ -10,8 +11,20 @@ class View{
 	function setEngine($engine){
 		$this->__engine = $engine;
 	}
+	function setCallback($method,$call){
+		if($call instanceof \Closure){
+			$call->bindTo($this);
+		}
+		$this->__callbacks[$method] = $call;
+	}
 	function __call($k,$args){
-		return call_user_func_array([$this->__engine,$k],$args);
+		if(isset($this->__callbacks[$k])){
+			$call = $this->__callbacks[$k];
+		}
+		else{
+			$call = [$this->__engine,$k];
+		}
+		return call_user_func_array($call,$args);
 	}
 	function __isset($k){
 		return isset($this->__engine->$k);
