@@ -162,18 +162,21 @@ class Template {
 	function display($file=null,$vars=[]){
 		if(isset($file))
 			$this->setPath($file);
+		if(!empty($vars))
+			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();
 		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->find()))
 			$this->writeCompile();
-		if(!empty($this->vars))
-			$vars = array_merge($this->vars,$vars);
-		if(!empty($vars))
-			extract($vars);
-		include($this->dirCompile.$this->find());
+		$this->includeVars($this->dirCompile.$this->find(),$this->vars);
 		return $this;
 	}
 	function writeCompile(){
 		$this->compilePHP($this->dirCompile.$this->find(),(string)$this->prepare());
+	}
+	function includeVars(){
+		if(func_num_args()>1&&count(func_get_arg(1)))
+			extract(func_get_arg(1));
+		return include(func_get_arg(0));
 	}
 	function find(){
 		$path = func_num_args()?func_get_arg(0):$this->path;

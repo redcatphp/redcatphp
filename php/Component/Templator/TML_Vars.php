@@ -14,14 +14,17 @@ class TML_Vars extends TML{
 		if(!$file)
 			return;
 		if($this->__get('static')){
-			$var = var_export(include($file),true);
+			$var = var_export($this->Template->includeVars($file,$this->Template->get()),true);
 		}
 		else{
-			$var = 'include("'.str_replace('"','\"',$file).'")';
+			$var = '$this->includeVars("'.str_replace('"','\"',$file).'",get_defined_vars())';
 		}
-		$this->head('<?php $__localVariables=compact(array_keys(get_defined_vars()));'.
-					'extract('.$var.',EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\');?>');
-		if(!$this->selfClosed)
+		$head = '<?php ';
+		if(!$this->selfClosed){
+			$head .= '$__localVariables=get_defined_vars();';
 			$this->foot('<?php extract($__localVariables,EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\'); ?>');
+		}
+		$head .= 'extract('.$var.',EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\');?>';
+		$this->head($head);
 	}
 }
