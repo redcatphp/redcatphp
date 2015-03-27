@@ -32,7 +32,7 @@ class I18n extends Faceted {
 		else
 			$lang = Config::langs('default');
 		Lang::set($lang);
-		$ctrl = $this->DispatcherUri->getController();
+		$ctrl = $this->DispatcherUri->Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
 		$ctrl->getView()->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templator_Toolbox->i18nGettext($TML);

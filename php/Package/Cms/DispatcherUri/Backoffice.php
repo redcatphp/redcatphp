@@ -1,5 +1,6 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
-class Backoffice extends ViewController{
+use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
+class Backoffice extends Dispatcher_Uri{
 	protected $pathFS = 'backoffice';
 	function __construct(){
 		$this->setHooks();
@@ -14,7 +15,7 @@ class Backoffice extends ViewController{
 						['_Surikat_Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Route_ByTml','',$this->pathFS],function(){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
-				return call_user_func_array($this->getController(),func_get_args());
+				return call_user_func_array($this->Mvc_Controller,func_get_args());
 			})
 			->append(['Route_ByPhpX','',$this->pathFS],function($paths){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));

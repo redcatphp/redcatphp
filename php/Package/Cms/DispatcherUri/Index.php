@@ -1,5 +1,6 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
-class Index extends ViewController{
+use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
+class Index extends Dispatcher_Uri{
 	protected $useConvention = true;
 	public $i18nConvention;
 	public $backoffice = 'backend/';
@@ -11,7 +12,7 @@ class Index extends ViewController{
 			$this->convention();
 	}
 	function __invoke(){
-		return call_user_func_array([$this,'getController'],func_get_args());
+		return call_user_func_array([$this,'Mvc_Controller'],func_get_args());
 	}
 	function convention(){
 		$this->append('service/',['Service']);
@@ -25,7 +26,7 @@ class Index extends ViewController{
 	}
 	function run($path){
 		if(!parent::run($path)){
-			$this->getController()->error(404);
+			$this->Mvc_Controller->error(404);
 		}
 	}
 }
