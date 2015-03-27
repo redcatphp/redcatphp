@@ -128,7 +128,7 @@ trait Mutator {
 	private static function __factoryDependency($c,$args=null){
 		static $reflectors = [];
 		if(class_exists($c)){
-			if(is_array($args)&&!empty($args)){
+			if(is_array($args)&&!empty($args)&&method_exists($c,'__construct')){
 				if(!isset($reflectors[$c]))
 					$reflectors[$c] = new \ReflectionClass($c);
 				return $reflectors[$c]->newInstanceArgs($args);
