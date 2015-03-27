@@ -1,8 +1,8 @@
 <?php namespace Surikat\Component\Route;
 class ByTml extends Faceted{
 	protected $match;
-	protected $dir = 'tml';
-	protected $dirFS = 'tml';
+	protected $dir = 'template';
+	protected $dirFS = 'template';
 	protected $dirHook;
 	protected $dirHookFS;
 	function __construct($dir=null,$dirFS=null){

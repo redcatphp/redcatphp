@@ -23,11 +23,11 @@ class Template {
 	protected $devCompileFile;
 	protected $vars = [];
 	function __construct($file=null,$vars=null,$options=null){
-		$this->setDirCompile(SURIKAT_TMP.'tml/compile/');
-		$this->setDirCache(SURIKAT_TMP.'tml/cache/');
+		$this->setDirCompile(SURIKAT_TMP.'templator/compile/');
+		$this->setDirCache(SURIKAT_TMP.'templator/cache/');
 		$this->addDirCwd([
-			'tml/',
-			'Surikat/tml/',
+			'template/',
+			'Surikat/template/',
 		]);
 		if(isset($file))
 			$this->setPath($file);
