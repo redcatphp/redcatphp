@@ -48,7 +48,7 @@ trait Mutator {
 		elseif(method_exists($this,$method='_'.$method))
 			$value = $this->$method($args);
 		else
-			$value = $this->defaultDependency(func_get_arg(0),$args);
+			$value = $this->defaultDependency($key,$args);
 		$this->setDependency($key,$value,$rkey);
 		return $this->getDependency($key,$args);
 	}
