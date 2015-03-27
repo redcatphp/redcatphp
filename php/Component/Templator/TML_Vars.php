@@ -2,16 +2,26 @@
 class TML_Vars extends TML{
 	protected $hiddenWrap = true;
 	function load(){
-		/*
-		$o->timeCompiled = time();
-		$o->assign();
-		$head = '<?php if(isset($THIS))$_THIS=$THIS;$THIS=new '.$c.'('.var_export($o->getArray(),true).');';
-		$head .= '$THIS->setView($this);';
-		$head .= '$THIS->execute();';
-		$head .= 'extract((array)$THIS,EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\');?>';
-		$tml->head($head);
-		if(!empty($tml->childNodes))
-			$tml->foot('<?php if(isset($_THIS));extract((array)($THIS=$_THIS),EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\'); ?>');
-		*/
+		$this->remapAttr('file');
+		$prefix = $this->__get('prefix');
+		if(!isset($prefix))
+			$prefix = 'vars.';
+		$file = $this->__get('file');
+		if(!pathinfo($file,PATHINFO_EXTENSION))
+			$file .= '.php';
+		$file = $prefix.$file;
+		$file = $this->Template->find($file);
+		if(!$file)
+			return;
+		if($this->__get('static')){
+			$var = var_export(include($file),true);
+		}
+		else{
+			$var = 'include("'.str_replace('"','\"',$file).'")';
+		}
+		$this->head('<?php $__localVariables=compact(array_keys(get_defined_vars()));'.
+					'extract('.$var.',EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\');?>');
+		if(!$this->selfClosed)
+			$this->foot('<?php extract($__localVariables,EXTR_OVERWRITE|EXTR_PREFIX_INVALID,\'i\'); ?>');
 	}
 }

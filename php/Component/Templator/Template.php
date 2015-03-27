@@ -166,7 +166,7 @@ class Template {
 		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->find()))
 			$this->writeCompile();
 		if(!empty($this->vars))
-		$vars = array_merge($this->vars,$vars);
+			$vars = array_merge($this->vars,$vars);
 		if(!empty($vars))
 			extract($vars);
 		include($this->dirCompile.$this->find());
