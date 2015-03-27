@@ -22,8 +22,6 @@ class Controller{
 		$v->onCompile(function($TML){
 			if($TML->Template->getParent())
 				return;
-			if(!isset($TML->childNodes[0])||$TML->childNodes[0]->namespace!='Presenter')
-				$TML->prepend('<Presenter:Presenter uri="static" />');
 			$this->Templator_Toolbox->JsIs($TML);
 			if(!$this->Dev_Level->VIEW)
 				$this->Templator_Toolbox->autoMIN($TML);

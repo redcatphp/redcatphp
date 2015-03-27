@@ -1,4 +1,3 @@
-<Presenter:Presenter />
 <?
 $this->Http_Request()->code(404);
 if(in_array(strtolower(pathinfo(@$_SERVER['PATH_INFO'],PATHINFO_EXTENSION)),array(

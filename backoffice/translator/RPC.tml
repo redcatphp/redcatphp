@@ -1,4 +1,3 @@
-<Presenter: uri="dynamic" />
 <?
 use DependencyInjection\Container;
 global $SURIKAT;

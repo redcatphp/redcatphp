@@ -1,4 +1,3 @@
-<Presenter:Presenter />
 <?
 $this->Http_Request()->code(403);
 ?>
