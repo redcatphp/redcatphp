@@ -21,17 +21,17 @@ class ViewController extends Dispatcher_Uri{
 		}
 		return $this->Controller;
 	}
-	function setView($View){
-		$this->View = $View;
-	}
-	function getView(){
-		if(!isset($this->View)){
-			$this->setView(new View());
-			if(isset($this->Controller)){
-				$this->View->setController($this->Controller);
-				$this->Controller->setView($this->View);
-			}
-		}
-		return $this->View;
-	}
+	//function setView($View){
+		//$this->View = $View;
+	//}
+	//function getView(){
+		//if(!isset($this->View)){
+			//$this->setView(new View());
+			//if(isset($this->Controller)){
+				//$this->View->setController($this->Controller);
+				//$this->Controller->setView($this->View);
+			//}
+		//}
+		//return $this->View;
+	//}
 }
