@@ -5,14 +5,13 @@ use Surikat\Component\Templator\TML;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class Controller{
 	use MutatorMagic;
-	protected $Router;
 	protected $View;
 	protected $prefixTmlCompile = '';
-	function __invoke($params,$uri,$Router){
+	function __invoke($params,$uri,$Route){
 		$path = is_string($params)?$params:$params[0];
-		$this->Router = $Router;
-		if(method_exists($Router,'getDirHook')
-			&&$hook = $Router->getDirHook()){
+		$this->Route = $Route;
+		if(method_exists($Route,'getDirHook')
+			&&$hook = $Route->getDirHook()){
 			$this->getView()->setDirCwd([
 				$hook.'/',
 				SURIKAT_LINK.$hook.'/',
@@ -27,12 +26,6 @@ class Controller{
 				$this->Templator_Toolbox->autoMIN($TML);
 		});
 		$this->display($path.'.tml');
-	}
-	function setRouter($Router){
-		$this->Router = $Router;
-	}
-	function getRouter(){
-		return $this->Router;
 	}
 	function setView($View){
 		$this->View = $View;
@@ -49,7 +42,7 @@ class Controller{
 	}
 	function display($file){
 		$v = $this->getView();
-		$v->set('URI',$this->getRouter());
+		$v->set('URI',$this->Route);
 		$v->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
 		$v->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
 		try{
@@ -62,7 +55,7 @@ class Controller{
 	function error($c){
 		try{
 			$v = $this->getView();
-			$v->set('URI',$this->getRouter());
+			$v->set('URI',$this->Route);
 			$v->display($c.'.tml');
 		}
 		catch(\Surikat\Component\Exception\View $e){

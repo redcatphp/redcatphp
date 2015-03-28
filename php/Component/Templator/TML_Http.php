@@ -5,7 +5,7 @@ class TML_Http extends TML{
 	function load(){
 		if($this->__get('static')){
 			if(count($this->Template->Http_Get())||(
-				count($this->treeDependency('Mvc_View__Mvc_Controller__Route'))
+				count($this->treeDependency('Mvc_View:Mvc_Controller:Route'))
 			)){
 				$this->notFound();
 			}
