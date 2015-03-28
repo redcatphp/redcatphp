@@ -73,13 +73,14 @@ trait Mutator {
 		return Container::get()->getDependency($key,$args);
 	}
 	function treeDependency($key,$args=null){
-		if(is_string($key)&&strpos($key,'__'))
-			$key = str_replace('__',':',explode(':',$key));
+		if(is_string($key))
+			$key = explode(':',str_replace('__',':',$key));
 		$r = $this;
 		$c = count($key)-1;
 		foreach($key as $i=>$k){
 			if($i<$c){
 				$r = $r->getDependency($k);
+				//$r = isset($r->__dependenciesRegistry[$k])?$r->getDependency($k):null;
 			}
 			elseif(func_num_args()>2){
 				$r->setDependency($k,func_get_arg(2));
@@ -87,7 +88,9 @@ trait Mutator {
 			}
 			else{
 				$r = $r->getDependency($k,$args);
+				//$r = isset($r->__dependenciesRegistry[$k])?$r->getDependency($k,$args):null;
 			}
+			//var_dump($k,$r);
 		}
 		return $r;
 	}

@@ -5,20 +5,19 @@ use Surikat\Component\Templator\TML;
 use Surikat\Component\DependencyInjection\MutatorMagic;
 class Controller{
 	use MutatorMagic;
-	protected $View;
 	protected $prefixTmlCompile = '';
 	function __invoke($params,$uri,$Route){
 		$path = is_string($params)?$params:$params[0];
+		//var_dump($this);
 		$this->Route = $Route;
 		if(method_exists($Route,'getDirHook')
 			&&$hook = $Route->getDirHook()){
-			$this->getView()->setDirCwd([
+			$this->Mvc_View->setDirCwd([
 				$hook.'/',
 				SURIKAT_LINK.$hook.'/',
 			]);
 		}
-		$v = $this->getView();
-		$v->onCompile(function($TML){
+		$this->Mvc_View->onCompile(function($TML){
 			if($TML->Template->getParent())
 				return;
 			$this->Templator_Toolbox->JsIs($TML);
@@ -27,26 +26,20 @@ class Controller{
 		});
 		$this->display($path.'.tml');
 	}
-	function setView($View){
-		$this->View = $View;
-	}
-	function getView(){
-		if(!isset($this->View)){
-			$this->setView(new View());
-			$this->View->setController($this);
-		}
-		return $this->View;
+	function Mvc_View(){
+		$View = new View();
+		$View->setDependency('Mvc_Controller',$this);
+		return $View;
 	}
 	function addPrefixTmlCompile($prefix){
 		$this->prefixTmlCompile .= $prefix;
 	}
 	function display($file){
-		$v = $this->getView();
-		$v->set('URI',$this->Route);
-		$v->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
-		$v->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
+		$this->Mvc_View->set('URI',$this->Route);
+		$this->Mvc_View->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
+		$this->Mvc_View->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
 		try{
-			$v->display($file);
+			$this->Mvc_View->display($file);
 		}
 		catch(\Surikat\Component\Exception\View $e){
 			$this->error($e->getMessage());
@@ -54,9 +47,8 @@ class Controller{
 	}
 	function error($c){
 		try{
-			$v = $this->getView();
-			$v->set('URI',$this->Route);
-			$v->display($c.'.tml');
+			$this->Mvc_View->set('URI',$this->Route);
+			$this->Mvc_View>display($c.'.tml');
 		}
 		catch(\Surikat\Component\Exception\View $e){
 			$this->Http_Request->code($e->getMessage());

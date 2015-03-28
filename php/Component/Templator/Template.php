@@ -36,13 +36,6 @@ class Template {
 		if(isset($options))
 			$this->setOptions($options);
 	}
-	protected $Controller;
-	function setController($Controller){
-		$this->Controller = $Controller;
-	}
-	function getController(){
-		return $this->Controller;
-	}
 	function setOptions($options=[]){
 		foreach($options as $k=>$v){
 			if(is_integer($k))

@@ -61,6 +61,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	}
 	function setTemplate($template){
 		$this->Template = $template;
+		$this->setDependency('Mvc_View',$this->Template);
 	}
 	function setNodeName($nodeName){
 		$this->nodeName = $nodeName;

@@ -1,6 +1,5 @@
 <?php namespace Surikat\Component\Route;
-use ArrayAccess;
-class Faceted extends Route implements ArrayAccess{
+class Faceted extends Route implements \ArrayAccess,\Countable{
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
@@ -77,6 +76,9 @@ class Faceted extends Route implements ArrayAccess{
 	}
 	function getParams(){
 		return $this->uriParams;
+	}
+	function count(){
+		return count($this->uriParams);
 	}
 	function __set($k,$v){
 		$this->uriParams[$k] = $v;
