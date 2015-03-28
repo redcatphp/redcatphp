@@ -48,7 +48,7 @@ class Controller{
 	function error($c){
 		try{
 			$this->Mvc_View->set('URI',$this->Route);
-			$this->Mvc_View>display($c.'.tml');
+			$this->Mvc_View->display($c.'.tml');
 		}
 		catch(\Surikat\Component\Exception\View $e){
 			$this->Http_Request->code($e->getMessage());

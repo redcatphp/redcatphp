@@ -43,7 +43,7 @@ class Faceted extends Route implements \ArrayAccess,\Countable{
 				$v = strpos($v,$this->separatorOr)?explode($this->separatorOr,$v):$v;
 				if($k)
 					$uriParams[$k] = $v;
-				elseif(!empty($v))
+				else
 					$uriParams[] = $v;
 			}
 		}

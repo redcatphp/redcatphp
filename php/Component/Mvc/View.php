@@ -10,6 +10,9 @@ class View{
 	}
 	function setEngine($engine){
 		$this->__engine = $engine;
+		if(method_exists($this->__engine,'setDependency')){
+			$this->__engine->setDependency('Mvc_View',$this);
+		}
 	}
 	function setCallback($method,$call){
 		if($call instanceof \Closure){
