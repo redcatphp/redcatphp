@@ -2,11 +2,18 @@
 use Surikat\Component\Database\RedBeanPHP\R;
 class Model{
 	private $__engine;
+	private $__engines;
 	private $__callbacks;
 	function __construct($engine=null){
 		if(!$engine)
 			$engine = R::getDatabase();
 		$this->setEngine($engine);
+	}
+	function db($dsn=null){
+		if(isset($dsn))
+			return $this->__engines[$dsn];
+		else
+			return $this->__engine;
 	}
 	function setEngine($engine){
 		$this->__engine = $engine;
