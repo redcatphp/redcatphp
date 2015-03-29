@@ -3,6 +3,7 @@ use Surikat\Component\DependencyInjection\Container;
 trait Mutator {
 	private $__dependenciesRegistry = [];
 	private $__dependenciesPrefix = 'Surikat\\Component';
+	private $__dependenciesFactory = 'static::factoryDependency';
 	function setDependency($key,$value=null,$rkey=null){
 		if(is_object($key)){
 			if(!isset($value))
@@ -59,12 +60,7 @@ trait Mutator {
 		elseif(method_exists($this,$method='_'.$method))
 			$value = $this->$method($args);
 		else
-			return $this->factoryDependency($key,$args);
-	}
-	function factoryDependency($key,$args=null){
-		$key = $this->__prefixClassName($key);
-		$key = self::__interfaceSubstitutionDefaultClass($key);
-		return $this->__factoryDependency($key,$args);
+			return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args);
 	}
 	function setDependencyPrefix($prefix){
 		$this->__dependenciesPrefix = $prefix;
@@ -112,6 +108,25 @@ trait Mutator {
 		}
 		return '_'.$prefix.$value;
 	}
+	function setDependencyFactory($callback){
+		$this->__dependenciesFactory = $callback;
+	}
+	private function __factoryDependency($c,$args=null){
+		return call_user_func($this->__dependenciesFactory,$c,$args);
+	}
+	static function factoryDependency($c,$args=null){
+		static $reflectors = [];
+		if(class_exists($c)){
+			if(is_array($args)&&!empty($args)&&method_exists($c,'__construct')){
+				if(!isset($reflectors[$c]))
+					$reflectors[$c] = new \ReflectionClass($c);
+				return $reflectors[$c]->newInstanceArgs($args);
+			}
+			else{
+				return new $c();
+			}
+		}
+	}
 	private static function __interfaceSubstitutionDefaultClass($value){
 		$value = str_replace('_','\\',$value);
 		if(interface_exists($value)){
@@ -124,18 +139,5 @@ trait Mutator {
 		if(strpos($value,'\\')===false&&!class_exists($value))
 			$value = $value.'\\'.$value;
 		return $value;
-	}
-	private function __factoryDependency($c,$args=null){
-		static $reflectors = [];
-		if(class_exists($c)){
-			if(is_array($args)&&!empty($args)&&method_exists($c,'__construct')){
-				if(!isset($reflectors[$c]))
-					$reflectors[$c] = new \ReflectionClass($c);
-				return $reflectors[$c]->newInstanceArgs($args);
-			}
-			else{
-				return new $c();
-			}
-		}
 	}
 }

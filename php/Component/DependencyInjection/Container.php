@@ -13,6 +13,6 @@ class Container{
 		return static::getStatic()->setDependency($key,$value);
 	}
 	function defaultDependency($key,$args=null){
-		return $this->factoryDependency($key,$args);
+		return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args);
 	}
 }
