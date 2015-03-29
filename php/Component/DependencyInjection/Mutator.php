@@ -22,7 +22,7 @@ trait Mutator {
 			}
 			$value = $this->__prefixClassName($value);
 			$value = self::__interfaceSubstitutionDefaultClass($value);
-			$value = self::__factoryDependency($value,$args);
+			$value = $this->__factoryDependency($value,$args);
 		}
 		$c = str_replace('_','\\',$key);
 		if(interface_exists($c)&&!($value instanceof $c)){
@@ -64,7 +64,7 @@ trait Mutator {
 	function factoryDependency($key,$args=null){
 		$key = $this->__prefixClassName($key);
 		$key = self::__interfaceSubstitutionDefaultClass($key);
-		return self::__factoryDependency($key,$args);
+		return $this->__factoryDependency($key,$args);
 	}
 	function setDependencyPrefix($prefix){
 		$this->__dependenciesPrefix = $prefix;
@@ -125,7 +125,7 @@ trait Mutator {
 			$value = $value.'\\'.$value;
 		return $value;
 	}
-	private static function __factoryDependency($c,$args=null){
+	private function __factoryDependency($c,$args=null){
 		static $reflectors = [];
 		if(class_exists($c)){
 			if(is_array($args)&&!empty($args)&&method_exists($c,'__construct')){
