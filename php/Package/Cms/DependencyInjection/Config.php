@@ -10,7 +10,7 @@ class Config{
 		return $obj;
 	}
 	function objectConfigure($obj,$c){
-		$inc = $this->dirPath.'/'.str_replace('\\','.',$c);
+		$inc = $this->dirPath.'/'.str_replace('\\','_',$c);
 		$obj->setConfig(include($inc));
 	}
 }
