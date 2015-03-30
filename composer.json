@@ -21,5 +21,6 @@
 			"Surikat\\": "php"
 		}
 	},
-	"minimum-stability": "alpha"
+	"target-dir": "Surikat",
+	"minimum-stability": "dev"
 }

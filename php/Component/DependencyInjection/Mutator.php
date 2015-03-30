@@ -109,10 +109,13 @@ trait Mutator {
 		return '_'.$prefix.$value;
 	}
 	function setDependencyFactory($callback){
+		if($callback instanceof \Closure){
+			$callback->bindTo($this);
+		}
 		$this->__dependenciesFactory = $callback;
 	}
 	private function __factoryDependency($c,$args=null){
-		return call_user_func($this->__dependenciesFactory,$c,$args);
+		return call_user_func($this->__dependenciesFactory,$c,$args,$this);
 	}
 	static function factoryDependency($c,$args=null){
 		static $reflectors = [];
