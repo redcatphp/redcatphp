@@ -26,7 +26,9 @@ trait Mutator {
 			$value = $this->__factoryDependency($value,$args);
 		}
 		$c = str_replace('_','\\',$key);
-		if(interface_exists($c)&&!($value instanceof $c)){
+		if((interface_exists($c)&&!($value instanceof $c))
+			||(interface_exists($c.'Interface')&&!($value instanceof $c.'Interface'))
+		){
 			throw new \Exception(sprintf('Instance of %s interface was expected, you have to implements it in %s',$c,get_class($value)));
 		}
 		return $this->__dependenciesRegistry[$rkey] = $value;
