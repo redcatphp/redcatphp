@@ -15,4 +15,4 @@ $SURIKAT->Autoload_Psr4([
 	''			=> getcwd().'/php',
 	'Surikat'	=> __DIR__,
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->_Surikat_Package_Cms_DependencyInjection_Config,'objectFactory']);
+$SURIKAT->setDependencyFactory([$SURIKAT->Config_DependencyInjection,'objectFactory']);
