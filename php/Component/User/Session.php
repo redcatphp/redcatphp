@@ -2,10 +2,10 @@
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Exception\Exception;
 use Surikat\Component\Exception\Security as ExceptionSecurity;
-use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 use Surikat\Component\User\SessionHandler;
 class Session{
-	use MutatorCall;
+	use MutatorCallTrait;
 	private $id;
 	private $key;
 	private $name = 'surikat';

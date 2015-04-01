@@ -1,6 +1,6 @@
 <?php
 namespace Surikat\Component\Observer;
-trait Observer{
+trait ObserverTrait{
 	function update($subject,$event=null){
 		$method = 'on'.str_replace(' ', '', ucwords(str_replace('.', ' ', $event)));
 		if(method_exists($this,$method)){

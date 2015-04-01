@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Service;
-use Surikat\Component\DependencyInjection\Mutator;
+use Surikat\Component\DependencyInjection\MutatorTrait;
 class Service {
-	use Mutator;
+	use MutatorTrait;
 	function __invoke($func=null){
 		if(!func_num_args()){
 			$this->getDependency('HTTP')->code('404');

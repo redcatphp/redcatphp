@@ -4,15 +4,15 @@ use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Database\R;
 use Surikat\Component\User\Session as __Session;
 use Surikat\Component\Mail\PHPMailer;
-use Surikat\Component\DependencyInjection\MutatorMagic;
-use Surikat\Component\DependencyInjection\Constant;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
+use Surikat\Component\DependencyInjection\ConstantTrait;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
 }
 class Auth{
-	use MutatorMagic;
-	use Constant;
+	use MutatorMagicTrait;
+	use ConstantTrait;
 	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;

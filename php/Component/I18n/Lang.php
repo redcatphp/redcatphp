@@ -1,10 +1,10 @@
 <?php
 namespace Surikat\Component\I18n{
-	use Surikat\Component\DependencyInjection\MutatorMagic;
+	use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 	use Surikat\Component\Config\Config;
 	use Surikat\Component\I18n\GettextEmulator;
 	class Lang {
-		use MutatorMagic;
+		use MutatorMagicTrait;
 		
 		private $locale;
 		private $domain;

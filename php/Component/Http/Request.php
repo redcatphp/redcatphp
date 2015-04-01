@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Http;
-use Surikat\Component\DependencyInjection\MutatorProperty;
+use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
 class Request{
-	use MutatorProperty;
+	use MutatorPropertyTrait;
 	function reloadLocation(){
 		header('Location: '.$this->Http_Url->getLocation(),false,302);
 	}

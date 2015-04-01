@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Templator;
-use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 use Surikat\Component\Cache\Sync;
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\SourceCode\PHP;
@@ -7,7 +7,7 @@ use Surikat\Component\Minify\HTML as minHTML;
 use Surikat\Component\Minify\PHP as minPHP;
 use Surikat\Component\Exception\View as ViewException;
 class Template {
-	use MutatorCall;
+	use MutatorCallTrait;
 	var $forceCompile;
 	var $path;
 	var $parent;

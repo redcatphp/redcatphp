@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Vars;
-use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	use MutatorCall;
+	use MutatorCallTrait;
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))

@@ -16,7 +16,7 @@ use Surikat\Component\Database\RedBeanPHP\OODB as OODB;
 use Surikat\Component\Database\RedBeanPHP\Cursor as Cursor;
 use Surikat\Component\Database\RedBeanPHP\Cursor\NullCursor as NullCursor;
 
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 
 /**
  * Abstract Repository
@@ -39,7 +39,7 @@ use Surikat\Component\DependencyInjection\MutatorMagic;
  */
 abstract class Repository
 {
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	/**
 	 * @var array
 	 */

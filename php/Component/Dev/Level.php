@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Dev;
-use Surikat\Component\DependencyInjection\Mutator;
+use Surikat\Component\DependencyInjection\MutatorTrait;
 class Level{
-	use Mutator;
+	use MutatorTrait;
 	private $phpDev;
 	private $level = 0;
 	private $levels;

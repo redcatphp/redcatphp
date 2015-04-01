@@ -1,9 +1,9 @@
 <?php namespace Surikat\Component\FileSystem;
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Image\Images;
 class Uploader{
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	public $extensionRewrite = [
 		'jpeg'=>'jpg',
 	];

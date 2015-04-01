@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\DependencyInjection;
-trait Facade{	
-	use Registry;
+trait FacadeTrait{
+	use RegistryTrait;
 	function __call($f,$args){
 		$method = '_'.$f;
 		if(method_exists($this,$method)&&(new \ReflectionMethod($this, $method))->isPublic())

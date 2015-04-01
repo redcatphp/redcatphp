@@ -2,9 +2,9 @@
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Minify\JS;
 use Surikat\Component\Minify\CSS;
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Synaptic {
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	function load($k){

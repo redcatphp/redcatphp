@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\DependencyInjection;
-trait Registry{
+trait RegistryTrait{
 	protected static $__instances = [];
 	protected static $__instance;
 	static function getStatic(){

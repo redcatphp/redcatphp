@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\Component\Database\RedBeanPHP\Logger\RDefault;
 
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Surikat\Component\Database\RedBeanPHP\Logger as Logger;
 use Surikat\Component\Database\RedBeanPHP\Logger\RDefault as RDefault;
 use Surikat\Component\Database\RedBeanPHP\RedException as RedException;
@@ -23,7 +23,7 @@ use Surikat\Component\Database\RedBeanPHP\RedException\Security as Security;
  */
 class Debug extends RDefault implements Logger
 {
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	
 	private $strLen = false;
 

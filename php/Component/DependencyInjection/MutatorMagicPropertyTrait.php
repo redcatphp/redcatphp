@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\DependencyInjection;
-trait MutatorMagicProperty{
+trait MutatorMagicPropertyTrait{
 	private $__legacyRegistry = [];
 	function &__get($k){
 		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})||($k{1}=='_'&&ctype_upper($k{2}))))){

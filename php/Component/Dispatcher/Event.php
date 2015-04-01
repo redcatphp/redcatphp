@@ -1,8 +1,8 @@
 <?php
 namespace Surikat\Component\Dispatcher;
-use Surikat\Component\DependencyInjection\Mutator;
+use Surikat\Component\DependencyInjection\MutatorTrait;
 class Event{
-	use Mutator;
+	use MutatorTrait;
 	protected $events = [];
 	function append($event,$listener,$index=0){
 		return $this->event($event,$listener,$index);

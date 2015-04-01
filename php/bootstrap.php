@@ -1,11 +1,15 @@
 <?php
-require __DIR__.'/Component/DependencyInjection/Mutator.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagicProperty.php';
-require __DIR__.'/Component/DependencyInjection/MutatorProperty.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagicCall.php';
-require __DIR__.'/Component/DependencyInjection/MutatorCall.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagic.php';
-require __DIR__.'/Component/DependencyInjection/Registry.php';
+error_reporting(-1);
+ini_set('display_startup_errors',true);
+ini_set('display_errors','stdout');
+			
+require __DIR__.'/Component/DependencyInjection/MutatorTrait.php';
+require __DIR__.'/Component/DependencyInjection/MutatorMagicPropertyTrait.php';
+require __DIR__.'/Component/DependencyInjection/MutatorPropertyTrait.php';
+require __DIR__.'/Component/DependencyInjection/MutatorMagicCallTrait.php';
+require __DIR__.'/Component/DependencyInjection/MutatorCallTrait.php';
+require __DIR__.'/Component/DependencyInjection/MutatorMagicTrait.php';
+require __DIR__.'/Component/DependencyInjection/RegistryTrait.php';
 require __DIR__.'/Component/DependencyInjection/Container.php';
 require __DIR__.'/Component/Autoload/Psr4.php';
 require __DIR__.'/constants.php';

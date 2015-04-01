@@ -1,9 +1,9 @@
 <?php namespace Surikat\Component\Dispatcher;
 use ReflectionClass;
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Surikat\Component\Route\Route;
 class Uri {
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	protected $routes = [];
 	protected $questionMark;
 	function append($pattern,$callback,$index=0){

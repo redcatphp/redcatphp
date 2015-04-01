@@ -1,10 +1,10 @@
 <?php namespace Surikat\Component\User;
 use Surikat\Component\User\Auth as User_Auth;
 use Surikat\Component\I18n\Lang;
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 Lang::initialize();
 class AuthServer{
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	protected $messages = [];
 	protected $lastResult;
 	protected $defaultLogoutKey = 'auth-server-logout';

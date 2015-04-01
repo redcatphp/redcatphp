@@ -2,9 +2,9 @@
 use Surikat\Component\Templator\TML;
 use Surikat\Component\Templator\TML_Apply;
 use Surikat\Component\Templator\CssSelector;
-use Surikat\Component\DependencyInjection\MutatorCall;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
-	use MutatorCall;
+	use MutatorCallTrait;
 	
 	var $nodeName;
 	var $parent;

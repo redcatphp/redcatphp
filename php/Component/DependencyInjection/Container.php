@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\DependencyInjection;
 class Container{
-	use MutatorMagic;
-	use Registry;
+	use MutatorMagicTrait;
+	use RegistryTrait;
 	static function get(){
 		$args = func_get_args();
 		if(empty($args))

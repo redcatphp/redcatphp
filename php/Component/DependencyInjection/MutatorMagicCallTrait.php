@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\DependencyInjection;
 use BadMethodCallException;
-trait MutatorMagicCall{
+trait MutatorMagicCallTrait{
 	function __call($k,$args){
 		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})||($k{1}=='_'&&ctype_upper($k{2}))))){
 			if(strpos($k,'__'))

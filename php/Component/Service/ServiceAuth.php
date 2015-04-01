@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Service;
-use Surikat\Component\DependencyInjection\MutatorProperty;
+use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
 class ServiceAuth {
-	use MutatorProperty;
+	use MutatorPropertyTrait;
 	function infos(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');

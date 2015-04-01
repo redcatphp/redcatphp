@@ -2,9 +2,9 @@
 use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Mvc\View;
 use Surikat\Component\Templator\TML;
-use Surikat\Component\DependencyInjection\MutatorMagic;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Controller{
-	use MutatorMagic;
+	use MutatorMagicTrait;
 	protected $prefixTmlCompile = '';
 	function __invoke($params,$uri,$Route){
 		$path = is_string($params)?$params:$params[0];

@@ -3,7 +3,7 @@ use Surikat\Component\Database\RedBeanPHP\QueryWriter\PostgreSQL;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter\MySQL;
 use Surikat\Component\Geocoding\Geocoding;
 use Surikat\Component\Validation\Ruler;
-trait Mixin_Geopoint{
+trait GeopointTrait{
 	static $columnPointCast	= 'point';
 	static $columnPointWriteCol;
 	static $columnPointReadCol;

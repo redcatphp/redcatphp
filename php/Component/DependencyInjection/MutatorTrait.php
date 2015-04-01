@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\DependencyInjection;
 use Surikat\Component\DependencyInjection\Container;
-trait Mutator {
+trait MutatorTrait {
 	private $__dependenciesRegistry = [];
 	private $__dependenciesPrefix = 'Surikat\\Component';
 	private $__dependenciesFactory = 'static::factoryDependency';

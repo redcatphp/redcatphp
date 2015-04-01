@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\Component\Observer;
 use SplObjectStorage;
-trait Subject{
+trait SubjectTrait{
 	private $__observers;
 	function attach($observer){
 		if(!isset($this->__observers))
