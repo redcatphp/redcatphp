@@ -12,6 +12,7 @@ class DependencyInjection{
 						$args = array_merge($config['__construct'],(array)$args);
 						unset($config['__construct']);
 					}
+					$obj = $mutator->factoryDependency($c,$args);
 					foreach($config as $method=>$arg){
 						$obj->$method($arg);
 					}
