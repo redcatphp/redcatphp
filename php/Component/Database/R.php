@@ -1,8 +1,11 @@
 <?php namespace Surikat\Component\Database;
 use Surikat\Component\DependencyInjection\Container;
+use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
 use Surikat\Component\Config\Config;
 use Surikat\Component\Vars\STR;
-class R extends RedBeanPHP\Facade{
+use Surikat\Component\Database\RedBeanPHP\Facade;
+class R extends Facade{
+	use MutatorPropertyTrait;
 	static function loadDB($key){
 		$getter = 'db';
 		if(!$key)
