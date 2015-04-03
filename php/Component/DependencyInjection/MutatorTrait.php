@@ -23,7 +23,8 @@ trait MutatorTrait {
 			}
 			$value = $this->__prefixClassName($value);
 			$value = self::__interfaceSubstitutionDefaultClass($value);
-			$value = $this->__factoryDependency($value,$args);
+			//$value = $this->__factoryDependency($value,$args);
+			$value = [$value,$args];
 		}
 		$c = str_replace('_','\\',$key);
 		if((interface_exists($c)&&!($value instanceof $c))
@@ -44,14 +45,21 @@ trait MutatorTrait {
 				$args = [$args];
 			$rkey = $key.'.'.sha1(json_encode($args));
 		}
-		if(array_key_exists($rkey,$this->__dependenciesRegistry))
+		if(array_key_exists($rkey,$this->__dependenciesRegistry)){
+			if(is_array($this->__dependenciesRegistry[$rkey])){
+				$this->__dependenciesRegistry[$rkey] = call_user_func_array([$this,'__factoryDependency'],$this->__dependenciesRegistry[$rkey]);
+			}
 			return $this->__dependenciesRegistry[$rkey];
-		if(method_exists($this,$method))
+		}
+		if(method_exists($this,$method)){
 			$value = $this->$method($args);
-		elseif(method_exists($this,$method='_'.$method))
+		}
+		elseif(method_exists($this,$method='_'.$method)){
 			$value = $this->$method($args);
-		else
+		}
+		else{
 			$value = $this->defaultDependency($key,$args);
+		}
 		$this->setDependency($key,$value,$rkey);
 		return $this->getDependency($key,$args);
 	}
