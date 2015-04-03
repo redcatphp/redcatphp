@@ -1,6 +1,10 @@
 <?php namespace Surikat\Component\Config;
 use Surikat\Component\Vars\Arrays;
 class Config {
+	protected $key;
+	function __construct($key='global'){
+		$this->key = $key;
+	}
 	private static $registry = [];
 	protected static $directory = 'config';
 	static function STORE($f,$a){
