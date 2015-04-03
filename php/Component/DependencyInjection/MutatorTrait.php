@@ -23,7 +23,6 @@ trait MutatorTrait {
 			}
 			$value = $this->__prefixClassName($value);
 			$value = self::__interfaceSubstitutionDefaultClass($value);
-			//$value = $this->__factoryDependency($value,$args);
 			$value = [$value,$args];
 		}
 		$c = str_replace('_','\\',$key);
