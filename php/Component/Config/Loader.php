@@ -35,7 +35,7 @@ class Loader {
 		return file_put_contents(SURIKAT_PATH.$this->directory.'/'.$this->file,$this->toString($contents));
 	}
 	function toString($contents){
-		return '<?php return '.$contents.';';
+		return '<?php return '.var_export($contents,true).';';
 	}
 	protected function getConf($inc){
 		return include($inc);

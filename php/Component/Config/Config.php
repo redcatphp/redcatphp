@@ -36,9 +36,6 @@ class Config implements \Countable, \Iterator, \ArrayAccess {
         }
         return $default;
     }
-    function __toString(){
-		return var_export($this->data,true);
-	}
 	function store(){
 		$this->Loader->putContents($this);
 	}
