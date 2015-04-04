@@ -150,8 +150,18 @@ trait MutatorTrait {
 			else
 				$value .= substr($value,strrpos($value,'\\'));
 		}
-		if(strpos($value,'\\')===false&&!class_exists($value))
-			$value = $value.'\\'.$value;
+		if(!class_exists($value)){
+			$x = explode('\\',$value);
+			$s1 = array_pop($x);
+			$s2 = array_pop($x);
+			if($s1!=$s2){
+				array_push($x,$s2);
+				array_push($x,$s1);
+				$c = implode('\\',$x).'\\'.$s1;
+				if(class_exists($c))
+					$value = $c;
+			}
+		}
 		return $value;
 	}
 }
