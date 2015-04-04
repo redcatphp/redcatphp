@@ -13,6 +13,8 @@ trait MutatorTrait {
 		$key = $this->__prefixClassName($key);
 		if(!isset($rkey))
 			$rkey = $key;
+		elseif(is_array($rkey))
+			$rkey = $key.'.'.sha1(json_encode($rkey));
 		if(!is_object($value)&&$value){
 			if(is_array($value)){
 				$args = $value;
