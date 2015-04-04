@@ -1,7 +1,9 @@
 <?php namespace Surikat\Component\Git\GitDeploy;
-use Surikat\Component\Config\INI as ConfigINI;
+use Surikat\Component\Config\Ini as ConfigIni;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 use Surikat\Component\Vars\Arrays;
 class GitDeploy{
+	use MutatorCallTrait;
 	static function factory($repoPath=null){
 		return new self($repoPath);
 	}
@@ -31,8 +33,8 @@ class GitDeploy{
 	function __construct($repoPath=null,$config=null){
 		ini_set('memory_limit', '256M');
         $this->repoPath = $repoPath;
-        $this->options = Arrays::merge_recursive($this->options,ConfigINI::deploy(':shared:'));
-		$this->iniServers = $config?$config:ConfigINI::deploy();
+        $this->options = Arrays::merge_recursive($this->options,$this->Config_LoaderIni('deploy')->loadObject()->get(':shared:'));
+		$this->iniServers = $config?$config:$this->Config_LoaderIni('deploy')->loadObject();
         if(!$this->iniServers)
             return self::error("Invalid deploy configuration");
 		foreach($this->iniServers as $uri=>$options){
