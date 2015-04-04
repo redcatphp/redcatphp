@@ -57,43 +57,47 @@ class Debug{
 			$html = true;
 		}
 		$msg = $this->errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
-		if($html){
-			echo $this->debugStyle;
-			echo "<pre class=\"error\" style=\"".$this->debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
-			//$f = file($file);
-			$f = explode("\n",str_replace(["\r\n","\r"],"\n",file_get_contents($file)));
-			foreach($f as &$x)
-				$x .= "\n";
-			$c = count($f);			
-			$start = $line-$this->debugLines;
-			$end = $line+$this->debugLines;
-			if($start<0)
-				$start = 0;
-			if($end>($c-1))
-				$end = $c-1;
-			$e = '';
-			for($i=$start;$i<=$end;$i++){
-				$e .= $f[$i];
+		if(is_file($file)){
+			if($html){
+				echo $this->debugStyle;
+				echo "<pre class=\"error\" style=\"".$this->debugWrapInlineCSS."\"><span>".$msg."</span>\nContext:\n";
+				$f = explode("\n",str_replace(["\r\n","\r"],"\n",file_get_contents($file)));
+				foreach($f as &$x)
+					$x .= "\n";
+				$c = count($f);			
+				$start = $line-$this->debugLines;
+				$end = $line+$this->debugLines;
+				if($start<0)
+					$start = 0;
+				if($end>($c-1))
+					$end = $c-1;
+				$e = '';
+				for($i=$start;$i<=$end;$i++){
+					$e .= $f[$i];
+				}
+				$e = highlight_string('<?php '.$e,true);
+				$e = str_replace('<br />',"\n",$e);
+				$e = substr($e,35);
+				$x = explode("\n",$e);
+				$e = '<code><span style="color: #000000">';
+				$count = count($x);
+				for($i=0;$i<$count;$i++){
+					$y = $start+$i;
+					$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
+					$e .= $x[$i]."\n";
+				}
+				$p = strpos($e,'&lt;?php');
+				$e = substr($e,0,$p).substr($e,$p+8);
+				echo $e;
+				echo '</pre>';
 			}
-			$e = highlight_string('<?php '.$e,true);
-			$e = str_replace('<br />',"\n",$e);
-			$e = substr($e,35);
-			$x = explode("\n",$e);
-			$e = '<code><span style="color: #000000">';
-			$count = count($x);
-			for($i=0;$i<$count;$i++){
-				$y = $start+$i;
-				$e .= '<span style="color:#'.($y==$line?'d00':'070').';">'.$y."\t</span>";
-				$e .= $x[$i]."\n";
+			else{
+				echo strip_tags($msg);
 			}
-			$p = strpos($e,'&lt;?php');
-			$e = substr($e,0,$p).substr($e,$p+8);
-			echo $e;
-			echo '</pre>';
 		}
-		else{
-			echo strip_tags($msg);
-		}
+		//else{
+			//echo "$message in $file on line $line";
+		//}
 		return true;
 	}
 	function fatalErrorHandle(){
