@@ -1,7 +1,6 @@
 <?php namespace Surikat\Component\Database;
 use Surikat\Component\DependencyInjection\Container;
 use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
-use Surikat\Component\Config\Config;
 use Surikat\Component\Vars\STR;
 use Surikat\Component\Database\RedBeanPHP\Facade;
 class R extends Facade{
