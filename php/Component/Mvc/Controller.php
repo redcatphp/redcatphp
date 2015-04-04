@@ -8,7 +8,6 @@ class Controller{
 	protected $prefixTmlCompile = '';
 	function __invoke($params,$uri,$Route){
 		$path = is_string($params)?$params:$params[0];
-		//var_dump($this);
 		$this->Route = $Route;
 		if(method_exists($Route,'getDirHook')
 			&&$hook = $Route->getDirHook()){
