@@ -2,7 +2,7 @@
 	<?
 		$langDir = 'langs/';
 		$lgC = Surikat\Component\I18n\Lang::get();
-		$lgD = Surikat\Component\Config\Config::langs('default');
+		$lgD = $this->Config('langs')->default;
 		$langs = [$lgD];
 		foreach(glob($langDir.'*.ini') as $langFile)
 			$langs[] = pathinfo($langFile,PATHINFO_FILENAME);

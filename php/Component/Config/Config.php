@@ -37,7 +37,7 @@ class Config implements \Countable, \Iterator, \ArrayAccess {
         return $default;
     }
 	function store(){
-		$this->Loader->putContents($this);
+		return $this->Loader->putContents($this);
 	}
     function __get($name){
         return $this->get($name);

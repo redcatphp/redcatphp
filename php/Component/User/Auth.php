@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\User;
-use Surikat\Component\Config\Config;
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Database\R;
 use Surikat\Component\User\Session as __Session;
@@ -86,11 +85,11 @@ class Auth{
 		if($__Session)
 			$this->__Session = $__Session;
 
-		$this->config = Config::auth();
+		$this->config = $this->Config('auth');
 		$dbm = 'db';
 		if(isset($this->config['db'])&&$this->config['db'])
 			$dbm .= '_'.$this->config['db'];
-		$db = Config::$dbm();
+		$db = $this->Config($dbm);
 		if((isset($db['name'])&&$db['name'])||(isset($db['file'])&&$db['file'])){
 			$this->db = R::getDatabase(isset($this->config['db'])?$this->config['db']:null);
 		}
@@ -109,7 +108,7 @@ class Auth{
 			$this->algo = PASSWORD_DEFAULT;
 	}
 	function sendMail($email, $type, $key, $login){
-		$config = Config::mailer();
+		$config = $this->Config('mailer');
 				
 		$fromName = isset($config['fromName'])?$config['fromName']:null;
 		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
@@ -149,7 +148,8 @@ class Auth{
 				$options = ['cost' => $this->cost];
 				if(password_needs_rehash($pass, $this->algo, $options)){
 					$this->config['root'] = password_hash($password, $this->algo, $options);
-					if(!Config::STORE('auth',$this->config)){
+					$this->Config('auth')->root = $this->config['root'];
+					if(!$this->Config('auth')->store()){
 						return self::ERROR_SYSTEM_ERROR;
 					}
 				}

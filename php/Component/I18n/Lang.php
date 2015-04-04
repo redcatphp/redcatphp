@@ -1,7 +1,7 @@
 <?php
 namespace Surikat\Component\I18n{
 	use Surikat\Component\DependencyInjection\MutatorMagicTrait;
-	use Surikat\Component\Config\Config;
+	use Surikat\Component\DependencyInjection\Container;
 	use Surikat\Component\I18n\GettextEmulator;
 	class Lang {
 		use MutatorMagicTrait;
@@ -81,7 +81,7 @@ namespace Surikat\Component\I18n{
 				return;
 			self::$initialized = true;
 			static::$defaultLocalesRoot = SURIKAT_PATH.'langs';
-			$tz = Config::langs('timezone');
+			$tz = Container::get()->Config('langs')->timezone;
 			if(!$tz)
 				$tz = @date_default_timezone_get();
 			date_default_timezone_set($tz);

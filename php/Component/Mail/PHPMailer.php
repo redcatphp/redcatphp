@@ -1,41 +1,38 @@
 <?php namespace Surikat\Component\Mail;
-use Surikat\Component\Config\Config;
 use Surikat\Component\Mail\PHPMailer\PHPMailer as OPHPMailer;
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 class PHPMailer extends OPHPMailer{
-	static function mail($email, $subject, $message, $html=true){
-		$o = self::instance();
+	use MutatorCallTrait;
+	function mail($email, $subject, $message, $html=true){
 		if(is_array($email)){
 			foreach($email as $k=>$v){
 				if(is_integer($k))
-					$o->addAddress($v);
+					$this->addAddress($v);
 				else
-					$o->addAddress($k,$v);
+					$this->addAddress($k,$v);
 			}
 		}
 		else{
-			$o->addAddress($email);
+			$this->addAddress($email);
 		}
-		$o->Subject = $subject;
+		$this->Subject = $subject;
 		if($html){
 			if(is_bool($html)){
-				$o->msgHTML($message);
+				$this->msgHTML($message);
 			}
 			else{
-				$o->msgHTML($html);
-				$o->AltBody = $message;
+				$this->msgHTML($html);
+				$this->AltBody = $message;
 			}
 		}
 		else{
-			$o->Body = $message;
+			$this->Body = $message;
 		}
-		return $o->send();
-	}
-	static function instance(){
-		return new static();
+		return $this->send();
 	}
 	function __construct($exceptions = false){
         parent::__construct($exceptions);
-        $config = Config::mailer();
+        $config = $this->Config('mailer');
 		$fromName = isset($config['fromName'])?$config['fromName']:null;
 		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
 		$replyName = isset($config['replyName'])?$config['replyName']:null;
