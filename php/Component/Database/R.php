@@ -12,19 +12,20 @@ class R extends Facade{
 			$key = 'default';
 		if($key!='default')
 			$getter = $getter.'_'.implode('_',explode('/',$key));
-
-		$type = Config::$getter('type');
+			
+		$config = Container::get()->Config($getter);
+		$type = $config->type;
 		if(!$type)
 			return;
-		$port = Config::$getter('port');
-		$host = Config::$getter('host');
-		$file = Config::$getter('file');
-		$name = Config::$getter('name');
-		$prefix = Config::$getter('prefix');
-		$case = Config::$getter('case');
-		$frozen = Config::$getter('frozen');
-		$user = Config::$getter('user');
-		$password = Config::$getter('password');
+		$port = $config->port;
+		$host = $config->host;
+		$file = $config->file;
+		$name = $config->name;
+		$prefix = $config->prefix;
+		$case = $config->case;
+		$frozen = $config->frozen;
+		$user = $config->user;
+		$password = $config->password;
 		
 		if($port)
 			$port = ';port='.$port;
