@@ -50,6 +50,9 @@ trait MutatorTrait {
 			if(is_array($this->__dependenciesRegistry[$rkey])){
 				$this->__dependenciesRegistry[$rkey] = call_user_func_array([$this,'__factoryDependency'],$this->__dependenciesRegistry[$rkey]);
 			}
+			if($this->__dependenciesRegistry[$rkey] instanceof \Closure){
+				$this->__dependenciesRegistry[$rkey] = $this->__dependenciesRegistry[$rkey]();
+			}
 			return $this->__dependenciesRegistry[$rkey];
 		}
 		if(method_exists($this,$method)){
