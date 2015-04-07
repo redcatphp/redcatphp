@@ -227,7 +227,7 @@ namespace Surikat\Component\I18n{
 					$this->unbind();
 				break;
 				default:
-					throw new \Exception('Call to undefined Method '.$f);
+					throw new \Exception(sprintf('Call to undefined Method %s',$f));
 				break;
 			}
 			return $r;
