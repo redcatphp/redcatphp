@@ -3,10 +3,6 @@ use Surikat\Component\I18n\Lang;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class I18n extends Faceted {
 	use MutatorMagicTrait;	
-	protected $DispatcherUri;
-	function __construct($DispatcherUri){
-		$this->DispatcherUri = $DispatcherUri;
-	}
 	function __invoke(&$uri){
 		parent::__invoke($uri);
 		$this->uriParams[0] = $this->i18nBySubdomain($this->uriParams[0]);
@@ -30,7 +26,7 @@ class I18n extends Faceted {
 		else
 			$lang = $this->Config('langs')->default;
 		Lang::set($lang);
-		$ctrl = $this->DispatcherUri->Mvc_Controller;
+		$ctrl = $this->Dispatcher_Uri->Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
 		$ctrl->Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templator_Toolbox->i18nGettext($TML);

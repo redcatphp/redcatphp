@@ -12,7 +12,7 @@ class Index extends Dispatcher_Uri{
 			$this->convention();
 	}
 	function __invoke(){
-		return call_user_func_array([$this,'Mvc_Controller'],func_get_args());
+		return $this->Mvc_Controller();
 	}
 	function convention(){
 		$this->append('service/',['Service']);

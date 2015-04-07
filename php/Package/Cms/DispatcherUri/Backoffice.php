@@ -15,7 +15,7 @@ class Backoffice extends Dispatcher_Uri{
 						['_Surikat_Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Route_ByTml','',$this->pathFS],function(){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
-				return call_user_func_array($this->Mvc_Controller,func_get_args());
+				return $this->Mvc_Controller();
 			})
 			->append(['Route_ByPhpX','',$this->pathFS],function($paths){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
