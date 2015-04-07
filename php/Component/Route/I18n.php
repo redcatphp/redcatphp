@@ -3,6 +3,10 @@ use Surikat\Component\I18n\Lang;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class I18n extends Faceted {
 	use MutatorMagicTrait;	
+	protected $Dispatcher_Uri;
+	function __construct($Dispatcher_Uri){
+		$this->Dispatcher_Uri = $Dispatcher_Uri;
+	}
 	function __invoke(&$uri){
 		parent::__invoke($uri);
 		$this->uriParams[0] = $this->i18nBySubdomain($this->uriParams[0]);
