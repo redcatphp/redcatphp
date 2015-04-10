@@ -1,7 +1,6 @@
 <?php namespace Surikat\Component\I18n;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Surikat\Component\DependencyInjection\Facade;
-use Surikat\Component\I18n\GettextEmulator;
 class Translator {
 	use Facade;
 	use MutatorMagicTrait;
@@ -14,7 +13,6 @@ class Translator {
 	private $localesRoot;
 	private $gettext;
 	private $altLocales;
-	private $GettextEmulator;
 	protected $countryAuto = true;
 	protected $defaultLocale = 'en_US';
 	protected $defaultDomain = 'messages';
@@ -41,7 +39,7 @@ class Translator {
 		else
 			$this->realDomain = $this->domain;
 		$this->realLocale = $this->locale.$this->suffixLocales;
-		$this->altLocales = GettextEmulator::get_list_of_locales($this->realLocale);
+		$this->altLocales = $this->__GettextEmulator($this->realLocale)->get_list_of_locales($this->realLocale);
 		if(function_exists('setlocale')){
 			foreach($this->altLocales as $lc){
 				if(in_array($lc,self::$systemLocales)){
@@ -100,11 +98,6 @@ class Translator {
 			$o = self::current();
 		return $o->gettext($msgid);
 	}
-	function GettextEmulator(){
-		if(!isset($this->GettextEmulator))
-			$this->GettextEmulator = new GettextEmulator($this->realLocale);
-		return $this->GettextEmulator;
-	}
 	function _unbind(){
 		array_pop(self::$bindStack);
 		$last = end(self::$bindStack);
@@ -155,7 +148,7 @@ class Translator {
 			case 'textdomain':
 			case 'bind_textdomain_codeset':
 				if($this->EMULATEGETTEXT){
-					$r = call_user_func_array([$this->GettextEmulator(),$f],$args);
+					$r = call_user_func_array([$this->__GettextEmulator($this->realLocale),$f],$args);
 				}
 				else{
 					$r = call_user_func_array($f,$args);
@@ -175,7 +168,7 @@ class Translator {
 			case 'dcnpgettext':
 				$this->bind();
 				if($this->EMULATEGETTEXT){
-					$r = call_user_func_array([$this->GettextEmulator(),$f],$args);
+					$r = call_user_func_array([$this->__GettextEmulator($this->realLocale),$f],$args);
 				}
 				else{
 					$r = call_user_func_array($f,$args);
