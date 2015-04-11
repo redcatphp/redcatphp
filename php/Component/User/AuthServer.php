@@ -1,8 +1,8 @@
 <?php namespace Surikat\Component\User;
 use Surikat\Component\User\Auth as User_Auth;
-use Surikat\Component\I18n\Lang;
+use Surikat\Component\I18n\Translator;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
-Lang::initialize();
+require_once SURIKAT_SPATH.'php/Components/I18n/Translator.inc.php';
 class AuthServer{
 	use MutatorMagicTrait;
 	protected $messages = [];
@@ -272,7 +272,7 @@ class AuthServer{
 	
 	
 	function getMessage($code,$widget=false){
-		$lg = Lang::currentLangCode();
+		$lg = Translator::currentLangCode();
 		if(!isset($this->messages[$lg])){
 			$this->messages[$lg] = [
 				Auth::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),

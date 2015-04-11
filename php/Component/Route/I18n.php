@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Route;
-use Surikat\Component\I18n\Lang;
+use Surikat\Component\I18n\Translator;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class I18n extends Faceted {
 	use MutatorMagicTrait;	
@@ -29,7 +29,7 @@ class I18n extends Faceted {
 		}
 		else
 			$lang = $this->Config('langs')->default;
-		Lang::set($lang);
+		Translator::set($lang);
 		$ctrl = $this->Dispatcher_Uri->Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
 		$ctrl->Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
