@@ -66,7 +66,7 @@ class Toolbox{
 		});
 	}
 	function i18nGettext($TML,$cache=true){
-		$TML('html')->attr('lang',Translator::currentLangCode());
+		$TML('html')->attr('lang',Translator::getLangCode());
 		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
@@ -86,11 +86,11 @@ class Toolbox{
 				return;
 			if($el->data('i18n')!==false){
 				if($cache){
-					$rw = __($rw);
+					$rw = $this->I18n_Translator()->__($rw);
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
-					$rw = "<?php echo __('$rw');?>";
+					$rw = '<?php echo $this->I18n_Translator()->__(\''.$rw.'\');?>';
 				}
 				$el->write($left.$rw.$right);
 			}
@@ -99,7 +99,7 @@ class Toolbox{
 			foreach($TML->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
 					$TML->removeAttr($k);
-					$TML->attr(substr($k,5),__($v));
+					$TML->attr(substr($k,5),$this->I18n_Translator()->__($v));
 				}
 			}
 		});

@@ -272,7 +272,7 @@ class AuthServer{
 	
 	
 	function getMessage($code,$widget=false){
-		$lg = Translator::currentLangCode();
+		$lg = Translator::getLangCode();
 		if(!isset($this->messages[$lg])){
 			$this->messages[$lg] = [
 				Auth::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),

@@ -1,7 +1,7 @@
 <eval>
 	<?
 		$langDir = 'langs/';
-		$lgC = Surikat\Component\I18n\Translator::get();
+		$lgC = Surikat\Component\I18n\Translator::getLangCode();
 		$lgD = $this->Config('langs')->default;
 		$langs = [$lgD];
 		foreach(glob($langDir.'*.ini') as $langFile)

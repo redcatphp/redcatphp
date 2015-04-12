@@ -24,6 +24,9 @@ class Translator {
 	protected $default_domain = 'messages';
 	protected $LC_CATEGORIES = ['LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL'];
 	protected $EMULATEGETTEXT = 1;
+	static function initialize(){
+		exec('locale -a',self::$systemLocales);
+	}
 	function __construct($locale=null,$domain=null){
 		$this->set($locale,$domain);
 	}
@@ -33,7 +36,6 @@ class Translator {
 		if(!$tz)
 			$tz = @date_default_timezone_get();
 		date_default_timezone_set($tz);
-		exec('locale -a',self::$systemLocales);
 		
 		$this->localesRoot = $this->defaultLocalesRoot;
 		$this->originLocale = $locale;
@@ -79,29 +81,11 @@ class Translator {
 		}
 		$this->bind();
 	}
-	function _n__($singular,$plural,$number,$lang=null,$domain=null){
-		if(isset($lang)||isset($domain)){
-			if(!isset($lang))
-				$lang = self::current()->locale;
-			if(!isset($domain))
-				$domain = self::current()->domain;
-			$o = self::factory($lang,$domain);
-		}
-		else
-			$o = self::current();
-		return $o->ngettext($singular, $plural, $number);
+	function _n__($singular,$plural,$number){
+		return $this->ngettext($singular, $plural, $number);
 	}
-	function ___($msgid,$lang=null,$domain=null){
-		if(isset($lang)||isset($domain)){
-			if(!isset($lang))
-				$lang = self::current()->locale;
-			if(!isset($domain))
-				$domain = self::current()->domain;
-			$o = self::factory($lang,$domain);
-		}
-		else
-			$o = self::current();
-		return $o->gettext($msgid);
+	function ___($msgid){
+		return $this->gettext($msgid);
 	}
 	function _unbind(){
 		array_pop(self::$bindStack);
@@ -157,6 +141,7 @@ class Translator {
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
+		//var_dump($this->locale,$f);
 		return call_user_func_array($f,func_get_args());
 	}
 	function _textdomain(){
@@ -269,3 +254,4 @@ class Translator {
 		$this->unbind();
 	}
 }
+Translator::initialize();
