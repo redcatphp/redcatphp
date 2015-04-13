@@ -28,9 +28,12 @@ class Translator {
 		exec('locale -a',self::$systemLocales);
 	}
 	function __construct($locale=null,$domain=null){
-		$this->set($locale,$domain);
+		if($locale)
+			$this->set($locale,$domain);
 	}
 	function _set($locale=null,$domain=null){
+		if(!isset($domain))
+			$domain = $this->defaultDomain;
 		$this->defaultLocalesRoot = SURIKAT_PATH.'langs';
 		$tz = $this->Config('langs')->timezone;
 		if(!$tz)
@@ -142,6 +145,7 @@ class Translator {
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
 		//var_dump($this->locale,$f);
+		//var_dump(func_get_args());
 		return call_user_func_array($f,func_get_args());
 	}
 	function _textdomain(){
