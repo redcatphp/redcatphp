@@ -17,7 +17,7 @@ class Translator {
 	private $altLocales;
 	protected $countryAuto = true;
 	protected $defaultLocale = 'en_US';
-	protected $defaultDomain = 'messages';
+	protected static $defaultDomain = 'messages';
 	protected $defaultLocalesRoot;
 	protected $suffixLocales = '.utf8';
 	protected $text_domains = [];
@@ -33,7 +33,7 @@ class Translator {
 	}
 	function _set($locale=null,$domain=null){
 		if(!isset($domain))
-			$domain = $this->defaultDomain;
+			$domain = self::$defaultDomain;
 		$this->defaultLocalesRoot = SURIKAT_PATH.'langs';
 		$tz = $this->Config('langs')->timezone;
 		if(!$tz)
@@ -97,7 +97,7 @@ class Translator {
 			$last = [
 				$this->defaultLocale,
 				$this->defaultLocale.$this->suffixLocales,
-				$this->defaultDomain,
+				self::$defaultDomain,
 				$this->defaultLocalesRoot
 			];
 		}
