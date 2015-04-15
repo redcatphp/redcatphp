@@ -8,6 +8,7 @@ class Translator {
 	}
 	protected static $systemLocales;
 	protected static $bindStack = [];
+	protected static $defaultDomain = 'messages';
 	private $locale;
 	private $domain;
 	private $originLocale;
@@ -17,7 +18,6 @@ class Translator {
 	private $altLocales;
 	protected $countryAuto = true;
 	protected $defaultLocale = 'en_US';
-	protected static $defaultDomain = 'messages';
 	protected $defaultLocalesRoot;
 	protected $suffixLocales = '.utf8';
 	protected $text_domains = [];
@@ -39,7 +39,6 @@ class Translator {
 		if(!$tz)
 			$tz = @date_default_timezone_get();
 		date_default_timezone_set($tz);
-		
 		$this->localesRoot = $this->defaultLocalesRoot;
 		$this->originLocale = $locale;
 		$this->locale = $locale;
@@ -101,6 +100,8 @@ class Translator {
 				$this->defaultLocalesRoot
 			];
 		}
+		if(!isset($last[1]))
+			return;
 		putenv('LANG='.$last[0]);
 		putenv('LANGUAGE='.$last[0]);
 		putenv('LC_ALL='.$last[0]);
@@ -111,6 +112,9 @@ class Translator {
 	}
 	function _bind(){
 		self::$bindStack[] = [$this->locale,$this->realLocale,$this->realDomain,$this->localesRoot];
+		if(!isset($this->locale))
+			return;
+		//var_dump($this->realLocale,$this->localesRoot);
 		$lang = $this->getLangCode();
 		putenv('LANG='.$this->locale);
 		putenv('LANGUAGE='.$this->locale);
@@ -144,8 +148,6 @@ class Translator {
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		//var_dump($this->locale,$f);
-		//var_dump(func_get_args());
 		return call_user_func_array($f,func_get_args());
 	}
 	function _textdomain(){
@@ -166,96 +168,108 @@ class Translator {
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _ngettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dngettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dcgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dcngettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _pgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dpgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dcpgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _npgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dnpgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 	function _dcnpgettext(){
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
 			$f = [$this->__GettextEmulator($this->realLocale),$f];
-		return call_user_func_array($f,func_get_args());
+		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
+		return $r;
 	}
 }
 Translator::initialize();
