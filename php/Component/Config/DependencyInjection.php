@@ -2,7 +2,7 @@
 namespace Surikat\Component\Config;
 class DependencyInjection{
 	public $dirPath = 'config';
-	function objectFactory($c,$args,$mutator){
+	function objectFactory($c,$args,$new,$mutator){
 		if(method_exists($c,'setConfig')){
 			$inc = $this->dirPath.'/'.str_replace('\\','_',$c);
 			if(is_file($inc)){

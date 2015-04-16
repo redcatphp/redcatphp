@@ -3,12 +3,12 @@ trait RegistryTrait{
 	protected static $__instances = [];
 	protected static $__instance;
 	static function getStatic(){
-		return isset(static::$__instance)?static::$__instance:static::setStatic();
+		return isset(static::$__instance)?static::$__instance:call_user_func_array('static::setStatic',func_get_args());
 	}
 	static function setStatic(){
-		return static::$__instance = static::registry(func_get_args());
+		return static::$__instance = static::getStaticRegistry(func_get_args());
 	}
-	static function registry($args=null,$class=null){
+	static function getStaticRegistry($args=null,$class=null){
 		$key = empty($args)?0:sha1(serialize($args));
 		if(!isset($class))
 			$class = get_called_class();

@@ -37,8 +37,12 @@ trait MutatorTrait {
 	}
 	function getDependency($key,$args=null){
 		$method = str_replace('\\','_',$key);
-		$key = $this->__prefixClassName($key);
+		$key = $this->__prefixClassName($key);		
 		if(empty($args)){
+			$c = str_replace('_','\\',$key);
+			if(method_exists($c,'getStatic')){
+				return $c::getStatic();
+			}
 			$rkey = $key;
 		}
 		else{
@@ -74,7 +78,7 @@ trait MutatorTrait {
 		elseif(method_exists($this,$method='_'.$method))
 			$value = $this->$method($args);
 		else
-			return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args);
+			return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args,true);
 	}
 	function setDependencyPrefix($prefix){
 		$this->__dependenciesPrefix = $prefix;
@@ -128,20 +132,26 @@ trait MutatorTrait {
 		}
 		$this->__dependenciesFactory = $callback;
 	}
-	private function __factoryDependency($c,$args=null){
-		return call_user_func($this->__dependenciesFactory,$c,$args,$this);
+	private function __factoryDependency($c,$args=null,$new=null){
+		return call_user_func($this->__dependenciesFactory,$c,$args,$new,$this);
 	}
-	static function factoryDependency($c,$args=null){
+	static function factoryDependency($c,$args=null,$new=null){
 		static $reflectors = [];
 		if(class_exists($c)){
-			if(is_array($args)&&!empty($args)&&method_exists($c,'__construct')){
-				if(!isset($reflectors[$c]))
-					$reflectors[$c] = new \ReflectionClass($c);
-				return $reflectors[$c]->newInstanceArgs($args);
+			if(is_array($args)&&!empty($args)){
+				if(!$new&&method_exists($c,'getStaticRegistry')){
+					return $c::getStaticRegistry($args);
+				}
+				elseif(method_exists($c,'__construct')){
+					if(!isset($reflectors[$c]))
+						$reflectors[$c] = new \ReflectionClass($c);
+					return $reflectors[$c]->newInstanceArgs($args);
+				}
 			}
-			else{
-				return new $c();
+			elseif(!$new&&method_exists($c,'getStatic')){
+				return $c::getStatic();
 			}
+			return new $c();
 		}
 	}
 	private static function __interfaceSubstitutionDefaultClass($value){

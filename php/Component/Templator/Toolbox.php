@@ -86,11 +86,11 @@ class Toolbox{
 				return;
 			if($el->data('i18n')!==false){
 				if($cache){
-					$rw = $this->I18n_Translator()->getStatic()->__($rw);
+					$rw = $this->I18n_Translator()->__($rw);
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo $this->I18n_Translator()->getStatic()->__(\''.$rw.'\');?>';
+					$rw = '<?php echo $this->I18n_Translator()->__(\''.$rw.'\');?>';
 				}
 				$el->write($left.$rw.$right);
 			}
