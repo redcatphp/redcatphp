@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\DependencyInjection;
-use Surikat\Component\DependencyInjection\Container;
 trait MutatorTrait {
 	private $__dependenciesRegistry = [];
 	private $__dependenciesPrefix = 'Surikat\\Component';
@@ -14,7 +13,7 @@ trait MutatorTrait {
 		if(!isset($rkey))
 			$rkey = $key;
 		elseif(is_array($rkey))
-			$rkey = $key.'.'.sha1(json_encode($rkey));
+			$rkey = $key.'.'.Container::hashArguments($rkey);
 		if(!is_object($value)&&$value){
 			if(is_array($value)){
 				$args = $value;
@@ -48,7 +47,7 @@ trait MutatorTrait {
 		else{
 			if(!is_array($args))
 				$args = [$args];
-			$rkey = $key.'.'.sha1(json_encode($args));
+			$rkey = $key.'.'.Container::hashArguments($args);
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry)){
 			if(is_array($this->__dependenciesRegistry[$rkey])){

@@ -9,7 +9,7 @@ trait RegistryTrait{
 		return static::$__instance = static::getStaticRegistry(func_get_args());
 	}
 	static function getStaticRegistry($args=null,$class=null){
-		$key = empty($args)?0:sha1(serialize($args));
+		$key = empty($args)?0:Container::hashArguments($args);
 		if(!isset($class))
 			$class = get_called_class();
 		else
