@@ -1,4 +1,4 @@
-<?php namespace;
+<?php
 use Surikat\Component\I18n\Translator;
 function __($msgid,$lang=null,$domain=null){
 	return Translator::__($msgid,$lang,$domain);
