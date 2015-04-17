@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Route;
-class Faceted extends Route implements \ArrayAccess,\Countable{
+class Faceted extends Route {
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [
 		'?','%',',','!','^','¨','#','~',"'",'"',"\r","\n","\t"," ",
@@ -9,8 +9,6 @@ class Faceted extends Route implements \ArrayAccess,\Countable{
 	protected $separatorAnd = '+';
 	protected $separatorEq = ':';
 	protected $separatorOr = '&';
-	protected $path;
-	protected $uriParams = [];
 	function buildPath(){
 		$uriParams = $this->uriParams;
 		$path = array_shift($uriParams);
@@ -55,9 +53,6 @@ class Faceted extends Route implements \ArrayAccess,\Countable{
 	function __toString(){
 		return (string)$this->buildPath();
 	}
-	function getPath(){
-		return $this->path;
-	}
 	function filterParam($s){
 		$s = trim($s);
 		$s = strip_tags($s);
@@ -73,42 +68,5 @@ class Faceted extends Route implements \ArrayAccess,\Countable{
 			$s = $ns;
 		}
 		return $s;
-	}
-	function getParams(){
-		return $this->uriParams;
-	}
-	function count(){
-		return count($this->uriParams);
-	}
-	function __set($k,$v){
-		$this->uriParams[$k] = $v;
-	}
-	function __get($k){
-		return isset($this->uriParams[$k])?$this->uriParams[$k]:null;
-	}
-	function __isset($k){
-		return isset($this->uriParams[$k]);
-	}
-	function __unset($k){
-		if(isset($this->uriParams[$k]))
-			unset($this->uriParams[$k]);
-	}
-	function offsetSet($k,$v){
-		return $this->__set($k,$v);
-	}
-	function offsetGet($k){
-		return $this->__get($k);
-	}
-	function offsetExists($k){
-		return $this->__isset($k);
-	}
-	function offsetUnset($k){
-		return $this->__unset($k);
-	}
-	static function __set_state($a){
-		$uri = new static();
-		foreach($a as $k=>$v)
-			$uri->$k = $v;
-		return $uri;
 	}
 }
