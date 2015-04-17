@@ -1,9 +1,9 @@
 <?php namespace Surikat\Component\Dev;
 class Debug{
+	private static $errorType;
 	private $errorHandler;
 	private $registeredErrorHandler;
 	private $debugLines = 5;
-	private $errorType;
 	private $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
 	public $debugWrapInlineCSS = 'margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;';
 	function errorHandler($set=true){
@@ -56,7 +56,7 @@ class Debug{
 			header("Content-Type: text/html; charset=utf-8");
 			$html = true;
 		}
-		$msg = $this->errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
+		$msg = self::$errorType[$code]."\t$message\nFile\t$file\nLine\t$line";
 		if(is_file($file)){
 			if($html){
 				echo $this->debugStyle;
@@ -108,8 +108,8 @@ class Debug{
 			self::errorHandle(E_ERROR,$error['message'],$error['file'],$error['line']);
 		}
 	}
-	function __construct(){
-		$this->errorType = [
+	static function initialize(){
+		self::$errorType = [
 			E_ERROR           => 'error',
 			E_WARNING         => 'warning',
 			E_PARSE           => 'parsing error',
@@ -123,10 +123,10 @@ class Debug{
 			E_USER_NOTICE     => 'user notice'
 		];
 		if(defined('E_STRICT'))
-		  $this->errorType[E_STRICT] = 'runtime notice';
+		  self::$errorType[E_STRICT] = 'runtime notice';
 	}
-	function errorType($code){
-		return isset($this->errorType[$code])?$this->errorType[$code]:null;
+	static function errorType($code){
+		return isset(self::$errorType[$code])?self::$errorType[$code]:null;
 	}
 	static function var_debug_html($variable,$strlen=100,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
 		$string = self::var_debug($variable,$strlen,$width,$depth,$i,$objects,true);
@@ -204,3 +204,4 @@ class Debug{
 		echo $string;
 	}
 }
+Debug::initialize();
