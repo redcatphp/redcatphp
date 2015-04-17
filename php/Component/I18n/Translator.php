@@ -1,11 +1,7 @@
 <?php namespace Surikat\Component\I18n;
-use Surikat\Component\DependencyInjection\MutatorMagicTrait;
-use Surikat\Component\DependencyInjection\FacadeTrait;
+use Surikat\Component\DependencyInjection\MutatorFacadeTrait;
 class Translator {
-	use MutatorMagicTrait, FacadeTrait{
-		FacadeTrait::__call insteadof MutatorMagicTrait;
-		MutatorMagicTrait::__call as ___call;
-	}
+	use MutatorFacadeTrait;
 	protected static $systemLocales;
 	protected static $bindStack = [];
 	protected static $defaultDomain = 'messages';
