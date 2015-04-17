@@ -2,7 +2,7 @@
 use Surikat\Component\User\Auth as User_Auth;
 use Surikat\Component\I18n\Translator;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
-require_once SURIKAT_SPATH.'php/Components/I18n/Translator.inc.php';
+require_once SURIKAT_SPATH.'php/Component/I18n/Translator.inc.php';
 class AuthServer{
 	use MutatorMagicTrait;
 	protected $messages = [];
