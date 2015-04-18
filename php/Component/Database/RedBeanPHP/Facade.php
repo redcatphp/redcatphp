@@ -7,11 +7,12 @@ use Surikat\Component\Database\RedBeanPHP\RedException as RedException;
 use Surikat\Component\Vars\STR;
 use Surikat\Component\DependencyInjection\Container;
 use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
+use Surikat\Component\DependencyInjection\FacadeTrait;
 
 class Facade{
 	use MutatorPropertyTrait;
+	use FacadeTrait;
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
-	public static $toolbox;
 	public static $currentDB = 'default';
 	public static $databases = [];
 	static function getVersion(){
@@ -26,15 +27,9 @@ class Facade{
 		if ( self::$currentDB !== $key ){
 			if ( !isset( self::$databases[$key] ) )
 				throw new RedException( 'No database has been specified for this key : '.$key.'.' );
-			self::configureFacadeWithToolbox( self::$databases[$key]->getToolBox() );
 			self::$currentDB = $key;
 		}
 		return self::$databases[$key];
-	}
-	public static function configureFacadeWithToolbox( ToolBox $tb ){
-		$oldTools                 = self::$toolbox;
-		self::$toolbox            = $tb;
-		return $oldTools;
 	}
 	public static function __callStatic( $func, $params ){
 		if( !isset( self::$databases[self::$currentDB] ) ){
