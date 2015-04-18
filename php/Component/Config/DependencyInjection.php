@@ -13,7 +13,7 @@ class DependencyInjection{
 			}
 			$inc .= '.php';
 			if(is_file($inc)){
-				$config = $this->includeFree($inc,$obj,$args);
+				$config = $this->includeFree($inc,$args);
 				if($config instanceof ConfigMethods){
 					if(isset($config['__construct'])){
 						$args = array_merge($config['__construct'],(array)$args);
@@ -35,7 +35,8 @@ class DependencyInjection{
 		}
 		return $obj;
 	}
-	function includeFree($file,$obj,$args){
-		return include($file);
+	function includeFree(){
+		$args = func_get_arg(1);
+		return include(func_get_arg(0));
 	}
 }
