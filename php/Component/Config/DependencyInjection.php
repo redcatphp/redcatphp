@@ -4,7 +4,14 @@ class DependencyInjection{
 	public $dirPath = 'config';
 	function objectFactory($c,$args,$new,$mutator){
 		if(method_exists($c,'setConfig')){
-			$inc = $this->dirPath.'/'.str_replace('\\','_',$c);
+			$inc = $this->dirPath.'/';
+			if(method_exists($c,'getConfigFilename')){
+				$inc .= $c::getConfigFilename();
+			}
+			else{
+				$inc .= str_replace('\\','_',$c);
+			}
+			$inc .= '.php';
 			if(is_file($inc)){
 				$config = $this->includeFree($inc,$obj,$args);
 				if($config instanceof ConfigMethods){
