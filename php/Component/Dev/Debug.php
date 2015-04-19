@@ -120,7 +120,11 @@ class Debug{
 			E_COMPILE_WARNING => 'compile warning',
 			E_USER_ERROR      => 'user error',
 			E_USER_WARNING    => 'user warning',
-			E_USER_NOTICE     => 'user notice'
+			E_USER_NOTICE     => 'user notice',
+			E_STRICT          => 'strict standard error',
+			E_RECOVERABLE_ERROR => 'recoverable error',
+			E_DEPRECATED      => 'deprecated error',
+			E_USER_DEPRECATED => 'user deprecated error',
 		];
 		if(defined('E_STRICT'))
 		  self::$errorType[E_STRICT] = 'runtime notice';
