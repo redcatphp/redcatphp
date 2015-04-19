@@ -1,8 +1,7 @@
 <?php
-error_reporting(-1);
-ini_set('display_startup_errors',true);
-ini_set('display_errors','stdout');
-			
+//error_reporting(-1);
+//ini_set('display_startup_errors',true);
+//ini_set('display_errors','stdout');
 require __DIR__.'/Component/DependencyInjection/MutatorTrait.php';
 require __DIR__.'/Component/DependencyInjection/MutatorMagicPropertyTrait.php';
 require __DIR__.'/Component/DependencyInjection/MutatorPropertyTrait.php';
