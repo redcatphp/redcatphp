@@ -22,7 +22,7 @@ trait RegistryTrait{
 				static::$__instances[$key] = new $class();
 			}
 			else{
-				static::$__instances[$key] = Container::getStatic()->factoryDependency($class,null,true);
+				static::$__instances[$key] = Container::getStatic()->factoryDependency($class,$args,true);
 			}
 		}
 		return static::$__instances[$key];
