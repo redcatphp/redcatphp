@@ -13,7 +13,7 @@ class Container{
 		return static::getStatic()->setDependency($key,$value);
 	}
 	function defaultDependency($key,$args=null){
-		return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args);
+		return $this->factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args);
 	}
 	static function hashArguments($args){
 		static $storage = null;
@@ -27,7 +27,6 @@ class Container{
 			elseif(is_object($arg)){
 				$storage->attach($arg);
 				$hash[] = $storage->getHash($arg);
-				//$hash[] = spl_object_hash($arg);
 			}
 			else{
 				$hash[] = sha1($arg);

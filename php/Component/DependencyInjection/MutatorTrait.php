@@ -2,7 +2,7 @@
 trait MutatorTrait {
 	private $__dependenciesRegistry = [];
 	private $__dependenciesPrefix = 'Surikat\\Component';
-	private $__dependenciesFactory = 'static::factoryDependency';
+	private $__dependenciesFactory = 'static::makeDependency';
 	function setDependency($key,$value=null,$rkey=null){
 		if(is_object($key)){
 			if(!isset($value))
@@ -51,7 +51,7 @@ trait MutatorTrait {
 		}
 		if(array_key_exists($rkey,$this->__dependenciesRegistry)){
 			if(is_array($this->__dependenciesRegistry[$rkey])){
-				$this->__dependenciesRegistry[$rkey] = call_user_func_array([$this,'__factoryDependency'],$this->__dependenciesRegistry[$rkey]);
+				$this->__dependenciesRegistry[$rkey] = call_user_func_array([$this,'factoryDependency'],$this->__dependenciesRegistry[$rkey]);
 			}
 			if($this->__dependenciesRegistry[$rkey] instanceof \Closure){
 				$this->__dependenciesRegistry[$rkey] = $this->__dependenciesRegistry[$rkey]();
@@ -77,7 +77,7 @@ trait MutatorTrait {
 		elseif(method_exists($this,$method='_'.$method))
 			$value = $this->$method($args);
 		else
-			return $this->__factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args,true);
+			return $this->factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args,true);
 	}
 	function setDependencyPrefix($prefix){
 		$this->__dependenciesPrefix = $prefix;
@@ -131,10 +131,10 @@ trait MutatorTrait {
 		}
 		$this->__dependenciesFactory = $callback;
 	}
-	private function __factoryDependency($c,$args=null,$new=null){
+	function factoryDependency($c,$args=null,$new=null){
 		return call_user_func($this->__dependenciesFactory,$c,$args,$new,$this);
 	}
-	static function factoryDependency($c,$args=null,$new=null){
+	static function makeDependency($c,$args=null,$new=null){
 		static $reflectors = [];
 		if(class_exists($c)){
 			if(is_array($args)&&!empty($args)){

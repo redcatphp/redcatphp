@@ -19,19 +19,19 @@ class DependencyInjection{
 						$args = array_merge($config['__construct'],(array)$args);
 						unset($config['__construct']);
 					}
-					$obj = $mutator->factoryDependency($c,$args);
+					$obj = $mutator->makeDependency($c,$args,$new);
 					foreach($config as $method=>$arg){
 						$obj->$method($arg);
 					}
 				}
 				else{
-					$obj = $mutator->factoryDependency($c,$args);
+					$obj = $mutator->makeDependency($c,$args,$new);
 					$obj->setConfig($config);
 				}
 			}
 		}
 		else{
-			$obj = $mutator->factoryDependency($c,$args);
+			$obj = $mutator->makeDependency($c,$args,$new);
 		}
 		return $obj;
 	}

@@ -15,10 +15,15 @@ trait RegistryTrait{
 		else
 			$key = $class.'.'.$key;
 		if(!isset(static::$__instances[$key])){
-			if(is_array($args)&&!empty($args))
-				static::$__instances[$key] = (new \ReflectionClass($class))->newInstanceArgs($args);
-			else
-				static::$__instances[$key] = new $class();
+			if($class==__NAMESPACE__.'\Container'){
+				if(is_array($args)&&!empty($args))
+					static::$__instances[$key] = (new \ReflectionClass($class))->newInstanceArgs($args);
+				else
+					static::$__instances[$key] = new $class();
+			}
+			else{
+				static::$__instances[$key] = Container::getStatic()->factoryDependency($class,null,true);
+			}
 		}
 		return static::$__instances[$key];
 	}

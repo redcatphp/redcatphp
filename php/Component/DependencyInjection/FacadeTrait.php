@@ -15,8 +15,9 @@ trait FacadeTrait{
 	static function __callStatic($f,$args){
 		$method = '_'.$f;
 		$c = get_called_class();
-		if(method_exists($c,$method)&&(new \ReflectionMethod($c, $method))->isPublic())
+		if(method_exists($c,$method)&&(new \ReflectionMethod($c, $method))->isPublic()){
 			return call_user_func_array([$c::getStatic(),$method],$args);
+		}
 		elseif(is_callable('parent::__callStatic'))
 			return parent::__callStatic($f,$args);
 		elseif(method_exists($c,'___callStatic'))
