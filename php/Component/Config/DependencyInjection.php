@@ -29,6 +29,9 @@ class DependencyInjection{
 					$obj->setConfig($config);
 				}
 			}
+			else{
+				$obj = $mutator->makeDependency($c,$args,$new);
+			}
 		}
 		else{
 			$obj = $mutator->makeDependency($c,$args,$new);
