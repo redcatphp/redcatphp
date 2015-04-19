@@ -4,10 +4,14 @@ class Psr4{
 	protected $checked = [];
 	function __construct(){
 		foreach(func_get_args() as $a){
-			foreach($a as $prefix=>$base_dir){
-				$this->addNamespace($prefix,$base_dir);
-			}
+			$this->addNamespaces($a);
 		}
+	}
+	function addNamespaces($a){
+		foreach($a as $prefix=>$base_dir){
+			$this->addNamespace($prefix,$base_dir);
+		}
+		return $this;
 	}
 	function addNamespace($prefix, $base_dir, $prepend = false){
 		$prefix = trim($prefix, '\\').'\\';

@@ -14,7 +14,7 @@ require __DIR__.'/Component/Autoload/Psr4.php';
 require __DIR__.'/constants.php';
 global $SURIKAT;
 $SURIKAT = Surikat\Component\DependencyInjection\Container::get();
-$SURIKAT->Autoload_Psr4([
+$SURIKAT->Autoload_Psr4->addNamespaces([
 	''			=> getcwd().'/php',
 	'Surikat'	=> __DIR__,
 ])->splRegister();
