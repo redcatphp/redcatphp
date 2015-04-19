@@ -138,8 +138,8 @@ trait MutatorTrait {
 		static $reflectors = [];
 		if(class_exists($c)){
 			if(is_array($args)&&!empty($args)){
-				if(!$new&&method_exists($c,'getStaticRegistry')){
-					return $c::getStaticRegistry($args);
+				if(!$new&&method_exists($c,'getStaticArray')){
+					return $c::getStaticArray($args);
 				}
 				elseif(method_exists($c,'__construct')){
 					if(!isset($reflectors[$c]))
