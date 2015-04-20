@@ -4,7 +4,7 @@ use Surikat\Component\Database\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWrit
 use Surikat\Component\Database\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Component\Database\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Component\Database\RedBeanPHP\Adapter as Adapter;
-use Surikat\Component\Database\RedBeanPHP\Database;
+use Surikat\Component\Database\RedBeanPHP\Facade;
 /**
  * RedBean Oracle Driver
  *
@@ -126,7 +126,7 @@ class Oracle extends AQueryWriter implements QueryWriter
 	 *
 	 * @return string table name
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix='', $case=false )
+	public function __construct( Adapter $a, Facade $db, $prefix='', $case=false )
 	{
 		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [

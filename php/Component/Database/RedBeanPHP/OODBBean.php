@@ -7,7 +7,7 @@ use Surikat\Component\Database\RedBeanPHP\BeanHelper as BeanHelper;
 use Surikat\Component\Database\RedBeanPHP\RedException\Security as Security;
 use Surikat\Component\Database\RedBeanPHP\RedException as RedException;
 use Surikat\Component\Database\RedBeanPHP\OODBBean as OODBBean;
-use Surikat\Component\Database\RedBeanPHP\Database;
+use Surikat\Component\Database\RedBeanPHP\Facade;
 
 /**
  * OODBBean (Object Oriented DataBase Bean)
@@ -94,7 +94,7 @@ class OODBBean implements\IteratorAggregate,\ArrayAccess,\Countable
 	protected static $autoResolve = FALSE;
 	
 	private $database;
-	function __construct(Database $db){
+	function __construct(Facade $db){
 		$this->database = $db;
 	}
 	

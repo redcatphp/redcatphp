@@ -3,7 +3,7 @@
 namespace Surikat\Component\Database\RedBeanPHP\QueryWriter;
 
 use Surikat\Component\Database\RedBeanPHP\Adapter;
-use Surikat\Component\Database\RedBeanPHP\Database;
+use Surikat\Component\Database\RedBeanPHP\Facade;
 use Surikat\Component\Database\RedBeanPHP\Adapter\DBAdapter;
 use Surikat\Component\Database\RedBeanPHP\RedException;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter;
@@ -88,7 +88,7 @@ abstract class AQueryWriter {
 	protected $caseSensitive;
 	protected $prefix;
 	protected $prefixL;
-	function __construct(Adapter $a, Database $db, $prefix='', $case=true){
+	function __construct(Adapter $a, Facade $db, $prefix='', $case=true){
 		$this->adapter = $a;
 		$this->database = $db;
 		$this->prefix = $prefix;

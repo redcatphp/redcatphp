@@ -1,7 +1,7 @@
 <?
 use DependencyInjection\Container;
 global $SURIKAT;
-$SURIKAT->Autoload_Psr4->addNamespace('Translator',__DIR__);
+$SURIKAT->Autoload_Psr4->addNamespace('Translator',$this->dirCompileToDirCwd(__DIR__));
 header('Content-Type: application/json; charset=UTF-8;');
 $service = new Translator\MessageService();
 $response = ['error'=>null];

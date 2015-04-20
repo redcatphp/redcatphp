@@ -8,7 +8,7 @@ use Surikat\Component\Database\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Component\Database\RedBeanPHP\Adapter as Adapter;
 use Surikat\Component\Database\RedBeanPHP\RedException\SQL as SQLException;
 
-use Surikat\Component\Database\RedBeanPHP\Database;
+use Surikat\Component\Database\RedBeanPHP\Facade;
 use Surikat\Component\Database\R;
 use Surikat\Component\Database\Table;
 use Surikat\Component\Database\Query;
@@ -73,7 +73,7 @@ class PostgreSQL extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Database $db, $prefix='', $case=true )
+	public function __construct( Adapter $a, Facade $db, $prefix='', $case=true )
 	{
 		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [

@@ -5,10 +5,12 @@ use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Vars\Arrays;
 use Surikat\Component\Database\SqlFormatter;
 use Surikat\Component\Database\R;
-use Surikat\Component\Database\RedBeanPHP\Database;
+use Surikat\Component\Database\RedBeanPHP\Facade;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter\AQueryWriter;
+use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Query {
+	use MutatorMagicTrait;
 	protected $table;
 	protected $pxTable;
 	protected $prefix;
@@ -28,16 +30,16 @@ class Query {
 		return $this->writer->columnExists($table,$column);
 	}
 	function __construct($table=null,$composer='select',$db=null,$writer=null){
-		if($table instanceof Database){
+		if($table instanceof Facade){
 			$db = $table;
 			$table = null;
 		}
-		if($composer instanceof Database){
+		if($composer instanceof Facade){
 			$db = $composer;
 			$composer = 'select';
 		}
 		if(!$db)
-			$db = R::getInstance();
+			$db = $this->Database_R();
 		$this->DataBase = $db;
 		if(!$writer)
 			$writer = $this->DataBase->getWriter();
@@ -72,7 +74,7 @@ class Query {
 	function __clone(){
         $this->composer = clone $this->composer;
     }
-	function __call($f,$args){
+	function ___call($f,$args){
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
 			if(!$this->table||$this->tableExists($this->table)){
 				$params = $this->composer->getParams();

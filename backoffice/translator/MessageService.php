@@ -4,13 +4,13 @@ use Surikat\Component\I18n\msgfmt;
 use Surikat\Component\I18n\getTextExtractorTML;
 use Surikat\Component\I18n\getTextExtractorPHP;
 use Surikat\Component\I18n\Gettext\Extractors\Po;
-use Surikat\Component\Model\R;
-use Surikat\Component\Model\Query;
+use Surikat\Component\Database\R;
+use Surikat\Component\Database\Query;
 class MessageService {
 	var $potfile = 'langs/messages.pot';
 	private $db;
 	function __construct() {
-		$this->db = R::getDatabase('langs');
+		$this->db = R::getStatic('translation');
 		if(!$this->db->exists()){
 			foreach(explode(';',file_get_contents(__DIR__.'/install.sql')) as $l)
 				$this->db->execMulti($l);
