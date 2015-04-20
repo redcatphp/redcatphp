@@ -229,7 +229,8 @@ class Template {
 		foreach($this->dirCwd as $d){
 			$path = $v;
 			if(strpos($v,$dirC)===0)
-				$path = rtrim($d,'/').substr($v,strlen($dirC));
+				//$path = rtrim($d,'/').substr($v,strlen($dirC));
+				$path = ltrim(substr($v,strlen($dirC)),'/');
 			$path = realpath($path);
 			if($path){
 				$v = $path;
