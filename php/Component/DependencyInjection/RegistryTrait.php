@@ -12,7 +12,7 @@ trait RegistryTrait{
 		return static::setStaticArray(func_get_args());
 	}
 	static function getStaticArray($args=null,$class=null){
-		$key = empty($args)||$args==[0]?0:Container::hashArguments($args);
+		$key = empty($args)||$args===[0]?0:Container::hashArguments($args);
 		if(!isset($class))
 			$class = get_called_class();
 		else
