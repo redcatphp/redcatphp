@@ -21,6 +21,7 @@ class Template {
 	var $isXhtml;
 	var $present;
 	protected $devCompileFile;
+	protected $__pluginNamespaces = [];
 	protected $vars = [];
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile(SURIKAT_TMP.'templator/compile/');
@@ -48,6 +49,24 @@ class Template {
 	}
 	function setPath($path){
 		$this->path = $path;
+	}
+	function getPluginNamespace($namespace){
+		return $this->__pluginNamespaces;
+	}
+	function setPluginNamespace($namespace){
+		$this->__pluginNamespaces = (array)$namespace;
+	}
+	function addPluginNamespace($namespace,$prepend=null){
+		if($prepend)
+			array_unshift($this->__pluginNamespaces,$namespace);
+		else
+			array_push($this->__pluginNamespaces,$namespace);
+	}
+	function appendPluginNamespace($namespace){
+		$this->addPluginNamespace($namespace,true);
+	}
+	function prependPluginNamespace(){
+		$this->addPluginNamespace($namespace,false);
 	}
 	function getAncestor($defaulThis=false){
 		$ancestor = $this;
