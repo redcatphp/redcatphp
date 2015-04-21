@@ -226,18 +226,11 @@ class Template {
 	}
 	function dirCompileToDirCwd($v){
 		$dirC = rtrim($this->dirCompile,'/');
-		foreach($this->dirCwd as $d){
-			$path = $v;
-			if(strpos($v,$dirC)===0)
-				//$path = rtrim($d,'/').substr($v,strlen($dirC));
-				$path = ltrim(substr($v,strlen($dirC)),'/');
-			$path = realpath($path);
-			if($path){
-				$v = $path;
-				break;
-			}
-		}
-		return $v;
+		$path = $v;
+		if(strpos($v,$dirC)===0)
+			$path = ltrim(substr($v,strlen($dirC)),'/');
+		$path = realpath($path);
+		return $path?$path:$v;
 	}
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
