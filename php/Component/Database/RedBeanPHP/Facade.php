@@ -27,10 +27,17 @@ use Surikat\Component\Database\RedBeanPHP\Driver\RPDO as RPDO;
 use Surikat\Component\Database\Table;
 use Surikat\Component\Database\Query;
 
-use Surikat\Component\Database\RedBeanPHP\Plugin\Preloader;
-use Surikat\Component\Database\RedBeanPHP\Plugin\Cooker;
+use Surikat\Component\DependencyInjection\Container;
+use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
+use Surikat\Component\DependencyInjection\FacadeTrait;
+
+use Surikat\Component\Vars\STR;
+use Surikat\Component\Vars\ArrayObject;
 
 class Facade{
+	use MutatorPropertyTrait;
+	use FacadeTrait;
+	
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	private static $plugins = [];
 	
@@ -50,32 +57,49 @@ class Facade{
 	private $dbType;
 	private $dsn;
 	private $prefix;
-	
-	static function getVersion(){
-		return self::C_REDBEANPHP_VERSION;
-	}
-	static function setErrorHandlingFUSE( $mode, $func = NULL ){
-		return OODBBean::setErrorHandlingFUSE( $mode, $func );
-	}
-	static function ext( $pluginName, $callable ){
-		if ( !ctype_alnum( $pluginName ) ) {
-			throw new RedException( 'Plugin name may only contain alphanumeric characters.' );
-		}
-		self::$plugins[$pluginName] = $callable;
-	}
-	static function ___callStatic( $pluginName, $params ){
-		if ( !ctype_alnum( $pluginName) ) {
-			throw new RedException( 'Plugin name may only contain alphanumeric characters.' );
-		}
-		if ( !isset( self::$plugins[$pluginName] ) ) {
-			throw new RedException( 'Plugin \''.$pluginName.'\' does not exist, add this plugin using: R::ext(\''.$pluginName.'\')' );
-		}
-		return call_user_func_array( self::$plugins[$pluginName], $params );
-	}
-	
+	protected $__modelNamespaces = [];	
 	
 	function __construct($name=''){
 		$this->name = $name;
+	}
+	static function getConfigFilename($args){
+		$name = 'db';
+		if(is_array($args)&&!empty($args)){
+			$key = array_shift($args);
+			if(!empty($key))
+				$name .= '.'.$key;
+		}
+		return $name;
+	}
+	function setConfig($config){
+		$config = new ArrayObject($config);
+		$type = $config->type;
+		if(!$type)
+			return;
+		$port = $config->port;
+		$host = $config->host;
+		$file = $config->file;
+		$name = $config->name;
+		$prefix = $config->prefix;
+		$case = $config->case;
+		$frozen = $config->frozen;
+		$user = $config->user;
+		$password = $config->password;
+		
+		if($port)
+			$port = ';port='.$port;
+		if($host)
+			$host = 'host='.$host;
+		elseif($file)
+			$host = $file;
+		if($name)
+			$name = ';dbname='.$name;
+		if(!isset($frozen))
+			$frozen = !Container::get()->Dev_Level->DB;
+		if(!isset($case))
+			$case = true;
+		$dsn = $type.':'.$host.$port.$name;
+		$this->construct($dsn, $user, $password, $frozen, $prefix, $case);
 	}
 	function construct( $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
 		
@@ -787,6 +811,7 @@ class Facade{
 			}
 		}
 	}
+	
 	function _load($type,$id,$column=null){
 		if(is_array($type)){
 			foreach($type as $tb)
@@ -838,18 +863,6 @@ class Facade{
 	public function _findCollection( $type, $sql = NULL, $bindings = array() )
 	{
 		return $this->finder->findCollection( $type, $sql, $bindings );
-	}
-
-	function _uniqSetter($type,$values){
-		if(is_string($values)){
-			$c = $this->getModelClass($type);
-			$values = [$c::getLoadUniq()=>$values];
-		}
-		return $values;
-	}
-
-	function _setUniqCheck($b=null){
-		Table::_checkUniq($b);
 	}
 	
 	function _safeTable($t){
@@ -1033,17 +1046,128 @@ class Facade{
 		return $this->adapter->getInsertID();
 	}
 	
-	function _preload($beans, $preload, $closure = NULL){
-		$preloader = new Preloader( $this->getToolBox() );
-		return $preloader->load($beans, $preload, $closure);
+	
+	function _uniqSetter($type,$values){
+		if(is_string($values)){
+			$c = $this->getModelClass($type);
+			$values = [$c::getLoadUniq()=>$values];
+		}
+		return $values;
 	}
-	function _each($beans, $preload, $closure = NULL){
-		$preloader = new Preloader( $this->getToolBox() );
-		return $preloader->load($beans, $preload, $closure);
+
+	function _setUniqCheck($b=null){
+		Table::_checkUniq($b);
 	}
-	function _graph($array, $fe = FALSE){
-		$cooker = new Cooker;
-		$cooker->setToolbox($this->getToolBox());
-		return $cooker->graph($array, $fe);
+	
+	function setModelNamespace($namespace){
+		$this->__modelNamespaces = (array)$namespace;
+	}
+	function addModelNamespace($namespace,$prepend=null){
+		if($prepend)
+			array_unshift($this->__modelNamespaces,$namespace);
+		else
+			array_push($this->__modelNamespaces,$namespace);
+	}
+	function appendModelNamespace($namespace){
+		$this->addModelNamespace($namespace,true);
+	}
+	function prependModelNamespace(){
+		$this->addModelNamespace($namespace,false);
+	}
+	
+	
+	private static function pointBindingLoop($sql,$binds){
+		$nBinds = [];
+		foreach($binds as $k=>$v){
+			if(is_integer($k))
+				$nBinds[] = $v;
+		}
+		$i = 0;
+		foreach($binds as $k=>$v){
+			if(!is_integer($k)){
+				$find = ':'.ltrim($k,':');
+				while(false!==$p=strpos($sql,$find)){
+					$preSql = substr($sql,0,$p);
+					$sql = $preSql.'?'.substr($sql,$p+strlen($find));
+					$c = count(explode('?',$preSql))-1;
+					array_splice($nBinds,$c,0,[$v]);
+				}
+			}
+			$i++;
+		}
+		return [$sql,$nBinds];
+	}
+	private static function nestBindingLoop($sql,$binds){
+		$nBinds = [];
+		$ln = 0;
+		foreach($binds as $k=>$v){
+			if(is_array($v)){
+				$c = count($v);
+				$av = array_values($v);
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = STR::posnth($sql,'?',$k);
+				if($p!==false){
+					$nSql = substr($sql,0,$p);
+					$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
+					$ln = strlen($nSql);
+					$nSql .= substr($sql,$p+1);
+					$sql = $nSql;
+					for($y=0;$y<$c;$y++)
+						$nBinds[] = $av[$y];
+				}
+			}
+			else{
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = STR::posnth($sql,'?',$k);
+				$ln = $p+1;
+				$nBinds[] = $v;
+			}
+		}
+		return [$sql,$nBinds];
+	}
+	static function nestBinding($sql,$binds){
+		do{
+			list($sql,$binds) = self::pointBindingLoop($sql,(array)$binds);
+			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
+			$containA = false;
+			foreach($binds as $v)
+				if($containA=is_array($v))
+					break;
+		}
+		while($containA);
+		return [$sql,$binds];
+	}
+	static function getVersion(){
+		return self::C_REDBEANPHP_VERSION;
+	}
+	static function setErrorHandlingFUSE( $mode, $func = NULL ){
+		return OODBBean::setErrorHandlingFUSE( $mode, $func );
+	}
+	static function ext( $pluginName, $callable ){
+		if ( !ctype_alnum( $pluginName ) ) {
+			throw new RedException( 'Plugin name may only contain alphanumeric characters.' );
+		}
+		self::$plugins[$pluginName] = $callable;
+	}
+	static function ___callStatic( $pluginName, $params ){
+		if ( !ctype_alnum( $pluginName) ) {
+			throw new RedException( 'Plugin name may only contain alphanumeric characters.' );
+		}
+		if ( !isset( self::$plugins[$pluginName] ) ) {
+			throw new RedException( 'Plugin \''.$pluginName.'\' does not exist, add this plugin using: R::ext(\''.$pluginName.'\')' );
+		}
+		return call_user_func_array( self::$plugins[$pluginName], $params );
+	}
+	static function addDatabase( $key, $dsn, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
+		$db = self::getStatic($key);
+		$db->construct($dsn, $user, $pass, $frozen, $prefix, $case);
+		return $db;
+	}
+	static function selectDatabase($key){
+		return self::setStatic($key);
 	}
 }
