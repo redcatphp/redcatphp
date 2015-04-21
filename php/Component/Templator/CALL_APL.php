@@ -9,7 +9,7 @@ abstract class CALL_APL extends CORE{
 			$this->__unset('compile');
 		}
 		if(!isset($this->callback))
-			$this->callback = lcfirst(substr($c=get_class($this),(strrpos($c,'_')+1)));
+			$this->callback = lcfirst(substr($c=get_class($this),(strrpos($c,'\\')+4)));
 		if($this->selector===null){
 			if(count($this->attributes)===1&&isset($this->metaAttribution[0])&&($k=$this->metaAttribution[0])&&$this->attributes[$k]==$k){
 				$this->selector = $k;

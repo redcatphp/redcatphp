@@ -3,11 +3,11 @@ use Surikat\Component\I18n\Translator;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Toolbox{
 	use MutatorMagicTrait;
-	function JsIs($TML,$href='css/is.'){
-		$head = $TML->find('head',0);
+	function JsIs($Tml,$href='css/is.'){
+		$head = $Tml->find('head',0);
 		if(!$head){
-			if($TML->find('body',0)){
-				$head = $TML;
+			if($Tml->find('body',0)){
+				$head = $Tml;
 				$head->append('<script type="text/javascript" src="/js/js.js"></script>');
 				$head->append('<script type="text/javascript">$js().dev=true;$js().min=false;$css().min=false;</script>');
 			}
@@ -16,7 +16,7 @@ class Toolbox{
 			}
 		}
 		$s = [];
-		$TML->recursive(function($el)use($TML,$head,$href,&$s){
+		$Tml->recursive(function($el)use($Tml,$head,$href,&$s){
 			if(
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 				&&!in_array($is,$s)
@@ -33,26 +33,26 @@ class Toolbox{
 		foreach($s as $is)
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
 	}
-	function autoMIN($TML){
+	function autoMIN($Tml){
 		if(!$this->Dev_Level->CSS){
-			foreach($TML('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
+			foreach($Tml('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
 				if(strpos($l,'://')===false)
 					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 		}
 		if(!$this->Dev_Level->JS){
-			foreach($TML('script[src]') as $s)
+			foreach($Tml('script[src]') as $s)
 				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 		}
 	}
-	function setCDN($TML,$url=true){
+	function setCDN($Tml,$url=true){
 		if($url===true){
 			$prefix = 'cdn';
 			$url = 'http'.(@$_SERVER["HTTPS"]=="on"?'s':'').'://'.(strpos($_SERVER['SERVER_NAME'],$prefix.'.')===0?'':$prefix.'.').$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/';
 		}
 		if(substr($url,-1)!='/')
 			$url .= '/';
-		$TML('script[src],img[src],link[href]')->each(function($el)use($url){
+		$Tml('script[src],img[src],link[href]')->each(function($el)use($url){
 			if(
 				($el->nodeName=='link'&&$el->type=='text/css'&&$this->Dev_Level->CSS)
 				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$this->Dev_Level->IMG)
@@ -65,10 +65,10 @@ class Toolbox{
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
 	}
-	function i18nGettext($TML,$cache=true){
-		$TML('html')->attr('lang',Translator::getLangCode());
-		$TML('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
-		$TML('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
+	function i18nGettext($Tml,$cache=true){
+		$Tml('html')->attr('lang',Translator::getLangCode());
+		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
+		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
@@ -95,18 +95,18 @@ class Toolbox{
 				$el->write($left.$rw.$right);
 			}
 		});
-		$TML('*')->each(function($TML){
-			foreach($TML->attributes as $k=>$v){
+		$Tml('*')->each(function($Tml){
+			foreach($Tml->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
-					$TML->removeAttr($k);
-					$TML->attr(substr($k,5),$this->I18n_Translator()->__($v));
+					$Tml->removeAttr($k);
+					$Tml->attr(substr($k,5),$this->I18n_Translator()->__($v));
 				}
 			}
 		});
-		$TML('*[i18n]')->removeAttr('i18n');
+		$Tml('*[i18n]')->removeAttr('i18n');
 	}
-	function i18nRel($TML,$lang,$path,$langMap=null){
-		$head = $TML->find('head',0);
+	function i18nRel($Tml,$lang,$path,$langMap=null){
+		$head = $Tml->find('head',0);
 		if(!$head)
 			return;
 		

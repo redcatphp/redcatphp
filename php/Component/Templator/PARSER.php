@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Templator;
-use Surikat\Component\Exception\ViewTML as ExceptionTML;
+use Surikat\Component\Exception\ViewTml as ExceptionTml;
 abstract class PARSER{
 	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;
@@ -641,9 +641,9 @@ abstract class PARSER{
 			$n = substr($n,0,$p);
 		$n = strtolower($n);
 		$n = str_replace('-','_',$n);
-		if(class_exists($c='Surikat\\Component\\Templator\\'.(ctype_upper($n)?$n:'TML_'.ucfirst($n))))
+		if(class_exists($c='Surikat\\Component\\Templator\\'.(ctype_upper($n)?$n:'Tml'.ucfirst($n))))
 			return $c;
-		return 'Surikat\\Component\\Templator\\TML';
+		return 'Surikat\\Component\\Templator\\Tml';
 	}
 	function evalue($v,$vars=null){
 		if(isset($vars))
@@ -695,7 +695,7 @@ abstract class PARSER{
 	protected function throwException($msg){
 		if($this->Template)
 			$msg .= $this->exceptionContext();
-		throw new ExceptionTML($msg);
+		throw new ExceptionTml($msg);
 	}
 	function exceptionContext(){
 		return ' on "'.$this->Template->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';

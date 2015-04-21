@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\Templator;
-use Surikat\Component\Templator\TML;
-class Group extends TML{
+use Surikat\Component\Templator\Tml;
+class Group extends Tml{
 	protected $hiddenWrap = true;
 	function addToGroup($node){
 		parent::offsetSet(null,$node);

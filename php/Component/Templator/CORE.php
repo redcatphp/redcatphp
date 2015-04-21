@@ -1,6 +1,6 @@
 <?php namespace Surikat\Component\Templator;
-use Surikat\Component\Templator\TML;
-use Surikat\Component\Templator\TML_Apply;
+use Surikat\Component\Templator\Tml;
+use Surikat\Component\Templator\TmlApply;
 use Surikat\Component\Templator\CssSelector;
 use Surikat\Component\DependencyInjection\MutatorCallTrait;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
@@ -494,7 +494,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	function applyFile($tpl,$params=[]){
 		if(($pos=strpos($tpl,':'))!==false)
 			$tpl = '../'.substr($tpl,0,$pos).'/'.($base=substr($tpl,$pos+1)).(strpos($base,'/')===false?'/'.$base:'').'.tpl';
-		TML_Apply::manualLoad($tpl,$this,$params);
+		TmlApply::manualLoad($tpl,$this,$params);
 	}
 	function before($arg){
 		if(is_scalar($arg))
@@ -822,7 +822,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return func_get_arg(0);
 	}
 	function createChild($parse=null,$builder=null){
-		$tml = new TML();
+		$tml = new Tml();
 		$tml->setParent($this);
 		if(isset($builder))
 			$tml->setBuilder($builder);

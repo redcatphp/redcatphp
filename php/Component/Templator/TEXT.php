@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Templator;
-use Surikat\Component\Templator\TML;
+use Surikat\Component\Templator\Tml;
 use Surikat\Component\Vars\STR;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
@@ -13,7 +13,7 @@ class TEXT extends CORE{
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)
-			$this->write(new TML('<loremipsum mini>'));
+			$this->write(new Tml('<loremipsum mini>'));
 	}
 	function textInject($text){
 		if(strpos($text,'<?php ')===false)

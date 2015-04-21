@@ -1,1 +1,0 @@
-<?php namespace Surikat\Component\Templator; class TML_Prepend extends CALL_APL {}
