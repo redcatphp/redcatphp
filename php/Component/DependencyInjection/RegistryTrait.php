@@ -28,6 +28,9 @@ trait RegistryTrait{
 		return static::$__instances[$key];
 	}
 	static function setStaticArray($args=null){
-		return static::$__instance = static::getStaticArray($args);
+		static::$__instance = static::getStaticArray($args);
+		if(method_exists(static::$__instance,'__setStatic'))
+			static::$__instance->__setStatic();
+		return static::$__instance;
 	}
 }
