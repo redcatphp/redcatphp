@@ -1059,6 +1059,9 @@ class Facade{
 		Table::_checkUniq($b);
 	}
 	
+	function getModelNamespace($namespace){
+		return $this->__modelNamespaces;
+	}
 	function setModelNamespace($namespace){
 		$this->__modelNamespaces = (array)$namespace;
 	}
