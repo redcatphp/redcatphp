@@ -6,7 +6,7 @@ class Model{
 	private $__callbacks;
 	function __construct($engine=null){
 		if(!$engine)
-			$engine = R::getDatabase();
+			$engine = R::getStatic();
 		$this->setEngine($engine);
 	}
 	function db($dsn=null){
