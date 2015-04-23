@@ -4,33 +4,32 @@ trait RegistryTrait{
 	protected static $__instance;
 	static function getStatic(){
 		if(func_num_args()==0)
-			return isset(static::$__instance)?static::$__instance:static::setStatic();
+			return isset(self::$__instance)?self::$__instance:self::setStatic();
 		else
-			return static::getStaticArray(func_get_args());
+			return self::getStaticArray(func_get_args());
 	}
 	static function setStatic(){
-		return static::setStaticArray(func_get_args());
+		return self::setStaticArray(func_get_args());
 	}
 	static function getStaticArray($args=null,$class=null){
 		$key = empty($args)||$args===[0]?0:Container::hashArguments($args);
 		if(!isset($class))
 			$class = get_called_class();
-		else
-			$key = $class.'.'.$key;
-		if(!isset(static::$__instances[$key])){
+		$key = $class.'.'.$key;
+		if(!isset(self::$__instances[$key])){
 			if($class==__NAMESPACE__.'\Container'&&empty($args)){
-				static::$__instances[$key] = new $class();
+				self::$__instances[$key] = new $class();
 			}
 			else{
-				static::$__instances[$key] = Container::getStatic()->factoryDependency($class,$args,true);
+				self::$__instances[$key] = Container::getStatic()->factoryDependency($class,$args,true);
 			}
 		}
-		return static::$__instances[$key];
+		return self::$__instances[$key];
 	}
 	static function setStaticArray($args=null){
-		static::$__instance = static::getStaticArray($args);
-		if(method_exists(static::$__instance,'__setStatic'))
-			static::$__instance->__setStatic();
-		return static::$__instance;
+		self::$__instance = self::getStaticArray($args);
+		if(method_exists(self::$__instance,'__setStatic'))
+			self::$__instance->__setStatic();
+		return self::$__instance;
 	}
 }
