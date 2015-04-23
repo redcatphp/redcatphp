@@ -4,7 +4,7 @@ use Surikat\Component\Database\RedBeanPHP\QueryWriter\AQueryWriter as AQueryWrit
 use Surikat\Component\Database\RedBeanPHP\QueryWriter as QueryWriter;
 use Surikat\Component\Database\RedBeanPHP\Adapter\DBAdapter as DBAdapter;
 use Surikat\Component\Database\RedBeanPHP\Adapter as Adapter; 
-use Surikat\Component\Database\RedBeanPHP\Facade;
+use Surikat\Component\Database\RedBeanPHP\Database;
 use Surikat\Component\Database\RedBeanPHP\RedException\SQL as SQLException;
 /**
  * RedBean CUBRID Writer
@@ -104,7 +104,7 @@ class CUBRID extends AQueryWriter implements QueryWriter
 	 *
 	 * @param Adapter $adapter Database Adapter
 	 */
-	public function __construct( Adapter $a, Facade $db, $prefix='', $case=false )
+	public function __construct( Adapter $a, Database $db, $prefix='', $case=false )
 	{
 		parent::__construct($a,$db,$prefix,$case);
 		$this->typeno_sqltype = [

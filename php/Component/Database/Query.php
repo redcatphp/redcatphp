@@ -5,7 +5,7 @@ use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Vars\Arrays;
 use Surikat\Component\Database\SqlFormatter;
 use Surikat\Component\Database\R;
-use Surikat\Component\Database\RedBeanPHP\Facade;
+use Surikat\Component\Database\RedBeanPHP\Database;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter\AQueryWriter;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
@@ -30,11 +30,11 @@ class Query {
 		return $this->writer->columnExists($table,$column);
 	}
 	function __construct($table=null,$composer='select',$db=null,$writer=null){
-		if($table instanceof Facade){
+		if($table instanceof Database){
 			$db = $table;
 			$table = null;
 		}
-		if($composer instanceof Facade){
+		if($composer instanceof Database){
 			$db = $composer;
 			$composer = 'select';
 		}

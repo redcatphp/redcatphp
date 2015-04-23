@@ -56,7 +56,7 @@ class ToolBox
 	 *
 	 * @return ToolBox
 	 */
-	public function __construct( OODB $oodb, Adapter $adapter, QueryWriter $writer, Facade $database )
+	public function __construct( OODB $oodb, Adapter $adapter, QueryWriter $writer, Database $database )
 	{
 		$this->oodb    = $oodb;
 		$this->adapter = $adapter;

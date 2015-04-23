@@ -1,3 +1,3 @@
 <?php namespace Surikat\Component\Database;
-use Surikat\Component\Database\RedBeanPHP\Facade;
-class R extends Facade{}
+use Surikat\Component\Database\RedBeanPHP\Database;
+class R extends Database{}
