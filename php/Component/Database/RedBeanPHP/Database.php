@@ -61,7 +61,7 @@ class Database{
 	function __construct($name='',DatabaseGroup $DatabaseGroup=null){
 		$this->name = $name;
 		if(isset($DatabaseGroup))
-			$this->__DatabaseGroup = $DatabaseGroup;
+			$this->Database_RedBeanPHP_DatabaseGroup = $DatabaseGroup;
 	}
 	static function getConfigFilename($args){
 		$name = 'db';
@@ -128,7 +128,7 @@ class Database{
 		return $this->prefix;
 	}
 	function _getDatabaseGroup(){
-		return $this->__DatabaseGroup;
+		return $this->Database_RedBeanPHP_DatabaseGroup;
 	}
 	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		$this->dsn = $dsn;
@@ -704,7 +704,7 @@ class Database{
 		if(!isset($cache[$k])){
 			$type = $this->writer->reverseCase($type);
 			$name = $this->name==''?'':'\\'.ucfirst($this->name);
-			foreach($this->__DatabaseGroup->getModelNamespace() as $ns){
+			foreach($this->getDatabaseGroup()->getModelNamespace() as $ns){
 				$c = $ns.'\\Model';
 				$cl = $ns.$name.'\\Model';
 				$cla = $ns.$name.'\\Model'.ucfirst($type);

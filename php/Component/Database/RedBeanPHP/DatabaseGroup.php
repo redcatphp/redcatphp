@@ -21,7 +21,7 @@ class DatabaseGroup{
 		}
 		return $this->databases[$key];
 	}
-	function getModelNamespace($namespace){
+	function getModelNamespace(){
 		return $this->modelNamespaces;
 	}
 	function setModelNamespace($namespace){
