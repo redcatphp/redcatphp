@@ -27,7 +27,7 @@ use Surikat\Component\Vars\JSON;
 use Surikat\Component\Cache\Sync;
 use BadMethodCallException;
 use Exception\DatabaseValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook
-class Table extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
+class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	#<workflow CRUD>
 	function onNew(){}
 	function onCreate(){}

@@ -10,7 +10,6 @@ use Surikat\Component\Database\RedBeanPHP\RedException\SQL as SQLException;
 
 use Surikat\Component\Database\RedBeanPHP\Database;
 use Surikat\Component\Database\R;
-use Surikat\Component\Database\Table;
 use Surikat\Component\Database\Query;
 
 /**

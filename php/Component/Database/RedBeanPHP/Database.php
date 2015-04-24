@@ -24,7 +24,7 @@ use Surikat\Component\Database\RedBeanPHP\RedException as RedException;
 use Surikat\Component\Database\RedBeanPHP\BeanHelper\SimpleBeanHelper as SimpleBeanHelper;
 use Surikat\Component\Database\RedBeanPHP\Driver\RPDO as RPDO;
 
-use Surikat\Component\Database\Table;
+use Surikat\Component\Database\Model;
 use Surikat\Component\Database\Query;
 
 use Surikat\Component\DependencyInjection\Container;
@@ -57,10 +57,11 @@ class Database{
 	private $dbType;
 	private $dsn;
 	private $prefix;
-	protected $__modelNamespaces = [];	
 	
-	function __construct($name=''){
+	function __construct($name='',DatabaseGroup $DatabaseGroup=null){
 		$this->name = $name;
+		if(isset($DatabaseGroup))
+			$this->__DatabaseGroup = $DatabaseGroup;
 	}
 	static function getConfigFilename($args){
 		$name = 'db';
@@ -125,6 +126,9 @@ class Database{
 	}
 	function _getPrefix(){
 		return $this->prefix;
+	}
+	function _getDatabaseGroup(){
+		return $this->__DatabaseGroup;
 	}
 	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		$this->dsn = $dsn;
@@ -699,18 +703,21 @@ class Database{
 		$k = $this->name.'.'.$type;
 		if(!isset($cache[$k])){
 			$type = $this->writer->reverseCase($type);
-			$name = $this->name==''?'':ucfirst($this->name).'\\';
-			$c = '\\Database\\Table';
-			$cl = '\\Database\\'.$name.'Table';
-			$cla = $cl.ucfirst($type);
-			if(class_exists($cla)||class_exists($cla='Surikat\Component'.$cla))
-				$cache[$k] = $cla;
-			elseif($name&&(class_exists($cl)||class_exists($cl='Surikat\Component'.$cl)))
-				$cache[$k] = $cl;
-			elseif(class_exists($c))
-				$cache[$k] = $c;
-			else
-				$cache[$k] = 'Surikat\Component'.$c;
+			$name = $this->name==''?'':'\\'.ucfirst($this->name);
+			foreach($this->__DatabaseGroup->getModelNamespace() as $ns){
+				$c = $ns.'\\Model';
+				$cl = $ns.$name.'\\Model';
+				$cla = $ns.$name.'\\Model'.ucfirst($type);
+				if(class_exists($cla))
+					$cache[$k] = $cla;
+				elseif(class_exists($cl))
+					$cache[$k] = $cl;
+				elseif(class_exists($c))
+					$cache[$k] = $c;
+			}
+			if(!isset($cache[$k])){
+				$cache[$k] = 'Surikat\\Component\\Database\\Model';
+			}
 		}
 		return $cache[$k];
 	}
@@ -1056,26 +1063,7 @@ class Database{
 	}
 
 	function _setUniqCheck($b=null){
-		Table::_checkUniq($b);
-	}
-	
-	function getModelNamespace($namespace){
-		return $this->__modelNamespaces;
-	}
-	function setModelNamespace($namespace){
-		$this->__modelNamespaces = (array)$namespace;
-	}
-	function addModelNamespace($namespace,$prepend=null){
-		if($prepend)
-			array_unshift($this->__modelNamespaces,$namespace);
-		else
-			array_push($this->__modelNamespaces,$namespace);
-	}
-	function appendModelNamespace($namespace){
-		$this->addModelNamespace($namespace,true);
-	}
-	function prependModelNamespace(){
-		$this->addModelNamespace($namespace,false);
+		Model::_checkUniq($b);
 	}
 	
 	
