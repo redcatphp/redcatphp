@@ -34,4 +34,10 @@ class Container{
 		}
 		return sha1(implode('.',$hash));
 	}
+	static function __getStaticNew($args=null,$class=null){
+		if(empty($args))
+			return new $class();
+		else
+			return static::getStatic()->factoryDependency($class,$args,true);
+	}
 }
