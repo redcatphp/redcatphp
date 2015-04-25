@@ -180,10 +180,7 @@ abstract class AQueryWriter {
 		//return strtolower(preg_replace('/(?<=[a-z])([A-Z])|([A-Z])(?=[a-z])/', '-$1$2', $str ));
 	}
 	static function camelCase($str){
-		$str = ucwords(str_replace('_', ' ', $str));
-        $str = str_replace(' ', '', $str);
-        $str = lcfirst($str);
-		return $str;
+		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
 	}
 	static function camelsSnakeCase(){
 		if(func_num_args())
@@ -192,11 +189,6 @@ abstract class AQueryWriter {
 			return self::$camelsSnakeCase;
 	}
 	
-	/**
-	 * Clears renames.
-	 *
-	 * @return void
-	 */
 	public static function clearRenames()
 	{
 		self::$renames = [];
