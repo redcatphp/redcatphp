@@ -17,7 +17,7 @@ class DatabaseGroup{
 	}
 	function getDb($key=0){
 		if(!isset($this->databases[$key])){
-			$this->databases[$key] = $this->__Database($this->prefix.$key,$this);
+			$this->databases[$key] = $this->__Database($this->prefix.$key);
 		}
 		return $this->databases[$key];
 	}
@@ -28,6 +28,8 @@ class DatabaseGroup{
 		$this->modelNamespaces = (array)$namespace;
 	}
 	function addModelNamespace($namespace,$prepend=null){
+		if($namespace)
+			$namespace = rtrim($namespace,'\\').'\\';
 		if($prepend)
 			array_unshift($this->modelNamespaces,$namespace);
 		else
@@ -36,7 +38,7 @@ class DatabaseGroup{
 	function appendModelNamespace($namespace){
 		$this->addModelNamespace($namespace,true);
 	}
-	function prependModelNamespace(){
+	function prependModelNamespace($namespace){
 		$this->addModelNamespace($namespace,false);
 	}
 }

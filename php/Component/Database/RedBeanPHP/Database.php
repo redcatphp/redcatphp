@@ -27,16 +27,13 @@ use Surikat\Component\Database\RedBeanPHP\Driver\RPDO as RPDO;
 use Surikat\Component\Database\Model;
 use Surikat\Component\Database\Query;
 
-use Surikat\Component\DependencyInjection\Container;
-use Surikat\Component\DependencyInjection\MutatorPropertyTrait;
-use Surikat\Component\DependencyInjection\FacadeTrait;
+use Surikat\Component\DependencyInjection\MutatorFacadeTrait;
 
 use Surikat\Component\Vars\STR;
 use Surikat\Component\Vars\ArrayObject;
 
 class Database{
-	use MutatorPropertyTrait;
-	use FacadeTrait;
+	use MutatorFacadeTrait;
 	
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	private static $plugins = [];
@@ -57,11 +54,17 @@ class Database{
 	private $dbType;
 	private $dsn;
 	private $prefix;
+	private $dbgroup;
+	private $DatabaseGroup;
 	
 	function __construct($name='',DatabaseGroup $DatabaseGroup=null){
 		$this->name = $name;
+		if(false!==$p=strpos($this->name,'.'))
+			$this->dbgroup = substr($this->name,0,$p);
 		if(isset($DatabaseGroup))
-			$this->Database_RedBeanPHP_DatabaseGroup = $DatabaseGroup;
+			$this->DatabaseGroup = $DatabaseGroup;
+		else
+			$this->DatabaseGroup = $this->Database_RedBeanPHP_DatabaseGroup($this->dbgroup);
 	}
 	static function getConfigFilename($args){
 		$name = 'db';
@@ -73,6 +76,12 @@ class Database{
 		return $name;
 	}
 	function setConfig($config){
+		if(!isset($config)){
+			$config = [
+				'type'=>'sqlite',
+				'file'=>SURIKAT_PATH.'.data/db.'.$this->name.'.sqlite'
+			];
+		}
 		$config = new ArrayObject($config);
 		$type = $config->type;
 		if(!$type)
@@ -96,17 +105,15 @@ class Database{
 		if($name)
 			$name = ';dbname='.$name;
 		if(!isset($frozen))
-			$frozen = !Container::get()->Dev_Level->DB;
+			$frozen = !$this->Dev_Level->DB;
 		if(!isset($case))
 			$case = true;
 		$dsn = $type.':'.$host.$port.$name;
 		$this->construct($dsn, $user, $password, $frozen, $prefix, $case);
 	}
 	function construct( $dsn = null, $username = null, $password = null, $frozen = false, $prefix = '', $case = true ){
-		
 		$this->prefix = $prefix;
 		$this->setup($dsn, $username, $password, $frozen, $prefix, $case);
-		
 		$this->finder             = new Finder( $this->toolbox );
 		$this->associationManager = new AssociationManager( $this->toolbox );
 		$this->redbean->setAssociationManager( $this->associationManager );
@@ -128,9 +135,9 @@ class Database{
 		return $this->prefix;
 	}
 	function _getDatabaseGroup(){
-		return $this->Database_RedBeanPHP_DatabaseGroup;
+		return $this->DatabaseGroup;
 	}
-	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
+	function _setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		$this->dsn = $dsn;
 		if ( is_object($dsn) ) {
 			$db  = new RPDO( $dsn );
@@ -697,27 +704,31 @@ class Database{
 	function _execFile($file,$bindings=[]){
 		return $this->execMulti(file_get_contents($file),$bindings);
 	}
-	
+	function findModelClass($type){
+		$type = ucfirst($this->writer->reverseCase($type));
+		if($this->name==''){
+			$name = '';
+		}
+		else{
+			$name = ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ', $this->name)))).'\\';
+		}
+		foreach($this->DatabaseGroup->getModelNamespace() as $ns){
+			if(class_exists($c=$ns.$name.'Model'.$type))
+				return $c;
+			if(class_exists($c=$ns.'Model'.$type))
+				return $c;
+			if(class_exists($c=$ns.$name.'Model'))
+				return $c;
+			if(class_exists($c=$ns.'Model'))
+				return $c;
+		}
+		return 'Surikat\\Component\\Database\\Model';
+	}
 	function _getModelClass($type){
 		static $cache = [];
 		$k = $this->name.'.'.$type;
 		if(!isset($cache[$k])){
-			$type = $this->writer->reverseCase($type);
-			$name = $this->name==''?'':'\\'.ucfirst($this->name);
-			foreach($this->getDatabaseGroup()->getModelNamespace() as $ns){
-				$c = $ns.'\\Model';
-				$cl = $ns.$name.'\\Model';
-				$cla = $ns.$name.'\\Model'.ucfirst($type);
-				if(class_exists($cla))
-					$cache[$k] = $cla;
-				elseif(class_exists($cl))
-					$cache[$k] = $cl;
-				elseif(class_exists($c))
-					$cache[$k] = $c;
-			}
-			if(!isset($cache[$k])){
-				$cache[$k] = 'Surikat\\Component\\Database\\Model';
-			}
+			$cache[$k] = $this->findModelClass($type);
 		}
 		return $cache[$k];
 	}
@@ -1066,6 +1077,21 @@ class Database{
 		Model::_checkUniq($b);
 	}
 	
+	function getModelNamespace(){
+		return $this->DatabaseGroup->getModelNamespace();
+	}
+	function setModelNamespace($namespace){
+		return $this->DatabaseGroup->setModelNamespace($namespace);
+	}
+	function addModelNamespace($namespace,$prepend=null){
+		return $this->DatabaseGroup->addModelNamespace($namespace,$prepend);
+	}
+	function appendModelNamespace($namespace){
+		return $this->DatabaseGroup->appendModelNamespace($namespace);
+	}
+	function prependModelNamespace($namespace){
+		return $this->DatabaseGroup->prependModelNamespace($namespace);
+	}
 	
 	private static function pointBindingLoop($sql,$binds){
 		$nBinds = [];
