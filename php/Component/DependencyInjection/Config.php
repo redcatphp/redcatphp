@@ -1,6 +1,6 @@
 <?php
-namespace Surikat\Component\Config;
-class DependencyInjection{
+namespace Surikat\Component\DependencyInjection;
+class Config{
 	public static $dirRoots = [];
 	public $dirPath = 'config';
 	static function intialize(){
@@ -49,6 +49,9 @@ class DependencyInjection{
 					return $obj;
 				}
 			}
+			$obj = $mutator->makeDependency($c,$args,$new);
+			$obj->setConfig(null);
+			return $obj;
 		}
 		return $mutator->makeDependency($c,$args,$new);
 	}
@@ -57,4 +60,4 @@ class DependencyInjection{
 		return include(func_get_arg(0));
 	}
 }
-DependencyInjection::intialize();
+Config::intialize();

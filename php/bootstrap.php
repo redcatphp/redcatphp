@@ -18,4 +18,4 @@ $SURIKAT->Autoload_Psr4->addNamespaces([
 	''			=> getcwd().'/php',
 	'Surikat'	=> __DIR__,
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->Config_DependencyInjection,'objectFactory']);
+$SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_Config,'objectFactory']);
