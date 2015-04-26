@@ -822,14 +822,20 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $node;
 	}
 	function getClass($n){
-		$n = str_replace('-','_',$n);
-		if(false!==$p=strrpos($n,':')){
-			$c = __NAMESPACE__.'\\'.substr($n,0,$p).'\\Tml'.ucfirst(substr($n,$p));
-			if(class_exists($c))
+		$n = preg_replace("/[^A-Za-z0-9 ]/", '_', $n);
+		if($this->Template)
+			$namespaces = $this->Template->getPluginNamespace();
+		else
+			$namespaces = [__NAMESPACE__];
+		foreach($namespaces as $ns){
+			if(false!==$p=strrpos($n,':')){
+				$c = $ns.'\\'.ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ',substr($n,0,$p))))).'\\Tml'.ucfirst(substr($n,$p+1));
+				if(class_exists($c))
+					return $c;
+			}
+			elseif(class_exists($c=$ns.'\\Tml'.ucfirst($n)))
 				return $c;
 		}
-		elseif(class_exists($c=__NAMESPACE__.'\\Tml'.ucfirst($n)))
-			return $c;
 		return __NAMESPACE__.'\\Tml';
 	}
 	function throwException($msg){
