@@ -543,42 +543,16 @@ abstract class PARSER{
 	private function addToCurrent($name,$attributes,$class=null){
 		if(!$this->currentTag)
 			$this->currentTag = $this;
-		if(($pos=strpos($name,'+'))!==false){
-			$x = explode('+',$name);
-			$a = [];
-			$node = new Group();
-			$node->setBuilder($this);
-			$node->setParent($this->currentTag);
-			$node->setNodeName($name);
-			$node->make($attributes);
-			$node->lineNumber = $this->lineNumber;
-			$node->characterNumber = $this->characterNumber;
-			$sc = null;
-			foreach($x as $n){
-				$c = self::getClass($n);
-				$g = new $c();
-				$g->setBuilder($this);
-				$g->setParent($this->currentTag);
-				$g->setNodeName($n);
-				$g->make($attributes);
-				$sc = $g->selfClosed&&$sc!==false;
-				$node->addToGroup($g);
-			}
-			if($sc)
-				$node->selfClosed = true;
-		}
-		else{
-			if($class===true)
-				$class = 'Surikat\\Component\\Templator\\'.$name;
-			$c = $class?$class:self::getClass($name);
-			$node = new $c();
-			$node->setBuilder($this);
-			$node->setParent($this->currentTag);
-			$node->setNodeName($name);
-			$node->make($attributes);
-			$node->lineNumber = $this->lineNumber;
-			$node->characterNumber = $this->characterNumber;
-		}
+		if($class===true)
+			$class = 'Surikat\\Component\\Templator\\'.$name;
+		$c = $class?$class:self::getClass($name);
+		$node = new $c();
+		$node->setBuilder($this);
+		$node->setParent($this->currentTag);
+		$node->setNodeName($name);
+		$node->make($attributes);
+		$node->lineNumber = $this->lineNumber;
+		$node->characterNumber = $this->characterNumber;
 		$this->currentTag[] = $node;
 		return $node;
 	}
