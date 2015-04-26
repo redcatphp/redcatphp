@@ -5,8 +5,8 @@ use Surikat\Component\Database\R;
 class TmlForm extends Tml {
 	function loadModelRules($model){
 		$this->__unset('modelRules');
-		if($this->Template->present)
-			$model = $this->presentProperty($model);
+		//if($this->Template->present)
+			//$model = $this->presentProperty($model);
 		$model = trim($model);
 		$c = R::getModelClass($model);
 		//var_dump($c);exit;

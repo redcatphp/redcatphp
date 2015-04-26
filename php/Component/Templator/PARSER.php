@@ -531,31 +531,15 @@ abstract class PARSER{
 		return strpos($check,self::PIO)!==false&&strpos($check,self::PIC)!==false;
 	}
 
-	private $currentTag;
 	private $__phpSRC = [];
 
 	protected $onLoad = [];
 	protected $onLoaded = [];
 	
+	protected $currentTag;
 	protected $lineNumber = 1;
 	protected $characterNumber = 1;
 	
-	private function addToCurrent($name,$attributes,$class=null){
-		if(!$this->currentTag)
-			$this->currentTag = $this;
-		if($class===true)
-			$class = 'Surikat\\Component\\Templator\\'.$name;
-		$c = $class?$class:self::getClass($name);
-		$node = new $c();
-		$node->setBuilder($this);
-		$node->setParent($this->currentTag);
-		$node->setNodeName($name);
-		$node->make($attributes);
-		$node->lineNumber = $this->lineNumber;
-		$node->characterNumber = $this->characterNumber;
-		$this->currentTag[] = $node;
-		return $node;
-	}
 	private function fireElement($name,$attributes){
 		$attributes['/'] = '';
 		if(($pos=strpos($name,'&'))!==false){
@@ -609,16 +593,6 @@ abstract class PARSER{
 	private function fireCDataSection($text){
 		$this->addToCurrent('CDATA',$text,true);
 	}
-
-	protected static function getClass($n){
-		if($p=strpos($n,':'))
-			$n = substr($n,0,$p);
-		$n = strtolower($n);
-		$n = str_replace('-','_',$n);
-		if(class_exists($c='Surikat\\Component\\Templator\\'.(ctype_upper($n)?$n:'Tml'.ucfirst($n))))
-			return $c;
-		return 'Surikat\\Component\\Templator\\Tml';
-	}
 	function evalue($v,$vars=null){
 		if(isset($vars))
 			extract($vars);
@@ -667,12 +641,7 @@ abstract class PARSER{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		if($this->Template)
-			$msg .= $this->exceptionContext();
 		throw new ExceptionTml($msg);
-	}
-	function exceptionContext(){
-		return ' on "'.$this->Template->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 	}
 }
 PARSER::initialize();

@@ -19,7 +19,6 @@ class Template {
 	var $toCacheV = [];
 	var $childNodes = [];
 	var $isXhtml;
-	var $present;
 	protected $devCompileFile;
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
@@ -49,6 +48,11 @@ class Template {
 	}
 	function setPath($path){
 		$this->path = $path;
+	}
+	function findPluginNamespace($class){
+		foreach($this->__pluginNamespaces as $ns)
+			if(class_exists($c=$class))
+				return $c;
 	}
 	function getPluginNamespace($namespace){
 		return $this->__pluginNamespaces;

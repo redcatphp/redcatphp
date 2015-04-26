@@ -810,16 +810,8 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		}
 		$media_s = $css->media?'[media="'.$css->media.'"]':'';
 		$media = $css->media?' media="'.$css->media.'"':'';
-		if($href&&!($script=$dom->children('link[href="'.$href.'"]'.$media_s,0)))
+		if($href&&!($dom->children('link[href="'.$href.'"],link[href^="'.$href.'?_t="]'.$media_s,0)))
 			$dom[] = '<link href="'.$href.'" rel="stylesheet" type="text/css"'.$media.'>';
-	}
-
-	function presentProperty(){
-		if(strpos(func_get_arg(0),'<?')!==false){
-			extract((array)$this->Template->present);
-			return $this->evalue(func_get_arg(0));
-		}
-		return func_get_arg(0);
 	}
 	function createChild($parse=null,$builder=null){
 		$tml = new Tml();
@@ -831,5 +823,42 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if(isset($parse))
 			$tml->parse($parse);
 		return $tml;
+	}
+	
+	
+	function addToCurrent($name,$attributes,$class=null){
+		if(!$this->currentTag)
+			$this->currentTag = $this;
+		if($class===true)
+			$class = __NAMESPACE__.'\\'.$name;
+		$c = $class?$class:$this->getClass($name);
+		$node = new $c();
+		$node->setBuilder($this);
+		$node->setParent($this->currentTag);
+		$node->setNodeName($name);
+		$node->make($attributes);
+		$node->lineNumber = $this->lineNumber;
+		$node->characterNumber = $this->characterNumber;
+		$this->currentTag[] = $node;
+		return $node;
+	}
+	function getClass($n){
+		$n = str_replace('-','_',$n);
+		if(false!==$p=strrpos($n,':')){
+			$c = __NAMESPACE__.'\\'.substr($n,0,$p).'\\Tml'.ucfirst(substr($n,$p));
+			if(class_exists($c))
+				return $c;
+		}
+		elseif(class_exists($c=__NAMESPACE__.'\\Tml'.ucfirst($n)))
+			return $c;
+		return __NAMESPACE__.'\\Tml';
+	}
+	function throwException($msg){
+		if($this->Template)
+			$msg .= $this->exceptionContext();
+		parent::throwException($msg);
+	}
+	function exceptionContext(){
+		return ' on "'.$this->Template->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 	}
 }
