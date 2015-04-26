@@ -704,7 +704,7 @@ class Database{
 	function _execFile($file,$bindings=[]){
 		return $this->execMulti(file_get_contents($file),$bindings);
 	}
-	function findModelClass($type){
+	function _getModelClass($type){
 		$type = ucfirst($this->writer->reverseCase($type));
 		if($this->name==''){
 			$name = '';
@@ -723,14 +723,6 @@ class Database{
 				return $c;
 		}
 		return 'Surikat\\Component\\Database\\Model';
-	}
-	function _getModelClass($type){
-		static $cache = [];
-		$k = $this->name.'.'.$type;
-		if(!isset($cache[$k])){
-			$cache[$k] = $this->findModelClass($type);
-		}
-		return $cache[$k];
 	}
 	function _getClassModel($c){
 		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
