@@ -14,9 +14,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	var $metaAttribution = [];
 	var $previousSibling;
 	var $nextSibling;
-	var $namespace;
-	var $namespaceClass;
-	var $_namespaces;
 	var $Template;
 	
 	protected $hiddenWrap;
@@ -165,15 +162,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		foreach($this->childNodes as $c)
 			$c->triggerLoaded();
 		$this->preventLoad = true;
-		if($this->_namespaces){
-			$x = $this->_namespaces;
-			while($v=array_pop($x)){
-				if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'loaded')){
-					$c::loaded($this);
-					break;
-				}
-			}
-		}
 		$this->loaded();
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
@@ -222,15 +210,6 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 					$this->$m($this->metaAttribution[$k],$key);
 			}
 			if(!$this->preventLoad){
-				if($this->_namespaces){
-					$x = $this->_namespaces;
-					while($v=array_pop($x)){
-						if(class_exists($c=(($s=implode('\\',$x))?$s.'\\':'').$v)&&method_exists($c,'load')){
-							$c::load($this);
-							break;
-						}
-					}
-				}
 				$this->load();
 			}
 			if(method_exists($this,'onExec')){

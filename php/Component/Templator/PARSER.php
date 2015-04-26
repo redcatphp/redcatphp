@@ -19,11 +19,21 @@ abstract class PARSER{
 	private static $PIC_L;
 	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
+	
+	private $__phpSRC = [];
+	
 	protected $parseReplacement = [
 		'\\<'=>'&lt;',
 		'\\>'=>'&gt;',
 		'\\"'=>'&quot;',
 	];
+
+	protected $onLoad = [];
+	protected $onLoaded = [];
+	protected $currentTag;
+	protected $lineNumber = 1;
+	protected $characterNumber = 1;
+	
 	static function initialize(){
 		self::$PI_HEX = [self::strToHex(self::$PI_STR[0]),self::strToHex(self::$PI_STR[1])];
 		self::$PIO_L = strlen(self::PIO);
@@ -530,15 +540,6 @@ abstract class PARSER{
 	protected static function checkPIOC($check){
 		return strpos($check,self::PIO)!==false&&strpos($check,self::PIC)!==false;
 	}
-
-	private $__phpSRC = [];
-
-	protected $onLoad = [];
-	protected $onLoaded = [];
-	
-	protected $currentTag;
-	protected $lineNumber = 1;
-	protected $characterNumber = 1;
 	
 	private function fireElement($name,$attributes){
 		$attributes['/'] = '';
@@ -630,13 +631,6 @@ abstract class PARSER{
 	protected function interpret($attributes,$nodeName=null){
 		if(isset($nodeName))
 			$this->nodeName = $nodeName;
-		if(($pos=strpos($this->nodeName,':'))!==false){
-			$this->namespace = ucfirst(substr($this->nodeName,0,$pos));
-			$this->namespaceClass = ucfirst(substr($this->nodeName,$pos+1));
-			$this->_namespaces = explode(':',trim($this->namespace.':'.$this->namespaceClass,':'));
-			foreach(array_keys($this->_namespaces) as $i)
-				$this->_namespaces[$i] = ucfirst($this->_namespaces[$i]);
-		}
 		$this->metaAttribution = $attributes;
 		$this->opened();
 	}
