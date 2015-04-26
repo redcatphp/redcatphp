@@ -1,7 +1,8 @@
 <?php namespace Surikat\Component\Templator;
+use Surikat\Component\Templator\Template;
 use Surikat\Component\Templator\Tml;
-use Surikat\Component\Templator\TmlApply;
 use Surikat\Component\Templator\CssSelector;
+use Surikat\Component\Templator\MarkupX\TmlApply;
 use Surikat\Component\DependencyInjection\MutatorCallTrait;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	use MutatorCallTrait;
@@ -826,7 +827,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		if($this->Template)
 			$namespaces = $this->Template->getPluginNamespace();
 		else
-			$namespaces = [__NAMESPACE__];
+			$namespaces = Template::getPluginNamespaceDefault();
 		foreach($namespaces as $ns){
 			if(false!==$p=strrpos($n,':')){
 				$c = $ns.'\\'.ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ',substr($n,0,$p))))).'\\Tml'.ucfirst(substr($n,$p+1));

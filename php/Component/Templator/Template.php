@@ -29,12 +29,7 @@ class Template {
 			'template/',
 			'Surikat/template/',
 		]);
-		$this->setPluginNamespace([
-			'',
-			__NAMESPACE__.'\\MarkupX',
-			__NAMESPACE__.'\\MarkupHtml5',
-			__NAMESPACE__,
-		]);
+		$this->setPluginNamespace(self::getPluginNamespaceDefault());
 		if(isset($file))
 			$this->setPath($file);
 		if(isset($vars))
@@ -57,6 +52,14 @@ class Template {
 	}
 	function getPluginNamespace(){
 		return $this->__pluginNamespaces;
+	}
+	static function getPluginNamespaceDefault(){
+		return [
+			'',
+			__NAMESPACE__.'\\MarkupX',
+			__NAMESPACE__.'\\MarkupHtml5',
+			__NAMESPACE__,
+		];
 	}
 	function setPluginNamespace($namespace){
 		$this->__pluginNamespaces = (array)$namespace;
