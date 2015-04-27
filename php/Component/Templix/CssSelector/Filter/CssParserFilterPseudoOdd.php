@@ -1,0 +1,8 @@
+<?php
+namespace Surikat\Component\Templix\CssSelector\Filter;
+use Surikat\Component\Templix\CssSelector\Filter\CssParserFilterPseudo;
+class CssParserFilterPseudoOdd extends CssParserFilterPseudo{
+	function match($node, $position, $items){
+		return $position % 2 > 0;
+	}
+}

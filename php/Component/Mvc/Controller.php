@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\Mvc;
 use Surikat\Component\Vars\ArrayObject;
 use Surikat\Component\Mvc\View;
-use Surikat\Component\Templator\Tml;
+use Surikat\Component\Templix\Tml;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Controller{
 	use MutatorMagicTrait;
@@ -19,9 +19,9 @@ class Controller{
 		$this->Mvc_View->onCompile(function($Tml){
 			if($Tml->Template->getParent())
 				return;
-			$this->Templator_Toolbox->JsIs($Tml);
+			$this->Templix_Toolbox->JsIs($Tml);
 			if(!$this->Dev_Level->VIEW)
-				$this->Templator_Toolbox->autoMIN($Tml);
+				$this->Templix_Toolbox->autoMIN($Tml);
 		});
 		$this->display($path.'.tml');
 	}

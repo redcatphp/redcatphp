@@ -33,8 +33,8 @@ class I18n extends Faceted {
 		$ctrl = $this->Dispatcher_Uri->Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
 		$ctrl->Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
-			$this->Templator_Toolbox->i18nGettext($TML);
-			$this->Templator_Toolbox->i18nRel($TML,$lang,$path,$langMap);
+			$this->Templix_Toolbox->i18nGettext($TML);
+			$this->Templix_Toolbox->i18nRel($TML,$lang,$path,$langMap);
 			if($langMap){
 				foreach($TML('a[href]') as $a){
 					if(strpos($a->href,'://')===false&&strpos($a->href,'javascript:')!==0&&strpos($a->href,'#')!==0){

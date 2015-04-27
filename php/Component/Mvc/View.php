@@ -1,5 +1,5 @@
 <?php namespace Surikat\Component\Mvc;
-use Surikat\Component\Templator\Template;
+use Surikat\Component\Templix\Template;
 class View{
 	private $__engine;
 	private $__callbacks;
