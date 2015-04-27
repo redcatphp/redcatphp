@@ -1,7 +1,4 @@
 <?php namespace Surikat\Component\Mvc;
-use Surikat\Component\Vars\ArrayObject;
-use Surikat\Component\Mvc\View;
-use Surikat\Component\Templix\Tml;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Controller{
 	use MutatorMagicTrait;
@@ -26,7 +23,7 @@ class Controller{
 		$this->display($path.'.tml');
 	}
 	function Mvc_View(){
-		$View = new View();
+		$View = $this->defaultDependency('Mvc_View');
 		$View->setDependency('Mvc_Controller',$this);
 		return $View;
 	}
