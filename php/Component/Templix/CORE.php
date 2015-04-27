@@ -823,7 +823,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return $node;
 	}
 	function getClass($n){
-		$n = preg_replace("/[^A-Za-z0-9 ]/", '_', $n);
+		$n = str_replace(' ','_',ucwords(preg_replace("/[^A-Za-z0-9 ]/", ' ', $n)));
 		if($this->Template)
 			$namespaces = $this->Template->getPluginNamespace();
 		else
