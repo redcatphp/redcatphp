@@ -15,7 +15,10 @@ require __DIR__.'/constants.php';
 global $SURIKAT;
 $SURIKAT = Surikat\Component\DependencyInjection\Container::get();
 $SURIKAT->Autoload_Psr4->addNamespaces([
-	''			=> getcwd().'/php',
+	''			=> [
+		getcwd().'/php',
+		__DIR__
+	],
 	'Surikat'	=> __DIR__,
 ])->splRegister();
 $SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_Config,'objectFactory']);
