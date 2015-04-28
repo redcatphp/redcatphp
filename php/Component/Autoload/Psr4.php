@@ -14,14 +14,21 @@ class Psr4{
 		return $this;
 	}
 	function addNamespace($prefix, $base_dir, $prepend = false){
-		$prefix = trim($prefix, '\\').'\\';
-		$base_dir = rtrim($base_dir, '/').'/';
-		if(!isset($this->namespaces[$prefix]))
-			$this->namespaces[$prefix] = [];
-		if ($prepend)
-			array_unshift($this->namespaces[$prefix], $base_dir);
-		else
-			array_push($this->namespaces[$prefix], $base_dir);
+		if(is_array($base_dir)){
+			foreach($base_dir as $dir){
+				$this->addNamespace($prefix, $dir, $prepend);
+			}
+		}
+		else{
+			$prefix = trim($prefix, '\\').'\\';
+			$base_dir = rtrim($base_dir, '/').'/';
+			if(!isset($this->namespaces[$prefix]))
+				$this->namespaces[$prefix] = [];
+			if ($prepend)
+				array_unshift($this->namespaces[$prefix], $base_dir);
+			else
+				array_push($this->namespaces[$prefix], $base_dir);
+		}
 		return $this;
 	}
 	protected function loadFile($file,$class){
