@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\Git\GitDeploy;
-use Surikat\Component\FileSystem\FS;
 abstract class Server {
     var $connection;
     var $current_commit;
@@ -94,7 +93,7 @@ abstract class Server {
         foreach ($changes['upload'] as $file => $contents) {
 			$totalSize += strlen($contents);
 		}
-		$humanTotalSize = FS::humanSize($totalSize);
+		$humanTotalSize = self::humanSize($totalSize);
 		$uploadedSize = 0;
         foreach ($changes['upload'] as $file => $contents) {
 			if($this->maintenance&&$file=='.htaccess'){
@@ -103,7 +102,7 @@ abstract class Server {
 			}
 			$uploadedSize += strlen($contents);
             if($this->set_file($file, $contents))
-				GitDeploy::logmessage("Uploaded: $file ".FS::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.FS::humanSize($uploadedSize).'/'.$humanTotalSize.')');
+				GitDeploy::logmessage("Uploaded: $file ".self::humanSize(strlen($contents)).'  ('.round(($uploadedSize/$totalSize)*100).'% '.self::humanSize($uploadedSize).'/'.$humanTotalSize.')');
         }
         foreach ($changes['delete'] as $file) {
             if ($list_only)
@@ -164,4 +163,9 @@ abstract class Server {
 			GitDeploy::logmessage('Turned maintenance mode off');
 		}
 	}
+	static function humanSize($bytes,$decimals=2){
+		$sz = 'BKMGTP';  
+		$factor = floor((strlen($bytes) - 1) / 3);  
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];  
+    }
 }

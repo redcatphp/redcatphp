@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\Image;
-use Surikat\Component\FileSystem\FS;
 abstract class Images {
 	public static $extensions = ['jpg','jpeg','png','gif','bmp','tiff','ico'];
 	public static $extensions_resizable = ['jpeg','jpg','png','gif','tiff','bmp'];

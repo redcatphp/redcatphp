@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\User;
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Exception\Exception;
 use Surikat\Component\Exception\Security as ExceptionSecurity;
 use Surikat\Component\DependencyInjection\MutatorCallTrait;

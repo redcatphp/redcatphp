@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\FileSystem;
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Synaptic {
 	use MutatorMagicTrait;

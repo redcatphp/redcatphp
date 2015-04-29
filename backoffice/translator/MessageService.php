@@ -1,5 +1,4 @@
 <?php namespace Translator;
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\I18n\msgfmt;
 use Surikat\Component\I18n\getTextExtractorTML;
 use Surikat\Component\I18n\getTextExtractorPHP;
@@ -84,7 +83,7 @@ class MessageService {
 		if(!$lang||!$name)
 			return;
 		$path = SURIKAT_PATH.'langs/'.$lang.'/LC_MESSAGES/'.$name.'.';
-		FS::mkdir($path,true);
+		@mkdir(dirname($path),0777,true);
 		$po = $path.'po';
 		$mo = $path.'mo';
 		$this->cat($lang,$name)->export($po);

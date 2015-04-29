@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\Service; 
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\Vars\JSON;
 use Surikat\Component\Minify\PHP as minPHP;
 use Surikat\Component\Minify\JS as minJS;
@@ -7,14 +6,48 @@ use Surikat\Component\Minify\CSS as minCSS;
 use ReflectionClass;
 use ReflectionMethod;
 use ZipArchive;
+
+function fileRecurse($dir,$arg,$pattern=null,$asc=null,&$ret=[],$skiplink=null){
+	$dir = rtrim($dir,'/').'/';
+	if(is_dir($dir)){
+		$dh = opendir($dir);
+		if($dh){
+			while($file=readdir($dh)){
+				if($file=='.'||$file=='..')
+					continue;
+				$f = $dir.$file;
+				if($skiplink&&is_link($f)){
+					continue;
+				}
+				elseif($asc){
+					$ret[] = call_user_func($arg,$f);
+					if(is_dir($f))
+						$ret[] = fileRecurse($f,$arg);
+				}
+				else{
+					if(is_dir($f))
+						$ret[] = fileRecurse($f,$arg);
+					$ret[] = call_user_func($arg,$f);
+				}
+			}
+			closedir($dh);
+		}
+	}
+	return $ret;
+}
+function humanSize($bytes,$decimals=2){
+	$sz = 'BKMGTP';  
+	$factor = floor((strlen($bytes) - 1) / 3);  
+	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];  
+}
+
 /* preload dependencies for manual compilation use */
 foreach([
-	'Min/PHP',
-	'Min/JS',
-	'Min/CSS',
-	'Min/HTML',
-	'FS',
-	'JSON'
+	'Minify/Php',
+	'Minify/Js',
+	'Minify/Css',
+	'Minify/Html',
+	'Vars/JSON'
 ] as $inc)
 	require dirname(__FILE__).'/../control/'.$inc.'.php';
 
@@ -58,7 +91,7 @@ else{
 			echo "<h1>Surikat Compilation to '".$target."':</h1><pre>\r\n";
 			$tt = 0;
 			$stt = 0;
-			FS::recurse($directory,function($file)use($directory,$p,$minifyPHP,&$tt,&$stt){
+			fileRecurse($directory,function($file)use($directory,$p,$minifyPHP,&$tt,&$stt){
 				$bs = basename($file);
 				$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 				if(is_dir($file)||($ext!='php'&&($bf=basename($file))!='LICENSE'&&$bf!='README.md')||(strpos($file,SURIKAT_TMP)===0)||($file==$directory.'/index.php.phar')||($file==$directory.'/index.php'))
@@ -73,13 +106,13 @@ else{
 				$tt += 1;
 			});
 			echo "</pre>";
-			echo "</p>$tt files: ".FS::humanSize($stt)."</p><p>index.php: ".FS::humanSize($_stt=filesize($target.'.phar'))."</p>";
+			echo "</p>$tt files: ".humanSize($stt)."</p><p>index.php: ".humanSize($_stt=filesize($target.'.phar'))."</p>";
 			echo '<p>compression: '.round(100-(($_stt/$stt)*100)).'%</p>';
 			echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
 			if(is_file($target))
 				unlink($target);
 			rename($target.'.phar',$target);
-			FS::recurse(SURIKAT_TMP,function($file){
+			fileRecurse(SURIKAT_TMP,function($file){
 				if(is_file($file))
 					@unlink($file);
 				elseif(is_dir($file))
@@ -93,7 +126,7 @@ else{
 function getZIP($url,$httpCache){
 	$zip = new ZipArchive;
 	$dir = SURIKAT_TMP.'kompiler_cache/'.sha1($url);
-	FS::mkdir($dir);
+	@mkdir($dir,0777,true);
 	$file = $dir.'.zip';
 	$cached = is_file($file)&&filesize($file)&&filemtime($file)>time()-$httpCache;
 	if($cached)

@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\SyntaxedCSS;
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Exception;
 class SCSSCServer{

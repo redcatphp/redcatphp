@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\Cache;
-use Surikat\Component\Cache\FS;
 use Surikat\Component\DependencyInjection\FacadeTrait;
 class Sync{
 	use FacadeTrait;

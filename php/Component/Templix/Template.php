@@ -1,6 +1,5 @@
 <?php namespace Surikat\Component\Templix;
 use Surikat\Component\DependencyInjection\MutatorCallTrait;
-use Surikat\Component\FileSystem\FS;
 use Surikat\Component\SourceCode\PHP;
 use Surikat\Component\Exception\View as ViewException;
 class Template {
@@ -155,8 +154,8 @@ class Template {
 		if($exist){
 			if(!$this->Dev_Level()->VIEW){
 				unlink($this->devCompileFile);
-				FS::rmdir($this->dirCompile);
-				FS::rmdir($this->dirCache);
+				self::rmdir($this->dirCompile);
+				self::rmdir($this->dirCache);
 				$this->FileSystem_Synaptic()->cleanMini();
 			}
 		}
@@ -319,5 +318,23 @@ class Template {
 	}
 	function offsetUnset($k){
 		return $this->__unset($k);
+	}
+	static function rmdir($dir){
+		if(is_dir($dir)){
+			$dh = opendir($dir);
+			if($dh){
+				while($file=readdir($dh)){
+					if($file!='.'&&$file!='..'){
+						$fullpath = $dir.'/'.$file;
+						if(is_file($fullpath))
+							unlink($fullpath);
+						else
+							self::rmdir($fullpath);
+					}
+				}
+				closedir($dh);
+			}
+		}
+		return is_dir($dir);
 	}
 }

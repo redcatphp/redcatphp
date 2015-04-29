@@ -1,5 +1,4 @@
 <?php namespace Translator;
-use Surikat\Component\FileSystem\FS;
 class Catalogue {
 	protected $db;
 	protected $lang;
@@ -9,7 +8,7 @@ class Catalogue {
 	static function headerPots(){
 		$pots = SURIKAT_PATH.'langs/header.pots';
 		if(!is_file($pots)){
-			FS::mkdir($pots,true);
+			@mkdir(dirname($pots),0777,true);
 			copy(__DIR__.'/header.pots',$pots);
 		}
 		return file_get_contents($pots);
