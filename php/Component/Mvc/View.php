@@ -8,6 +8,9 @@ class View{
 			$engine = new Template();
 		$this->setEngine($engine);
 	}
+	function getEngine(){
+		return $this->__engine;
+	}
 	function setEngine($engine){
 		$this->__engine = $engine;
 		if(method_exists($this->__engine,'setDependency')){

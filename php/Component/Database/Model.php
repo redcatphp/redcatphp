@@ -20,14 +20,15 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
+use Surikat\Component\DependencyInjection\MutatorCallTrait;
 use Surikat\Component\Database\RedBeanPHP\OODBBean;
 use Surikat\Component\Database\RedBeanPHP\SimpleModel;
 use Surikat\Component\Database\RedBeanPHP\QueryWriter\AQueryWriter;
 use Surikat\Component\Vars\JSON;
-use Surikat\Component\Cache\Sync;
 use BadMethodCallException;
 use Exception\DatabaseValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook
 class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
+	use MutatorCallTrait;
 	#<workflow CRUD>
 	function onNew(){}
 	function onCreate(){}
@@ -57,7 +58,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $str;
 	}
 	static $metaCast = [];
-	static $Sync;
+	protected $sync;
 	private static $_checkUniq;
 	private $errors = [];
 	private $_relationsKeysStore = [];
@@ -266,8 +267,8 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				$this->trigger('created');
 			else
 				$this->trigger('updated');
-			if(static::$Sync)
-				Sync::update('model.'.$this->table);
+			if($this->sync)
+				$this->Cache_Sync()->update('model.'.$this->table);
 		}
 		$this->trigger('changed');
 		if(isset($this->_onces['validate']))

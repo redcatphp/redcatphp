@@ -24,7 +24,8 @@ class Controller{
 	}
 	function Mvc_View(){
 		$View = $this->defaultDependency('Mvc_View');
-		$View->setDependency('Mvc_Controller',$this);
+		if(method_exists($View->getEngine(),'setDependency'))
+			$View->getEngine()->setDependency('Mvc_Controller',$this);
 		return $View;
 	}
 	function addPrefixTmlCompile($prefix){
