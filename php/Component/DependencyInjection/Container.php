@@ -22,7 +22,7 @@ class Container{
 		$hash = [];
 		foreach($args as $arg){
 			if(is_array($arg)){
-				$hash[] = Container::hashArguments($arg);
+				$hash[] = self::hashArguments($arg);
 			}
 			elseif(is_object($arg)){
 				$storage->attach($arg);
