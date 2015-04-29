@@ -1,19 +1,23 @@
 <?php namespace Surikat\Component\Cache;
 use Surikat\Component\Cache\FS;
+use Surikat\Component\DependencyInjection\FacadeTrait;
 class Sync{
-	const TIMESPACE = 'sync/timespace/';
-	const CACHE = 'sync/cache/';
-	const EXT = '.sync';
-	static function mtime($file,$sync,$forceCache=true){
-		$syncF = SURIKAT_TMP.self::TIMESPACE.$sync.self::EXT;
+	use FacadeTrait;
+	var $timespace = 'sync/timespace/';
+	var $cache = 'sync/cache/';
+	var $ext = '.sync';
+	var $spaceName = 'sync';
+	var $className;
+	function mtime($file,$sync,$forceCache=true){
+		$syncF = SURIKAT_TMP.$this->timespace.$sync.$this->ext;
 		if($forceCache&&!is_file($syncF)){
 			FS::mkdir($syncF,true);
 			file_put_contents($syncF,'');
 		}
 		return @filemtime($file)<@filemtime($syncF);
 	}
-	static function update($sync){
-		$syncF = SURIKAT_TMP.self::TIMESPACE.$sync.self::EXT;
+	function update($sync){
+		$syncF = SURIKAT_TMP.$this->timespace.$sync.$this->ext;
 		if(!is_file($syncF)){
 			FS::mkdir($syncF,true);
 			file_put_contents($syncF,'');
@@ -21,39 +25,36 @@ class Sync{
 		else
 			touch($syncF);
 	}
-	
-	static $spaceName = 'sync';
-	static $className;
-	static function __callStatic($c,$args){
+	function __call($c,$args){
 		$id = sha1(serialize([$c,$args]));
-		$file = SURIKAT_TMP.self::CACHE.static::$spaceName.'/'.$id;
+		$file = SURIKAT_TMP.$this->cache.$this->spaceName.'/'.$id;
 		if(strpos($c,'static')===0&&ctype_upper(substr($c,6,1)))
-			return self::_statical(lcfirst(substr($c,6)),$args,$id,$file);
+			return $this->_statical(lcfirst(substr($c,6)),$args,$id,$file);
 		elseif(strpos($c,'sync')===0&&ctype_upper(substr($c,4,1)))
-			return self::_sync(lcfirst(substr($c,4)),$args,$id,$file);
+			return $this->_sync(lcfirst(substr($c,4)),$args,$id,$file);
 		else
-			return self::_dynTry($c,$args,$id,$file);
+			return $this->_dynTry($c,$args,$id,$file);
 	}
-	private static function _dynTry($c,$args,$id,$file){
+	private function _dynTry($c,$args,$id,$file){
 		FS::mkdir($file,true);
 		$data = null;
 		try{
-			file_put_contents($file,serialize($data=call_user_func_array([(static::$className?static::$className:static::$spaceName),$c],$args)),LOCK_EX);
+			file_put_contents($file,serialize($data=call_user_func_array([($this->className?$this->className:$this->spaceName),$c],$args)),LOCK_EX);
 		}
 		catch(\PDOException $e){
 			$data = unserialize(file_get_contents($file));
 		}
 		return $data;
 	}
-	private static function _sync($c,$args,$id,$file){
-		$sync = SURIKAT_TMP.self::TIMESPACE.static::$spaceName.'.'.$args[0].self::EXT;
+	private function _sync($c,$args,$id,$file){
+		$sync = SURIKAT_TMP.$this->timespace.$this->spaceName.'.'.$args[0].$this->ext;
 		if(!($msync=@filemtime($sync))||@filemtime($file)<$msync)
-			return self::_dynTry($c,$args,$id,$file);
+			return $this->_dynTry($c,$args,$id,$file);
 		return unserialize(file_get_contents($file));
 	}
-	private static function _statical($c,$args,$id,$file){
+	private function _statical($c,$args,$id,$file){
 		if(!file_exists($file))
-			return self::_dynTry($c,$args,$id,$file);
+			return $this->_dynTry($c,$args,$id,$file);
 		else
 			return unserialize(file_get_contents($file));
 	}
