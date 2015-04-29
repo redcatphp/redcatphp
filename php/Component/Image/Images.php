@@ -324,7 +324,7 @@ abstract class Images {
 	}
 	public static function createThumb($sourceFile, $targetFile, $maxWidth, $maxHeight, $quality = 80, $preserverAspectRatio = true, $bmpSupported = false){
 		$dir = dirname($targetFile);
-		FS::mkdir($dir);
+		@mkdir($dir,0777,true);
 		$sourceImageAttr = @getimagesize($sourceFile);
 		if ($sourceImageAttr === false) {
 			return false;

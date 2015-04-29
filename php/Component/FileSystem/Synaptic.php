@@ -86,7 +86,7 @@ class Synaptic {
 	}
 	protected function registerMini($min){
 		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
-		FS::mkdir($f,true);
+		@mkdir(dirname($f),0777,true);
 		file_put_contents($f,$min."\n",FILE_APPEND|LOCK_EX);
 	}
 	protected function minifyJS($f,$min){
@@ -95,7 +95,7 @@ class Synaptic {
 		set_time_limit(0);
 		$c = $this->Minify_Js->process(file_get_contents($f));
 		if(!$this->Dev_Level->JS){
-			FS::mkdir($min,true);
+			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}
@@ -121,7 +121,7 @@ class Synaptic {
 		$c = $this->Minify_Css->process($c);
 		if(!$this->Dev_Level->CSS){
 			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
-			FS::mkdir($min,true);
+			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
 		}

@@ -72,7 +72,7 @@ class Uploader{
 			throw $this->Exception_Upload('type');
 		if($maxFileSize&&filesize($file['tmp_name'])>$maxFileSize)
 			throw $this->Exception_Upload(UPLOAD_ERR_FORM_SIZE);
-		FS::mkdir($dir);
+		@mkdir($dir,0777,true);
 		$name = $this->formatFilename($file['name']);
 		if($nooverw){
 			$i = 2;

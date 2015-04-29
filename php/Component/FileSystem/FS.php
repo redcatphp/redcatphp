@@ -28,12 +28,6 @@ abstract class FS {
 		}
 		return $ret;
 	}
-	static function mkdir($file,$isFile=null){
-		$dir = $file;
-		if($isFile)
-			$dir = dirname($file);
-		return @mkdir($dir,0777,true);					
-	}
 	static function humanSize($bytes,$decimals=2){
 		$sz = 'BKMGTP';  
 		$factor = floor((strlen($bytes) - 1) / 3);  

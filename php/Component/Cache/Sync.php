@@ -11,7 +11,7 @@ class Sync{
 	function mtime($file,$sync,$forceCache=true){
 		$syncF = SURIKAT_TMP.$this->timespace.$sync.$this->ext;
 		if($forceCache&&!is_file($syncF)){
-			FS::mkdir($syncF,true);
+			@mkdir(dirname($syncF),0777,true);
 			file_put_contents($syncF,'');
 		}
 		return @filemtime($file)<@filemtime($syncF);
@@ -19,7 +19,7 @@ class Sync{
 	function update($sync){
 		$syncF = SURIKAT_TMP.$this->timespace.$sync.$this->ext;
 		if(!is_file($syncF)){
-			FS::mkdir($syncF,true);
+			@mkdir(dirname($syncF),0777,true);
 			file_put_contents($syncF,'');
 		}
 		else
@@ -36,9 +36,9 @@ class Sync{
 			return $this->_dynTry($c,$args,$id,$file);
 	}
 	private function _dynTry($c,$args,$id,$file){
-		FS::mkdir($file,true);
 		$data = null;
 		try{
+			@mkdir(dirname($file),0777,true);
 			file_put_contents($file,serialize($data=call_user_func_array([($this->className?$this->className:$this->spaceName),$c],$args)),LOCK_EX);
 		}
 		catch(\PDOException $e){

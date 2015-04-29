@@ -162,7 +162,7 @@ class Template {
 		}
 		else{
 			if($this->Dev_Level()->VIEW){
-				FS::mkdir($this->devCompileFile,true);
+				@mkdir(dirname($this->devCompileFile),0777,true);
 				file_put_contents($this->devCompileFile,'');
 			}
 			if($this->Dev_Level()->CSS)
@@ -257,7 +257,7 @@ class Template {
 		return $path?$path:$v;
 	}
 	protected function compileStore($file,$str){
-		FS::mkdir($file,true);
+		@mkdir(dirname($file),0777,true);
 		if(!$this->Dev_Level()->VIEW)
 			$str = $this->Minify_Php()->process($str);
 		return file_put_contents($file,$str,LOCK_EX);

@@ -243,7 +243,7 @@ class Session{
 	}
 	function addAttempt(){
 		$ip = $this->getIp();
-		FS::mkdir($this->attemptsPath);
+		@mkdir($this->attemptsPath,0777,true);
 		if(is_file($this->attemptsPath.$ip))
 			$attempt_count = ((int)file_get_contents($this->attemptsPath.$ip))+1;
 		else

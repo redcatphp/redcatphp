@@ -79,7 +79,7 @@ class SCSSCServer{
 	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;
 		$this->cacheDir = $cacheDir?$cacheDir:SURIKAT_TMP.'scss/';
-		FS::mkdir($this->cacheDir);
+		@mkdir($this->cacheDir,0777,true);
 		$this->scss->setImportPaths($this->dir);
 		if(is_dir('css'))
 			$this->scss->addImportPath('css');
