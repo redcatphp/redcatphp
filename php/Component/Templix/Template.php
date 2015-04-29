@@ -1,10 +1,7 @@
 <?php namespace Surikat\Component\Templix;
 use Surikat\Component\DependencyInjection\MutatorCallTrait;
-use Surikat\Component\Cache\Sync;
 use Surikat\Component\FileSystem\FS;
 use Surikat\Component\SourceCode\PHP;
-use Surikat\Component\Minify\HTML as minHTML;
-use Surikat\Component\Minify\PHP as minPHP;
 use Surikat\Component\Exception\View as ViewException;
 class Template {
 	use MutatorCallTrait;
@@ -217,7 +214,7 @@ class Template {
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
-		return Sync::mtime($this->dirCache.$file,$sync,$forceCache);
+		return $this->Cache_Sync()->mtime($this->dirCache.$file,$sync,$forceCache);
 	}
 	function cacheInc($h,$sync=null){
 		if(func_num_args()<2)
@@ -242,13 +239,13 @@ class Template {
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file;
 		if(!$this->Dev_Level()->VIEW)
-			$str = minHTML::minify($str);
+			$str = $this->Minify_Html()->process($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->path.'/'.$file.'.php';
 		if(!$this->Dev_Level()->VIEW)
-			$str = minPHP::minify($str);
+			$str = $this->Minify_Php()->process($str);
 		return $this->compileStore($file,$str);
 	}
 	function dirCompileToDirCwd($v){
@@ -262,7 +259,7 @@ class Template {
 	protected function compileStore($file,$str){
 		FS::mkdir($file,true);
 		if(!$this->Dev_Level()->VIEW)
-			$str = minPHP::minify($str);
+			$str = $this->Minify_Php()->process($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}
 	protected function compilePHP($file,$str){

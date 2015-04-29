@@ -1,19 +1,16 @@
-<?php namespace Surikat\Component\Minify; 
-class PHP {
+<?php namespace Surikat\Component\Minify;
+use Surikat\Component\DependencyInjection\MutatorFacadeTrait;
+class Php {
+	use MutatorFacadeTrait;
 	var $minifyHTML;
 	private $tokens = [];
-	private $head;
 	private $result;
-	static function minify($out,$head='',$minifyHTML=true){
-		$o = new self($out,$head,$minifyHTML);
-		$out = str_replace('?><?php','',$o);
-		unset($o);
-		return $out;
-	}
-	function __construct($text,$head=null,$minifyHTML=null){
-		$this->add_tokens($text);
-		$this->head = $head;
+	function _process($text,$minifyHTML=true){
+		$this->tokens = [];
+		$this->result = null;
 		$this->minifyHTML = $minifyHTML;
+		$this->add_tokens($text);
+		return str_replace('?><?php','',$this);
 	}
 	function __toString() {
 		$this->remove_public_modifier();
@@ -25,17 +22,19 @@ class PHP {
 			$text = $t[1];
 			if(!strlen($text))
 				continue;
-			if(preg_match("~^\\w\\w$~", $this->result[strlen($this->result) - 1] . $text[0]))
+			$l = strlen($this->result)-1;
+			if(preg_match("~^\\w\\w$~", (isset($this->result[$l])?$this->result[$l]:'').$text[0]))
 				$this->result .= " ";
 			$this->result .= $text;
 		}
 	}
 	private function compressLoopHTML(){
-		$php = true;
+		$php = false;
 		$html = '';
 		foreach($this->tokens as $t){
 			$text = $t[1];
-			if(strlen($text)&&preg_match("~^\\w\\w$~",$this->result[strlen($this->result)-1].$text[0]))
+			$l = strlen($this->result)-1;
+			if(strlen($text)&&preg_match("~^\\w\\w$~",(isset($this->result[$l])?$this->result[$l]:'').$text[0]))
 				$this->result .= ' ';
 			if(($tt=trim($text))=='?>'){
 				$this->result .= $text;
@@ -49,7 +48,7 @@ class PHP {
 			}
 			else{
 				if(!$php){
-					$tmp = HTML::minify($text);
+					$tmp = $this->__Html->process($text);
 					if(preg_match("/\\s/",substr($text,-1)))
 						$tmp .= ' ';
 					if(preg_match("/\\s/",substr($text,0,1)))
@@ -61,9 +60,7 @@ class PHP {
 		}
 	}
 	private function generate_result() {
-		$this->result = "<?php ";
-		if($this->head)
-			$this->result .= $this->head;
+		$this->result = "";
 		if($this->minifyHTML)
 			$this->compressLoopHTML();
 		else
@@ -84,15 +81,6 @@ class PHP {
 	}
 	private function add_tokens($text) {            
 		$tokens = token_get_all(trim($text));
-		if(!count($tokens))
-			return;
-		
-		if(is_array($tokens[0]) && $tokens[0][0] == T_OPEN_TAG)
-			array_shift($tokens);
-			
-		$last = count($tokens) - 1;
-		if(is_array($tokens[$last]) && $tokens[$last][0] == T_CLOSE_TAG)
-			array_pop($tokens);
 		$pending_whitespace = count($this->tokens) ? "\n" : "";
 		foreach($tokens as $t) {
 			if(!is_array($t))

@@ -1,4 +1,5 @@
-<?php namespace Surikat\Component\Minify; 
+<?php namespace Surikat\Component\Minify;
+use Surikat\Component\DependencyInjection\MutatorFacadeTrait;
 #modified by surikat
 /*
  Compress HTML
@@ -10,21 +11,14 @@
  @package Minify
  @author Stephen Clay <steve@mrclay.org>
 */
-class HTML {
+class Html {
+	use MutatorFacadeTrait;
 	protected $_isXhtml = null;
     protected $_replacementHash = null;
     protected $_placeholders = [];
 	protected $_html;
-	protected $_cssMinifier = ['Surikat\\Component\\Minify\\CSS','minify'];
-	protected $_jsMinifier = ['Surikat\\Component\\Minify\\JS','minify'];
-	static $singleton;
-    public static function minify($html) {
-        if(!isset(self::$singleton))
-			self::$singleton = new HTML();
-		return self::$singleton->process($html);
-    }
-    public function __construct(){}
-    public function process($html){
+    function __construct(){}
+    function _process($html){
         $this->_html = str_replace("\r\n", "\n", trim($html));
         if ($this->_isXhtml === null)
             $this->_isXhtml = (false !== strpos($this->_html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
@@ -103,8 +97,8 @@ class HTML {
         // remove CDATA section markers
         $css = $this->_removeCdata($css);
         // minify
-        $minifier = $this->_cssMinifier
-            ? $this->_cssMinifier
+        $minifier = $this->__Css
+            ? [$this->__Css,'process']
             : 'trim';
         $css = call_user_func($minifier, $css);
         return $this->_reservePlace($this->_needsCdata($css)
@@ -123,8 +117,8 @@ class HTML {
         // remove CDATA section markers
         $js = $this->_removeCdata($js);
         // minify
-        $minifier = $this->_jsMinifier
-            ? $this->_jsMinifier
+        $minifier = $this->__Js
+            ? [$this->__Js,'process']
             : 'trim'; 
         $js = call_user_func($minifier, $js);
         return $this->_reservePlace($this->_needsCdata($js)

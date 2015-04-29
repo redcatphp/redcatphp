@@ -1,4 +1,4 @@
-<?php namespace Surikat\Component\Minify; 
+<?php namespace Surikat\Component\Minify;
 /**
  * JSMin.php - modified PHP implementation of Douglas Crockford's JSMin.
  *
@@ -54,8 +54,10 @@
  * @link http://code.google.com/p/jsmin-php/
  */
 
+use Surikat\Component\DependencyInjection\FacadeTrait;
 // class JSMin {
-class JS {
+class Js {
+	use FacadeTrait;
     const ORD_LF            = 10;
     const ORD_SPACE         = 32;
     const ACTION_KEEP_A     = 1;
@@ -78,6 +80,7 @@ class JS {
      * @param string $js Javascript to be minified
      * @return string
      */
+    /*
     public static function minify($js,$pic=false)
     {
 		// $jsmin = new JSMin($js,$pic);
@@ -86,11 +89,25 @@ class JS {
         unset($jsmin);
         return $min;
     }
+    */
+    public function _process($input,$pic=false){
+        $this->a           = "\n";
+		$this->b           = '';
+		$this->inputIndex  = 0;
+		$this->inputLength = 0;
+		$this->lookAhead   = null;
+		$this->output      = '';
+		$this->lastByteOut  = '';
+		
+		$this->preserve_important_comments = $pic;
+        $this->input = $input;
+        return $this->min();
+	}
 
     /**
      * @param string $input
      */
-    public function __construct($input,$pic=true)
+    public function __construct($input='',$pic=true)
     {
         $this->preserve_important_comments = $pic;
         $this->input = $input;

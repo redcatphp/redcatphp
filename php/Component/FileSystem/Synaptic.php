@@ -1,7 +1,5 @@
 <?php namespace Surikat\Component\FileSystem;
 use Surikat\Component\FileSystem\FS;
-use Surikat\Component\Minify\JS;
-use Surikat\Component\Minify\CSS;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Synaptic {
 	use MutatorMagicTrait;
@@ -23,7 +21,7 @@ class Synaptic {
 				}
 				elseif(substr($k,-7,-3)=='.min'){
 					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					$this->minifyJS($kv,$k);
+					$this->minifyJs($kv,$k);
 				}
 				else{
 					$this->Http_Request->code(404);
@@ -95,7 +93,7 @@ class Synaptic {
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
-		$c = JS::minify(file_get_contents($f));
+		$c = $this->Minify_Js->process(file_get_contents($f));
 		if(!$this->Dev_Level->JS){
 			FS::mkdir($min,true);
 			$this->registerMini($min);
@@ -120,7 +118,7 @@ class Synaptic {
 		}
 		else
 			$c = file_get_contents($f);
-		$c = CSS::minify($c);
+		$c = $this->Minify_Css->process($c);
 		if(!$this->Dev_Level->CSS){
 			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
 			FS::mkdir($min,true);
