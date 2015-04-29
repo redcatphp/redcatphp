@@ -1,5 +1,4 @@
 <?php namespace Surikat\Component\Templix;
-use Surikat\Component\I18n\Translator;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 class Toolbox{
 	use MutatorMagicTrait;
@@ -66,7 +65,7 @@ class Toolbox{
 		});
 	}
 	function i18nGettext($Tml,$cache=true){
-		$Tml('html')->attr('lang',Translator::getLangCode());
+		$Tml('html')->attr('lang',$this->I18n_Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
