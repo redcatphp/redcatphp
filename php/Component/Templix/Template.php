@@ -19,8 +19,8 @@ class Template {
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
 	function __construct($file=null,$vars=null,$options=null){
-		$this->setDirCompile(SURIKAT_TMP.'templator/compile/');
-		$this->setDirCache(SURIKAT_TMP.'templator/cache/');
+		$this->setDirCompile(SURIKAT_TMP.'templix/compile/');
+		$this->setDirCache(SURIKAT_TMP.'templix/cache/');
 		$this->addDirCwd([
 			'template/',
 			'Surikat/template/',
