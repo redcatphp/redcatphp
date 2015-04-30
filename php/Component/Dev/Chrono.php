@@ -1,19 +1,19 @@
 <?php namespace Surikat\Component\Dev;
 class Chrono {
-	private $sizeFactors = 'BKMGTP';
+	private static $sizeFactors = 'BKMGTP';
 	private $start;
 	private $end;
-	function sizeFromBytes($bytes,$dec=2){
-		return rtrim(sprintf("%.{$dec}f",(float)($bytes)/(float)pow(1024,$factor=floor((strlen($bytes)-1)/3))),'.0').' '.@$this->sizeFactors[$factor].($factor?'B':'ytes');
+	static function sizeFromBytes($bytes,$dec=2){
+		return rtrim(sprintf("%.{$dec}f",(float)($bytes)/(float)pow(1024,$factor=floor((strlen($bytes)-1)/3))),'.0').' '.@self::$sizeFactors[$factor].($factor?'B':'ytes');
 	}
-	function requestTime($dec=2){
+	static function requestTime($dec=2){
 		if(isset($_SERVER["REQUEST_TIME_FLOAT"]))
-			return $this->format(microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"],$dec);
+			return self::format(microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"],$dec);
 	}
-	function format($v,$dec=2){
-		return $this->formatTime($v,$dec)." | ".$this->sizeFromBytes(memory_get_peak_usage(),$dec);
+	static function format($v,$dec=2){
+		return self::formatTime($v,$dec)." | ".self::sizeFromBytes(memory_get_peak_usage(),$dec);
 	}
-	function formatTime($v,$dec=2){
+	static function formatTime($v,$dec=2){
 		if($v>=1){
 			$u = 's';
 		}
@@ -38,13 +38,13 @@ class Chrono {
 		return $end-$this->start;
 	}
 	function display($dec=2){
-		return $this->formatTime($this->getLength(),$dec);
+		return self::formatTime($this->getLength(),$dec);
 	}
 	function show($dec=2){
 		echo '<pre>'.$this->display($dec)."\r\n".'</pre>';
 	}
 	function showAll($dec=2){
-		echo '<pre>'.$this->name.':'.$this->display()." | ".$this->sizeFromBytes(memory_get_peak_usage(),$dec)."\r\n".'</pre>';
+		echo '<pre>'.$this->name.':'.$this->display()." | ".self::sizeFromBytes(memory_get_peak_usage(),$dec)."\r\n".'</pre>';
 	}
 	
 	
