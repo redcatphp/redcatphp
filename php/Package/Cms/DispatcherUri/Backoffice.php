@@ -1,7 +1,7 @@
 <?php namespace Surikat\Package\Cms\DispatcherUri;
 use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
 class Backoffice extends Dispatcher_Uri{
-	protected $pathFS = 'backoffice';
+	protected $pathFS = 'plugin/backoffice';
 	function __construct(){
 		$this->setHooks();
 	}
