@@ -100,6 +100,7 @@ class SCSSC {
 	protected $importCache = [];
 
 	protected $userFunctions = [];
+	protected $parsedFiles = [];
 
 	protected $numberPrecision = 5;
 	protected $formatter;
