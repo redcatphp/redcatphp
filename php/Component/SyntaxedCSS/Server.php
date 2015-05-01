@@ -1,7 +1,7 @@
 <?php namespace Surikat\Component\SyntaxedCSS;
 use Surikat\Component\DependencyInjection\MutatorMagicTrait;
 use Exception;
-class SCSSCServer{
+class Server{
 	use MutatorMagicTrait;
 	static function joinPath($left, $right) {
 		return rtrim($left, '/\\') . DIRECTORY_SEPARATOR . ltrim($right, '/\\');
@@ -73,7 +73,7 @@ class SCSSCServer{
 		$this->Http_Request->fileCache($output);
 	}
 	function __construct(){
-		$this->scss = $this->SyntaxedCSS_SCSSC;
+		$this->scss = $this->SyntaxedCSS_Scss;
 	}
 	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;
