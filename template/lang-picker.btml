@@ -1,7 +1,7 @@
 <eval>
 	<?
 		$langDir = 'langs/';
-		$lgC = Surikat\Component\I18n\Translator::getLangCode();
+		$lgC = I18n\Translator::getLangCode();
 		$lgD = $this->Config('langs')->default;
 		$langs = [$lgD];
 		foreach(glob($langDir.'*.ini') as $langFile)
@@ -9,8 +9,8 @@
 	?>
 	<foreach "$langs as $lg">
 		<?
-			$language = Surikat\Component\I18n\Punic\Language::getName($lg,$lg);
-			$language = Surikat\Component\Vars\STR::ucfirst($language);
+			$language = I18n\Punic\Language::getName($lg,$lg);
+			$language = Vars\STR::ucfirst($language);
 			$lcPath = $URI[0];
 			if($lg!=$lgC){
 				if($lg==$lgD){

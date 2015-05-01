@@ -1,7 +1,7 @@
 <graph-erm>
 	<eval>
 		<?
-			use Surikat\Component\Database\R;
+			use Database\R;
 			$listOfColumns = function($t,$details=null){
 				static $listOfColumns = array();
 				if(!isset($listOfColumns[$t]))

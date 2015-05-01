@@ -1,0 +1,1 @@
+<?php namespace Exception; class ViewTml extends \Exception\Exception{}

@@ -1,5 +1,5 @@
-<?php namespace Surikat\Package\Cms\DispatcherUri;
-use Surikat\Component\Dispatcher\Uri as Dispatcher_Uri;
+<?php namespace Package\Cms\DispatcherUri;
+use Dispatcher\Uri as Dispatcher_Uri;
 class Synaptic extends Dispatcher_Uri{
 	protected $pathFS;
 	function __construct($pathFS=''){

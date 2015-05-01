@@ -1,24 +1,23 @@
 <?php
-//error_reporting(-1);
-//ini_set('display_startup_errors',true);
-//ini_set('display_errors','stdout');
-require __DIR__.'/Component/DependencyInjection/MutatorTrait.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagicPropertyTrait.php';
-require __DIR__.'/Component/DependencyInjection/MutatorPropertyTrait.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagicCallTrait.php';
-require __DIR__.'/Component/DependencyInjection/MutatorCallTrait.php';
-require __DIR__.'/Component/DependencyInjection/MutatorMagicTrait.php';
-require __DIR__.'/Component/DependencyInjection/RegistryTrait.php';
-require __DIR__.'/Component/DependencyInjection/Container.php';
-require __DIR__.'/Component/Autoload/Psr4.php';
+error_reporting(-1);
+ini_set('display_startup_errors',true);
+ini_set('display_errors','stdout');
+require __DIR__.'/DependencyInjection/MutatorTrait.php';
+require __DIR__.'/DependencyInjection/MutatorMagicPropertyTrait.php';
+require __DIR__.'/DependencyInjection/MutatorPropertyTrait.php';
+require __DIR__.'/DependencyInjection/MutatorMagicCallTrait.php';
+require __DIR__.'/DependencyInjection/MutatorCallTrait.php';
+require __DIR__.'/DependencyInjection/MutatorMagicTrait.php';
+require __DIR__.'/DependencyInjection/RegistryTrait.php';
+require __DIR__.'/DependencyInjection/Container.php';
+require __DIR__.'/Autoload/Psr4.php';
 require __DIR__.'/constants.php';
 global $SURIKAT;
-$SURIKAT = Surikat\Component\DependencyInjection\Container::get();
+$SURIKAT = DependencyInjection\Container::get();
 $SURIKAT->Autoload_Psr4->addNamespaces([
 	''			=> [
 		getcwd().'/php',
 		__DIR__
-	],
-	'Surikat'	=> __DIR__,
+	]
 ])->splRegister();
 $SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_Config,'objectFactory']);

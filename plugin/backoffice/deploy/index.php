@@ -1,5 +1,5 @@
 <?php
-use Surikat\Component\Git\GitDeploy\GitDeploy;
+use Git\GitDeploy\GitDeploy;
 
 set_time_limit(0);
 $this->Http_Request()->nocacheHeaders();

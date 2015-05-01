@@ -1,1 +1,0 @@
-<?php namespace Surikat\Component\Exception; class ViewTml extends \Surikat\Component\Exception\Exception{}

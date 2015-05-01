@@ -1,5 +1,5 @@
 <?php
-use Surikat\Component\Git\PhpGit\Git; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
+use Git\PhpGit\Git; #forked from: PHP-Git César D. Rodas <crodas@member.fsf.org> http://www.php.net/license/3_01.txt  PHP License 3.01 - http://cesar.la/git
 if(!isset($dir))
 	return;
 $git = new Git($dir.'.git');
