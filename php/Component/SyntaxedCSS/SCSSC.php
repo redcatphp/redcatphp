@@ -104,6 +104,7 @@ class SCSSC {
 	protected $parsedFiles = [];
 	protected $extends = [];
 	protected $extendsMap = [];
+	protected $commentsSeen = [];
 
 	protected $numberPrecision = 5;
 	protected $formatter;
