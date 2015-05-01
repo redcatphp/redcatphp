@@ -17,7 +17,7 @@ trait MutatorMagicPropertyTrait{
 		else{
 			if(!isset($this->__legacyRegistry[$k]))
 				$this->__legacyRegistry[$k] = null;
-			$r = $this->__legacyRegistry[$k];
+			return $this->__legacyRegistry[$k];
 		}
 		return $r;
 	}
