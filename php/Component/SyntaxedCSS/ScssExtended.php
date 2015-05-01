@@ -69,7 +69,6 @@ class ScssExtended extends Scss{
 			foreach(array_keys($matches[0]) as $i){
 				$fname = str_replace('-','_',$matches[1][$i]);
 				$func = 'scss_'.$fname;
-				//ob_start();
 				$arg = $matches[2][$i];
 				$r = [
 					'['=>'(',
@@ -198,7 +197,6 @@ class ScssExtended extends Scss{
 			exit(print($__code));
 		eval('?>'.$__code);
 		$c = ob_get_clean();
-		//restore_error_handler();
 		set_error_handler($h);
 		return $c;
 	}

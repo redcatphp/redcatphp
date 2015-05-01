@@ -110,10 +110,10 @@ class Scss {
 	protected $formatter;
 	var $sourcePos;
 	
-	public function compile($code, $name=null) {
-		//addon by surikat
-		$GLOBALS['scss_origin'] = &$this;
-		
+	public $allowImportCSS;//addon by surikat
+	public $allowImportRemote;//addon by surikat
+	
+	public function compile($code, $name=null) {		
 		$this->indentLevel = -1;
 		$this->commentsSeen = [];
 		$this->extends = [];
@@ -1575,8 +1575,6 @@ class Scss {
 		$this->compileChildren($tree->children, $out);
 		array_shift($this->importPaths);
 	}
-	public $allowImportCSS;//addon by surikat
-	public $allowImportRemote;//addon by surikat
 	// results the file path for an import url if it exists
 	public function findImport($url) {
 		$urls = [];
