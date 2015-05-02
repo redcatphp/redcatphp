@@ -1,8 +1,5 @@
 <?php namespace User;
-use Exception\Exception;
-use Exception\Security as ExceptionSecurity;
 use DependencyInjection\MutatorCallTrait;
-use User\SessionHandler;
 class Session{
 	use MutatorCallTrait;
 	private $id;
@@ -27,7 +24,7 @@ class Session{
 	protected $User_SessionHandler;
 	protected $Http_Cookie;
 	protected $handled;
-	function __construct($name=null,$saveRoot=null,SessionHandler $sessionHandler=null){
+	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null){
 		if(!$saveRoot)
 			$saveRoot = SURIKAT_PATH.'.tmp/sessions/';
 		if($name)
@@ -126,7 +123,7 @@ class Session{
 		$now = time();
 		$mtime = filemtime($this->serverFile());
 		if($now>$mtime+$this->maxLifetime){
-			throw new ExceptionSecurity('Invalid session');
+			throw new SecurityException('Invalid session');
 		}
 		if($now>$mtime+$this->regeneratePeriod||$this->get('_FP_')!=$this->getClientFP()){
 			$this->set('_FP_',$this->getClientFP());
@@ -213,7 +210,7 @@ class Session{
 		if($s=$this->isBlocked()){
 			$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 			$this->reset();
-			throw new ExceptionSecurity(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
+			throw new SecurityException(sprintf('Too many failed session open or login submit. Are you trying to bruteforce me ? Wait for %d seconds',$s));
 		}
 	}
 	function reset(){
