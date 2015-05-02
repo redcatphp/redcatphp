@@ -1,6 +1,5 @@
 <?php namespace FileSystem;
 use DependencyInjection\MutatorMagicTrait;
-use Image\Images;
 class Uploader{
 	use MutatorMagicTrait;
 	public $extensionRewrite = [
@@ -33,7 +32,7 @@ class Uploader{
 						$img = imagecreatefrompng($file);
 					break;
 					default:
-						throw $this->Exception_Upload('image format conversion not supported');
+						throw new UploadException('image format conversion not supported');
 					break;
 				}
 				$file = substr($file,0,-1*strlen($ext)).$conversion;
@@ -54,7 +53,7 @@ class Uploader{
 		},function($file){
 			$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
 			if(!in_array($ext,(array)$extensions))
-				throw $this->Exception_Upload('extension');
+				throw new UploadException('extension');
 		});
 	}
 	function formatFilename($name){
@@ -66,11 +65,11 @@ class Uploader{
 	}
 	function uploadFile(&$file,$dir='',$mime=null,$callback=null,$precallback=null,$nooverw=null,$maxFileSize=null){
 		if($file['error']!==UPLOAD_ERR_OK)
-			throw $this->Exception_Upload($file['error']);
+			throw new UploadException($file['error']);
 		if($mime&&stripos($file['type'],$mime)!==0)
-			throw $this->Exception_Upload('type');
+			throw new UploadException('type');
 		if($maxFileSize&&filesize($file['tmp_name'])>$maxFileSize)
-			throw $this->Exception_Upload(UPLOAD_ERR_FORM_SIZE);
+			throw new UploadException(UPLOAD_ERR_FORM_SIZE);
 		@mkdir($dir,0777,true);
 		$name = $this->formatFilename($file['name']);
 		if($nooverw){
@@ -82,7 +81,7 @@ class Uploader{
 		if($precallback)
 			$precallback($dir.$name);
 		if(!move_uploaded_file($file['tmp_name'],$dir.$name))
-			throw $this->Exception_Upload('move_uploaded_file');
+			throw new UploadException('move_uploaded_file');
 		if($callback)
 			$callback($dir.$name);
 	}

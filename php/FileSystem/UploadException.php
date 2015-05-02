@@ -1,5 +1,5 @@
-<?php namespace Exception;
-class Upload extends \Exception\Exception{
+<?php namespace FileSystem;
+class UploadException extends \Exception{
     public function __construct($code){
         parent::__construct($this->codeToMessage($code));
     }

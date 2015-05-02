@@ -1,4 +1,4 @@
-<?php namespace Document;
+<?php namespace FileSystem;
 
 /*
  * **************************
