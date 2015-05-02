@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX;
-use Markdown\Parsedown;
+use FileSystem\Parsedown;
 class TmlMarkdown extends \Templix\Tml {
 	protected $hiddenWrap = true;
 	protected $noParseContent = true;

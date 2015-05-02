@@ -1,5 +1,5 @@
 <?php
-namespace Markdown;
+namespace FileSystem;
 #
 #
 # Parsedown
