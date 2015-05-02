@@ -1,5 +1,6 @@
 <?php namespace Mvc;
 use DependencyInjection\MutatorMagicTrait;
+use DomainException;
 class Controller{
 	use MutatorMagicTrait;
 	protected $prefixTmlCompile = '';
@@ -38,7 +39,7 @@ class Controller{
 		try{
 			$this->Mvc_View->display($file);
 		}
-		catch(\Exception\View $e){
+		catch(DomainException $e){
 			$this->error($e->getMessage());
 		}
 	}
@@ -47,7 +48,7 @@ class Controller{
 			$this->Mvc_View->set('URI',$this->Route);
 			$this->Mvc_View->display($c.'.tml');
 		}
-		catch(\Exception\View $e){
+		catch(DomainException $e){
 			$this->Http_Request->code($e->getMessage());
 		}
 		exit;

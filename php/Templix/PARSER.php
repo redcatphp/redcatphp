@@ -1,5 +1,4 @@
 <?php namespace Templix;
-use Exception\ViewTml as ExceptionTml;
 abstract class PARSER{
 	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;
@@ -635,7 +634,7 @@ abstract class PARSER{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		throw new ExceptionTml($msg);
+		throw new MarkupException($msg);
 	}
 }
 PARSER::initialize();

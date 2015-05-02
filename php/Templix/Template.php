@@ -1,6 +1,6 @@
 <?php namespace Templix;
 use DependencyInjection\MutatorCallTrait;
-use Exception\View as ViewException;
+use DomainException;
 class Template {
 	use MutatorCallTrait;
 	var $forceCompile;
@@ -121,7 +121,7 @@ class Template {
 	}
 	function prepare(){
 		if(!($file=$this->find()))
-			throw new ViewException('404');
+			throw new DomainException('404');
 		$node = new Tml();
 		$node->setTemplate($this);
 		$node->parse(file_get_contents($file));
