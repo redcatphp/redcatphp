@@ -1,6 +1,7 @@
-<?php namespace Exception;
-class Exception extends \Exception{
-    private $_data;
+<?php namespace Database;
+use Traversable;
+class ValidationException extends \Exception{
+	private $_data;
     function __construct($message, $code = 0, Exception $previous = null, $data = null){
 		foreach(func_get_args() as $arg)
 			if(is_string($arg))
@@ -25,5 +26,22 @@ class Exception extends \Exception{
 	}
     function setData($data){
 		$this->_data = $data;
+	}
+	function getFlattenData($glue='.'){
+		$data = [];
+		foreach($this->getData() as $k=>$v){
+			$this->recursivePoint($k,$v,$data,$glue);
+		}
+		return $data;
+	}
+	private function recursivePoint($k,$v,&$data=[],$glue='.'){
+		if(is_array($v)||$v instanceof Traversable){
+			foreach($v as $_k=>$_v){
+				$this->recursivePoint($k.$glue.$_k,$_v,$data);
+			}
+		}
+		else{
+			$data[$k] = $v;
+		}
 	}
 }

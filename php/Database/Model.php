@@ -26,7 +26,7 @@ use Database\RedBeanPHP\SimpleModel;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
 use Vars\JSON;
 use BadMethodCallException;
-use Exception\DatabaseValidation as ExceptionModelValidation; //for allowing mirrored exception class catching and (optional) hook
+use Database\ValidationException; //for allowing mirrored exception class catching and (optional) hook
 class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	use MutatorCallTrait;
 	#<workflow CRUD>
@@ -117,7 +117,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 		return $this;
 	}
 	function throwValidationError($e=null){
-		throw new ExceptionModelValidation('Données manquantes ou erronées',$e);
+		throw new ValidationException('Données manquantes ou erronées',$e);
 	}
 	function _relationsKeysRestore(){
 		foreach($this->_relationsKeysStore as $k=>$v)
