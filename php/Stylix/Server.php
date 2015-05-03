@@ -1,4 +1,4 @@
-<?php namespace SyntaxedCSS;
+<?php namespace Stylix;
 use DependencyInjection\MutatorMagicTrait;
 use Exception;
 class Server{
@@ -73,7 +73,7 @@ class Server{
 		$this->Http_Request->fileCache($output);
 	}
 	function __construct(){
-		$this->scss = $this->SyntaxedCSS_Scss;
+		$this->scss = $this->Stylix_Scss;
 	}
 	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;

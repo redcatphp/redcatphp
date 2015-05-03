@@ -130,8 +130,8 @@ class Synaptic {
 	}
 	protected function scss($path) {
 		set_time_limit(0);
-		$server = $this->SyntaxedCSS_Server;
-		$scssc = $server->SyntaxedCSS_Scss;
+		$server = $this->Stylix_Server;
+		$scssc = $server->Stylix_Scss;
 		$scssc->allowImportCSS = true;
 		$scssc->allowImportRemote = true;
 		$server->setPath(dirname($path));

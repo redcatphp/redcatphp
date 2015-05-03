@@ -1,5 +1,5 @@
 <?php
-namespace SyntaxedCSS;
+namespace Stylix;
 use stdClass;
 use Exception;
 use DependencyInjection\MutatorMagicTrait;

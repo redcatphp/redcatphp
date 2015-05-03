@@ -1,4 +1,4 @@
-<?php namespace SyntaxedCSS;
+<?php namespace Stylix;
 /**
  * SCSS base formatter
  *

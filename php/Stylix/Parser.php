@@ -1,4 +1,4 @@
-<?php namespace SyntaxedCSS;
+<?php namespace Stylix;
 use stdClass;
 use Exception;
 /**
