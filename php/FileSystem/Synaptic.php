@@ -7,16 +7,16 @@ class Synaptic {
 	protected $dirs = [''];
 	function setDirs($d){
 		$this->dirs = (array)$d;
-		foreach(array_keys($this->dirs) as $k){
-			if($this->dirs[$k])
-				$this->dirs[$k] = rtrim($this->dirs[$k],'/').'/';
+		foreach($this->dirs as $d){
+			if($d)
+				$this->dirs[$k] = rtrim($d,'/').'/';
 		}
 	}
 	function prependDir($d){
-		array_unshift($this->dirs,rtrim($d,'/').'/');
+		array_unshift($this->dirs,$d?rtrim($d,'/').'/':'');
 	}
 	function appendDir($d){
-		$this->dirs[] = rtrim($d,'/').'/';
+		$this->dirs[] = $d?rtrim($d,'/').'/':'';
 	}
 	function load($k){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
@@ -156,9 +156,10 @@ class Synaptic {
 	}
 	protected function scss($path) {
 		$from = [];
-		$from[] = dirname($path);
 		foreach($this->dirs as $d){
 			if(is_dir($dir=$d.'css'))
+				$from[] = $dir;
+			if(is_dir($dir=$d.dirname($path)))
 				$from[] = $dir;
 		}
 		$this->Stylix_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
