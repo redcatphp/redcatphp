@@ -9,6 +9,7 @@ class Synaptic extends Dispatcher_Uri{
 	}
 	function __invoke(){
 		list($filename,$file) = func_get_args();
+		$this->FileSystem_Synaptic->appendDir('Surikat');
 		$this->FileSystem_Synaptic->load($this->pathFS.$file);
 	}
 }

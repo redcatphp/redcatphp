@@ -4,6 +4,20 @@ class Synaptic {
 	use MutatorMagicTrait;
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
+	protected $dirs = [''];
+	function setDirs($d){
+		$this->dirs = (array)$d;
+		foreach(array_keys($this->dirs) as $k){
+			if($this->dirs[$k])
+				$this->dirs[$k] = rtrim($this->dirs[$k],'/').'/';
+		}
+	}
+	function prependDir($d){
+		array_unshift($this->dirs,rtrim($d,'/').'/');
+	}
+	function appendDir($d){
+		$this->dirs[] = rtrim($d,'/').'/';
+	}
 	function load($k){
 		$extension = strtolower(pathinfo($k,PATHINFO_EXTENSION));
 		if(!in_array($extension,$this->allowedExtensions)){
@@ -12,58 +26,68 @@ class Synaptic {
 		}
 		switch($extension){
 			case 'js':
-				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
-					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
-					header('Content-Type: application/javascript; charset:utf-8');
-					$this->Http_Request->fileCache($f);
-					readfile($f);
-				}
-				elseif(substr($k,-7,-3)=='.min'){
-					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					$this->minifyJs($kv,$k);
-				}
-				else{
-					$this->Http_Request->code(404);
-				}
-			break;
-			case 'css':
-				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
-					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
-					header('Content-Type: text/css; charset:utf-8');
-					$this->Http_Request->fileCache($f);
-					readfile($f);
-				}
-				elseif(substr($k,-8,-4)=='.min')
-					$this->minifyCSS(substr($k,0,-8).'.css');
-				elseif(
-					is_file(dirname($key=$k).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss')
-					||(($key=basename(SURIKAT_SPATH).'/'.$key)&&is_file(dirname($key).'/'.pathinfo($key,PATHINFO_FILENAME).'.scss'))
-				){
-					if($this->scss($key)===false){
-						$this->Http_Request->code(404);
+				foreach($this->dirs as $d){
+					if(is_file($f=$d.$k)){
+						header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
+						header('Content-Type: application/javascript; charset:utf-8');
+						$this->Http_Request->fileCache($f);
+						readfile($f);
+						return;
 					}
 				}
-				else{
-					$this->Http_Request->code(404);
+				if(substr($k,-7,-3)=='.min'){
+					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
+					$this->minifyJs($kv,$k);
+					return;
+				}				
+				$this->Http_Request->code(404);
+			break;
+			case 'css':
+				foreach($this->dirs as $d){
+					if(is_file($f=$d.$k)){
+						header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
+						header('Content-Type: text/css; charset:utf-8');
+						$this->Http_Request->fileCache($f);
+						readfile($f);
+						return;
+					}
 				}
+				if(substr($k,-8,-4)=='.min'){
+					$this->minifyCSS(substr($k,0,-8).'.css');
+					return;
+				}
+				foreach($this->dirs as $d){
+					$file = $d.dirname($k).'/'.pathinfo($k,PATHINFO_FILENAME).'.scss';
+					if(is_file($file)){
+						if($this->scss($k)===false){
+							$this->Http_Request->code(404);
+						}
+						return;
+					}
+				}
+				$this->Http_Request->code(404);
 			break;
 			case 'png':
 			case 'jpg':
 			case 'jpeg':
 			case 'gif':
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
-				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
-					$this->Http_Request->fileCache($f);
-					readfile($f);
+				foreach($this->dirs as $d){
+					if(is_file($f=$d.$k)){
+						$this->Http_Request->fileCache($f);
+						readfile($f);
+						return;
+					}
 				}
-				elseif(is_file($f='img/404.png')||is_file($f=SURIKAT_SPATH.'img/404.png')){
-					$this->Http_Request->code(404);
-					$this->Http_Request->fileCache($f);
-					readfile($f);
+				foreach($this->dirs as $d){
+					if(is_file($f=$d.'img/404.png')){
+						$this->Http_Request->code(404);
+						$this->Http_Request->fileCache($f);
+						readfile($f);
+						return;
+					}
 				}
-				else{
-					$this->Http_Request->code(404);
-				}
+				$this->Http_Request->code(404);
 			break;
 		}
 	}
@@ -102,39 +126,41 @@ class Synaptic {
 			header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
 	}
-	protected function minifyCSS($f){
-		if(!is_file($f)
-			&&!is_file($f=dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
-			&&!is_file($f=SURIKAT_SPATH.dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.scss')
-			&&!is_file($f=SURIKAT_SPATH.dirname($f).'/'.basename($f))
-		)
-			return false;
-		$e = pathinfo($f,PATHINFO_EXTENSION);
-		if($e=='scss'){
-			ob_start();
-			$this->scss($f);
-			$c = ob_get_clean();
+	protected function minifyCSS($file){
+		foreach($this->dirs as $d){
+			if(is_file($f=$d.$file)||is_file($f=$d.dirname($file).'/'.pathinfo($file,PATHINFO_FILENAME).'.scss')){
+				$e = pathinfo($f,PATHINFO_EXTENSION);
+				if($e=='scss'){
+					ob_start();
+					$this->scss($f);
+					$c = ob_get_clean();
+				}
+				else
+					$c = file_get_contents($f);
+				$c = $this->Minify_Css->process($c);
+				if(!$this->Dev_Level->CSS){
+					$dir = dirname($file);
+					$min = $dir.'/'.pathinfo($file,PATHINFO_FILENAME).'.min.css';
+					if(!is_dir($dir))
+						@mkdir($dir,0777,true);
+					$this->registerMini($min);
+					file_put_contents($min,$c,LOCK_EX);
+				}
+				if(!headers_sent())
+					header('Content-Type:text/css; charset=utf-8');
+				echo $c;
+				return;
+			}
 		}
-		else
-			$c = file_get_contents($f);
-		$c = $this->Minify_Css->process($c);
-		if(!$this->Dev_Level->CSS){
-			$min = dirname($f).'/'.pathinfo($f,PATHINFO_FILENAME).'.min.css';
-			@mkdir(dirname($min),0777,true);
-			$this->registerMini($min);
-			file_put_contents($min,$c,LOCK_EX);
-		}
-		if(!headers_sent())
-			header('Content-Type:text/css; charset=utf-8');
-		echo $c;
+		return false;
 	}
 	protected function scss($path) {
 		$from = [];
 		$from[] = dirname($path);
-		if(is_dir('css'))
-			$from[] = 'css';
-		if(is_dir(basename(SURIKAT_SPATH).'/css'))
-			$from[] = basename(SURIKAT_SPATH).'/css';
+		foreach($this->dirs as $d){
+			if(is_dir($dir=$d.'css'))
+				$from[] = $dir;
+		}
 		$this->Stylix_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
 	}
 }
