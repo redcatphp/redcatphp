@@ -12,7 +12,7 @@ class Synaptic {
 		}
 		switch($extension){
 			case 'js':
-				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
+				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: application/javascript; charset:utf-8');
 					$this->Http_Request->fileCache($f);
@@ -27,7 +27,7 @@ class Synaptic {
 				}
 			break;
 			case 'css':
-				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
+				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
 					header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 					header('Content-Type: text/css; charset:utf-8');
 					$this->Http_Request->fileCache($f);
@@ -52,11 +52,11 @@ class Synaptic {
 			case 'jpeg':
 			case 'gif':
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
-				if(is_file($f=SURIKAT_PATH.$k)||is_file($f=SURIKAT_SPATH.$k)){
+				if(is_file($f=$k)||is_file($f=SURIKAT_SPATH.$k)){
 					$this->Http_Request->fileCache($f);
 					readfile($f);
 				}
-				elseif(is_file($f=SURIKAT_PATH.'img/404.png')||is_file($f=SURIKAT_SPATH.'img/404.png')){
+				elseif(is_file($f='img/404.png')||is_file($f=SURIKAT_SPATH.'img/404.png')){
 					$this->Http_Request->code(404);
 					$this->Http_Request->fileCache($f);
 					readfile($f);
@@ -68,7 +68,7 @@ class Synaptic {
 		}
 	}
 	function cleanMini($ext=null){
-		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
+		$f = '.tmp/synaptic/min-registry.txt';
 		if(!is_file($f))
 			return;
 		foreach(file($f) as $file){
@@ -84,7 +84,7 @@ class Synaptic {
 		unlink($f);
 	}
 	protected function registerMini($min){
-		$f = SURIKAT_PATH.'.tmp/synaptic/min-registry.txt';
+		$f = '.tmp/synaptic/min-registry.txt';
 		@mkdir(dirname($f),0777,true);
 		file_put_contents($f,$min."\n",FILE_APPEND|LOCK_EX);
 	}

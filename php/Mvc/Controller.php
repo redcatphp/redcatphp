@@ -11,7 +11,7 @@ class Controller{
 			&&$hook = $Route->getDirHook()){
 			$this->Mvc_View->setDirCwd([
 				$hook.'/',
-				SURIKAT_LINK.$hook.'/',
+				'Surikat/'.$hook.'/',
 			]);
 		}
 		$this->Mvc_View->onCompile(function($Tml){

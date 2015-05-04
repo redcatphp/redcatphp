@@ -13,7 +13,7 @@ class CsvImporter{
 	private $addCols;
 	private $addColsAfter;
 	function __construct($options=[]){
-		$this->csvDir = SURIKAT_PATH.'.data/';
+		$this->csvDir = '.data/';
 		foreach($options as $k=>$v)
 			$this->$k = $v;
 	}

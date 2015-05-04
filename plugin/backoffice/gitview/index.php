@@ -1,2 +1,3 @@
-<?php $dir = SURIKAT_PATH;
+<?php
+$dir = getcwd().'/';
 include __DIR__.'/main.inc.php';

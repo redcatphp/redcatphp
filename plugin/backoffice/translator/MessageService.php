@@ -63,7 +63,7 @@ class MessageService {
 			return;
 		$this->cat($lang,'messages');
 		$names = [];
-		foreach(glob(SURIKAT_PATH.'langs/*.pot') as $name)
+		foreach(glob('langs/*.pot') as $name)
 			$names[] = pathinfo($name,PATHINFO_FILENAME);
 		return $names;
 	}
@@ -77,12 +77,12 @@ class MessageService {
 	}
 	function importCatalogue($lang,$name,$atline=null){
 		if($lang&&$name)
-			return $this->cat($lang,$name)->import(SURIKAT_PATH.$this->potfile,$atline);
+			return $this->cat($lang,$name)->import($this->potfile,$atline);
 	}
 	function exportCatalogue($lang,$name){
 		if(!$lang||!$name)
 			return;
-		$path = SURIKAT_PATH.'langs/'.$lang.'/LC_MESSAGES/'.$name.'.';
+		$path = 'langs/'.$lang.'/LC_MESSAGES/'.$name.'.';
 		@mkdir(dirname($path),0777,true);
 		$po = $path.'po';
 		$mo = $path.'mo';
@@ -97,17 +97,18 @@ class MessageService {
 	}
 	
 	function makePot(){
-		$potfile = SURIKAT_PATH.$this->potfile;
+		$potfile = $this->potfile;
 		$pot = Catalogue::headerPots();
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
-		$pot .= getTextExtractorTML::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
-		$pot .= getTextExtractorPHP::parse(SURIKAT_PATH.'tml',SURIKAT_PATH);
-		$pot .= getTextExtractorPHP::parse(SURIKAT_PATH.'php',SURIKAT_PATH);
+		$cwd = getcwd().'/';
+		$pot .= getTextExtractorTML::parse('tml',$cwd);
+		$pot .= getTextExtractorPHP::parse('tml',$cwd);
+		$pot .= getTextExtractorPHP::parse('php',$cwd);
 		file_put_contents($potfile,$pot);
 	}
 	function countPotMessages(){
-		//return (new POParser())->countEntriesFromStream(fopen(SURIKAT_PATH.'langs/messages.pot', 'r'));
-		return count(Po::fromFile(SURIKAT_PATH.'langs/messages.pot')->getArrayCopy());
+		//return (new POParser())->countEntriesFromStream(fopen('langs/messages.pot', 'r'));
+		return count(Po::fromFile('langs/messages.pot')->getArrayCopy());
 	}
 }

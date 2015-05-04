@@ -14,7 +14,7 @@ class FolderVars{
 	var $exists = null;
 	function __construct($dir){
 		$this->key = rtrim($dir,'/').'/';
-		$this->dir = SURIKAT_PATH.'content/'.rtrim($dir,'/').'/';
+		$this->dir = 'content/'.rtrim($dir,'/').'/';
 		$this->exists = is_dir($this->dir);
 	}
 	function getvars($types=null){

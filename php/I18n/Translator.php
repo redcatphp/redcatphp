@@ -30,7 +30,7 @@ class Translator {
 	function _set($locale=null,$domain=null){
 		if(!isset($domain))
 			$domain = self::$defaultDomain;
-		$this->defaultLocalesRoot = SURIKAT_PATH.'langs';
+		$this->defaultLocalesRoot = 'langs';
 		$tz = $this->Config('langs')->timezone;
 		if(!$tz)
 			$tz = @date_default_timezone_get();

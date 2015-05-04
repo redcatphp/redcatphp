@@ -38,8 +38,9 @@ class Url {
 			else{
 				$docRoot = $this->server['DOCUMENT_ROOT'].'/';
 				//$docRoot = dirname($this->server['SCRIPT_FILENAME']).'/';
-				if($docRoot!=SURIKAT_PATH&&strpos(SURIKAT_PATH,$docRoot)===0)
-					$this->suffixHref = substr(SURIKAT_PATH,strlen($docRoot));
+				$cwd = getcwd().'/';
+				if($docRoot!=$cwd&&strpos($cwd,$docRoot)===0)
+					$this->suffixHref = substr($cwd,strlen($docRoot));
 			}
 		}
 		return $this->suffixHref;

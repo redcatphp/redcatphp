@@ -18,7 +18,7 @@ class ByPhp extends Route{
 		if(!$path||substr($path,-1)=='/')
 			$path .= 'index.php';
 		$file = $this->dirFS.'/'.$path;
-		if(	is_file($f=($adir=SURIKAT_PATH).$file)
+		if(	is_file($f=($adir=getcwd().'/').$file)
 			||is_file($f=($adir=SURIKAT_SPATH).$file))
 			return [$this->dirFS,$path,$adir.$this->dirFS,$f];
 	}

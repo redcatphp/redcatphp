@@ -9,7 +9,7 @@ ob_implicit_flush(true);
 echo '<pre>';
 GitDeploy::factory()
 	->maintenanceOn()
-	->deploy(SURIKAT_PATH)
+	->deploy(getcwd().'/')
 	->maintenanceOff()
 ;
 echo '</pre>';

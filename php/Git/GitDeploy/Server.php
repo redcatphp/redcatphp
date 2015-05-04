@@ -158,7 +158,7 @@ abstract class Server {
 			elseif($git)
 				$htaccess = $git->get_file_contents('.htaccess');
 			else
-				$htaccess = file_get_contents(SURIKAT_PATH.'.htaccess');
+				$htaccess = file_get_contents('.htaccess');
 			$this->set_file('.htaccess', $htaccess);
 			GitDeploy::logmessage('Turned maintenance mode off');
 		}

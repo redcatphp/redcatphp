@@ -79,7 +79,7 @@ class Database{
 		if(!isset($config)){
 			$config = [
 				'type'=>'sqlite',
-				'file'=>SURIKAT_PATH.'.data/db.'.$this->name.'.sqlite'
+				'file'=>'.data/db.'.$this->name.'.sqlite'
 			];
 		}
 		$config = new ArrayObject($config);

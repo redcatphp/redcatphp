@@ -11,7 +11,7 @@ class Loader {
 		}
 		if(!isset($dirs))
 			$dirs = [
-				SURIKAT_PATH.$this->directory.'/',
+				$this->directory.'/',
 				SURIKAT_SPATH.$this->directory.'/',
 			];
 		$this->dirs = $dirs;
@@ -32,7 +32,7 @@ class Loader {
 		return $array;
 	}
 	function putContents($contents){
-		return file_put_contents(SURIKAT_PATH.$this->directory.'/'.$this->file,$this->toString($contents));
+		return file_put_contents($this->directory.'/'.$this->file,$this->toString($contents));
 	}
 	function toString($contents){
 		return '<?php return '.var_export($contents,true).';';

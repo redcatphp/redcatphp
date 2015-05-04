@@ -14,7 +14,7 @@ class ByPhpX extends ByPhp {
 			$index = false;
 		}
 		$file = $this->dirFS.'/'.$path;
-		if(	is_file($f=($adir=SURIKAT_PATH).$file)
+		if(	is_file($f=($adir=getcwd().'/').$file)
 			||is_file($f=($adir=SURIKAT_SPATH).$file)
 		){
 			return [$this->dirFS,$path,$adir.$this->dirFS,$f];
@@ -22,7 +22,7 @@ class ByPhpX extends ByPhp {
 		elseif(!$index){
 			$path .= '/index.php';
 			$file = $this->dirFS.'/'.$path;
-			if(is_file($f=($adir=SURIKAT_PATH).$file)
+			if(is_file($f=($adir=getcwd().'/').$file)
 				||is_file($f=($adir=SURIKAT_SPATH).$file)
 			){
 				return [$this->dirFS,$path,$adir.$this->dirFS,$f];

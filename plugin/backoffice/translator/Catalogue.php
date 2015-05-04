@@ -6,7 +6,7 @@ class Catalogue {
 	protected $id;
 	protected $POParser;
 	static function headerPots(){
-		$pots = SURIKAT_PATH.'langs/header.pots';
+		$pots = 'langs/header.pots';
 		if(!is_file($pots)){
 			@mkdir(dirname($pots),0777,true);
 			copy(__DIR__.'/header.pots',$pots);
