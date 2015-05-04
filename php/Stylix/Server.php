@@ -1,9 +1,8 @@
 <?php namespace Stylix;
 class Server{
+	protected $cacheDir = '.tmp/stylix/';
 	function __construct($from=null){
 		$this->compiler = new Compiler();
-		$this->cacheDir = '.tmp/stylix/';
-		@mkdir($this->cacheDir,0777,true);
 		if(isset($from))
 			$this->setImportPaths($from);
 	}
@@ -72,6 +71,8 @@ class Server{
 		$v2 = Compiler::Stylix_VERSION;
 		$t = @date('r');
 		$css = "/* compiled by Stylix $v2 ( based on Leafo/ScssPhp $v - Sass 3.2 implementation in PHP ) on $t (${elapsed}s) */\n\n" . $css;
+		if(!is_dir($this->cacheDir))
+			@mkdir($this->cacheDir,0777,true);
 		file_put_contents($out, $css, LOCK_EX);
 		file_put_contents($this->importsCacheName($out),
 			serialize($this->compiler->getParsedFiles()),LOCK_EX);
@@ -105,6 +106,9 @@ class Server{
 	}
 	function setImportPaths($dir){
 		$this->compiler->setImportPaths($dir);
+	}
+	function setCacheDir($dir){
+		$this->cacheDir = $dir;
 	}
 	static function joinPath($left, $right) {
 		return rtrim($left, '/\\') . DIRECTORY_SEPARATOR . ltrim($right, '/\\');
