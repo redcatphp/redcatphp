@@ -129,12 +129,12 @@ class Synaptic {
 		echo $c;
 	}
 	protected function scss($path) {
-		set_time_limit(0);
-		$server = $this->Stylix_Server;
-		$scssc = $server->Stylix_Compiler;
-		$scssc->allowImportCSS = true;
-		$scssc->allowImportRemote = true;
-		$server->setPath(dirname($path));
-		$server->serve(pathinfo($path,PATHINFO_FILENAME).'.scss');
+		$from = [];
+		$from[] = dirname($path);
+		if(is_dir('css'))
+			$from[] = 'css';
+		if(is_dir(basename(SURIKAT_SPATH).'/css'))
+			$from[] = basename(SURIKAT_SPATH).'/css';
+		$this->Stylix_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
 	}
 }

@@ -104,8 +104,6 @@ class Compiler
     //protected $formatter = 'Leafo\ScssPhp\Formatter\Nested';
     protected $formatter = 'Stylix\Formatter\Nested';
 	
-	public $allowImportCSS;//addon by surikat
-	public $allowImportRemote;//addon by surikat
 	public $dev;//addon by surikat
 	
 	//followings methods addons by surikat
@@ -2139,6 +2137,11 @@ class Compiler
         $this->importPaths[] = $path;
     }
 
+	public function getImportPaths() //surikat addon
+    {
+        return $this->importPaths;
+    }
+	
     public function setImportPaths($path)
     {
         $this->importPaths = (array)$path;
