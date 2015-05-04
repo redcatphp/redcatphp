@@ -26,12 +26,12 @@ class Session{
 	protected $handled;
 	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null){
 		if(!$saveRoot)
-			$saveRoot = '.tmp/sessions/';
+			$saveRoot = getcwd().'/.tmp/sessions/';
 		if($name)
 			$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
-		$this->attemptsPath = '.tmp/attempts/';
+		$this->attemptsPath = getcwd().'/tmp/attempts/';
 		$this->cookiePath = '/'.$this->Http_Url()->getSuffixHref();
 		$this->cookieDomain = $this->Http_Url()->getServerHref();
 		$this->checkBlocked();
