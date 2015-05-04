@@ -44,7 +44,7 @@ class Translator {
 		else
 			$this->realDomain = $this->domain;
 		$this->realLocale = $this->locale.$this->suffixLocales;
-		$this->altLocales = $this->__GettextEmulator($this->realLocale)->get_list_of_locales($this->realLocale);
+		$this->altLocales = $this->_GettextEmulator($this->realLocale)->get_list_of_locales($this->realLocale);
 		if(function_exists('setlocale')){
 			foreach($this->altLocales as $lc){
 				if(in_array($lc,self::$systemLocales)){
@@ -137,25 +137,25 @@ class Translator {
 	function _setlocale(){
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		return call_user_func_array($f,func_get_args());
 	}
 	function _bindtextdomain(){
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		return call_user_func_array($f,func_get_args());
 	}
 	function _textdomain(){
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		return call_user_func_array($f,func_get_args());
 	}
 	function _bind_textdomain_codeset(){
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		return call_user_func_array($f,func_get_args());
 	}
 	
@@ -163,7 +163,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -172,7 +172,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -181,7 +181,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -190,7 +190,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -199,7 +199,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -208,7 +208,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -217,7 +217,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -226,7 +226,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -235,7 +235,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -244,7 +244,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -253,7 +253,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;
@@ -262,7 +262,7 @@ class Translator {
 		$this->bind();
 		$f = substr(__FUNCTION__,1);
 		if($this->EMULATEGETTEXT)
-			$f = [$this->__GettextEmulator($this->realLocale),$f];
+			$f = [$this->_GettextEmulator($this->realLocale),$f];
 		$r = call_user_func_array($f,func_get_args());
 		$this->unbind();
 		return $r;

@@ -12,7 +12,7 @@ class Backoffice extends Dispatcher_Uri{
 		$this->User_Session->setName('surikat_backoffice');
 		$this
 			->append(['Route_Extension','css|js|png|jpg|jpeg|gif'],
-						['_Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
+						['Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Route_ByTml','',$this->pathFS],function(){
 				$this->User_Auth->lockServer($this->User_Auth->constant('RIGHT_MANAGE'));
 				return $this->Mvc_Controller();

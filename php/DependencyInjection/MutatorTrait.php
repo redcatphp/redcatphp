@@ -1,7 +1,6 @@
 <?php namespace DependencyInjection;
 trait MutatorTrait {
 	private $__dependenciesRegistry = [];
-	private $__dependenciesPrefix = '';
 	private $__dependenciesFactory = 'static::makeDependency';
 	function setDependency($key,$value=null,$rkey=null){
 		if(is_object($key)){
@@ -79,9 +78,6 @@ trait MutatorTrait {
 		else
 			return $this->factoryDependency(self::__interfaceSubstitutionDefaultClass($this->__prefixClassName($key)),$args,true);
 	}
-	function setDependencyPrefix($prefix){
-		$this->__dependenciesPrefix = $prefix;
-	}
 	function defaultDependency($key,$args=null){
 		return Container::get()->getDependency($key,$args);
 	}
@@ -107,23 +103,13 @@ trait MutatorTrait {
 	
 	private function __prefixClassName($value){
 		if($value{0}=='_'){
-			if($value{1}=='_'){
-				$value = substr($value,2);
-				$c = get_class($this);
-				$prefix = substr($c, 0, strrpos($c, '\\'));
-			}
-			else{
-				$value = substr($value,1);
-				$prefix = '';
-			}
-		}
-		else{
-			$prefix = $this->__dependenciesPrefix;
-		}
-		if($prefix){
+			$value = substr($value,1);
+			$c = get_class($this);
+			$prefix = substr($c, 0, strrpos($c, '\\'));
 			$prefix = str_replace('\\','_',$prefix).'_';
+			$value = $prefix.$value;
 		}
-		return '_'.$prefix.$value;
+		return $value;
 	}
 	function setDependencyFactory($callback){
 		if($callback instanceof \Closure){

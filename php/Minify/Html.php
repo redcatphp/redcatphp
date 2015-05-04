@@ -97,8 +97,8 @@ class Html {
         // remove CDATA section markers
         $css = $this->_removeCdata($css);
         // minify
-        $minifier = $this->__Css
-            ? [$this->__Css,'process']
+        $minifier = $this->_Css
+            ? [$this->_Css,'process']
             : 'trim';
         $css = call_user_func($minifier, $css);
         return $this->_reservePlace($this->_needsCdata($css)
@@ -117,8 +117,8 @@ class Html {
         // remove CDATA section markers
         $js = $this->_removeCdata($js);
         // minify
-        $minifier = $this->__Js
-            ? [$this->__Js,'process']
+        $minifier = $this->_Js
+            ? [$this->_Js,'process']
             : 'trim'; 
         $js = call_user_func($minifier, $js);
         return $this->_reservePlace($this->_needsCdata($js)

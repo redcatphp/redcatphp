@@ -2,7 +2,7 @@
 use BadMethodCallException;
 trait MutatorMagicCallTrait{
 	function __call($k,$args){
-		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})||($k{1}=='_'&&ctype_upper($k{2}))))){
+		if(ctype_upper($k{0})||($k{0}=='_'&&(ctype_upper($k{1})))){
 			if(strpos($k,'__'))
 				return $this->treeDependency($k,$args);
 			else

@@ -14,10 +14,10 @@ class Config implements \Countable, \Iterator, \ArrayAccess {
 			$this->Loader = $loader;
 		}
 		elseif(is_string($array)){
-			$this->Loader = $this->getDependency('__Loader',[$array]);
+			$this->Loader = $this->getDependency('_Loader',[$array]);
 		}
 		else{
-			$this->Loader = $this->getDependency('__Loader');
+			$this->Loader = $this->getDependency('_Loader');
 		}
         if(is_string($array)){
 			$array = $this->Loader->load();

@@ -48,7 +48,7 @@ class Php {
 			}
 			else{
 				if(!$php){
-					$tmp = $this->__Html->process($text);
+					$tmp = $this->_Html->process($text);
 					if(preg_match("/\\s/",substr($text,-1)))
 						$tmp .= ' ';
 					if(preg_match("/\\s/",substr($text,0,1)))

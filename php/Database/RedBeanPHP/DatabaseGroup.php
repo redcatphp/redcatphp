@@ -17,7 +17,7 @@ class DatabaseGroup{
 	}
 	function getDb($key=0){
 		if(!isset($this->databases[$key])){
-			$this->databases[$key] = $this->__Database($this->prefix.$key);
+			$this->databases[$key] = $this->_Database($this->prefix.$key);
 		}
 		return $this->databases[$key];
 	}
