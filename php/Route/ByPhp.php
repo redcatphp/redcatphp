@@ -3,6 +3,7 @@ use Route\Faceted;
 class ByPhp extends Route{
 	protected $dir = '';
 	protected $dirFS = '';
+	protected $dirs = ['','Surikat/'];
 	function __construct($dir=null,$dirFS=null){
 		if(isset($dir)||isset($dirFS)){
 			if(!isset($dirFS))
@@ -18,8 +19,22 @@ class ByPhp extends Route{
 		if(!$path||substr($path,-1)=='/')
 			$path .= 'index.php';
 		$file = $this->dirFS.'/'.$path;
-		if(	is_file($f=($adir=getcwd().'/').$file)
-			||is_file($f=($adir=getcwd().'/Surikat/').$file))
-			return [$this->dirFS,$path,$adir.$this->dirFS,$f];
+		foreach($this->dirs as $d){
+			if($f=realpath(($adir=$d.'/').$file))
+				return [$this->dirFS,$path,$adir.$this->dirFS,$f];
+		}
+	}
+	function setDirs($d){
+		$this->dirs = (array)$d;
+		foreach($this->dirs as $d){
+			if($d)
+				$this->dirs[$k] = rtrim($d,'/').'/';
+		}
+	}
+	function prependDir($d){
+		array_unshift($this->dirs,$d?rtrim($d,'/').'/':'');
+	}
+	function appendDir($d){
+		$this->dirs[] = $d?rtrim($d,'/').'/':'';
 	}
 }
