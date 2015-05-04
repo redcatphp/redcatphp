@@ -1,7 +1,5 @@
 <?php namespace Vars;
-use DependencyInjection\MutatorCallTrait;
 class ArrayObject extends \ArrayObject implements \ArrayAccess{
-	use MutatorCallTrait;
 	function __construct($a=[]){
 		foreach($a as $k=>$v)
             if (is_array($v))
@@ -154,10 +152,7 @@ class ArrayObject extends \ArrayObject implements \ArrayAccess{
 		return new static(array_filter((array)$this,$cb));
 	}
 	function __toString(){
-		if($this->Dev_Level()->CONTROL)
-			return $this->__debug();
-		else
-			return '';
+		return var_export($this->getArray,true);
 	}
 	function __debug(){
 		return '<pre>'.htmlentities(print_r($this->getArray(),true)).'<pre>';
