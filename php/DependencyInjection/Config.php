@@ -28,10 +28,10 @@ class Config{
 			foreach((array)$paths as $path){
 				if(is_file($path)){
 					$config = $this->includeFree($path,$args);
-					if($config instanceof ConfigMethods){
-						if(isset($config['__construct'])){
-							$args = array_merge($config['__construct'],(array)$args);
-							unset($config['__construct']);
+					if(is_object($config)){
+						if(isset($config->__construct)){
+							$args = array_merge($config->__construct,(array)$args);
+							unset($config->__construct);
 						}
 						$obj = $mutator->makeDependency($c,$args,$new);
 						foreach($config as $method=>$arg){
