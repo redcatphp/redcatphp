@@ -27,11 +27,11 @@ class Request{
 	}
 	function fileCache($output){
 		$mtime = filemtime($output);
-		$etag = $this->Http_Request->FileEtag($output);
+		$etag = $this->FileEtag($output);
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mtime).' GMT', true);
 		header('Etag: '.$etag);
-		if(!$this->Http_Request->isModified($mtime,$etag)){
-			$this->Http_Request->code(304);
+		if(!$this->isModified($mtime,$etag)){
+			$this->code(304);
 			exit;
 		}
 	}
