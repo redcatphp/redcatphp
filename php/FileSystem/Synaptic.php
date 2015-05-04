@@ -131,7 +131,7 @@ class Synaptic {
 	protected function scss($path) {
 		set_time_limit(0);
 		$server = $this->Stylix_Server;
-		$scssc = $server->Stylix_Scss;
+		$scssc = $server->Stylix_Compiler;
 		$scssc->allowImportCSS = true;
 		$scssc->allowImportRemote = true;
 		$server->setPath(dirname($path));

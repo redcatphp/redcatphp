@@ -31,9 +31,10 @@ class Server{
 		else
 			$css = $this->scss->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
-		$v = $this->scss->VERSION;
+		$v = Compiler::Scss_VERSION;
+		$v2 = Compiler::Stylix_VERSION;
 		$t = @date('r');
-		$css = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
+		$css = "/* compiled by Stylix $v2 ( based on Leafo/ScssPhp $v - Sass 3.2 implementation in PHP ) on $t (${elapsed}s) */\n\n" . $css;
 		file_put_contents($out, $css, LOCK_EX);
 		file_put_contents($this->importsCacheName($out),
 			serialize($this->scss->getParsedFiles()),LOCK_EX);
@@ -73,7 +74,7 @@ class Server{
 		$this->Http_Request->fileCache($output);
 	}
 	function __construct(){
-		$this->scss = $this->Stylix_Scss;
+		$this->scss = $this->Stylix_Compiler;
 	}
 	function setPath($dir, $cacheDir=null){
 		$this->dir = $dir;
