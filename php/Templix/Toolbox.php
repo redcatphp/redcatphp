@@ -20,12 +20,7 @@ class Toolbox{
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 				&&!in_array($is,$s)
 				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
-				&&(
-					is_file(SURIKAT_PATH.($h=$href.strtolower($is).'.css'))
-					||is_file(SURIKAT_SPATH.$h)
-					||is_file(SURIKAT_PATH.($h=$href.strtolower($is).'.scss'))
-					||is_file(SURIKAT_SPATH.$h)
-				)
+				&&Toolbox::getHttpResponseCode($this->Http_Url->getBaseHref().$href.strtolower($is).'.css')===200
 			)
 				$s[] = $is;
 		});
@@ -43,6 +38,10 @@ class Toolbox{
 				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 		}
+	}
+	static function getHttpResponseCode($theURL) {
+		$headers = get_headers($theURL);
+		return (int)substr($headers[0], 9, 3);
 	}
 	function setCDN($Tml,$url=true){
 		if($url===true){

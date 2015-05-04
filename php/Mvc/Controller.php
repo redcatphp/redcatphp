@@ -34,8 +34,8 @@ class Controller{
 	}
 	function display($file){
 		$this->Mvc_View->set('URI',$this->Route);
-		$this->Mvc_View->setDirCompile(SURIKAT_TMP.'tml/compile/'.$this->prefixTmlCompile);
-		$this->Mvc_View->setDirCache(SURIKAT_TMP.'tml/cache/'.$this->prefixTmlCompile);
+		$this->Mvc_View->setDirCompile('.tmp/templix/compile/'.$this->prefixTmlCompile);
+		$this->Mvc_View->setDirCache('.tmp/templix/cache/'.$this->prefixTmlCompile);
 		try{
 			$this->Mvc_View->display($file);
 		}

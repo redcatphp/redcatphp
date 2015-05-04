@@ -94,7 +94,7 @@ else{
 			fileRecurse($directory,function($file)use($directory,$p,$minifyPHP,&$tt,&$stt){
 				$bs = basename($file);
 				$ext = strtolower(pathinfo($file,PATHINFO_EXTENSION));
-				if(is_dir($file)||($ext!='php'&&($bf=basename($file))!='LICENSE'&&$bf!='README.md')||(strpos($file,SURIKAT_TMP)===0)||($file==$directory.'/index.php.phar')||($file==$directory.'/index.php'))
+				if(is_dir($file)||($ext!='php'&&($bf=basename($file))!='LICENSE'&&$bf!='README.md')||(strpos($file,'/.tmp/')===0)||($file==$directory.'/index.php.phar')||($file==$directory.'/index.php'))
 					return;
 				$tg = substr($file,strlen($directory)+1);
 				$content = file_get_contents($file);
@@ -112,7 +112,7 @@ else{
 			if(is_file($target))
 				unlink($target);
 			rename($target.'.phar',$target);
-			fileRecurse(SURIKAT_TMP,function($file){
+			fileRecurse('.tmp/',function($file){
 				if(is_file($file))
 					@unlink($file);
 				elseif(is_dir($file))
@@ -125,7 +125,7 @@ else{
 /*
 function getZIP($url,$httpCache){
 	$zip = new ZipArchive;
-	$dir = SURIKAT_TMP.'kompiler_cache/'.sha1($url);
+	$dir = '.tmp/kompiler_cache/'.sha1($url);
 	@mkdir($dir,0777,true);
 	$file = $dir.'.zip';
 	$cached = is_file($file)&&filesize($file)&&filemtime($file)>time()-$httpCache;

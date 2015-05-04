@@ -7,6 +7,3 @@ if(!defined('SURIKAT_PATH'))
 
 if(!defined('SURIKAT_SPATH'))
 	define('SURIKAT_SPATH',realpath(__DIR__.'/..').'/');
-
-if(!defined('SURIKAT_TMP'))
-	define('SURIKAT_TMP',SURIKAT_PATH.'.tmp/');
