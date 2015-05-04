@@ -109,6 +109,9 @@ class Compiler
 	public $dev;//addon by surikat
 	
 	//followings methods addons by surikat
+	function setDev($mode=true){
+		$this->dev = $mode;
+	}
 	function phpScssSupport($code){
 		$code = $this->mixinSphpSupport($code);
 		$code = $this->autoloadSphpSupport($code);
@@ -1029,13 +1032,7 @@ class Compiler
                 foreach ($selectors as $sel) {
                     // only use the first one
                     $sel = current($this->evalSelector($sel));
-                    //surikat addon for autoload
-					//if((strpos($strExt=implode('',$sel),'%')===0)&&(($pathF=$this->findImport('extend/'.substr(str_replace('%','.',$strExt),1)))&&!in_array($pathF,$this->parsedFiles))&&($realPath=realpath($pathF))&&!isset($this->importCache[$realPath])){
-						//$this->importFile($pathF,$out);
-						//$this->pushExtends($sel, array(array(array(''))));
-					//}
-					//else
-						$this->pushExtends($sel, $out->selectors);
+					$this->pushExtends($sel, $out->selectors);
                 }
                 break;
             case 'if':
@@ -1127,14 +1124,7 @@ class Compiler
             case 'include': // including a mixin
                 list(,$name, $argValues, $content) = $child;
 
-                $mixin = $this->get(self::$namespaces['mixin'] . $name, false);
-				
-				//autoload include - surikat addon
-				//if (!$mixin&&($path=$this->findImport('include/'.$name))){
-					//$this->importFile($path,$out);
-					//$mixin = $this->get(self::$namespaces["mixin"] . $name, false);
-				//}
-				
+                $mixin = $this->get(self::$namespaces['mixin'] . $name, false);				
                 if (! $mixin) {
                     $this->throwError("Undefined mixin $name");
                 }
