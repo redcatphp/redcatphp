@@ -6,7 +6,7 @@ use DependencyInjection\MutatorMagicTrait;
 use DependencyInjection\ConstantTrait;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
-	require_once SURIKAT_SPATH.'php/Crypto/password-compat.inc.php';
+	require_once __DIR__.'/../Crypto/password-compat.inc.php';
 }
 class Auth{
 	use MutatorMagicTrait;
@@ -641,6 +641,6 @@ class Auth{
 		exit;
 	}
 	function lockServer($r,$redirect=true){
-		return $this->getDependency('__AuthServer',$this)->htmlLock($r,$redirect);
+		return $this->getDependency('_AuthServer',$this)->htmlLock($r,$redirect);
 	}
 }
