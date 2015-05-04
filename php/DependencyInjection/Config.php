@@ -1,12 +1,8 @@
 <?php
 namespace DependencyInjection;
 class Config{
-	public static $dirRoots = [];
+	public static $dirRoots = ['','Surikat/'];
 	public $dirPath = 'config';
-	static function intialize(){
-		self::$dirRoots[] = '';
-		self::$dirRoots[] = 'Surikat/';
-	}
 	function getConfigFilename($c,$args=null){
 		return strtolower(str_replace('\\','.',$c));
 	}
@@ -60,4 +56,3 @@ class Config{
 		return include(func_get_arg(0));
 	}
 }
-Config::intialize();
