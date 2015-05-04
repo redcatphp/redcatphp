@@ -11,7 +11,6 @@ require __DIR__.'/DependencyInjection/MutatorMagicTrait.php';
 require __DIR__.'/DependencyInjection/RegistryTrait.php';
 require __DIR__.'/DependencyInjection/Container.php';
 require __DIR__.'/Autoload/Psr4.php';
-require __DIR__.'/constants.php';
 global $SURIKAT;
 $SURIKAT = DependencyInjection\Container::get();
 $SURIKAT->Autoload_Psr4->addNamespaces([

@@ -145,7 +145,7 @@ abstract class Server {
 		if(!$this->maintenance){
 			$this->connection();
 			$this->maintenance = true;
-			$this->set_file('.htaccess', file_get_contents(SURIKAT_SPATH.'htaccess_307'));
+			$this->set_file('.htaccess', file_get_contents('Surikat/htaccess_307'));
 			GitDeploy::logmessage('Turned maintenance mode on.');
 		}
 	}

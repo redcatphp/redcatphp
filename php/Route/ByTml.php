@@ -23,7 +23,7 @@ class ByTml extends Faceted{
 			$params[0] = substr($params[0],strlen($this->dirHook));
 		$file = $this->dirFS.'/'.ltrim($params[0],'/').'.tml';
 		if(	is_file($file)
-			||is_file(SURIKAT_SPATH.$file))
+			||is_file('Surikat/'.$file))
 			return $params;
 	}
 	function getDirHook(){

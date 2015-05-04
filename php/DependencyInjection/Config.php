@@ -5,7 +5,7 @@ class Config{
 	public $dirPath = 'config';
 	static function intialize(){
 		self::$dirRoots[] = '';
-		self::$dirRoots[] = SURIKAT_SPATH;
+		self::$dirRoots[] = 'Surikat/';
 	}
 	function getConfigFilename($c,$args=null){
 		return strtolower(str_replace('\\','.',$c));

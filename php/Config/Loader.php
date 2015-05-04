@@ -12,7 +12,7 @@ class Loader {
 		if(!isset($dirs))
 			$dirs = [
 				$this->directory.'/',
-				SURIKAT_SPATH.$this->directory.'/',
+				'Surikat/'.$this->directory.'/',
 			];
 		$this->dirs = $dirs;
 	}
