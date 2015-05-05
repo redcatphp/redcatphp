@@ -67,7 +67,7 @@ class Uri {
 		$this->run($path);
 	}
 	function haveParameters(){
-		return $this->questionMark||count($this->FluxServer_Http_Get);
+		return $this->questionMark||count($_GET);
 	}
 	private function objectify(&$a){
 		if(is_array($a)&&isset($a[0])&&is_string($a[0])){

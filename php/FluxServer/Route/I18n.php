@@ -16,7 +16,7 @@ class I18n extends Faceted {
 		$path = urldecode($path);
 		$templatePath = $path;
 		$langMap = false;
-		if($lang=$this->FluxServer_Http_Url->getSubdomainLang()){
+		if($lang=$this->FluxServer_Url->getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
 				if(isset($langMap[$path]))

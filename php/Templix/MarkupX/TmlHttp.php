@@ -4,7 +4,7 @@ class TmlHttp extends \Templix\Tml{
 	protected $hiddenWrap = true;
 	function load(){
 		if($this->__get('static')){
-			if(count($this->Template->FluxServer_Http_Get())||(
+			if(count($_GET)||(
 				count($this->Template->treeDependency('FluxServer_Mvc_View:FluxServer_Mvc_Controller:Route'))>1
 			)){
 				$this->notFound();

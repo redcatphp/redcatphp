@@ -86,15 +86,15 @@ class Uploader{
 			$callback($dir.$name);
 	}
 	function file($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($this->FluxServer_Http_Files[$k])){
-			if($this->FluxServer_Http_Files[$k]['name'])
-				$this->uploadFile($this->FluxServer_Http_Files[$k],$dir,$mime,$callback,false,true,$maxFileSize);
+		if(isset($_FILES[$k])){
+			if($_FILES[$k]['name'])
+				$this->uploadFile($_FILES[$k],$dir,$mime,$callback,false,true,$maxFileSize);
 			return true;
 		}
 	}
 	function files($dir,$k,$mime=null,$callback=null,$maxFileSize=null){
-		if(isset($this->FluxServer_Http_Files[$k])){
-			$files =& $this->FluxServer_Http_Files[$k];
+		if(isset($_FILES[$k])){
+			$files =& $_FILES[$k];
 			for($i=0;count($files['name'])>$i;$i++){
 				$file = [];
 				foreach(array_keys($files) as $prop)

@@ -29,19 +29,19 @@ class AuthServer{
 		$r = null;
 		if(method_exists($this,$action)){
 			$r = $this->$action();
-			$ajax = $this->FluxServer_Http_Request->isAjax();
+			$ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';
 			if(!is_bool($r)){
 				switch($r){
 					case Auth::OK_LOGGED_IN:
 						if(!$ajax){
 							$this->_Session->set('Auth','result',$action,$r);
-							$this->FluxServer_Http_Request->reloadLocation();
+							$this->reloadLocation();
 						}
 					break;
 					case Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
 							$this->_Session->set('Auth','result',$action,$r);
-							$this->FluxServer_Http_Request->reloadLocation();
+							$this->reloadLocation();
 						}
 					break;
 				}
@@ -52,11 +52,11 @@ class AuthServer{
 		return $this->lastResult = $r;
 	}
 	function register(){
-		if(isset($this->FluxServer_Http_Post['email'])&&isset($this->FluxServer_Http_Post['login'])&&isset($this->FluxServer_Http_Post['password'])&&isset($this->FluxServer_Http_Post['confirm'])){
-			$email = $this->FluxServer_Http_Post['email'];
-			$login = trim($this->FluxServer_Http_Post['login'])?$this->FluxServer_Http_Post['login']:$email;
+		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
+			$email = $_POST['email'];
+			$login = trim($_POST['login'])?$_POST['login']:$email;
 			$this->_Session->set('Auth','email',$email);
-			return $this->_Auth->register($email, $login, $this->FluxServer_Http_Post['password'], $this->FluxServer_Http_Post['confirm']);
+			return $this->_Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
@@ -65,15 +65,15 @@ class AuthServer{
 		}
 	}
 	function activate(){
-		if(isset($this->FluxServer_Http_Get['key'])){
-			return $this->_Auth->activate($this->FluxServer_Http_Get['key']);
+		if(isset($_GET['key'])){
+			return $this->_Auth->activate($_GET['key']);
 		}
 	}
 	function loginPersona(){
-		if(isset($this->FluxServer_Http_Post['email'])&&$this->FluxServer_Http_Post['email']&&$this->FluxServer_Http_Post['email']==($email=$this->_Session->get('email'))){
+		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->_Session->get('email'))){
 			$lifetime = 0;
-			if(isset($this->FluxServer_Http_Post['login'])){
-				switch($this->FluxServer_Http_Post['lifetime']){
+			if(isset($_POST['login'])){
+				switch($_POST['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -92,10 +92,10 @@ class AuthServer{
 		}
 	}
 	function login(){
-		if(isset($this->FluxServer_Http_Post['login'])&&isset($this->FluxServer_Http_Post['password'])){
+		if(isset($_POST['login'])&&isset($_POST['password'])){
 			$lifetime = 0;
-			if(isset($this->FluxServer_Http_Post['remember'])&&$this->FluxServer_Http_Post['remember']&&isset($this->FluxServer_Http_Post['lifetime'])){
-				switch($this->FluxServer_Http_Post['lifetime']){
+			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
+				switch($_POST['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -110,39 +110,42 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->_Auth->login($this->FluxServer_Http_Post['login'], $this->FluxServer_Http_Post['password'], $lifetime);
+			return $this->_Auth->login($_POST['login'], $_POST['password'], $lifetime);
 		}
-		elseif(isset($this->FluxServer_Http_Post['email'])&&$this->FluxServer_Http_Post['email']){
+		elseif(isset($_POST['email'])&&$_POST['email']){
 			return $this->loginPersona();
 		}
 	}
 	function resetreq(){
-		if(isset($this->FluxServer_Http_Post['email'])){
-			return $this->_Auth->requestReset($this->FluxServer_Http_Post['email']);
+		if(isset($_POST['email'])){
+			return $this->_Auth->requestReset($_POST['email']);
 		}
 	}
 	function resetpass(){
-		if(isset($this->FluxServer_Http_Get['key'])&&isset($this->FluxServer_Http_Post['password'])&&isset($this->FluxServer_Http_Post['confirm'])){
-			return $this->_Auth->resetPass($this->FluxServer_Http_Get['key'], $this->FluxServer_Http_Post['password'], $this->FluxServer_Http_Post['confirm']);
+		if(isset($_GET['key'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
+			return $this->_Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function lougoutAPI($key=null){
 		if(!$key)
 			$key = $this->defaultLogoutKey;
-		if(isset($this->FluxServer_Http_Post[$key])){
+		if(isset($_POST[$key])){
 			$this->logout();
 			return true;
 		}
+	}
+	function reloadLocation(){
+		header('Location: '.$this->FluxServer_Url->getLocation(),false,302);
 	}
 	function lougoutBTN($key=null,$ret=false){
 		if(!$key)
 			$key = $this->defaultLogoutKey;
 		if($this->lougoutAPI()){
-			$this->HTTP->reloadLocation();
+			$this->reloadLocation();
 		}
 		else{
 			$html = '
-			<link href="'.$this->FluxServer_Http_Url->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
+			<link href="'.$this->FluxServer_Url->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
 			<style type="text/css">
 				a.auth-logout{
 					background: none repeat scroll 0 0 #fff;
@@ -174,10 +177,10 @@ class AuthServer{
 					content: "\f011";
 				}
 			</style>
-			<script type="text/javascript" src="'.$this->FluxServer_Http_Url->getBaseHref().'js/post.js"></script>
+			<script type="text/javascript" src="'.$this->FluxServer_Url->getBaseHref().'js/post.js"></script>
 			<script type="text/javascript">
 				authServerLogoutCaller = function(){
-					post("'.$this->FluxServer_Http_Url->getLocation().'",{"'.$key.'":1});
+					post("'.$this->FluxServer_Url->getLocation().'",{"'.$key.'":1});
 					return false;
 				};
 			</script>
@@ -194,11 +197,11 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = $this->FluxServer_Http_Url->getLocation();
-		if(isset($this->FluxServer_Http_Post['__login__'])&&isset($this->FluxServer_Http_Post['__password__'])){
+		$action = $this->FluxServer_Url->getLocation();
+		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
-			if(isset($this->FluxServer_Http_Post['remember'])&&$this->FluxServer_Http_Post['remember']&&isset($this->FluxServer_Http_Post['lifetime'])){
-				switch($this->FluxServer_Http_Post['lifetime']){
+			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
+				switch($_POST['lifetime']){
 					case 'day':
 						$lifetime = 86400;
 					break;
@@ -213,7 +216,7 @@ class AuthServer{
 					break;
 				}
 			}
-			if($this->_Auth->login($this->FluxServer_Http_Post['__login__'],$this->FluxServer_Http_Post['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
+			if($this->_Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}

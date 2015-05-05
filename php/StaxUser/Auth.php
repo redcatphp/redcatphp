@@ -95,7 +95,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = $this->FluxServer_Http_Url->getBaseHref();
+			$this->siteUrl = $this->FluxServer_Url->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
@@ -627,7 +627,16 @@ class Auth{
 	function lock($r,$redirect=true){
 		if($this->allowed($r))
 			return;
-		$this->FluxServer_Http_Request->nocacheHeaders();
+		
+		//nocache headers
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); 
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s" ) . " GMT" );
+		header("Pragma: no-cache");
+		header("Cache-Control: no-cache");
+		header("Expires: -1");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		
 		if($redirect){
 			if($this->connected())
 				$redirect = '403';

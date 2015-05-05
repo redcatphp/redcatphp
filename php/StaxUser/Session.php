@@ -37,14 +37,14 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = getcwd().'/tmp/attempts/';
-		$this->cookiePath = '/'.$this->FluxServer_Http_Url()->getSuffixHref();
-		$this->cookieDomain = $this->FluxServer_Http_Url()->getServerHref();
+		$this->cookiePath = '/'.$this->FluxServer_Url()->getSuffixHref();
+		$this->cookieDomain = $this->FluxServer_Url()->getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->_SessionHandler = $sessionHandler;
 		else
 			$this->_SessionHandler = $this->getDependency('_SessionHandler');
-		$this->Http_Cookie = $this->FluxServer_Http_Cookie();
+		$this->Http_Cookie = $_COOKIE;
 		$this->garbageCollector();
 	}
 	function handleReload(){
@@ -152,7 +152,7 @@ class Session{
 		return is_file($this->serverFile($id));
 	}
 	function cookie(){
-		return $this->Http_Cookie[$this->name];
+		return isset($this->Http_Cookie[$this->name])?$this->Http_Cookie[$this->name]:null;
 	}
 	function clientId(){
 		$cookie = $this->cookie();
@@ -300,7 +300,8 @@ class Session{
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
     function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
-        unset($this->Http_Cookie[$name]);
+		if(isset($this->Http_Cookie[$name]))
+			unset($this->Http_Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
 }

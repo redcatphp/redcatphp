@@ -30,7 +30,7 @@ class Synaptic {
 					if(is_file($f=$d.$k)){
 						header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 						header('Content-Type: application/javascript; charset:utf-8');
-						$this->FluxServer_Http_Request->fileCache($f);
+						$this->fileCache($f);
 						readfile($f);
 						return;
 					}
@@ -47,7 +47,7 @@ class Synaptic {
 					if(is_file($f=$d.$k)){
 						header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expires).'GMT');
 						header('Content-Type: text/css; charset:utf-8');
-						$this->FluxServer_Http_Request->fileCache($f);
+						$this->fileCache($f);
 						readfile($f);
 						return;
 					}
@@ -74,7 +74,7 @@ class Synaptic {
 				header('Content-Type:image/'.$extension.'; charset=utf-8');
 				foreach($this->dirs as $d){
 					if(is_file($f=$d.$k)){
-						$this->FluxServer_Http_Request->fileCache($f);
+						$this->fileCache($f);
 						readfile($f);
 						return;
 					}
@@ -82,7 +82,7 @@ class Synaptic {
 				foreach($this->dirs as $d){
 					if(is_file($f=$d.'img/404.png')){
 						http_response_code(404);
-						$this->FluxServer_Http_Request->fileCache($f);
+						$this->fileCache($f);
 						readfile($f);
 						return;
 					}
@@ -163,5 +163,23 @@ class Synaptic {
 				$from[] = $dir;
 		}
 		$this->Stylix_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
+	}
+	function fileCache($output){
+		$mtime = filemtime($output);
+		$etag = $this->fileEtag($output);
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mtime).' GMT', true);
+		header('Etag: '.$etag);
+		if(!$this->isModified($mtime,$etag)){
+			http_response_code(304);
+			exit;
+		}
+	}
+	function isModified($mtime,$etag){
+		return !((isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$mtime)
+			||(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH'] == $etag));
+	}
+	function fileEtag($file){
+		$s = stat($file);
+		return sprintf('%x-%s', $s['size'], base_convert(str_pad($s['mtime'], 16, "0"),10,16));
 	}
 }

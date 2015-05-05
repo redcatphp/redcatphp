@@ -20,7 +20,7 @@ class Toolbox{
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 				&&!in_array($is,$s)
 				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
-				&&Toolbox::getHttpResponseCode($this->FluxServer_Http_Url->getBaseHref().$href.strtolower($is).'.css')===200
+				&&Toolbox::getHttpResponseCode($this->FluxServer_Url->getBaseHref().$href.strtolower($is).'.css')===200
 			)
 				$s[] = $is;
 		});
@@ -115,12 +115,12 @@ class Toolbox{
 		if($langMap&&isset($langMap[$path])){
 			$xPath = $langMap[$path];
 		}
-		$head->append('<link rel="alternate" href="'.$this->FluxServer_Http_Url->getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		$head->append('<link rel="alternate" href="'.$this->FluxServer_Url->getSubdomainHref().$xPath.'" hreflang="x-default" />');
 		foreach(glob('langs/*.ini') as $langFile){
 			$lg = pathinfo($langFile,PATHINFO_FILENAME);
 			$langMap = parse_ini_file($langFile);
 			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.$this->FluxServer_Http_Url->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+			$head->append('<link rel="alternate" href="'.$this->FluxServer_Url->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
 		}
 	}
 }
