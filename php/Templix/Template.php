@@ -9,6 +9,7 @@ class Template {
 	var $dirCwd = [];
 	var $dirCompile;
 	var $dirCache;
+	var $dirSync;
 	var $compile = [];
 	var $toCachePHP = [];
 	var $toCacheV = [];
@@ -20,6 +21,7 @@ class Template {
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
+		$this->setDirSync('.tmp/sync/');
 		$this->addDirCwd([
 			'template/',
 			'Surikat/template/',
@@ -95,6 +97,9 @@ class Template {
 	}
 	function setDirCache($d){
 		$this->dirCache = rtrim($d,'/').'/';
+	}
+	function setDirSync($d){
+		$this->dirSync = rtrim($d,'/').'/';
 	}
 	function setDirCwd($d){
 		$this->dirCwd = [];
@@ -212,7 +217,12 @@ class Template {
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
-		return $this->Cache_Sync()->mtime($this->dirCache.$file,$sync,$forceCache);
+		$syncF = $this->dirSync.$sync.'.sync';
+		if($forceCache&&!is_file($syncF)){
+			@mkdir(dirname($syncF),0777,true);
+			file_put_contents($syncF,'');
+		}
+		return @filemtime($this->dirCache.$file)<@filemtime($syncF);
 	}
 	function cacheInc($h,$sync=null){
 		if(func_num_args()<2)

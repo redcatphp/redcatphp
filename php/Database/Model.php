@@ -70,6 +70,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 	protected $_on = [];
 	protected $_onces = [];
 	protected $queryWriter;
+	protected $dirSync = '.tmp/sync/';
 	static function _checkUniq($b=null){
 		self::$_checkUniq = isset($b)?!!$b:true;
 	}
@@ -268,7 +269,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			else
 				$this->trigger('updated');
 			if($this->sync)
-				$this->Cache_Sync()->update('model.'.$this->table);
+				$this->sync('model.'.$this->table);
 		}
 		$this->trigger('changed');
 		if(isset($this->_onces['validate']))
@@ -529,5 +530,17 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 			|JSON_NUMERIC_CHECK
 			|JSON_UNESCAPED_SLASHES
 		);
+	}
+	function setDirSync($d){
+		$this->dirSync = rtrim($d,'/').'/';
+	}
+	function sync($sync){
+		$syncF = $this->dirSync.$sync.'.sync';
+		if(!is_file($syncF)){
+			@mkdir(dirname($syncF),0777,true);
+			file_put_contents($syncF,'');
+		}
+		else
+			touch($syncF);
 	}
 }
