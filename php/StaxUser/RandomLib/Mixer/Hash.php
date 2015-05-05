@@ -17,9 +17,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Mixer;
+namespace StaxUser\RandomLib\Mixer;
 
-use \Crypto\SecurityLib\Strength;
+use \StaxUser\SecurityLib\Strength;
 
 /**
  * The Hash medium strength mixer class
@@ -33,7 +33,7 @@ use \Crypto\SecurityLib\Strength;
  * @subpackage Mixer
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  */
-class Hash extends \Crypto\RandomLib\AbstractMixer {
+class Hash extends \StaxUser\RandomLib\AbstractMixer {
 
     /**
      * @var string The hash instance to use

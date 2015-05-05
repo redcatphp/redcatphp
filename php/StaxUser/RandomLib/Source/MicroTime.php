@@ -17,9 +17,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Source;
+namespace StaxUser\RandomLib\Source;
 
-use Crypto\SecurityLib\Strength;
+use SecurityLib\Strength;
 
 /**
  * The Microtime Random Number Source
@@ -34,7 +34,7 @@ use Crypto\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-final class MicroTime implements \Crypto\RandomLib\Source {
+final class MicroTime implements \StaxUser\RandomLib\Source {
 
     /**
      * A static counter to ensure unique hashes and prevent state collisions

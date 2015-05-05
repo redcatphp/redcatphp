@@ -14,9 +14,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib;
+namespace StaxUser\RandomLib;
 
-use Crypto\SecurityLib\Strength;
+use StaxUser\SecurityLib\Strength;
 
 /**
  * The Random Factory
@@ -27,7 +27,7 @@ use Crypto\SecurityLib\Strength;
  * @package    Random
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  */
-class Factory extends \Crypto\SecurityLib\AbstractFactory {
+class Factory extends \StaxUser\SecurityLib\AbstractFactory {
 
     /**
      * @var array A list of available random number mixing strategies
@@ -57,7 +57,7 @@ class Factory extends \Crypto\SecurityLib\AbstractFactory {
      * @return Generator The instantiated generator
      * @throws RuntimeException If an appropriate mixing strategy isn't found
      */
-    public function getGenerator(\Crypto\SecurityLib\Strength $strength) {
+    public function getGenerator(StaxUser\SecurityLib\Strength $strength) {
         $sources    = $this->getSources();
         $newSources = array();
         foreach ($sources as $source) {
@@ -172,7 +172,7 @@ class Factory extends \Crypto\SecurityLib\AbstractFactory {
      * @return Mixer The found mixer
      * @throws RuntimeException if a valid mixer cannot be found
      */
-    protected function findMixer(\Crypto\SecurityLib\Strength $strength) {
+    protected function findMixer(StaxUser\SecurityLib\Strength $strength) {
         $newMixer = null;
         $fallback = null;
         foreach ($this->getMixers() as $mixer) {

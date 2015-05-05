@@ -17,9 +17,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Source;
+namespace StaxUser\RandomLib\Source;
 
-use Crypto\SecurityLib\Strength;
+use SecurityLib\Strength;
 
 /**
  * The Rand Random Number Source
@@ -34,7 +34,7 @@ use Crypto\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class Rand implements \Crypto\RandomLib\Source {
+class Rand implements \StaxUser\RandomLib\Source {
 
     /**
      * Return an instance of Strength indicating the strength of the source

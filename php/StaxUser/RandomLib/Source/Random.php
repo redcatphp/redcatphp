@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Source;
+namespace StaxUser\RandomLib\Source;
 
-use Crypto\SecurityLib\Strength;
+use SecurityLib\Strength;
 
 /**
  * The Random Random Number Source

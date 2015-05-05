@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib;
+namespace StaxUser\RandomLib;
 
-use Crypto\SecurityLib\BaseConverter;
+use SecurityLib\BaseConverter;
 
 /**
  * The Random Number Generator Class
@@ -195,7 +195,7 @@ class Generator {
         if ($bits == 63) {
             /**
              * Fixes issue #22
-             * @see https://github.com/ircmaxell/RandomLib/issues/22
+             * @see https://github.com/ircmaxell/StaxUser\RandomLib/issues/22
              */
             $mask = 0x7fffffffffffffff;
         } else {

@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Source;
+namespace StaxUser\RandomLib\Source;
 
-use Crypto\SecurityLib\Strength;
+use SecurityLib\Strength;
 
 /**
  * The OpenSSL Random Number Source
@@ -30,7 +30,7 @@ use Crypto\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class OpenSSL implements \Crypto\RandomLib\Source {
+class OpenSSL implements \StaxUser\RandomLib\Source {
 
     /**
      * Return an instance of Strength indicating the strength of the source

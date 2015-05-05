@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\SecurityLib;
+namespace SecurityLib;
 
 /**
  * A Utility class for converting between raw binary strings and a given

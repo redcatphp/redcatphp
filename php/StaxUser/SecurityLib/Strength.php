@@ -12,7 +12,7 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\SecurityLib;
+namespace SecurityLib;
 
 /**
  * The strength FlyweightEnum class

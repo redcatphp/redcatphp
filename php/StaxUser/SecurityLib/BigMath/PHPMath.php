@@ -12,9 +12,9 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Crypto\SecurityLib\BigMath;
+namespace StaxUser\SecurityLib\BigMath;
 
-use Crypto\SecurityLib\BaseConverter;
+use StaxUser\SecurityLib\BaseConverter;
 
 /**
  * A class for arbitrary precision math functions implemented in PHP
@@ -23,7 +23,7 @@ use Crypto\SecurityLib\BaseConverter;
  * @package    Core
  * @subpackage BigMath
  */
-class PHPMath extends \Crypto\SecurityLib\BigMath {
+class PHPMath extends \StaxUser\SecurityLib\BigMath {
 
     /**
      * Add two numbers together

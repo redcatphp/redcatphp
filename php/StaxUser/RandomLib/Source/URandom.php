@@ -15,9 +15,9 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib\Source;
+namespace StaxUser\RandomLib\Source;
 
-use Crypto\SecurityLib\Strength;
+use SecurityLib\Strength;
 
 /**
  * The URandom Random Number Source
@@ -30,7 +30,7 @@ use Crypto\SecurityLib\Strength;
  * @author     Anthony Ferrara <ircmaxell@ircmaxell.com>
  * @codeCoverageIgnore
  */
-class URandom implements \Crypto\RandomLib\Source {
+class URandom implements \StaxUser\RandomLib\Source {
 
     /**
      * @var string The file to read from

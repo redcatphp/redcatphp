@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace Crypto\RandomLib;
+namespace StaxUser\RandomLib;
 
 /**
  * The Mixer strategy interface.

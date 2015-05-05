@@ -12,7 +12,7 @@
  * @version   Build @@version@@
  */
 
-namespace Crypto\SecurityLib;
+namespace SecurityLib;
 
 /**
  * The base abstract factory used by all PasswordLib factories

@@ -12,7 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    Build @@version@@
  */
-namespace Crypto\SecurityLib\BigMath;
+namespace StaxUser\SecurityLib\BigMath;
 
 /**
  * A class for arbitrary precision math functions implemented using bcmath
@@ -21,7 +21,7 @@ namespace Crypto\SecurityLib\BigMath;
  * @package    Core
  * @subpackage BigMath
  */
-class BCMath extends \Crypto\SecurityLib\BigMath {
+class BCMath extends \StaxUser\SecurityLib\BigMath {
 
     /**
      * Add two numbers together
