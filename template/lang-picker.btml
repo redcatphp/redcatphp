@@ -1,6 +1,6 @@
 <eval>
 	<?
-		$langDir = 'langs/';
+		$langDir = SURIKAT_CWD.'langs/';
 		$lgC = I18n\Translator::getLangCode();
 		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
 		$lgD = $config->default;
@@ -12,7 +12,7 @@
 		<?
 			$language = I18n\Punic\Language::getName($lg,$lg);
 			$language = Vars\STR::ucfirst($language);
-			$lcPath = $URI[0];
+			$lcPath = $this->FluxServer_Mvc_Controller()->Route[0];
 			if($lg!=$lgC){
 				if($lg==$lgD){
 					$langMap = parse_ini_file($langDir.$lgC.'.ini');
