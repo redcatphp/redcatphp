@@ -8,7 +8,7 @@ use Database\R;
 use Database\RedBeanPHP\Database;
 use Database\RedBeanPHP\QueryWriter;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 class Query {
 	use MutatorMagicTrait;
 	protected $table;

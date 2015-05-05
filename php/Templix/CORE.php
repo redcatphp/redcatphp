@@ -3,7 +3,7 @@ use Templix\Template;
 use Templix\Tml;
 use Templix\CssSelector;
 use Templix\MarkupX\TmlApply;
-use DependencyInjection\MutatorCallTrait;
+use ObjexLoader\MutatorCallTrait;
 class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 	use MutatorCallTrait;
 	

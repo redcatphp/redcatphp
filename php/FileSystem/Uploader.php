@@ -1,5 +1,5 @@
 <?php namespace FileSystem;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 class Uploader{
 	use MutatorMagicTrait;
 	public $extensionRewrite = [

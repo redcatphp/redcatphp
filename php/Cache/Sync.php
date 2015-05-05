@@ -1,5 +1,5 @@
 <?php namespace Cache;
-use DependencyInjection\FacadeTrait;
+use ObjexLoader\FacadeTrait;
 class Sync{
 	use FacadeTrait;
 	var $timespace = 'sync/timespace/';

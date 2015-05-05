@@ -1,5 +1,5 @@
 <?php namespace Templix;
-use DependencyInjection\MutatorCallTrait;
+use ObjexLoader\MutatorCallTrait;
 use DomainException;
 class Template {
 	use MutatorCallTrait;

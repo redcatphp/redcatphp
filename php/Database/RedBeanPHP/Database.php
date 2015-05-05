@@ -27,7 +27,7 @@ use Database\RedBeanPHP\Driver\RPDO as RPDO;
 use Database\Model;
 use Database\Query;
 
-use DependencyInjection\MutatorFacadeTrait;
+use ObjexLoader\MutatorFacadeTrait;
 
 use Vars\STR;
 use Vars\ArrayObject;

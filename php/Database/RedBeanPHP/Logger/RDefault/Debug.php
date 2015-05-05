@@ -1,7 +1,7 @@
 <?php
 namespace Database\RedBeanPHP\Logger\RDefault;
 
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 use Database\RedBeanPHP\Logger as Logger;
 use Database\RedBeanPHP\Logger\RDefault as RDefault;
 use Database\RedBeanPHP\RedException as RedException;

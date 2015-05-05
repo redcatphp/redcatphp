@@ -1,5 +1,5 @@
 <?php namespace Minify;
-use DependencyInjection\MutatorFacadeTrait;
+use ObjexLoader\MutatorFacadeTrait;
 class Php {
 	use MutatorFacadeTrait;
 	var $minifyHTML;

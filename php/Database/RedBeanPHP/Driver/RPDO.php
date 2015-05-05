@@ -2,7 +2,7 @@
 
 namespace Database\RedBeanPHP\Driver;
 
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 use Database\SqlFormatter;
 use Database\RedBeanPHP\Driver as Driver;
 use Database\RedBeanPHP\Logger as Logger;

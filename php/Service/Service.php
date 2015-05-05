@@ -1,5 +1,5 @@
 <?php namespace Service;
-use DependencyInjection\MutatorTrait;
+use ObjexLoader\MutatorTrait;
 class Service {
 	use MutatorTrait;
 	function __invoke($func=null){

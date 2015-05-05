@@ -1,6 +1,6 @@
 <?php
 namespace Dispatcher;
-use DependencyInjection\MutatorTrait;
+use ObjexLoader\MutatorTrait;
 class Event{
 	use MutatorTrait;
 	protected $events = [];

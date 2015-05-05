@@ -1,5 +1,5 @@
 <?php namespace Minify;
-use DependencyInjection\MutatorFacadeTrait;
+use ObjexLoader\MutatorFacadeTrait;
 #modified by surikat
 /*
  Compress HTML

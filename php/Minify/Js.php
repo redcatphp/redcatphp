@@ -54,7 +54,7 @@
  * @link http://code.google.com/p/jsmin-php/
  */
 
-use DependencyInjection\FacadeTrait;
+use ObjexLoader\FacadeTrait;
 // class JSMin {
 class Js {
 	use FacadeTrait;

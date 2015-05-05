@@ -1,5 +1,5 @@
 <?php namespace Http;
-use DependencyInjection\MutatorPropertyTrait;
+use ObjexLoader\MutatorPropertyTrait;
 class Request{
 	use MutatorPropertyTrait;
 	function reloadLocation(){

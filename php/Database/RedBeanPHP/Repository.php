@@ -16,7 +16,7 @@ use Database\RedBeanPHP\OODB as OODB;
 use Database\RedBeanPHP\Cursor as Cursor;
 use Database\RedBeanPHP\Cursor\NullCursor as NullCursor;
 
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 
 /**
  * Abstract Repository

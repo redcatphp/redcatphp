@@ -20,7 +20,7 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
-use DependencyInjection\MutatorCallTrait;
+use ObjexLoader\MutatorCallTrait;
 use Database\RedBeanPHP\OODBBean;
 use Database\RedBeanPHP\SimpleModel;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
@@ -285,7 +285,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				$this->$col = call_user_func_array(['Validation\\Filter',$f],$a);
+				$this->$col = call_user_func_array(['RedBoxORM\Validation\Filter',$f],$a);
 			}
 		}
 	}
@@ -299,7 +299,7 @@ class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
 				if(!is_array($a))
 					$a = (array)$a;
 				array_unshift($a,$this->$col);
-				if(!call_user_func_array(['Validation\\Ruler',$f],$a))
+				if(!call_user_func_array(['RedBoxORM\Validation\Ruler',$f],$a))
 					$this->error($col,'ruler '.$f.' with value '.array_shift($a).' and with params "'.implode('","',$a).'"');
 			}
 		}

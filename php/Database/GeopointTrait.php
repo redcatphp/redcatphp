@@ -2,7 +2,7 @@
 use Database\RedBeanPHP\QueryWriter\PostgreSQL;
 use Database\RedBeanPHP\QueryWriter\MySQL;
 use Geocoding\Geocoding;
-use Validation\Ruler;
+use RedBoxORM\Validation\Ruler;
 trait GeopointTrait{
 	static $columnPointCast	= 'point';
 	static $columnPointWriteCol;

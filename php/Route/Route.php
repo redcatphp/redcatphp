@@ -1,5 +1,5 @@
 <?php namespace Route;
-use DependencyInjection\MutatorTrait;
+use ObjexLoader\MutatorTrait;
 class Route implements RouteInterface{
 	use MutatorTrait;
 	protected $path;

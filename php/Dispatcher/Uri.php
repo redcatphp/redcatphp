@@ -1,6 +1,6 @@
 <?php namespace Dispatcher;
 use ReflectionClass;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 use Route\Route;
 class Uri {
 	use MutatorMagicTrait;

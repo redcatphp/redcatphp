@@ -1,6 +1,6 @@
 <?php namespace Route;
 use I18n\Translator;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 class I18n extends Faceted {
 	use MutatorMagicTrait;	
 	protected $Dispatcher_Uri;
@@ -27,8 +27,10 @@ class I18n extends Faceted {
 				}
 			}
 		}
-		else
-			$lang = $this->Config('langs')->default;
+		else{
+			$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
+			$lang = $config->default;
+		}
 		Translator::set($lang);
 		$ctrl = $this->Dispatcher_Uri->Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');

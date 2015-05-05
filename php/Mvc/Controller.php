@@ -1,5 +1,5 @@
 <?php namespace Mvc;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 use DomainException;
 class Controller{
 	use MutatorMagicTrait;

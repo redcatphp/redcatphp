@@ -1,5 +1,5 @@
 <?php namespace Templix;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 class Toolbox{
 	use MutatorMagicTrait;
 	function JsIs($Tml,$href='css/is.'){

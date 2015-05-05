@@ -1,5 +1,5 @@
 <?php namespace Route;
-use DependencyInjection\MutatorTrait;
+use ObjexLoader\MutatorTrait;
 interface RouteInterface extends \ArrayAccess,\Countable{
 	function getPath();
 	function getParams();

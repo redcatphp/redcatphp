@@ -1,7 +1,7 @@
 <?php
 namespace Database\RedBeanPHP;
-use DependencyInjection\MutatorCallTrait;
-use DependencyInjection\RegistryTrait;
+use ObjexLoader\MutatorCallTrait;
+use ObjexLoader\RegistryTrait;
 class DatabaseGroup{
 	use MutatorCallTrait;
 	use RegistryTrait;

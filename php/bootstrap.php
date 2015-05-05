@@ -2,23 +2,21 @@
 error_reporting(-1);
 ini_set('display_startup_errors',true);
 ini_set('display_errors','stdout');
-require __DIR__.'/DependencyInjection/MutatorTrait.php';
-require __DIR__.'/DependencyInjection/MutatorMagicPropertyTrait.php';
-require __DIR__.'/DependencyInjection/MutatorPropertyTrait.php';
-require __DIR__.'/DependencyInjection/MutatorMagicCallTrait.php';
-require __DIR__.'/DependencyInjection/MutatorCallTrait.php';
-require __DIR__.'/DependencyInjection/MutatorMagicTrait.php';
-require __DIR__.'/DependencyInjection/RegistryTrait.php';
-require __DIR__.'/DependencyInjection/Container.php';
-require __DIR__.'/Autoload/Psr4.php';
-define('SURIKAT_CWD',getcwd().'/');
+require __DIR__.'/ObjexLoader/MutatorTrait.php';
+require __DIR__.'/ObjexLoader/MutatorMagicPropertyTrait.php';
+require __DIR__.'/ObjexLoader/MutatorPropertyTrait.php';
+require __DIR__.'/ObjexLoader/MutatorMagicCallTrait.php';
+require __DIR__.'/ObjexLoader/MutatorCallTrait.php';
+require __DIR__.'/ObjexLoader/MutatorMagicTrait.php';
+require __DIR__.'/ObjexLoader/RegistryTrait.php';
+require __DIR__.'/ObjexLoader/Container.php';
+require __DIR__.'/ObjexLoader/AutoloadPsr4.php';
 define('SURIKAT',realpath(__DIR__.'/..').'/');
+define('SURIKAT_CWD',getcwd().'/');
 global $SURIKAT;
-$SURIKAT = DependencyInjection\Container::get();
-$SURIKAT->Autoload_Psr4->addNamespaces([
-	''			=> [
-		getcwd().'/php',
-		__DIR__
-	]
+$SURIKAT = ObjexLoader\Container::get();
+$SURIKAT->ObjexLoader_AutoloadPsr4->addNamespace('',[
+	getcwd().'/php',
+	__DIR__
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_ConfigInjector,'objectFactory']);
+$SURIKAT->setDependencyFactory([$SURIKAT->ObjexLoader_ConfigInjector,'objectFactory']);

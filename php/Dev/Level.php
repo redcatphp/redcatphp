@@ -1,5 +1,5 @@
 <?php namespace Dev;
-use DependencyInjection\MutatorTrait;
+use ObjexLoader\MutatorTrait;
 class Level{
 	use MutatorTrait;
 	private $phpDev;

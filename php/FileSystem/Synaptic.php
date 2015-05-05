@@ -1,5 +1,5 @@
 <?php namespace FileSystem;
-use DependencyInjection\MutatorMagicTrait;
+use ObjexLoader\MutatorMagicTrait;
 class Synaptic {
 	use MutatorMagicTrait;
 	protected $expires = 2592000;

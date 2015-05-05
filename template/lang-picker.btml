@@ -2,7 +2,8 @@
 	<?
 		$langDir = 'langs/';
 		$lgC = I18n\Translator::getLangCode();
-		$lgD = $this->Config('langs')->default;
+		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
+		$lgD = $config->default;
 		$langs = [$lgD];
 		foreach(glob($langDir.'*.ini') as $langFile)
 			$langs[] = pathinfo($langFile,PATHINFO_FILENAME);

@@ -1,5 +1,5 @@
 <?php namespace I18n;
-use DependencyInjection\MutatorFacadeTrait;
+use ObjexLoader\MutatorFacadeTrait;
 class Translator {
 	use MutatorFacadeTrait;
 	protected static $systemLocales;
@@ -31,7 +31,8 @@ class Translator {
 		if(!isset($domain))
 			$domain = self::$defaultDomain;
 		$this->defaultLocalesRoot = 'langs';
-		$tz = $this->Config('langs')->timezone;
+		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
+		$tz = $config->timezone;
 		if(!$tz)
 			$tz = @date_default_timezone_get();
 		date_default_timezone_set($tz);

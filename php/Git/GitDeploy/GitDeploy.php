@@ -1,5 +1,5 @@
 <?php namespace Git\GitDeploy;
-use DependencyInjection\MutatorCallTrait;
+use ObjexLoader\MutatorCallTrait;
 use Vars\Arrays;
 class GitDeploy{
 	use MutatorCallTrait;

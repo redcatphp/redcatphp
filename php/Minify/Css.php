@@ -1,5 +1,5 @@
 <?php namespace Minify;
-use DependencyInjection\FacadeTrait;
+use ObjexLoader\FacadeTrait;
 class Css{
 	use FacadeTrait;
 	function _process($str){
