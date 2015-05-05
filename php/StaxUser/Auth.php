@@ -95,7 +95,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = $this->Http_Url->getBaseHref();
+			$this->siteUrl = $this->FluxServer_Http_Url->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
@@ -627,7 +627,7 @@ class Auth{
 	function lock($r,$redirect=true){
 		if($this->allowed($r))
 			return;
-		$this->Http_Request->nocacheHeaders();
+		$this->FluxServer_Http_Request->nocacheHeaders();
 		if($redirect){
 			if($this->connected())
 				$redirect = '403';
@@ -636,7 +636,7 @@ class Auth{
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{
-			$this->Http_Request->code(403);
+			http_response_code(403);
 		}
 		exit;
 	}

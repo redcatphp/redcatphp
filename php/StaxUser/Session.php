@@ -37,14 +37,14 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = getcwd().'/tmp/attempts/';
-		$this->cookiePath = '/'.$this->Http_Url()->getSuffixHref();
-		$this->cookieDomain = $this->Http_Url()->getServerHref();
+		$this->cookiePath = '/'.$this->FluxServer_Http_Url()->getSuffixHref();
+		$this->cookieDomain = $this->FluxServer_Http_Url()->getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->_SessionHandler = $sessionHandler;
 		else
 			$this->_SessionHandler = $this->getDependency('_SessionHandler');
-		$this->Http_Cookie = $this->Http_Cookie();
+		$this->Http_Cookie = $this->FluxServer_Http_Cookie();
 		$this->garbageCollector();
 	}
 	function handleReload(){

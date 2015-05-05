@@ -1,5 +1,5 @@
 <?php namespace Package\Cms\DispatcherUri;
-use Dispatcher\Uri as Dispatcher_Uri;
+use FluxServer\Dispatcher\Uri as Dispatcher_Uri;
 class Synaptic extends Dispatcher_Uri{
 	protected $pathFS;
 	function __construct($pathFS=''){
@@ -9,7 +9,7 @@ class Synaptic extends Dispatcher_Uri{
 	}
 	function __invoke(){
 		list($filename,$file) = func_get_args();
-		$this->FileSystem_Synaptic->appendDir('Surikat');
-		$this->FileSystem_Synaptic->load($this->pathFS.$file);
+		$this->FluxServer_File_Synaptic->appendDir('Surikat');
+		$this->FluxServer_File_Synaptic->load($this->pathFS.$file);
 	}
 }

@@ -1,5 +1,5 @@
 <?
-$this->Http_Request()->code(500);
+$this->FluxServer_Http_Request()->code(500);
 ?>
 <extend>
 	<attr selector="main" addClass="not-found">

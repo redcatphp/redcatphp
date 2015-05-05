@@ -155,7 +155,7 @@ class Template {
 				unlink($this->devCompileFile);
 				self::rmdir($this->dirCompile);
 				self::rmdir($this->dirCache);
-				$this->FileSystem_Synaptic()->cleanMini();
+				$this->FluxServer_File_Synaptic()->cleanMini();
 			}
 		}
 		else{
@@ -164,9 +164,9 @@ class Template {
 				file_put_contents($this->devCompileFile,'');
 			}
 			if($this->Dev_Level()->CSS)
-				$this->FileSystem_Synaptic()->cleanMini('css');
+				$this->FluxServer_File_Synaptic()->cleanMini('css');
 			if($this->Dev_Level()->JS)
-				$this->FileSystem_Synaptic()->cleanMini('js');
+				$this->FluxServer_File_Synaptic()->cleanMini('js');
 		}
 	}
 	function fetch($file=null,$vars=[]){

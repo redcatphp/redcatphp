@@ -2,5 +2,5 @@
 use ObjexLoader\Container;
 return [
 	'timeCompiled'	=> time(),
-	'BASE_HREF'		=> Container::get()->Http_Url()->getBaseHref(),
+	'BASE_HREF'		=> Container::get()->FluxServer_Http_Url()->getBaseHref(),
 ];
