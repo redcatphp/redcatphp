@@ -1,2 +1,2 @@
-<?php $dir = SURIKAT_SPATH;
+<?php $dir = SURIKAT;
 include __DIR__.'/main.inc.php';

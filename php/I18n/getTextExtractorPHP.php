@@ -3,7 +3,10 @@ use I18n\Gettext\Extractors\PhpCode;
 class getTextExtractorPHP extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		if($sourceDir){
-			$cwd = getcwd();
+			if(defined('SURIKAT_CWD'))
+				$cwd = SURIKAT_CWD;
+			else
+				$cwd = getcwd();
 			chdir($sourceDir);
 			$file = substr($file,strlen($sourceDir));
 		}

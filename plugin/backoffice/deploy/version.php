@@ -9,7 +9,7 @@ ob_implicit_flush(true);
 echo '<pre>';
 GitDeploy::factory()
 	->maintenanceOn()
-	->deploy(getcwd().'/')
+	->deploy(SURIKAT_CWD)
 	->maintenanceOff()
 ;
 echo '</pre>';

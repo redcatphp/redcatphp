@@ -21,10 +21,10 @@ class ByPhpX extends ByPhp {
 		if(!$index){
 			$path .= '/index.php';
 			$file = $this->dirFS.'/'.$path;
-			if(is_file($f=($adir=getcwd().'/').$file)
-				||is_file($f=($adir=getcwd().'/Surikat/').$file)
-			){
-				return [$this->dirFS,$path,$adir.$this->dirFS,$f];
+			foreach($this->dirs as $d){
+				if($f=realpath(($adir=$d.'/').$file)){
+					return [$this->dirFS,$path,$adir.$this->dirFS,$f];
+				}
 			}
 		}
 	}

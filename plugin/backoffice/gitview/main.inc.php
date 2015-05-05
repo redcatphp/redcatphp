@@ -20,7 +20,7 @@ elseif (isset($_GET['file'])){
 	}
 }
 elseif (isset($_GET['diff'])){
-	include(SURIKAT_SPATH."php/Git/PhpGit/contrib.diff.php");
+	include(SURIKAT."php/Git/PhpGit/contrib.diff.php");
 	$diff    = $git->getCommitDiff($_GET['diff']);
 	$changes = $diff[0];
 	foreach ($changes as $change) {

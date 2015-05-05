@@ -60,7 +60,10 @@ class Translator {
 				foreach(self::$systemLocales as $lc){
 					if(strpos($lc,$this->locale.'_')===0){
 						if(!is_dir($this->localesRoot.'/'.$lc)){
-							$cwd = getcwd();
+							if(defined('SURIKAT_CWD'))
+								$cwd = SURIKAT_CWD;
+							else
+								$cwd = getcwd();
 							chdir($this->localesRoot);
 							symlink($this->locale,$this->localesRoot.'/'.$lc);
 							chdir($cwd);

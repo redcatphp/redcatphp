@@ -1,6 +1,6 @@
 <?php
 namespace DependencyInjection;
-class Config{
+class ConfigInjector{
 	public static $dirRoots = ['','Surikat/'];
 	public $dirPath = 'config';
 	function getConfigFilename($c,$args=null){

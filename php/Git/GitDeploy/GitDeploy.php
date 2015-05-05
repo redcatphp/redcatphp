@@ -1,5 +1,4 @@
 <?php namespace Git\GitDeploy;
-use Config\Ini as ConfigIni;
 use DependencyInjection\MutatorCallTrait;
 use Vars\Arrays;
 class GitDeploy{
@@ -33,8 +32,16 @@ class GitDeploy{
 	function __construct($repoPath=null,$config=null){
 		ini_set('memory_limit', '256M');
         $this->repoPath = $repoPath;
-        $this->options = Arrays::merge_recursive($this->options,$this->Config_LoaderIni('deploy')->loadObject()->get(':shared:'));
-		$this->iniServers = $config?$config:$this->Config_LoaderIni('deploy')->loadObject();
+		$this->iniServers = $config;
+	}
+	static function getConfigFilename(){
+		return 'deploy';
+	}
+	function setConfig($config){
+		var_dump($config);exit;
+        $this->options = Arrays::merge_recursive($this->options,$config[':shared:']);
+        if(!$this->iniServers)
+			$this->iniServers = $config;
         if(!$this->iniServers)
             return self::error("Invalid deploy configuration");
 		foreach($this->iniServers as $uri=>$options){

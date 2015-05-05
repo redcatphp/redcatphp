@@ -101,7 +101,10 @@ class MessageService {
 		$pot = Catalogue::headerPots();
 		$pot = str_replace("{ctime}",gmdate('Y-m-d H:iO',is_file($potfile)?filemtime($potfile):time()),$pot);
 		$pot = str_replace("{mtime}",gmdate('Y-m-d H:iO'),$pot);
-		$cwd = getcwd().'/';
+		if(defined('SURIKAT_CWD'))
+			$cwd = SURIKAT_CWD;
+		else
+			$cwd = getcwd();
 		$pot .= getTextExtractorTML::parse('tml',$cwd);
 		$pot .= getTextExtractorPHP::parse('tml',$cwd);
 		$pot .= getTextExtractorPHP::parse('php',$cwd);

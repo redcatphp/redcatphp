@@ -7,11 +7,11 @@ ob_implicit_flush(true);
 @ob_end_flush();
 
 echo '<pre>';
-GitDeploy::factory(getcwd().'/')
+GitDeploy::factory(SURIKAT_CWD)
 	->maintenanceOn()
 	->autocommit()
 	->deploy()
-	->getParent(SURIKAT_SPATH)
+	->getParent(SURIKAT)
 		->deploy()
 	->getOrigin()
 		->maintenanceOff()

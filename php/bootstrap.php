@@ -11,6 +11,8 @@ require __DIR__.'/DependencyInjection/MutatorMagicTrait.php';
 require __DIR__.'/DependencyInjection/RegistryTrait.php';
 require __DIR__.'/DependencyInjection/Container.php';
 require __DIR__.'/Autoload/Psr4.php';
+define('SURIKAT_CWD',getcwd().'/');
+define('SURIKAT',realpath(__DIR__.'/..').'/');
 global $SURIKAT;
 $SURIKAT = DependencyInjection\Container::get();
 $SURIKAT->Autoload_Psr4->addNamespaces([
@@ -19,4 +21,4 @@ $SURIKAT->Autoload_Psr4->addNamespaces([
 		__DIR__
 	]
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_Config,'objectFactory']);
+$SURIKAT->setDependencyFactory([$SURIKAT->DependencyInjection_ConfigInjector,'objectFactory']);

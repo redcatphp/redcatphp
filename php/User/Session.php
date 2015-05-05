@@ -25,8 +25,13 @@ class Session{
 	protected $Http_Cookie;
 	protected $handled;
 	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null){
-		if(!$saveRoot)
-			$saveRoot = getcwd().'/.tmp/sessions/';
+		if(!$saveRoot){
+			if(defined('SURIKAT_CWD'))
+				$cwd = SURIKAT_CWD;
+			else
+				$cwd = getcwd();
+			$saveRoot = $cwd.'/.tmp/sessions/';
+		}
 		if($name)
 			$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
