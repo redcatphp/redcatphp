@@ -15,8 +15,8 @@ define('SURIKAT',realpath(__DIR__.'/..').'/');
 define('SURIKAT_CWD',getcwd().'/');
 global $SURIKAT;
 $SURIKAT = ObjexLoader\Container::get();
-$SURIKAT->ObjexLoader_AutoloadPsr4->addNamespace('',[
+$SURIKAT->_AutoloadPsr4->addNamespace('',[
 	getcwd().'/php',
 	__DIR__
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->ObjexLoader_ConfigInjector,'objectFactory']);
+$SURIKAT->setDependencyFactory([$SURIKAT->_ConfigInjector,'objectFactory']);
