@@ -1,5 +1,5 @@
 <?php
-namespace FileSystem;
+namespace Templix\MarkupX;
 #
 #
 # Parsedown
