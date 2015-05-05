@@ -52,11 +52,6 @@ class TmlLoop extends \Templix\Tml{
 		else
 			return '$'.$var;
 	}
-	//private function methodModel($params){
-		//if(isset($this->cacheSync)&&!trim($this->cacheSync))
-			//$this->cacheSync = $params['table'].'.db';
-		//return '(array)model::'.$params['method'].'('.self::exportVars($params['table'],@$params['compo'],explode(',',@$params['compoParams'])).')';
-	//}
 	private function methodFile($file){
 		$method = 'methodFile'.(substr($file,-1)==='/'?'Dir':ucfirst(strtolower(pathinfo($file,PATHINFO_EXTENSION))));
 		return $this->$method($file);
@@ -65,7 +60,7 @@ class TmlLoop extends \Templix\Tml{
 		return "glob($file.'*')";
 	}
 	private function methodFileJson($file){
-		return 'K\\JSON::decode(file_get_contents($file),true)';
+		return 'json_decode(file_get_contents($file),true)';
 	}
 	private function methodFileSvar($file){
 		return "unserialize(file_get_contents('$file'))";
@@ -80,6 +75,6 @@ class TmlLoop extends \Templix\Tml{
 		return "parse_ini_file('$file',true)";
 	}
 	private function methodFileTml($file){
-		return "new Templix\\Tml(file_get_contents('$file'))->childNodes";
+		return "new Templix\Tml(file_get_contents('$file'))->childNodes";
 	}
 }
