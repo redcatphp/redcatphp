@@ -1,4 +1,4 @@
-<?php namespace Service;
+<?php namespace Package\Service;
 use ObjexLoader\MutatorPropertyTrait;
 class ServiceAuth {
 	use MutatorPropertyTrait;

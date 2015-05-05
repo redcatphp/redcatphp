@@ -15,7 +15,7 @@ class Index extends Dispatcher_Uri{
 		return $this->FluxServer_Mvc_Controller();
 	}
 	function convention(){
-		$this->append('service/',['Service']);
+		$this->append('service/',['Package_Service']);
 		$this->append(['FluxServer_Route_Extension','css|js|png|jpg|jpeg|gif'], ['Package_Cms_DispatcherUri_Synaptic']);
 		$this->append(['FluxServer_Route_ByTml','plugin'],$this);
 		$this->append(['FluxServer_Route_ByTml'],$this);

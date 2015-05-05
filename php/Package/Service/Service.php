@@ -1,4 +1,4 @@
-<?php namespace Service;
+<?php namespace Package\Service;
 use ObjexLoader\MutatorTrait;
 class Service {
 	use MutatorTrait;
@@ -18,7 +18,7 @@ class Service {
 	}
 	protected static function __funcToCm($func){
 		$pos = strpos($func,'_');
-		$c = 'Service\\Service_';
+		$c = 'Package\Service\Service_';
 		if($pos){
 			$c .= ucfirst(substr($func,0,$pos));
 			$m = lcfirst(self::StudlyCaps(substr($func,$pos+1)));
