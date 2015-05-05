@@ -26,12 +26,7 @@ class Index extends Dispatcher_Uri{
 	}
 	function run($path){
 		if(!parent::run($path)){
-			try{
-				$this->View->display($c.'.tml');
-			}
-			catch(DomainException $e){
-				http_response_code($e->getMessage());
-			}
+			$this->FluxServer_Mvc_Controller()->error(404);
 			exit;
 		}
 	}
