@@ -1,4 +1,4 @@
-<?php namespace RedBoxORM\Validation;
+<?php namespace RedBase\Validation;
 use DateTime\Dates;
 class Ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
