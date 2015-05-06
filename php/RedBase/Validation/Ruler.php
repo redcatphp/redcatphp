@@ -1,5 +1,4 @@
 <?php namespace RedBase\Validation;
-use DateTime\Dates;
 class Ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
 	static function unique($v){
@@ -91,10 +90,36 @@ class Ruler {
 	  	}
 		return $total%10==0;
 	}
-	static function date($v){
-		return Dates::validate_date($v);
+	static function date($date,$required=false){
+		if(is_array($date)){
+			$ok = !$required;
+			foreach(array_keys($date) as $k)
+				if(($required||!empty($date[$k]))&&!($ok=self::date($date[$k],$required)))
+					return false;
+			return $ok;
+		}
+		else{
+			preg_match( '#^(?P<year>\d{2}|\d{4})([- /.])(?P<month>\d{1,2})\2(?P<day>\d{1,2})$#', $date, $matches );
+			return $date=='0000-00-00'|| (preg_match( '#^(?P<year>\d{2}|\d{4})([- /.])(?P<month>\d{1,2})\2(?P<day>\d{1,2})$#', $date, $matches )
+				   && checkdate($matches['month'],$matches['day'],$matches['year']));
+		}
 	}
-	static function time($v){
-		return Dates::validate_time($v);
+	static function time(&$time,$required=false){
+		if(is_array($time)){
+			$ok = !$required;
+			foreach(array_keys($time) as $k)
+				if(($required||!empty($time[$k]))&&!($ok=self::time($time[$k],$required)))
+					return false;
+			return $ok;
+		}
+		else{
+			if(mb_strlen($time)==5)
+				$time .= ':00';
+			$xp = explode(':',$time);
+			$hour = (int)@$xp[0];
+			$minute = (int)@$xp[1];
+			$second = (int)@$xp[2];
+			return $hour>-1&&$hour<24&&$minute>-1&&$minute<60&&$second>-1&&$second<60;
+		}
 	}
 }
