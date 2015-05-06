@@ -1,4 +1,4 @@
-<?php namespace PhpSecLib;
+<?php namespace Authentic\PhpSecLib;
 
 /**
  * Base Class for all Crypt_* cipher classes

@@ -1,4 +1,4 @@
-<?php namespace PhpSecLib;
+<?php namespace Authentic\PhpSecLib;
 
 /**
  * Pure-PHP ASN.1 Parser

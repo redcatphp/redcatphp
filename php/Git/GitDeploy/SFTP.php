@@ -1,6 +1,6 @@
 <?php namespace Git\GitDeploy;
-use PhpSecLib\Net_SFTP;
-use PhpSecLib\Crypt_RSA;
+use Authentic\PhpSecLib\Net_SFTP;
+use Authentic\PhpSecLib\Crypt_RSA;
 class SFTP extends Server {
     function connect($server) {
         $this->connection = new Net_SFTP($server['host'], $server['port'], 10);
