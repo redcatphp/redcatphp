@@ -12,7 +12,7 @@
  * @version   Build @@version@@
  */
 
-namespace SecurityLib;
+namespace StaxUser\SecurityLib;
 
 /**
  * The base abstract factory used by all PasswordLib factories

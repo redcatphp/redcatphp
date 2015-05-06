@@ -12,7 +12,7 @@
  * @version    Build @@version@@
  */
 
-namespace SecurityLib;
+namespace StaxUser\SecurityLib;
 
 /**
  * The strength FlyweightEnum class

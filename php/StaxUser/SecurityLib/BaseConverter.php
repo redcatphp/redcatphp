@@ -14,7 +14,7 @@
  * @version    Build @@version@@
  */
 
-namespace SecurityLib;
+namespace StaxUser\SecurityLib;
 
 /**
  * A Utility class for converting between raw binary strings and a given
