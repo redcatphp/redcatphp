@@ -1,8 +1,7 @@
 <?php namespace Database;
 use ArrayAccess;
 use BadMethodCallException;
-use Vars\ArrayObject;
-use Vars\Arrays;
+use Database\ArrayObject;
 use Database\SqlFormatter;
 use Database\R;
 use Database\RedBeanPHP\Database;

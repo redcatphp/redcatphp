@@ -29,9 +29,6 @@ use Database\Query;
 
 use ObjexLoader\MutatorFacadeTrait;
 
-use Vars\STR;
-use Vars\ArrayObject;
-
 class Database{
 	use MutatorFacadeTrait;
 	
@@ -82,7 +79,7 @@ class Database{
 				'file'=>'.data/db.'.$this->name.'.sqlite'
 			];
 		}
-		$config = new ArrayObject($config);
+		$config = (object)$config;
 		$type = $config->type;
 		if(!$type)
 			return;
@@ -1116,7 +1113,7 @@ class Database{
 				if($ln)
 					$p = strpos($sql,'?',$ln);
 				else
-					$p = STR::posnth($sql,'?',$k);
+					$p = self::posnth($sql,'?',$k);
 				if($p!==false){
 					$nSql = substr($sql,0,$p);
 					$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
@@ -1131,7 +1128,7 @@ class Database{
 				if($ln)
 					$p = strpos($sql,'?',$ln);
 				else
-					$p = STR::posnth($sql,'?',$k);
+					$p = self::posnth($sql,'?',$k);
 				$ln = $p+1;
 				$nBinds[] = $v;
 			}
@@ -1178,5 +1175,16 @@ class Database{
 	}
 	static function selectDatabase($key){
 		return self::setStatic($key);
+	}
+	static function posnth($haystack,$needle,$n,$offset=0){
+		$l = strlen($needle);
+		for($i=0;$i<=$n;$i++){
+			$indx = strpos($haystack, $needle, $offset);
+			if($i==$n||$indx===false)
+				return $indx;
+			else
+				$offset = $indx+$l;
+		}
+		return false;
 	}
 }

@@ -1,6 +1,5 @@
 <?php namespace Git\GitDeploy;
 use ObjexLoader\MutatorCallTrait;
-use Vars\Arrays;
 class GitDeploy{
 	use MutatorCallTrait;
 	static function factory($repoPath=null){
@@ -33,13 +32,19 @@ class GitDeploy{
 		ini_set('memory_limit', '256M');
         $this->repoPath = $repoPath;
 		$this->iniServers = $config;
-	}
-	static function getConfigFilename(){
-		return 'deploy';
-	}
-	function setConfig($config){
-		var_dump($config);exit;
-        $this->options = Arrays::merge_recursive($this->options,$config[':shared:']);
+		
+		if(!isset($config)){
+			$config = [];
+			foreach(['Surikat/',''] as $d){
+				if(is_file($f=$d.'config/deploy.ini')){
+					$config = self::array_merge_recursive($config,parse_ini_file($f,true));
+				}
+			}
+		}
+		if(empty($config))
+			throw new \Exception('Missing deploy config');
+		
+        $this->options = self::array_merge_recursive($this->options,$config[':shared:']);
         if(!$this->iniServers)
 			$this->iniServers = $config;
         if(!$this->iniServers)
@@ -150,5 +155,23 @@ class GitDeploy{
 			if (!in_array($file, $ignore))
 				$return[] = $file;
 		return $return;
+	}
+	static function array_merge_recursive(){
+		$args = func_get_args();
+		$merged = array_shift($args);
+		foreach($args as $array2){
+			if(!is_array($array2)){
+				continue;
+			}
+			foreach($array2 as $key => &$value){
+				if(is_array($value)&&isset($merged [$key])&&is_array($merged[$key])){
+					$merged[$key] = self::array_merge_recursive($merged[$key],$value);
+				}
+				else{
+					$merged[$key] = $value;
+				}
+			}
+		}
+		return $merged;
 	}
 }

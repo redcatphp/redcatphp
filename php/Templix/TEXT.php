@@ -1,12 +1,11 @@
 <?php namespace Templix;
 use Templix\Tml;
-use Vars\STR;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
 	function parse($text){
 		if($this->parent&&$this->parent->Template&&$this->parent->Template->isXhtml)
-			$text = STR::cleanXhtml($text);
+			$text = preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/S',['self','convert_entity'], $text);
 		$text = self::phpImplode($text,$this->constructor);
 		$this->textInject($text);
 		//$this->biohazard();

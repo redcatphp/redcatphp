@@ -1,7 +1,6 @@
 <?php
 namespace Templix\CssSelector\Model;
 use Templix\CssSelector\Model\CssParserModelFactor;
-use Vars\Arrays;
 class CssParserModelSelector{
 	private $_factors = [];
 	function addFactor($factor){
@@ -20,7 +19,13 @@ class CssParserModelSelector{
 		$ret = [];
 		foreach ($nodes as $node)
 			$ret = array_merge($ret, $factor->filter($node));
-		return Arrays::unique($ret);
-		return $ret;
+		return array_filter($ret, function($obj){
+			static $idList = array();
+			if(in_array($obj,$idList,true)){
+				return false;
+			}
+			$idList[] = $obj;
+			return true;
+		});
 	}
 }

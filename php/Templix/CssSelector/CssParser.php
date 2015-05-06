@@ -14,8 +14,6 @@ use Templix\CssSelector\Model\CssParserModelFactor;
 use Templix\CssSelector\Model\CssParserModelSelector;
 use Templix\CssSelector\TextParserException;
 use Templix\CssSelector\TextParser;
-use Vars\Arrays;
- 
 /**
  * selectorList			  = selector {"," selector}
  * selector				  = factor {factor}
@@ -297,7 +295,14 @@ class CssParser extends TextParser{
 				$selector->filter($this->_node)
 			);
 		} while ($this->eq(","));
-		return new ArrayObject(Arrays::unique($nodes));
+		return new ArrayObject(array_filter($nodes, function($obj){
+			static $idList = array();
+			if(in_array($obj,$idList,true)){
+				return false;
+			}
+			$idList[] = $obj;
+			return true;
+		}));
 	}
 	protected function _parse(){
 		return $this->is("selectorList");

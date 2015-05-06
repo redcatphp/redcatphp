@@ -1,5 +1,4 @@
 <?php namespace Service; 
-use Vars\JSON;
 use Minify\PHP as minPHP;
 use Minify\JS as minJS;
 use Minify\CSS as minCSS;
@@ -47,7 +46,6 @@ foreach([
 	'Minify/Js',
 	'Minify/Css',
 	'Minify/Html',
-	'Vars/JSON'
 ] as $inc)
 	require dirname(__FILE__).'/../control/'.$inc.'.php';
 

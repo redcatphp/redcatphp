@@ -24,7 +24,6 @@ use ObjexLoader\MutatorCallTrait;
 use Database\RedBeanPHP\OODBBean;
 use Database\RedBeanPHP\SimpleModel;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
-use Vars\JSON;
 use BadMethodCallException;
 use Database\ValidationException; //for allowing mirrored exception class catching and (optional) hook
 class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
