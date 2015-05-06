@@ -1,6 +1,6 @@
-<?php namespace Stylix;
+<?php namespace Stylish;
 class Server{
-	protected $cacheDir = '.tmp/stylix/';
+	protected $cacheDir = '.tmp/stylish/';
 	function __construct($from=null){
 		$this->compiler = new Compiler();
 		if(isset($from))
@@ -68,9 +68,9 @@ class Server{
 			$css = $this->compiler->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
 		$v = Compiler::Scss_VERSION;
-		$v2 = Compiler::Stylix_VERSION;
+		$v2 = Compiler::Stylish_VERSION;
 		$t = @date('r');
-		$css = "/* compiled by Stylix $v2 ( based on Leafo/ScssPhp $v - Sass 3.2 implementation in PHP ) on $t (${elapsed}s) */\n\n" . $css;
+		$css = "/* compiled by Stylish $v2 ( based on Leafo/ScssPhp $v - Sass 3.2 implementation in PHP ) on $t (${elapsed}s) */\n\n" . $css;
 		if(!is_dir($this->cacheDir))
 			@mkdir($this->cacheDir,0777,true);
 		file_put_contents($out, $css, LOCK_EX);

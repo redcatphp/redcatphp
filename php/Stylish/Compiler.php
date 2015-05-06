@@ -11,7 +11,7 @@
  */
 
 //namespace Leafo\ScssPhp;
-namespace Stylix;
+namespace Stylish;
 
 //use Leafo\ScssPhp\Colors;
 //use Leafo\ScssPhp\Parser;
@@ -50,7 +50,7 @@ namespace Stylix;
  */
 class Compiler
 {
-    const Stylix_VERSION = 'v1.1';
+    const Stylish_VERSION = 'v1.1';
     const Scss_VERSION = 'v0.1.1';
 
     static protected $operatorNames = array(
@@ -102,7 +102,7 @@ class Compiler
     protected $numberPrecision = 5;
 
     //protected $formatter = 'Leafo\ScssPhp\Formatter\Nested';
-    protected $formatter = 'Stylix\Formatter\Nested';
+    protected $formatter = 'Stylish\Formatter\Nested';
 	
 	public $dev;//addon by surikat
 	

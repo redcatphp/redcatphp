@@ -11,9 +11,9 @@
  */
 
 //namespace Leafo\ScssPhp\Formatter;
-namespace Stylix\Formatter;
+namespace Stylish\Formatter;
 
-use Stylix\Formatter;
+use Stylish\Formatter;
 
 /**
  * SCSS crunched formatter

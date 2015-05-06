@@ -11,10 +11,10 @@
  */
 
 //namespace Leafo\ScssPhp\Formatter;
-namespace Stylix\Formatter;
+namespace Stylish\Formatter;
 
 //use Leafo\ScssPhp\Formatter;
-use Stylix\Formatter;
+use Stylish\Formatter;
 
 /**
  * SCSS expanded formatter

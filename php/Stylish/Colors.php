@@ -11,7 +11,7 @@
  */
 
 //namespace Leafo\ScssPhp;
-namespace Stylix;
+namespace Stylish;
 
 //use Leafo\ScssPhp\Parser;
 

@@ -162,7 +162,7 @@ class Synaptic {
 			if(is_dir($dir=$d.dirname($path)))
 				$from[] = $dir;
 		}
-		$this->Stylix_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
+		$this->Stylish_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
 	}
 	function fileCache($output){
 		$mtime = filemtime($output);
