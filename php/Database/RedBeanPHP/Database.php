@@ -83,15 +83,15 @@ class Database{
 		$type = $config->type;
 		if(!$type)
 			return;
-		$port = $config->port;
-		$host = $config->host;
-		$file = $config->file;
-		$name = $config->name;
-		$prefix = $config->prefix;
-		$case = $config->case;
-		$frozen = $config->frozen;
-		$user = $config->user;
-		$password = $config->password;
+		$port = isset($config->port)?$config->port:null;
+		$host = isset($config->host)?$config->host:null;
+		$file = isset($config->file)?$config->file:null;
+		$name = isset($config->name)?$config->name:null;
+		$prefix = isset($config->prefix)?$config->prefix:null;
+		$case = isset($config->case)?$config->case:null;
+		$frozen = isset($config->frozen)?$config->frozen:null;
+		$user = isset($config->user)?$config->user:null;
+		$password = isset($config->password)?$config->password:null;
 		
 		if($port)
 			$port = ';port='.$port;
