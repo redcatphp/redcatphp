@@ -21,4 +21,4 @@ $SURIKAT->Dev_Level
 	->JS()
 ;
 
-$SURIKAT->Package_Cms_DispatcherUri_Index->runFromGlobals();
+$SURIKAT->KungFu_Cms_DispatcherUri_Index->runFromGlobals();

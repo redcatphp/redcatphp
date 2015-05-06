@@ -1,4 +1,4 @@
-<?php namespace Package\Service;
+<?php namespace KungFu\Service;
 use ObjexLoader\MutatorPropertyTrait;
 class ServiceAuth {
 	use MutatorPropertyTrait;

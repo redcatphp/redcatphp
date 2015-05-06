@@ -1,4 +1,4 @@
-<?php namespace Package\Cms\DispatcherUri;
+<?php namespace KungFu\Cms\DispatcherUri;
 use Unit\Dispatcher\Uri as Dispatcher_Uri;
 class Synaptic extends Dispatcher_Uri{
 	protected $pathFS;

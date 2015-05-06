@@ -1,4 +1,4 @@
-<?php namespace Package\Cms\DispatcherUri;
+<?php namespace KungFu\Cms\DispatcherUri;
 use Unit\Dispatcher\Uri as Dispatcher_Uri;
 class Backoffice extends Dispatcher_Uri{
 	protected $pathFS = 'plugin/backoffice';
@@ -6,7 +6,7 @@ class Backoffice extends Dispatcher_Uri{
 		$this->Authentic_Session->setName('surikat_backoffice');
 		$this
 			->append(['Unit_Route_Extension','css|js|png|jpg|jpeg|gif'],
-						['Package_Cms_DispatcherUri_Synaptic',$this->pathFS])
+						['KungFu_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Unit_Route_ByTml','',$this->pathFS],function(){
 				$this->Authentic_Auth->lockServer($this->Authentic_Auth->constant('RIGHT_MANAGE'));
 				return $this->Unit_Mvc_Controller();

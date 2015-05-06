@@ -12,6 +12,6 @@ class TmlHttp extends \Templix\Tml{
 		}
 	}
 	function notFound(){
-		$this->Package_Cms_DispatcherUri_Index()->Unit_Mvc_Controller->error(404);
+		$this->KungFu_Cms_DispatcherUri_Index()->Unit_Mvc_Controller->error(404);
 	}
 }
