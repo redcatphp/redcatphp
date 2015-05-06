@@ -1,5 +1,5 @@
 <?php
-namespace FluxServer\Dispatcher;
+namespace Unit\Dispatcher;
 use ObjexLoader\MutatorTrait;
 class Event{
 	use MutatorTrait;

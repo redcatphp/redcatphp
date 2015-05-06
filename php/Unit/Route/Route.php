@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 use ObjexLoader\MutatorTrait;
 class Route implements RouteInterface{
 	use MutatorTrait;

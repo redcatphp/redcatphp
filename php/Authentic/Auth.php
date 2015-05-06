@@ -95,7 +95,7 @@ class Auth{
 		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
 			$this->siteUrl = $this->config['siteUrl'];
 		else
-			$this->siteUrl = $this->FluxServer_Url->getBaseHref();
+			$this->siteUrl = $this->Unit_Url->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];

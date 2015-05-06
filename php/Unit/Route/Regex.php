@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 class Regex extends Route{
 	private $match;
 	function __construct($match){

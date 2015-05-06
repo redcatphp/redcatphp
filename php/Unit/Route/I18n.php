@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 use I18n\Translator;
 use ObjexLoader\MutatorMagicTrait;
 class I18n extends Faceted {
@@ -16,7 +16,7 @@ class I18n extends Faceted {
 		$path = urldecode($path);
 		$templatePath = $path;
 		$langMap = false;
-		if($lang=$this->FluxServer_Url->getSubdomainLang()){
+		if($lang=$this->Unit_Url->getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
 				if(isset($langMap[$path]))
@@ -32,9 +32,9 @@ class I18n extends Faceted {
 			$lang = $config->default;
 		}
 		Translator::set($lang);
-		$ctrl = $this->Dispatcher_Uri->FluxServer_Mvc_Controller;
+		$ctrl = $this->Dispatcher_Uri->Unit_Mvc_Controller;
 		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
-		$ctrl->FluxServer_Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
+		$ctrl->Unit_Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templix_Toolbox->i18nGettext($TML);
 			$this->Templix_Toolbox->i18nRel($TML,$lang,$path,$langMap);
 			if($langMap){

@@ -1,5 +1,5 @@
 <?php namespace Package\Cms\DispatcherUri;
-use FluxServer\Dispatcher\Uri as Dispatcher_Uri;
+use Unit\Dispatcher\Uri as Dispatcher_Uri;
 class Index extends Dispatcher_Uri{
 	protected $useConvention = true;
 	public $i18nConvention;
@@ -12,21 +12,21 @@ class Index extends Dispatcher_Uri{
 			$this->convention();
 	}
 	function __invoke(){
-		return $this->FluxServer_Mvc_Controller();
+		return $this->Unit_Mvc_Controller();
 	}
 	function convention(){
 		$this->append('service/',['Package_Service']);
-		$this->append(['FluxServer_Route_Extension','css|js|png|jpg|jpeg|gif'], ['Package_Cms_DispatcherUri_Synaptic']);
-		$this->append(['FluxServer_Route_ByTml','plugin'],$this);
-		$this->append(['FluxServer_Route_ByTml'],$this);
+		$this->append(['Unit_Route_Extension','css|js|png|jpg|jpeg|gif'], ['Package_Cms_DispatcherUri_Synaptic']);
+		$this->append(['Unit_Route_ByTml','plugin'],$this);
+		$this->append(['Unit_Route_ByTml'],$this);
 		if($this->i18nConvention)
-			$this->prepend(['FluxServer_Route_I18n',$this],$this);
+			$this->prepend(['Unit_Route_I18n',$this],$this);
 		if($this->backoffice)
 			$this->prepend($this->backoffice,['Package_Cms_DispatcherUri_Backoffice']);
 	}
 	function run($path){
 		if(!parent::run($path)){
-			$this->FluxServer_Mvc_Controller()->error(404);
+			$this->Unit_Mvc_Controller()->error(404);
 			exit;
 		}
 	}

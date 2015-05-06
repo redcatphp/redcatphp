@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 class Extension extends Route{
 	private $match;
 	private $extension;

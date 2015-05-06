@@ -1,11 +1,11 @@
-<?php namespace FluxServer\Route;
-class Suffix extends Route{
+<?php namespace Unit\Route;
+class Prefix extends Route{
 	private $match;
 	function __construct($match){
 		$this->match = ltrim($match,'/');
 	}
 	function __invoke($uri){
-		if(strrpos($uri,$this->match)===strlen($uri)-strlen($this->match)){
+		if(strpos($uri,$this->match)===0){
 			return (string)substr($uri,strlen($this->match));
 		}
 	}

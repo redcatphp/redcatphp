@@ -135,7 +135,7 @@ class AuthServer{
 		}
 	}
 	function reloadLocation(){
-		header('Location: '.$this->FluxServer_Url->getLocation(),false,302);
+		header('Location: '.$this->Unit_Url->getLocation(),false,302);
 	}
 	function lougoutBTN($key=null,$ret=false){
 		if(!$key)
@@ -145,7 +145,7 @@ class AuthServer{
 		}
 		else{
 			$html = '
-			<link href="'.$this->FluxServer_Url->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
+			<link href="'.$this->Unit_Url->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
 			<style type="text/css">
 				a.auth-logout{
 					background: none repeat scroll 0 0 #fff;
@@ -177,10 +177,10 @@ class AuthServer{
 					content: "\f011";
 				}
 			</style>
-			<script type="text/javascript" src="'.$this->FluxServer_Url->getBaseHref().'js/post.js"></script>
+			<script type="text/javascript" src="'.$this->Unit_Url->getBaseHref().'js/post.js"></script>
 			<script type="text/javascript">
 				authServerLogoutCaller = function(){
-					post("'.$this->FluxServer_Url->getLocation().'",{"'.$key.'":1});
+					post("'.$this->Unit_Url->getLocation().'",{"'.$key.'":1});
 					return false;
 				};
 			</script>
@@ -197,7 +197,7 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = $this->FluxServer_Url->getLocation();
+		$action = $this->Unit_Url->getLocation();
 		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){

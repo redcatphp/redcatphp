@@ -1,7 +1,7 @@
-<?php namespace FluxServer\Dispatcher;
+<?php namespace Unit\Dispatcher;
 use ReflectionClass;
 use ObjexLoader\MutatorMagicTrait;
-use FluxServer\Route\Route;
+use Unit\Route\Route;
 class Uri {
 	use MutatorMagicTrait;
 	protected $routes = [];
@@ -15,10 +15,10 @@ class Uri {
 	function route($route,$callback,$index=0,$prepend=false){
 		if(is_string($route)){
 			if(strpos($route,'/^')===0&&strrpos($route,'$/')-strlen($route)===-2){
-				$route = ['FluxServer_Route_Regex',$route];
+				$route = ['Unit_Route_Regex',$route];
 			}
 			else{
-				$route = ['FluxServer_Route_Prefix',$route];
+				$route = ['Unit_Route_Prefix',$route];
 			}
 		}
 		$route = [$route,$callback];
@@ -84,7 +84,7 @@ class Uri {
 			}
 		}
 		if($a instanceof Route){
-			$a->setDependency('FluxServer_Dispatcher_Uri',$this);
+			$a->setDependency('Unit_Dispatcher_Uri',$this);
 		}
 	}
 }

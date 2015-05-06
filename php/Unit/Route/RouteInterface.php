@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 use ObjexLoader\MutatorTrait;
 interface RouteInterface extends \ArrayAccess,\Countable{
 	function getPath();

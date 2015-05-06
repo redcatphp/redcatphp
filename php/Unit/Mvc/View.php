@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Mvc;
+<?php namespace Unit\Mvc;
 use Templix\Template;
 class View{
 	private $__engine;
@@ -14,7 +14,7 @@ class View{
 	function setEngine($engine){
 		$this->__engine = $engine;
 		if(method_exists($this->__engine,'setDependency')){
-			$this->__engine->setDependency('FluxServer_Mvc_View',$this);
+			$this->__engine->setDependency('Unit_Mvc_View',$this);
 		}
 	}
 	function setCallback($method,$call){

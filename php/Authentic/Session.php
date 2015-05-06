@@ -37,8 +37,8 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = getcwd().'/tmp/attempts/';
-		$this->cookiePath = '/'.$this->FluxServer_Url()->getSuffixHref();
-		$this->cookieDomain = $this->FluxServer_Url()->getServerHref();
+		$this->cookiePath = '/'.$this->Unit_Url()->getSuffixHref();
+		$this->cookieDomain = $this->Unit_Url()->getServerHref();
 		$this->checkBlocked();
 		if(isset($sessionHandler))
 			$this->_SessionHandler = $sessionHandler;

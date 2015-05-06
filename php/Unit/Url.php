@@ -1,4 +1,4 @@
-<?php namespace FluxServer;
+<?php namespace Unit;
 class Url {
 	protected $baseHref;
 	protected $suffixHref;

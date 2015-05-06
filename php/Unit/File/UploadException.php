@@ -1,4 +1,4 @@
-<?php namespace FluxServer\File;
+<?php namespace Unit\File;
 class UploadException extends \Exception{
     public function __construct($code){
         parent::__construct($this->codeToMessage($code));

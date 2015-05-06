@@ -1,4 +1,4 @@
-<?php namespace FluxServer\File;
+<?php namespace Unit\File;
 use ObjexLoader\MutatorMagicTrait;
 class Synaptic {
 	use MutatorMagicTrait;

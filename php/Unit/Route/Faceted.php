@@ -1,4 +1,4 @@
-<?php namespace FluxServer\Route;
+<?php namespace Unit\Route;
 class Faceted extends Route {
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [

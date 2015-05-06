@@ -5,13 +5,13 @@ class TmlHttp extends \Templix\Tml{
 	function load(){
 		if($this->__get('static')){
 			if(count($_GET)||(
-				count($this->Template->treeDependency('FluxServer_Mvc_View:FluxServer_Mvc_Controller:Route'))>1
+				count($this->Template->treeDependency('Unit_Mvc_View:Unit_Mvc_Controller:Route'))>1
 			)){
 				$this->notFound();
 			}
 		}
 	}
 	function notFound(){
-		$this->Package_Cms_DispatcherUri_Index()->FluxServer_Mvc_Controller->error(404);
+		$this->Package_Cms_DispatcherUri_Index()->Unit_Mvc_Controller->error(404);
 	}
 }
