@@ -7,14 +7,14 @@ class ServiceAuth {
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode($this->StaxUser_Session->get('_AUTH_'));
+		echo json_encode($this->Authentic_Session->get('_AUTH_'));
 	}
 	function email(){
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		echo json_encode($this->StaxUser_Session->get('_AUTH_','email'));
+		echo json_encode($this->Authentic_Session->get('_AUTH_','email'));
 	}
 	function persona(){
 		if(isset($_POST['assertion'])){
@@ -31,10 +31,10 @@ class ServiceAuth {
 			$response = curl_exec($ch);
 			curl_close($ch);
 			if(($js = json_decode($response))&&$js->status==='okay'&&$js->email)
-				$this->StaxUser_Session->set('email',$js->email);
+				$this->Authentic_Session->set('email',$js->email);
 		}
 		else{
-			$response = json_encode($this->StaxUser_Session->get('email'));
+			$response = json_encode($this->Authentic_Session->get('email'));
 		}
 		header('Content-Type: application/json; charset=UTF-8');
 		header('Cache-Control: no-cache, must-revalidate');
@@ -46,7 +46,7 @@ class ServiceAuth {
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		header('Pragma: no-cache');
-		$this->StaxUser_Session->destroy();
+		$this->Authentic_Session->destroy();
 		echo 'ok';
 	}
 }

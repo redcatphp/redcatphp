@@ -1,0 +1,19 @@
+<?php
+return [
+	'PHP',
+	'CONTROL',
+	//'VIEW',
+	//'PRESENT',;
+	//'MODEL',
+	//'DB',
+	//'DBSPEED',
+	//'SQL',
+	//'ROUTE',
+	//'I18N',
+	//'IMG',
+	//'SERVER',
+	//'NAV',
+	'STD',
+	//'CSS',
+	//'JS',
+];

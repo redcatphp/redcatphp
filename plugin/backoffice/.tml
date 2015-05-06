@@ -17,7 +17,7 @@
 		<![endif]-->
 	</head>
 	<body>
-		<?$this->StaxUser_AuthServer()->lougoutBTN();?>
+		<?$this->Authentic_AuthServer()->lougoutBTN();?>
 		<?
 			$db=(object)@include('model/config.php');
 			$config=(object)[];
