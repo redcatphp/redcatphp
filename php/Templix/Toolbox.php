@@ -64,7 +64,7 @@ class Toolbox{
 		});
 	}
 	function i18nGettext($Tml,$cache=true){
-		$Tml('html')->attr('lang',$this->I18n_Translator->getLangCode());
+		$Tml('html')->attr('lang',$this->InterNative_Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
@@ -84,11 +84,11 @@ class Toolbox{
 				return;
 			if($el->data('i18n')!==false){
 				if($cache){
-					$rw = $this->I18n_Translator()->__($rw);
+					$rw = $this->InterNative_Translator()->__($rw);
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo $this->I18n_Translator()->__(\''.$rw.'\');?>';
+					$rw = '<?php echo $this->InterNative_Translator()->__(\''.$rw.'\');?>';
 				}
 				$el->write($left.$rw.$right);
 			}
@@ -97,7 +97,7 @@ class Toolbox{
 			foreach($Tml->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
 					$Tml->removeAttr($k);
-					$Tml->attr(substr($k,5),$this->I18n_Translator()->__($v));
+					$Tml->attr(substr($k,5),$this->InterNative_Translator()->__($v));
 				}
 			}
 		});

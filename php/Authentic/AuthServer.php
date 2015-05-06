@@ -1,8 +1,8 @@
 <?php namespace Authentic;
 use Authentic\Auth;
-use I18n\Translator;
+use InterNative\Translator;
 use ObjexLoader\MutatorMagicTrait;
-require_once __DIR__.'/../I18n/Translator.inc.php';
+require_once __DIR__.'/../InterNative/Translator.inc.php';
 class AuthServer{
 	use MutatorMagicTrait;
 	protected $messages = [];

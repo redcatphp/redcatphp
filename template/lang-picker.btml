@@ -1,7 +1,7 @@
 <eval>
 	<?
 		$langDir = SURIKAT_CWD.'langs/';
-		$lgC = I18n\Translator::getLangCode();
+		$lgC = InterNative\Translator::getLangCode();
 		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
 		$lgD = $config->default;
 		$langs = [$lgD];
@@ -10,8 +10,8 @@
 	?>
 	<foreach "$langs as $lg">
 		<?
-			$language = I18n\Punic\Language::getName($lg,$lg);
-			$language = I18n\Strings::ucfirst($language);
+			$language = InterNative\Punic\Language::getName($lg,$lg);
+			$language = InterNative\Strings::ucfirst($language);
 			$lcPath = $this->Unit_Mvc_Controller()->Route[0];
 			if($lg!=$lgC){
 				if($lg==$lgD){

@@ -20,7 +20,7 @@ class Index extends Dispatcher_Uri{
 		$this->append(['Unit_Route_ByTml','plugin'],$this);
 		$this->append(['Unit_Route_ByTml'],$this);
 		if($this->i18nConvention)
-			$this->prepend(['Unit_Route_I18n',$this],$this);
+			$this->prepend(['Unit_Route_L10n',$this],$this);
 		if($this->backoffice)
 			$this->prepend($this->backoffice,['Package_Cms_DispatcherUri_Backoffice']);
 	}
