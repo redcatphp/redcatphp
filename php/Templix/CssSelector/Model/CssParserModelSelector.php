@@ -1,6 +1,5 @@
 <?php
 namespace Templix\CssSelector\Model;
-use Templix\CssSelector\Model\CssParserModelFactor;
 class CssParserModelSelector{
 	private $_factors = [];
 	function addFactor($factor){

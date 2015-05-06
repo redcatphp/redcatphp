@@ -1,5 +1,4 @@
 <?php namespace Templix;
-use Templix\Tml;
 class TEXT extends CORE{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
