@@ -1,7 +1,7 @@
 <?php namespace KungFu\Cms\DispatcherUri;
 use Unit\Dispatcher\Uri as Dispatcher_Uri;
 class Backoffice extends Dispatcher_Uri{
-	protected $pathFS = 'plugin/backoffice';
+	public $pathFS = 'plugin/backoffice';
 	function __construct(){
 		$this->Authentic_Session->setName('surikat_backoffice');
 		$this
@@ -20,6 +20,11 @@ class Backoffice extends Dispatcher_Uri{
 		;
 	}
 	function __invoke(){
+		global $SURIKAT;
+		$SURIKAT
+			->Unit_AutoloadPsr4
+			->addNamespace('',SURIKAT.$this->pathFS.'/php')
+		;
 		return $this->run(func_get_arg(0));
 	}
 }
