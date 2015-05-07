@@ -1,4 +1,4 @@
-<?php namespace ObjexLoader;
+<?php namespace Unit;
 class AutoloadPsr4{
 	protected $namespaces = [];
 	protected $checked = [];

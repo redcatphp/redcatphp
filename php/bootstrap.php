@@ -10,12 +10,12 @@ require __DIR__.'/ObjexLoader/MutatorCallTrait.php';
 require __DIR__.'/ObjexLoader/MutatorMagicTrait.php';
 require __DIR__.'/ObjexLoader/RegistryTrait.php';
 require __DIR__.'/ObjexLoader/Container.php';
-require __DIR__.'/ObjexLoader/AutoloadPsr4.php';
+require __DIR__.'/Unit/AutoloadPsr4.php';
 define('SURIKAT',realpath(__DIR__.'/..').'/');
 define('SURIKAT_CWD',getcwd().'/');
 global $SURIKAT;
 $SURIKAT = ObjexLoader\Container::get();
-$SURIKAT->_AutoloadPsr4->addNamespace('',[
+$SURIKAT->Unit_AutoloadPsr4->addNamespace('',[
 	getcwd().'/php',
 	__DIR__
 ])->splRegister();
