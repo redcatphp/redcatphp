@@ -1,4 +1,4 @@
-<?php namespace Templix\MarkupX;
+<?php namespace KungFu\TemplixPlugin;
 class TmlMarkdown extends \Templix\Tml {
 	protected $hiddenWrap = true;
 	protected $noParseContent = true;

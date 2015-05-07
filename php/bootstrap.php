@@ -13,10 +13,12 @@ require __DIR__.'/ObjexLoader/Container.php';
 require __DIR__.'/Unit/AutoloadPsr4.php';
 define('SURIKAT',realpath(__DIR__.'/..').'/');
 define('SURIKAT_CWD',getcwd().'/');
-global $SURIKAT;
-$SURIKAT = ObjexLoader\Container::get();
-$SURIKAT->Unit_AutoloadPsr4->addNamespace('',[
+use ObjexLoader\Container;
+Container::get()->Unit_AutoloadPsr4->addNamespace('',[
 	getcwd().'/php',
 	__DIR__
 ])->splRegister();
-$SURIKAT->setDependencyFactory([$SURIKAT->_ConfigInjector,'objectFactory']);
+Container::get()->setDependencyFactory([
+	Container::get()->_ConfigInjector,
+	'objectFactory'
+]);

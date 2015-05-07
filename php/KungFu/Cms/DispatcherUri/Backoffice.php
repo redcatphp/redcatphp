@@ -20,8 +20,7 @@ class Backoffice extends Dispatcher_Uri{
 		;
 	}
 	function __invoke(){
-		global $SURIKAT;
-		$SURIKAT
+		\ObjexLoader\Container::get()
 			->Unit_AutoloadPsr4
 			->addNamespace('',SURIKAT.$this->pathFS.'/php')
 		;

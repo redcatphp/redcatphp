@@ -1,8 +1,8 @@
 <?php #Copy this file to ../DOCUMENT_ROOT to start a new project
 if(!@include(__DIR__.'/Surikat/php/bootstrap.php'))
 	symlink('../Surikat','Surikat')&&include('Surikat/php/bootstrap.php');
-
-$SURIKAT->Dev_Level
+use ObjexLoader\Container;
+Container::get()->Dev_Level
 	->PHP()
 	//->CONTROL()
 	//->VIEW()
@@ -21,4 +21,4 @@ $SURIKAT->Dev_Level
 	->JS()
 ;
 
-$SURIKAT->KungFu_Cms_DispatcherUri_Index->runFromGlobals();
+Container::get()->KungFu_Cms_DispatcherUri_Index->runFromGlobals();

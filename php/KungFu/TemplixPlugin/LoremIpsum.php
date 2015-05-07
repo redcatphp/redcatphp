@@ -1,4 +1,4 @@
-<?php namespace Dev; 
+<?php namespace KungFu\TemplixPlugin;
 class LoremIpsum {
 	/**
 	*	Copyright (c) 2009, Mathew Tinsley (tinsley@tinsology.net)

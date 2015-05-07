@@ -1,4 +1,4 @@
-<?php namespace Templix\MarkupX; 
+<?php namespace KungFu\TemplixPlugin; 
 class TmlLoremipsum extends \Templix\Tml {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

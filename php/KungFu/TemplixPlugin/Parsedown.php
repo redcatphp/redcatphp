@@ -1,5 +1,5 @@
 <?php
-namespace Templix\MarkupX;
+namespace KungFu\TemplixPlugin;
 #
 #
 # Parsedown
