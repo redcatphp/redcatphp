@@ -1,8 +1,8 @@
-<?php namespace Unit\Dispatcher;
+<?php namespace Unit;
 use ReflectionClass;
 use ObjexLoader\MutatorMagicTrait;
 use Unit\Route\Route;
-class Uri {
+class Dispatcher {
 	use MutatorMagicTrait;
 	protected $routes = [];
 	protected $questionMark;
@@ -84,7 +84,7 @@ class Uri {
 			}
 		}
 		if($a instanceof Route){
-			$a->setDependency('Unit_Dispatcher_Uri',$this);
+			$a->setDependency('Unit_Dispatcher',$this);
 		}
 	}
 }

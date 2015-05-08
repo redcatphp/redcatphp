@@ -21,4 +21,4 @@ Container::get()->Dev_Level
 	->JS()
 ;
 
-Container::get()->KungFu_Cms_DispatcherUri_Index->runFromGlobals();
+Container::get()->KungFu_Cms_Dispatcher_Index->runFromGlobals();

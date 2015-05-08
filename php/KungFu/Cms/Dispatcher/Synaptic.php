@@ -1,6 +1,6 @@
-<?php namespace KungFu\Cms\DispatcherUri;
-use Unit\Dispatcher\Uri as Dispatcher_Uri;
-class Synaptic extends Dispatcher_Uri{
+<?php namespace KungFu\Cms\Dispatcher;
+use Unit\Dispatcher;
+class Synaptic extends Dispatcher{
 	protected $pathFS;
 	function __construct($pathFS=''){
 		$this->pathFS = rtrim($pathFS,'/');

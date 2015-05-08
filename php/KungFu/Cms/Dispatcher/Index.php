@@ -1,6 +1,6 @@
-<?php namespace KungFu\Cms\DispatcherUri;
-use Unit\Dispatcher\Uri as Dispatcher_Uri;
-class Index extends Dispatcher_Uri{
+<?php namespace KungFu\Cms\Dispatcher;
+use Unit\Dispatcher;
+class Index extends Dispatcher{
 	protected $useConvention = true;
 	public $i18nConvention;
 	public $backoffice = 'backend/';
@@ -16,13 +16,13 @@ class Index extends Dispatcher_Uri{
 	}
 	function convention(){
 		$this->append('service/',['KungFu_Service']);
-		$this->append(['Unit_Route_Extension','css|js|png|jpg|jpeg|gif'], ['KungFu_Cms_DispatcherUri_Synaptic']);
+		$this->append(['Unit_Route_Extension','css|js|png|jpg|jpeg|gif'], ['KungFu_Cms_Dispatcher_Synaptic']);
 		$this->append(['Unit_Route_ByTml','plugin'],$this);
 		$this->append(['Unit_Route_ByTml'],$this);
 		if($this->i18nConvention)
 			$this->prepend(['Unit_Route_L10n',$this],$this);
 		if($this->backoffice)
-			$this->prepend($this->backoffice,['KungFu_Cms_DispatcherUri_Backoffice']);
+			$this->prepend($this->backoffice,['KungFu_Cms_Dispatcher_Backoffice']);
 	}
 	function run($path){
 		if(!parent::run($path)){
