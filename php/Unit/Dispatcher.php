@@ -1,9 +1,7 @@
 <?php namespace Unit;
 use ReflectionClass;
-use ObjexLoader\MutatorMagicTrait;
 use Unit\Route\Route;
 class Dispatcher {
-	use MutatorMagicTrait;
 	protected $routes = [];
 	protected $questionMark;
 	function append($pattern,$callback,$index=0){

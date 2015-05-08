@@ -3,24 +3,35 @@ use Unit\Dispatcher;
 use Unit\Route\Extension;
 use Unit\Route\ByTml;
 use Unit\Route\ByPhpX;
+use Authentic\Auth;
+use Authentic\Session;
+use Templix\Templix;;
 class Backoffice extends Dispatcher{
 	protected $Templix;
 	public $pathFS = 'plugin/backoffice';
 	function __construct(){
-		$this->Authentic_Session->setName('surikat_backoffice');
 		$this
 			->append(new Extension('css|js|png|jpg|jpeg|gif'),new Synaptic($this->pathFS))
 			->append(new ByTml('',$this->pathFS),function(){
-				$this->Authentic_Auth->lockServer($this->Authentic_Auth->constant('RIGHT_MANAGE'));
+				$this->lock();
 				return $this->Templix();
 			})
 			->append(new ByPhpX('',$this->pathFS),function($paths){
-				$this->Authentic_Auth->lockServer($this->Authentic_Auth->constant('RIGHT_MANAGE'));
+				$this->lock();
 				list($dir,$file,$adir,$afile) = $paths;
 				chdir($adir);
 				include $file;
 			})
 		;
+	}
+	function Templix(){
+		return $this->Templix?:$this->Templix = new Templix();
+	}
+	function lock(){
+		$Session = new Session();
+		$Session->setName('surikat_backoffice');
+		$Auth = new Auth($Session);
+		$Auth->lockServer(Auth::RIGHT_MANAGE);
 	}
 	function __invoke(){
 		\ObjexLoader\Container::get()
