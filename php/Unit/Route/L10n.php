@@ -3,21 +3,19 @@ use InterNative\Translator;
 use ObjexLoader\MutatorMagicTrait;
 class L10n extends Faceted {
 	use MutatorMagicTrait;	
+	protected $lang;
+	protected $langMap;
 	function __invoke($uri){
 		parent::__invoke($uri);
-		$this->uriParams[0] = $this->i18nBySubdomain($this->uriParams[0]);
-		$uri = $this->buildPath();
-	}
-	protected function i18nBySubdomain($path){
-		$path = urldecode($path);
+		$path = urldecode($this->uriParams[0]);
 		$templatePath = $path;
-		$langMap = false;
+		$this->langMap = false;
 		if($lang=$this->Unit_Url->getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
-				$langMap = parse_ini_file($langFile);
-				if(isset($langMap[$path]))
-					$templatePath = $langMap[$path];
-				elseif(($k=array_search($path,$langMap))!==false){
+				$this->langMap = parse_ini_file($langFile);
+				if(isset($this->langMap[$path]))
+					$templatePath = $this->langMap[$path];
+				elseif(($k=array_search($path,$this->langMap))!==false){
 					header('Location: /'.$k,false,301);
 					exit;
 				}
@@ -28,20 +26,23 @@ class L10n extends Faceted {
 			$lang = $config->default;
 		}
 		Translator::set($lang);
-		$tml = $this->Templix;
-		$tml->setDirCompileSuffix('.'.$lang.'/');
-		$tml->onCompile(function($TML)use($lang,$path,$langMap){
-			$this->Templix_Toolbox->i18nGettext($TML);
-			$this->Templix_Toolbox->i18nRel($TML,$lang,$path,$langMap);
-			if($langMap){
-				foreach($TML('a[href]') as $a){
-					if(strpos($a->href,'://')===false&&strpos($a->href,'javascript:')!==0&&strpos($a->href,'#')!==0){
-						if(($k=array_search($a->href,$langMap))!==false)
-							$a->href = $k;
-					}
-				}
-			}
-		});
-		return $templatePath;
+		$this->setLang($lang);
+		$this->uriParams[0] = $templatePath;
+		return $this->uriParams;
+	}
+	function setLang($lang){
+		$this->lang = $lang;
+	}
+	function getLang(){
+		return $this->lang;
+	}
+	function getLangMap(){
+		return $this->langMap;
+	}
+	function run($path){
+		if(!parent::run($path)){
+			$this->Templix()->error(404);
+			exit;
+		}
 	}
 }

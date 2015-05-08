@@ -34,9 +34,10 @@ class Templix extends Template {
 		$this->onCompile(function($Tml){
 			if($Tml->Template->getParent())
 				return;
-			$this->Templix_Toolbox->JsIs($Tml);
-			if(!$this->Dev_Level->VIEW)
-				$this->Templix_Toolbox->autoMIN($Tml);
+			$Toolbox = new Toolbox();
+			$Toolbox->JsIs($Tml);
+			if(!$this->Dev_Level()->VIEW)
+				$Toolbox()->autoMIN($Tml);
 		});
 		$this->display($path.'.tml');
 	}
