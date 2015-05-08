@@ -1,6 +1,12 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
+use Unit\Route\Extension;
+use Unit\Route\ByTml;
+use Unit\Route\L10n as Route_L10n;
+use Templix\Templix;
+use KungFu\Service\Service;
 class Index extends Dispatcher{
+	protected $Templix;
 	protected $useConvention = true;
 	public $i18nConvention;
 	public $backoffice = 'backend/';
@@ -11,18 +17,21 @@ class Index extends Dispatcher{
 		if($this->useConvention)
 			$this->convention();
 	}
+	function Templix(){
+		return $this->Templix?:$this->Templix = new Templix();
+	}
 	function __invoke(){
 		return $this->Templix();
 	}
 	function convention(){
-		$this->append('service/',['KungFu_Service']);
-		$this->append(['Unit_Route_Extension','css|js|png|jpg|jpeg|gif'], ['KungFu_Cms_Dispatcher_Synaptic']);
-		$this->append(['Unit_Route_ByTml','plugin'],$this);
-		$this->append(['Unit_Route_ByTml'],$this);
+		$this->append('service/',new Service());
+		$this->append(new Extension('css|js|png|jpg|jpeg|gif'), new Synaptic());
+		$this->append(new ByTml('plugin'),$this);
+		$this->append(new ByTml(),$this);
 		if($this->i18nConvention)
-			$this->prepend(['Unit_Route_L10n',$this],$this);
+			$this->prepend(new Route_L10n($this),$this);
 		if($this->backoffice)
-			$this->prepend($this->backoffice,['KungFu_Cms_Dispatcher_Backoffice']);
+			$this->prepend($this->backoffice,new Backoffice());
 	}
 	function run($path){
 		if(!parent::run($path)){

@@ -1,5 +1,6 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
+use Unit\File\Synaptic as File_Synaptic;
 class Synaptic extends Dispatcher{
 	protected $pathFS;
 	function __construct($pathFS=''){
@@ -9,7 +10,8 @@ class Synaptic extends Dispatcher{
 	}
 	function __invoke(){
 		list($filename,$file) = func_get_args();
-		$this->Unit_File_Synaptic->appendDir('Surikat');
-		$this->Unit_File_Synaptic->load($this->pathFS.$file);
+		$synaptic = new File_Synaptic();
+		$synaptic->appendDir('Surikat');
+		$synaptic->load($this->pathFS.$file);
 	}
 }
