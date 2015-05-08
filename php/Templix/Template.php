@@ -16,6 +16,7 @@ class Template {
 	var $childNodes = [];
 	var $isXhtml;
 	protected $devCompileFile;
+	protected $dirCompileSuffix = '';
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
 	function __construct($file=null,$vars=null,$options=null){
@@ -95,6 +96,9 @@ class Template {
 		$this->dirCompile = rtrim($d,'/').'/';
 		$this->devCompileFile = $this->dirCompile.'.dev';
 	}
+	function setDirCompileSuffix($suffix){
+		$this->dirCompileSuffix .= $suffix;
+	}
 	function setDirCache($d){
 		$this->dirCache = rtrim($d,'/').'/';
 	}
@@ -145,7 +149,7 @@ class Template {
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
 	}
 	function evalue(){
-		$compileFile = $this->dirCompile.$this->find().'.svar';
+		$compileFile = $this->dirCompile.$this->dirCompileSuffix.$this->find().'.svar';
 		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||$this->forceCompile||!is_file($compileFile))
 			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
@@ -158,8 +162,8 @@ class Template {
 		if($exist){
 			if(!$this->Dev_Level()->VIEW){
 				unlink($this->devCompileFile);
-				self::rmdir($this->dirCompile);
-				self::rmdir($this->dirCache);
+				self::rmdir($this->dirCompile.$this->dirCompileSuffix);
+				self::rmdir($this->dirCache.$this->dirCompileSuffix);
 				$this->Unit_File_Synaptic()->cleanMini();
 			}
 		}
@@ -185,13 +189,13 @@ class Template {
 		if(!empty($vars))
 			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->find()))
+		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->dirCompileSuffix.$this->find()))
 			$this->writeCompile();
-		$this->includeVars($this->dirCompile.$this->find(),$this->vars);
+		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$this->find(),$this->vars);
 		return $this;
 	}
 	function writeCompile(){
-		$this->compilePHP($this->dirCompile.$this->find(),(string)$this->prepare());
+		$this->compilePHP($this->dirCompile.$this->dirCompileSuffix.$this->find(),(string)$this->prepare());
 	}
 	function includeVars(){
 		if(func_num_args()>1&&count(func_get_arg(1)))
@@ -222,15 +226,15 @@ class Template {
 			@mkdir(dirname($syncF),0777,true);
 			file_put_contents($syncF,'');
 		}
-		return @filemtime($this->dirCache.$file)<@filemtime($syncF);
+		return @filemtime($this->dirCache.$this->dirCompileSuffix.$file)<@filemtime($syncF);
 	}
 	function cacheInc($h,$sync=null){
 		if(func_num_args()<2)
-			return $this->dirCache.$this->path.'/'.$h;
+			return $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$h;
 		if($this->mtime($h,$sync))
-			return $this->dirCache.$this->path.'/'.$h.'.php';
+			return $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$h.'.php';
 		else
-			readfile($this->dirCache.$this->path.'/'.$h);
+			readfile($this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$h);
 	}
 	function cacheRegen($file,$str){
 		$file = substr($file,0,-4);
@@ -245,19 +249,19 @@ class Template {
 		$this->toCachePHP[] = [$file,$str];
 	}
 	protected function _cacheV($file,$str){
-		$file = $this->dirCache.$this->path.'/'.$file;
+		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file;
 		if(!$this->Dev_Level()->VIEW)
 			$str = $this->Minify_Html()->process($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
-		$file = $this->dirCache.$this->path.'/'.$file.'.php';
+		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file.'.php';
 		if(!$this->Dev_Level()->VIEW)
 			$str = $this->Minify_Php()->process($str);
 		return $this->compileStore($file,$str);
 	}
 	function dirCompileToDirCwd($v){
-		$dirC = rtrim($this->dirCompile,'/');
+		$dirC = rtrim($this->dirCompile.$this->dirCompileSuffix,'/');
 		$path = $v;
 		if(strpos($v,$dirC)===0)
 			$path = ltrim(substr($v,strlen($dirC)),'/');

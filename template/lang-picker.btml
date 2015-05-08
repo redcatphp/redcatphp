@@ -12,7 +12,7 @@
 		<?
 			$language = InterNative\Punic\Language::getName($lg,$lg);
 			$language = InterNative\Strings::ucfirst($language);
-			$lcPath = $this->Unit_Mvc_Controller()->Route[0];
+			$lcPath = $this->Templix()->Route[0];
 			if($lg!=$lgC){
 				if($lg==$lgD){
 					$langMap = parse_ini_file($langDir.$lgC.'.ini');

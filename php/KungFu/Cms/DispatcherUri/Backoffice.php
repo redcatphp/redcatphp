@@ -9,7 +9,7 @@ class Backoffice extends Dispatcher_Uri{
 						['KungFu_Cms_DispatcherUri_Synaptic',$this->pathFS])
 			->append(['Unit_Route_ByTml','',$this->pathFS],function(){
 				$this->Authentic_Auth->lockServer($this->Authentic_Auth->constant('RIGHT_MANAGE'));
-				return $this->Unit_Mvc_Controller();
+				return $this->Templix();
 			})
 			->append(['Unit_Route_ByPhpX','',$this->pathFS],function($paths){
 				$this->Authentic_Auth->lockServer($this->Authentic_Auth->constant('RIGHT_MANAGE'));

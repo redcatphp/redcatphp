@@ -12,7 +12,7 @@ class Index extends Dispatcher_Uri{
 			$this->convention();
 	}
 	function __invoke(){
-		return $this->Unit_Mvc_Controller();
+		return $this->Templix();
 	}
 	function convention(){
 		$this->append('service/',['KungFu_Service']);
@@ -26,7 +26,7 @@ class Index extends Dispatcher_Uri{
 	}
 	function run($path){
 		if(!parent::run($path)){
-			$this->Unit_Mvc_Controller()->error(404);
+			$this->Templix()->error(404);
 			exit;
 		}
 	}

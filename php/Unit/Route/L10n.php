@@ -32,9 +32,9 @@ class L10n extends Faceted {
 			$lang = $config->default;
 		}
 		Translator::set($lang);
-		$ctrl = $this->Dispatcher_Uri->Unit_Mvc_Controller;
-		$ctrl->addPrefixTmlCompile('.'.$lang.'/');
-		$ctrl->Unit_Mvc_View->onCompile(function($TML)use($lang,$path,$langMap){
+		$tml = $this->Dispatcher_Uri->Templix;
+		$tml->setDirCompileSuffix('.'.$lang.'/');
+		$tml->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templix_Toolbox->i18nGettext($TML);
 			$this->Templix_Toolbox->i18nRel($TML,$lang,$path,$langMap);
 			if($langMap){
