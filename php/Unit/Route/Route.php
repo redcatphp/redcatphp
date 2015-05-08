@@ -1,9 +1,12 @@
 <?php namespace Unit\Route;
 use ObjexLoader\MutatorTrait;
-class Route implements RouteInterface{
+class Route implements RouteInterface,\ArrayAccess,\Countable{
 	use MutatorTrait;
 	protected $path;
 	protected $uriParams = [];
+	function __invoke($uri){
+		
+	}
 	function getPath(){
 		return $this->path;
 	}

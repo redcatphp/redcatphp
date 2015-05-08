@@ -1,12 +1,6 @@
 <?php namespace Unit\Route;
-use ObjexLoader\MutatorTrait;
-interface RouteInterface extends \ArrayAccess,\Countable{
+interface RouteInterface{
+	function __invoke($uri);
 	function getPath();
 	function getParams();
-	function count();
-	function __set($k,$v);
-	function __get($k);
-	function __isset($k);
-	function __unset($k);
-	static function __set_state($a);
 }

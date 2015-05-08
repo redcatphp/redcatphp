@@ -3,11 +3,7 @@ use InterNative\Translator;
 use ObjexLoader\MutatorMagicTrait;
 class L10n extends Faceted {
 	use MutatorMagicTrait;	
-	protected $Dispatcher_Uri;
-	function __construct($Dispatcher_Uri){
-		$this->Dispatcher_Uri = $Dispatcher_Uri;
-	}
-	function __invoke(&$uri){
+	function __invoke($uri){
 		parent::__invoke($uri);
 		$this->uriParams[0] = $this->i18nBySubdomain($this->uriParams[0]);
 		$uri = $this->buildPath();
@@ -32,7 +28,7 @@ class L10n extends Faceted {
 			$lang = $config->default;
 		}
 		Translator::set($lang);
-		$tml = $this->Dispatcher_Uri->Templix;
+		$tml = $this->Templix;
 		$tml->setDirCompileSuffix('.'.$lang.'/');
 		$tml->onCompile(function($TML)use($lang,$path,$langMap){
 			$this->Templix_Toolbox->i18nGettext($TML);

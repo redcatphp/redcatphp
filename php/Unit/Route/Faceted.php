@@ -24,7 +24,7 @@ class Faceted extends Route {
 		}
 		return $path;
 	}
-	function __invoke(&$uri){
+	function __invoke($uri){
 		$path = ltrim($uri,'/');
 		$this->path = $path;
 		$uriParams = [];

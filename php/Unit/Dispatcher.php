@@ -56,15 +56,19 @@ class Dispatcher {
 		return false;
 	}
 	function runFromGlobals(){
-		//$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
-		$s = strlen($_SERVER['CWD'])-1;
-		$p = strpos($_SERVER['REQUEST_URI'],'?');
-		if($p===false)
-			$path = substr($_SERVER['REQUEST_URI'],$s);
-		else
-			$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
-		$this->questionMark = !!$p;
-		$this->run($path);
+		if(isset($_SERVER['SURIKAT_CWD'])){
+			$s = strlen($_SERVER['SURIKAT_CWD'])-1;
+			$p = strpos($_SERVER['REQUEST_URI'],'?');
+			if($p===false)
+				$path = substr($_SERVER['REQUEST_URI'],$s);
+			else
+				$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
+			$this->questionMark = !!$p;
+			$this->run($path);
+		}
+		else{
+			$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
+		}
 	}
 	function haveParameters(){
 		return $this->questionMark||count($_GET);

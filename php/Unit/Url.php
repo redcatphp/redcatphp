@@ -32,8 +32,8 @@ class Url {
 	}
 	function getSuffixHref(){
 		if(!isset($this->suffixHref)){
-			if(isset($this->server['CWD'])){
-				$this->suffixHref = ltrim($this->server['CWD'],'/');				
+			if(isset($this->server['SURIKAT_CWD'])){
+				$this->suffixHref = ltrim($this->server['SURIKAT_CWD'],'/');				
 			}
 			else{
 				$docRoot = $this->server['DOCUMENT_ROOT'].'/';

@@ -12,6 +12,7 @@ class TmlHttp extends \Templix\Tml{
 		}
 	}
 	function notFound(){
-		$this->KungFu_Cms_Dispatcher_Index()->Templix->error(404);
+		if(method_exists($this->Template,'error'))
+			$this->Template->error(404);
 	}
 }
