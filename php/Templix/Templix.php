@@ -3,6 +3,7 @@ use ObjexLoader\MutatorMagicTrait;
 use DomainException;
 class Templix extends Template {
 	use MutatorMagicTrait;
+	var $Route;
 	function display($file = null, $vars = []){
 		try{
 			parent::display($file, $vars);
@@ -20,7 +21,6 @@ class Templix extends Template {
 		}
 		exit;
 	}
-	var $Route;
 	function __invoke($params,$uri,$Route){
 		$path = is_string($params)?$params:$params[0];
 		$this->Route = $Route;

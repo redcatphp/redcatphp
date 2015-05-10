@@ -2,6 +2,7 @@
 namespace KungFu\Cms\Controller;
 use Templix\Templix;
 use Templix\Toolbox as Templix_Toolbox;
+use InterNative\Translator;
 use KungFu\Cms\Controller\Templix as Controller_Templix;
 class L10n extends Controller_Templix{
 	protected $Dispatcher;
@@ -20,6 +21,8 @@ class L10n extends Controller_Templix{
 		$lang = $this->Route->getLang();
 		$langMap = $this->Route->getLangMap();
 		
+		Translator::set($lang);
+		
 		$this->Templix()->setDirCompileSuffix('.'.$lang.'/');
 		$this->Templix()->onCompile(function($TML)use($lang,$path,$langMap){
 			$Toolbox = new Templix_Toolbox();
@@ -35,7 +38,6 @@ class L10n extends Controller_Templix{
 			}
 		});
 		return $this->Templix();
-		//return $this->Templix()->display($params[0]);
 	}
 	function Templix(){
 		return $this->Templix?:$this->Templix = new Templix();

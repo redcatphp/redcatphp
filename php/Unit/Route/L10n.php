@@ -1,5 +1,4 @@
 <?php namespace Unit\Route;
-use InterNative\Translator;
 use ObjexLoader\MutatorMagicTrait;
 class L10n extends Faceted {
 	use MutatorMagicTrait;	
@@ -25,7 +24,6 @@ class L10n extends Faceted {
 			$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
 			$lang = $config->default;
 		}
-		Translator::set($lang);
 		$this->setLang($lang);
 		$this->uriParams[0] = $templatePath;
 		return $this->uriParams;
