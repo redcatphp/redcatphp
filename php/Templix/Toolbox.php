@@ -2,6 +2,16 @@
 use ObjexLoader\MutatorMagicTrait;
 class Toolbox{
 	use MutatorMagicTrait;
+	
+	protected $baseHref;
+	protected $suffixHref;
+	protected $server;
+	function __construct($server=null){
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
+	}
+	
 	function JsIs($Tml,$href='css/is.'){
 		$head = $Tml->find('head',0);
 		if(!$head){
@@ -20,7 +30,7 @@ class Toolbox{
 				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 				&&!in_array($is,$s)
 				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
-				&&Toolbox::getHttpResponseCode($this->Unit_Url->getBaseHref().$href.strtolower($is).'.css')===200
+				&&Toolbox::getHttpResponseCode($this->getBaseHref().$href.strtolower($is).'.css')===200
 			)
 				$s[] = $is;
 		});
@@ -108,6 +118,7 @@ class Toolbox{
 		if(!$head)
 			return;
 		
+		
 		if(!isset($langMap)&&file_exists($langFile='langs/'.$lang.'.ini')){
 			$langMap = parse_ini_file($langFile);
 		}
@@ -115,12 +126,74 @@ class Toolbox{
 		if($langMap&&isset($langMap[$path])){
 			$xPath = $langMap[$path];
 		}
-		$head->append('<link rel="alternate" href="'.$this->Unit_Url->getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		$head->append('<link rel="alternate" href="'.$this->getSubdomainHref().$xPath.'" hreflang="x-default" />');
 		foreach(glob('langs/*.ini') as $langFile){
 			$lg = pathinfo($langFile,PATHINFO_FILENAME);
 			$langMap = parse_ini_file($langFile);
 			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.$this->Unit_Url->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+			$head->append('<link rel="alternate" href="'.$this->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
 		}
+	}
+
+	function setBaseHref($href){
+		$this->baseHref = $href;
+	}
+	function getProtocolHref(){
+		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
+	}
+	function getServerHref(){
+		return $this->server['SERVER_NAME'];
+	}
+	function getPortHref(){
+		$ssl = @$this->server['HTTPS']==='on';
+		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
+	}
+	function getBaseHref(){
+		if(!isset($this->baseHref)){
+			$this->setBaseHref($this->getProtocolHref().$this->getServerHref().$this->getPortHref().'/');
+		}
+		return $this->baseHref.$this->getSuffixHref();
+	}
+	function setSuffixHref($href){
+		$this->suffixHref = $href;
+	}
+	function getSuffixHref(){
+		if(!isset($this->suffixHref)){
+			if(isset($this->server['SURIKAT_CWD'])){
+				$this->suffixHref = ltrim($this->server['SURIKAT_CWD'],'/');				
+			}
+			else{
+				$docRoot = $this->server['DOCUMENT_ROOT'].'/';
+				//$docRoot = dirname($this->server['SCRIPT_FILENAME']).'/';
+				if(defined('SURIKAT_CWD'))
+					$cwd = SURIKAT_CWD;
+				else
+					$cwd = getcwd();
+				if($docRoot!=$cwd&&strpos($cwd,$docRoot)===0)
+					$this->suffixHref = substr($cwd,strlen($docRoot));
+			}
+		}
+		return $this->suffixHref;
+	}
+	function getSubdomainHref($sub=''){
+		$lg = $this->getSubdomainLang();
+		$server = $this->getServerHref();
+		if($lg)
+			$server = substr($server,strlen($lg)+1);
+		if($sub)
+			$sub .= '.';
+		return $this->getProtocolHref().$sub.$server.$this->getPortHref().'/'.$this->getSuffixHref();
+	}
+	function getSubdomainLang($domain=null){
+		if(!isset($domain))
+			$domain = $this->getServerHref();
+		$urlParts = explode('.', $domain);
+		if(count($urlParts)>2&&strlen($urlParts[0])==2)
+			return $urlParts[0];
+		else
+			return null;
+	}
+	function getLocation(){
+		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
 	}
 }

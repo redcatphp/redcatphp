@@ -52,6 +52,7 @@ class Dispatcher {
 				$path = substr($_SERVER['REQUEST_URI'],$s);
 			else
 				$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
+			$path = urldecode($path);
 			$this->questionMark = !!$p;
 			$this->run($path);
 		}

@@ -8,23 +8,12 @@ use KungFu\Cms\Controller\L10n as Controller_L10n;
 use KungFu\Cms\Service\Service;
 class Index extends Dispatcher{
 	protected $Templix;
-	protected $useConvention = true;
 	public $i18nConvention;
 	public $backoffice = 'backend/';
 	function __construct($config=[]){
 		foreach($config as $k=>$v){
 			$this->$k = $v;
 		}
-		if($this->useConvention)
-			$this->convention();
-	}
-	function Templix(){
-		return $this->Templix?:$this->Templix = new Templix();
-	}
-	function __invoke(){
-		return $this->Templix();
-	}
-	function convention(){
 		$this->append('service/',new Service());
 		$this->append(new Extension('css|js|png|jpg|jpeg|gif'),function(){
 			return new Synaptic();
@@ -39,6 +28,12 @@ class Index extends Dispatcher{
 			$this->prepend($this->backoffice,function(){
 				return new Backoffice();
 			});
+	}
+	function Templix(){
+		return $this->Templix?:$this->Templix = new Templix();
+	}
+	function __invoke(){
+		return $this->Templix();
 	}
 	function run($path){
 		if(!parent::run($path)){
