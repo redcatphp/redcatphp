@@ -1,4 +1,4 @@
-<?php namespace Unit\Route;
+<?php namespace KungFu\Cms\Route;
 use ObjexLoader\MutatorMagicTrait;
 class L10n extends Faceted {
 	use MutatorMagicTrait;	

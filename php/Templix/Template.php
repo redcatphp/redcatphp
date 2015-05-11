@@ -15,6 +15,7 @@ class Template {
 	var $toCacheV = [];
 	var $childNodes = [];
 	var $isXhtml;
+	protected $cleanRegister;
 	protected $devCompileFile;
 	protected $dirCompileSuffix = '';
 	protected $__pluginNamespaces = [];
@@ -27,6 +28,7 @@ class Template {
 			'template/',
 			'Surikat/template/',
 		]);
+		$this->setCleanRegister('.tmp/synaptic/min-registry.txt');
 		$this->setPluginNamespace(self::getPluginNamespaceDefault());
 		if(isset($file))
 			$this->setPath($file);
@@ -164,7 +166,7 @@ class Template {
 				unlink($this->devCompileFile);
 				self::rmdir($this->dirCompile.$this->dirCompileSuffix);
 				self::rmdir($this->dirCache.$this->dirCompileSuffix);
-				$this->Unit_File_Synaptic()->cleanMini();
+				$this->cleanRegisterAuto();
 			}
 		}
 		else{
@@ -173,9 +175,9 @@ class Template {
 				file_put_contents($this->devCompileFile,'');
 			}
 			if($this->Dev_Level()->CSS)
-				$this->Unit_File_Synaptic()->cleanMini('css');
+				$this->cleanRegisterAuto('css');
 			if($this->Dev_Level()->JS)
-				$this->Unit_File_Synaptic()->cleanMini('js');
+				$this->cleanRegisterAuto('js');
 		}
 	}
 	function fetch($file=null,$vars=[]){
@@ -331,6 +333,27 @@ class Template {
 	}
 	function offsetUnset($k){
 		return $this->__unset($k);
+	}
+	function setCleanRegister($f){
+		$this->cleanRegister = $f;
+	}
+	function getCleanRegister(){
+		return $this->cleanRegister;
+	}
+	function cleanRegisterAuto($ext=null){
+		if(!$this->cleanRegister||!is_file($this->cleanRegister))
+			return;
+		foreach(file($this->cleanRegister) as $file){
+			$file = trim($file);
+			if(empty($file))
+				continue;
+			if($ext&&$ext!=pathinfo($file,PATHINFO_EXTENSION))
+				continue;
+			$file = realpath($file);
+			if($file)
+				unlink($file);
+		}
+		unlink($this->cleanRegister);
 	}
 	static function rmdir($dir){
 		if(is_dir($dir)){

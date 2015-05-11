@@ -1,4 +1,4 @@
-<?php namespace Unit\Route;
+<?php namespace KungFu\Cms\Route;
 class ByTml extends Faceted{
 	protected $match;
 	protected $dir = 'template';

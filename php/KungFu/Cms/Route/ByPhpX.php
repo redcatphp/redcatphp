@@ -1,4 +1,4 @@
-<?php namespace Unit\Route;
+<?php namespace KungFu\Cms\Route;
 class ByPhpX extends ByPhp {
 	function __invoke($uri){
 		if($this->dir&&strpos($uri,$this->dir)!==0)

@@ -1,11 +1,11 @@
 <?php namespace KungFu\Cms\Dispatcher;
-use Unit\Dispatcher;
-use Unit\Route\Extension;
-use Unit\Route\ByTml;
-use Unit\Route\ByPhpX;
 use Authentic\Auth;
 use Authentic\Session;
 use Templix\Templix;;
+use Unit\Dispatcher;
+use Unit\Route\Extension;
+use KungFu\Cms\Route\ByTml;
+use KungFu\Cms\Route\ByPhpX;
 class Backoffice extends Dispatcher{
 	protected $Templix;
 	public $pathFS = 'plugin/backoffice';

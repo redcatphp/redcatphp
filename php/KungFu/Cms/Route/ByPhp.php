@@ -1,4 +1,5 @@
-<?php namespace Unit\Route;
+<?php namespace KungFu\Cms\Route;
+use Unit\Route;
 class ByPhp extends Route{
 	protected $dir = '';
 	protected $dirFS = '';

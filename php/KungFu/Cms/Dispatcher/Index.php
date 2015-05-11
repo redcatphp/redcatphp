@@ -1,11 +1,11 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
-use Unit\Route\Extension;
-use Unit\Route\ByTml;
-use Unit\Route\L10n as Route_L10n;
 use Templix\Templix;
+use Unit\Route\Extension;
+use KungFu\Cms\Route\ByTml;
+use KungFu\Cms\Route\L10n as Route_L10n;
 use KungFu\Cms\Controller\L10n as Controller_L10n;
-use KungFu\Service\Service;
+use KungFu\Cms\Service\Service;
 class Index extends Dispatcher{
 	protected $Templix;
 	protected $useConvention = true;
@@ -26,13 +26,19 @@ class Index extends Dispatcher{
 	}
 	function convention(){
 		$this->append('service/',new Service());
-		$this->append(new Extension('css|js|png|jpg|jpeg|gif'), new Synaptic());
+		$this->append(new Extension('css|js|png|jpg|jpeg|gif'),function(){
+			return new Synaptic();
+		});
 		if($this->i18nConvention)
-			$this->append(new Route_L10n($this),new L10n(['backoffice'=>$this->backoffice]));
+			$this->append(new Route_L10n($this),function(){
+				return new L10n(['backoffice'=>$this->backoffice]);
+			});
 		$this->append(new ByTml('plugin'),$this);
 		$this->append(new ByTml(),$this);
 		if($this->backoffice)
-			$this->prepend($this->backoffice,new Backoffice());
+			$this->prepend($this->backoffice,function(){
+				return new Backoffice();
+			});
 	}
 	function run($path){
 		if(!parent::run($path)){

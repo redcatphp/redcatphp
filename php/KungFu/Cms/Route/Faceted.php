@@ -1,4 +1,5 @@
-<?php namespace Unit\Route;
+<?php namespace KungFu\Cms\Route;
+use Unit\Route;
 class Faceted extends Route {
 	protected $separatorWord = '-';
 	protected $forbiddenChrParam = [

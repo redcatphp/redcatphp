@@ -1,6 +1,6 @@
-<?php namespace Unit\Route;
+<?php namespace Unit;
 use ObjexLoader\MutatorTrait;
-class Route implements RouteInterface,\ArrayAccess,\Countable{
+class Route implements \ArrayAccess,\Countable{
 	use MutatorTrait;
 	protected $path;
 	protected $uriParams = [];

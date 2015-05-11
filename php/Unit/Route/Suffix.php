@@ -1,4 +1,5 @@
 <?php namespace Unit\Route;
+use Unit\Route;
 class Suffix extends Route{
 	private $match;
 	function __construct($match){

@@ -1,4 +1,5 @@
 <?php namespace Unit\Route;
+use Unit\Route;
 class Extension extends Route{
 	private $match;
 	private $extension;
