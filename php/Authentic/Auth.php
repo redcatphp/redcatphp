@@ -92,10 +92,7 @@ class Auth{
 		if((isset($db['name'])&&$db['name'])||(isset($db['file'])&&$db['file'])){
 			$this->db = R::getStatic(isset($this->config['db'])?$this->config['db']:null);
 		}
-		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
-			$this->siteUrl = $this->config['siteUrl'];
-		else
-			$this->siteUrl = $this->Unit_Url->getBaseHref();
+		$this->siteUrl = $this->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
 			$this->tableUsers = $this->config['tableUsers'];
@@ -600,6 +597,27 @@ class Auth{
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		return self::OK_EMAIL_CHANGED;
+	}
+	function getBaseHref(){
+		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
+			return $this->config['siteUrl'];
+		$protocol = 'http'.(isset($_SERVER["HTTPS"])&&$_SERVER["HTTPS"]=="on"?'s':'').'://';
+		$name = $_SERVER['SERVER_NAME'];
+		$ssl = isset($_SERVER["HTTPS"])&&$_SERVER["HTTPS"]==="on";
+		$port = isset($_SERVER['SERVER_PORT'])&&$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
+		if(isset($_SERVER['SURIKAT_CWD'])){
+			$suffixHref = ltrim($_SERVER['SURIKAT_CWD'],'/');
+		}
+		else{
+			$docRoot = $_SERVER['DOCUMENT_ROOT'].'/';
+			if(defined('SURIKAT_CWD'))
+				$cwd = SURIKAT_CWD;
+			else
+				$cwd = getcwd();
+			if($docRoot!=$cwd&&strpos($cwd,$docRoot)===0)
+				$suffixHref = substr($cwd,strlen($docRoot));
+		}
+		return $protocol.$name.$port.'/'.$suffixHref;
 	}
 
 	function getRight(){
