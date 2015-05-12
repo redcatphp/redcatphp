@@ -5,13 +5,12 @@ use KungFu\TemplixPlugin\Toolbox;
 use ObjexLoader\MutatorMagicTrait;
 class Templix{
 	use MutatorMagicTrait;
-	protected $Dispatcher;
 	protected $Route;
 	protected $path;
 	protected $params;
 	protected $Templix;
-	function __construct($Dispatcher=null){
-		$this->Dispatcher = $Dispatcher;
+	function __construct(){
+		
 	}
 	function Templix(){
 		return $this->Templix?:$this->Templix = new Templix_Templix();

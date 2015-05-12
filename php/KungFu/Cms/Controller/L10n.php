@@ -6,13 +6,11 @@ use KungFu\Cms\Controller\Templix as Controller_Templix;
 use ObjexLoader\MutatorMagicTrait;
 class L10n extends Controller_Templix{
 	use MutatorMagicTrait;
-	protected $Dispatcher;
 	protected $Route;
 	protected $path;
 	protected $params;
 	protected $Templix;
-	function __construct($Dispatcher=null){
-		$this->Dispatcher = $Dispatcher;
+	function __construct(){
 	}
 	function __invoke($params,$path,$Route){
 		$this->Route = $Route;
@@ -37,7 +35,7 @@ class L10n extends Controller_Templix{
 				}
 			}
 		});
-		return $this->Templix();
+		parent::__invoke($params,$path,$Route);
 	}
 	function i18nGettext($Tml,$cache=true){
 		$Tml('html')->attr('lang',$this->InterNative_Translator->getLangCode());
