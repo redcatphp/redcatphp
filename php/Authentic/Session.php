@@ -21,8 +21,8 @@ class Session{
 	protected $blockedWait = 1800; //half hour
 	protected $maxLifetime = 31536000; //1 year
 	protected $regeneratePeriod = 3600; //1 hour
-	protected $_SessionHandler;
-	protected $Http_Cookie;
+	protected $SessionHandler;
+	protected $Cookie;
 	protected $handled;
 	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null){
 		if(!$saveRoot){
@@ -40,11 +40,10 @@ class Session{
 		$this->cookiePath = '/'.$this->Unit_Url()->getSuffixHref();
 		$this->cookieDomain = $this->Unit_Url()->getServerHref();
 		$this->checkBlocked();
-		if(isset($sessionHandler))
-			$this->_SessionHandler = $sessionHandler;
-		else
-			$this->_SessionHandler = $this->getDependency('_SessionHandler');
-		$this->Http_Cookie = $_COOKIE;
+		if(!isset($sessionHandler))
+			$sessionHandler = new SessionHandler();
+		$this->SessionHandler = $sessionHandler;
+		$this->Cookie = $_COOKIE;
 		$this->garbageCollector();
 	}
 	function handleReload(){
@@ -58,12 +57,12 @@ class Session{
 		}
 	}
 	function handle(){
-		$this->_SessionHandler->open($this->savePath,$this->name);
+		$this->SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
 			$this->key = $this->clientKey();
 			if($this->serverExist()){
-				$this->data = (array)unserialize($this->_SessionHandler->read($this->getPrefix().$this->id));
+				$this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->id));
 				$this->autoRegenerateId();
 			}
 			else{
@@ -80,12 +79,12 @@ class Session{
 	}
 	function garbageCollector(){
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
-			$this->_SessionHandler->gc($this->maxLifetime);
+			$this->SessionHandler->gc($this->maxLifetime);
 	}
 	function destroy(){
 		if($this->id)
-			$this->_SessionHandler->destroy($this->getPrefix().$this->id);
-		$this->_SessionHandler->close();
+			$this->SessionHandler->destroy($this->getPrefix().$this->id);
+		$this->SessionHandler->close();
 		$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 		return true;
 	}
@@ -152,7 +151,7 @@ class Session{
 		return is_file($this->serverFile($id));
 	}
 	function cookie(){
-		return isset($this->Http_Cookie[$this->name])?$this->Http_Cookie[$this->name]:null;
+		return isset($this->Cookie[$this->name])?$this->Cookie[$this->name]:null;
 	}
 	function clientId(){
 		$cookie = $this->cookie();
@@ -231,10 +230,10 @@ class Session{
 	}
 	function __destruct(){
 		if($this->modified)
-			$this->_SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
+			$this->SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
 		else
-			$this->_SessionHandler->touch($this->getPrefix().$this->id);
-		$this->_SessionHandler->close();
+			$this->SessionHandler->touch($this->getPrefix().$this->id);
+		$this->SessionHandler->close();
 	}
 	function generateId(){
 		return hash('sha512',$this->_RandomLib_Factory()->getMediumStrengthGenerator()->generate($this->idLength));
@@ -293,15 +292,15 @@ class Session{
 		return $this->data[$k];
 	}
 	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
-		if($expire&&isset($this->Http_Cookie[$name]))
+		if($expire&&isset($this->Cookie[$name]))
 			$this->removeCookie($name, $path, $domain, $secure, $httponly);
 		if($global)
-			$this->Http_Cookie[$name] = $value;
+			$this->Cookie[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
     function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
-		if(isset($this->Http_Cookie[$name]))
-			unset($this->Http_Cookie[$name]);
+		if(isset($this->Cookie[$name]))
+			unset($this->Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
 }
