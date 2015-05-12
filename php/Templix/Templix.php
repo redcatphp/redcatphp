@@ -37,7 +37,7 @@ class Templix extends Template {
 			$Toolbox = new Toolbox();
 			$Toolbox->JsIs($Tml);
 			if(!$this->Dev_Level()->VIEW)
-				$Toolbox()->autoMIN($Tml);
+				$Toolbox->autoMIN($Tml);
 		});
 		$this->display($path.'.tml');
 	}

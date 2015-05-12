@@ -1,6 +1,5 @@
 <?php
 namespace KungFu\Cms\Controller;
-use Templix\Templix;
 use Templix\Toolbox as Templix_Toolbox;
 use InterNative\Translator;
 use KungFu\Cms\Controller\Templix as Controller_Templix;
@@ -38,8 +37,5 @@ class L10n extends Controller_Templix{
 			}
 		});
 		return $this->Templix();
-	}
-	function Templix(){
-		return $this->Templix?:$this->Templix = new Templix();
 	}
 }

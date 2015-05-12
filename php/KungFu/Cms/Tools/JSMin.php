@@ -1,4 +1,4 @@
-<?php namespace Minify;
+<?php namespace KungFu\Tools;
 /**
  * JSMin.php - modified PHP implementation of Douglas Crockford's JSMin.
  *
@@ -56,7 +56,7 @@
 
 use ObjexLoader\FacadeTrait;
 // class JSMin {
-class Js {
+class JSMin {
 	use FacadeTrait;
     const ORD_LF            = 10;
     const ORD_SPACE         = 32;
@@ -80,29 +80,13 @@ class Js {
      * @param string $js Javascript to be minified
      * @return string
      */
-    /*
     public static function minify($js,$pic=false)
     {
-		// $jsmin = new JSMin($js,$pic);
-		$jsmin = new JS($js,$pic);
+		$jsmin = new JSMin($js,$pic);
         $min = $jsmin->min();
         unset($jsmin);
         return $min;
     }
-    */
-    public function _process($input,$pic=false){
-        $this->a           = "\n";
-		$this->b           = '';
-		$this->inputIndex  = 0;
-		$this->inputLength = 0;
-		$this->lookAhead   = null;
-		$this->output      = '';
-		$this->lastByteOut  = '';
-		
-		$this->preserve_important_comments = $pic;
-        $this->input = $input;
-        return $this->min();
-	}
 
     /**
      * @param string $input

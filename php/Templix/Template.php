@@ -253,27 +253,30 @@ class Template {
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file;
 		if(!$this->Dev_Level()->VIEW)
-			$str = $this->Minify_Html()->process($str);
+			$str = Minify::HTML($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file.'.php';
 		if(!$this->Dev_Level()->VIEW)
-			$str = $this->Minify_Php()->process($str);
+			$str = Minify::PHP($str);
 		return $this->compileStore($file,$str);
 	}
 	function dirCompileToDirCwd($v){
 		$dirC = rtrim($this->dirCompile.$this->dirCompileSuffix,'/');
 		$path = $v;
-		if(strpos($v,$dirC)===0)
-			$path = ltrim(substr($v,strlen($dirC)),'/');
+		$cwd = getcwd();
+		if(strpos($path,$cwd)===0)
+			$path = ltrim(substr($path,strlen($cwd)),'/');
+		if(strpos($path,$dirC)===0)
+			$path = ltrim(substr($path,strlen($dirC)),'/');
 		$path = realpath($path);
 		return $path?$path:$v;
 	}
 	protected function compileStore($file,$str){
 		@mkdir(dirname($file),0777,true);
 		if(!$this->Dev_Level()->VIEW)
-			$str = $this->Minify_Php()->process($str);
+			$str = Minify::PHP($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}
 	protected function compilePHP($file,$str){

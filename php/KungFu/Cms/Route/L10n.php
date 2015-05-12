@@ -37,10 +37,4 @@ class L10n extends Faceted {
 	function getLangMap(){
 		return $this->langMap;
 	}
-	function run($path){
-		if(!parent::run($path)){
-			$this->Templix()->error(404);
-			exit;
-		}
-	}
 }

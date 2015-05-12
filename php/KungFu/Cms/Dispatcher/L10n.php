@@ -1,10 +1,10 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
 use Unit\Route\Extension;
-use Templix\Templix;
 use KungFu\Cms\Route\ByTml;
 use KungFu\Cms\Route\L10n as Route_L10n;
 use KungFu\Cms\Controller\L10n as Controller_L10n;
+use KungFu\Cms\Controller\Templix;
 class L10n extends Index{
 	protected $Templix;
 	protected $Controller_L10n;

@@ -1,10 +1,10 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
-use Templix\Templix;
 use Unit\Route\Extension;
 use KungFu\Cms\Route\ByTml;
 use KungFu\Cms\Route\L10n as Route_L10n;
 use KungFu\Cms\Controller\L10n as Controller_L10n;
+use KungFu\Cms\Controller\Templix;
 use KungFu\Cms\Service\Service;
 class Index extends Dispatcher{
 	protected $Templix;
@@ -37,7 +37,7 @@ class Index extends Dispatcher{
 	}
 	function run($path){
 		if(!parent::run($path)){
-			$this->Templix()->error(404);
+			$this->Templix()->__invoke()->error(404);
 			exit;
 		}
 	}

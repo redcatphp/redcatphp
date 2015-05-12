@@ -1,6 +1,7 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
 use ObjexLoader\MutatorMagicTrait;
+use KungFu\Tools\JSMin;
 class Synaptic extends Dispatcher{
 	use MutatorMagicTrait;
 	protected $pathFS;
@@ -116,7 +117,7 @@ class Synaptic extends Dispatcher{
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
-		$c = $this->Minify_Js->process(file_get_contents($f));
+		$c = JSMin::minify(file_get_contents($f));
 		if(!$this->Dev_Level->JS){
 			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
@@ -137,7 +138,7 @@ class Synaptic extends Dispatcher{
 				}
 				else
 					$c = file_get_contents($f);
-				$c = $this->Minify_Css->process($c);
+				$c = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    ',"\ r \ n", "\ r", "\ n", "\ t"],'',preg_replace( '! / \ *[^*]* \ *+([^/][^*]* \ *+)*/!','',preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!','',$c)));
 				if(!$this->Dev_Level->CSS){
 					$dir = dirname($file);
 					$min = $dir.'/'.pathinfo($file,PATHINFO_FILENAME).'.min.css';

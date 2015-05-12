@@ -1,7 +1,7 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Authentic\Auth;
 use Authentic\Session;
-use Templix\Templix;;
+use KungFu\Cms\Controller\Templix;;
 use Unit\Dispatcher;
 use Unit\Route\Extension;
 use KungFu\Cms\Route\ByTml;
