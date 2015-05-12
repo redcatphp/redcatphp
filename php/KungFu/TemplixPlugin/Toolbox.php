@@ -1,4 +1,4 @@
-<?php namespace Templix;
+<?php namespace KungFu\TemplixPlugin;
 use ObjexLoader\MutatorMagicTrait;
 class Toolbox{
 	use MutatorMagicTrait;
@@ -72,67 +72,6 @@ class Toolbox{
 			if($el->$k&&strpos('://',$el->$k)===false)
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
-	}
-	function i18nGettext($Tml,$cache=true){
-		$Tml('html')->attr('lang',$this->InterNative_Translator->getLangCode());
-		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
-		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
-			$rw = "$el";
-			$l = strlen($rw);
-			$left = $l-strlen(ltrim($rw));
-			$right = $l-strlen(rtrim($rw));
-			if($left)
-				$left = substr($rw,0,$left);
-			else
-				$left = '';
-			if($right)
-				$right = substr($rw,-1*$right);
-			else
-				$right = '';
-			$rw = trim($rw);
-			if(!$rw)
-				return;
-			if($el->data('i18n')!==false){
-				if($cache){
-					$rw = $this->InterNative_Translator()->__($rw);
-				}
-				else{
-					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo $this->InterNative_Translator()->__(\''.$rw.'\');?>';
-				}
-				$el->write($left.$rw.$right);
-			}
-		});
-		$Tml('*')->each(function($Tml){
-			foreach($Tml->attributes as $k=>$v){
-				if(strpos($k,'i18n-')===0){
-					$Tml->removeAttr($k);
-					$Tml->attr(substr($k,5),$this->InterNative_Translator()->__($v));
-				}
-			}
-		});
-		$Tml('*[i18n]')->removeAttr('i18n');
-	}
-	function i18nRel($Tml,$lang,$path,$langMap=null){
-		$head = $Tml->find('head',0);
-		if(!$head)
-			return;
-		
-		
-		if(!isset($langMap)&&file_exists($langFile='langs/'.$lang.'.ini')){
-			$langMap = parse_ini_file($langFile);
-		}
-		$xPath = $path;
-		if($langMap&&isset($langMap[$path])){
-			$xPath = $langMap[$path];
-		}
-		$head->append('<link rel="alternate" href="'.$this->getSubdomainHref().$xPath.'" hreflang="x-default" />');
-		foreach(glob('langs/*.ini') as $langFile){
-			$lg = pathinfo($langFile,PATHINFO_FILENAME);
-			$langMap = parse_ini_file($langFile);
-			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.$this->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
-		}
 	}
 
 	function setBaseHref($href){

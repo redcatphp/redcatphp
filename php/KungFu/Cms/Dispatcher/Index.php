@@ -20,7 +20,7 @@ class Index extends Dispatcher{
 		});
 		if($this->i18nConvention)
 			$this->append(new Route_L10n($this),function(){
-				return new L10n(['backoffice'=>$this->backoffice]);
+				return new L10n();
 			});
 		$this->append(new ByTml('plugin'),$this);
 		$this->append(new ByTml(),$this);
@@ -37,7 +37,7 @@ class Index extends Dispatcher{
 	}
 	function run($path){
 		if(!parent::run($path)){
-			$this->Templix()->__invoke()->error(404);
+			$this->Templix()->error(404);
 			exit;
 		}
 	}
