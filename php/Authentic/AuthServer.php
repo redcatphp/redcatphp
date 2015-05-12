@@ -8,10 +8,13 @@ class AuthServer{
 	protected $messages = [];
 	protected $lastResult;
 	protected $defaultLogoutKey = 'auth-server-logout';
+	protected $Auth;
+	protected $Session;
 	function __construct(Auth $Auth=null){
-		if($Auth)
-			$this->_Auth = $Auth;
-		$this->_Session = $this->_Auth->_Session;
+		if(!$Auth)
+			$Auth = new Auth();
+		$this->Auth = $Auth;
+		$this->Session = $this->Auth->getSession();
 	}
 	function getResultMessage($widget=false){
 		if($this->lastResult&&!is_bool($this->lastResult)){
@@ -34,20 +37,20 @@ class AuthServer{
 				switch($r){
 					case Auth::OK_LOGGED_IN:
 						if(!$ajax){
-							$this->_Session->set('Auth','result',$action,$r);
+							$this->Session->set('Auth','result',$action,$r);
 							$this->reloadLocation();
 						}
 					break;
 					case Auth::OK_REGISTER_SUCCESS:
 						if(!$ajax){
-							$this->_Session->set('Auth','result',$action,$r);
+							$this->Session->set('Auth','result',$action,$r);
 							$this->reloadLocation();
 						}
 					break;
 				}
 			}
 			if(!$r)
-				$r = $this->_Session->get('Auth','result',$action);
+				$r = $this->Session->get('Auth','result',$action);
 		}
 		return $this->lastResult = $r;
 	}
@@ -55,22 +58,22 @@ class AuthServer{
 		if(isset($_POST['email'])&&isset($_POST['login'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
 			$email = $_POST['email'];
 			$login = trim($_POST['login'])?$_POST['login']:$email;
-			$this->_Session->set('Auth','email',$email);
-			return $this->_Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
+			$this->Session->set('Auth','email',$email);
+			return $this->Auth->register($email, $login, $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function resendactivate(){
-		if($email=$this->_Session->get('Auth','email')){
-			return $this->_Auth->resendActivation($email);
+		if($email=$this->Session->get('Auth','email')){
+			return $this->Auth->resendActivation($email);
 		}
 	}
 	function activate(){
 		if(isset($_GET['key'])){
-			return $this->_Auth->activate($_GET['key']);
+			return $this->Auth->activate($_GET['key']);
 		}
 	}
 	function loginPersona(){
-		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->_Session->get('email'))){
+		if(isset($_POST['email'])&&$_POST['email']&&$_POST['email']==($email=$this->Session->get('email'))){
 			$lifetime = 0;
 			if(isset($_POST['login'])){
 				switch($_POST['lifetime']){
@@ -88,7 +91,7 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->_Auth->loginPersona($email, $lifetime);
+			return $this->Auth->loginPersona($email, $lifetime);
 		}
 	}
 	function login(){
@@ -110,7 +113,7 @@ class AuthServer{
 					break;
 				}
 			}
-			return $this->_Auth->login($_POST['login'], $_POST['password'], $lifetime);
+			return $this->Auth->login($_POST['login'], $_POST['password'], $lifetime);
 		}
 		elseif(isset($_POST['email'])&&$_POST['email']){
 			return $this->loginPersona();
@@ -118,12 +121,12 @@ class AuthServer{
 	}
 	function resetreq(){
 		if(isset($_POST['email'])){
-			return $this->_Auth->requestReset($_POST['email']);
+			return $this->Auth->requestReset($_POST['email']);
 		}
 	}
 	function resetpass(){
 		if(isset($_GET['key'])&&isset($_POST['password'])&&isset($_POST['confirm'])){
-			return $this->_Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
+			return $this->Auth->resetPass($_GET['key'], $_POST['password'], $_POST['confirm']);
 		}
 	}
 	function lougoutAPI($key=null){
@@ -193,7 +196,7 @@ class AuthServer{
 		}
 	}
 	function logout(){
-		return $this->_Auth->logout();
+		return $this->Auth->logout();
 	}
 	
 	function htmlLock($r,$redirect=true){
@@ -216,16 +219,16 @@ class AuthServer{
 					break;
 				}
 			}
-			if($this->_Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
+			if($this->Auth->login($_POST['__login__'],$_POST['__password__'],$lifetime)===Auth::OK_LOGGED_IN){
 				header('Location: '.$action,false,302);
 				exit;
 			}
 		}
-		if($this->_Auth->allowed($r))
+		if($this->Auth->allowed($r))
 			return;
-		if($this->_Auth->connected()){
+		if($this->Auth->connected()){
 			if($redirect)
-				header('Location: '.$this->_Auth->siteUrl.'403',false,302);
+				header('Location: '.$this->Auth->siteUrl.'403',false,302);
 			else
 				http_response_code(403);
 			exit;
@@ -251,8 +254,8 @@ class AuthServer{
 			}
 		</style>
 		</head><body>';
-		if($seconds=$this->_Session->isBlocked()){
-			echo $this->_Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
+		if($seconds=$this->Session->isBlocked()){
+			echo $this->Auth->getMessage([Auth::ERROR_USER_BLOCKED,$seconds],true);
 		}
 		echo '<form id="form" action="'.$action.'" method="POST">
 			<label for="__login__">Login</label><input type="text" id="__login__" name="__login__" placeholder="Login"><br>

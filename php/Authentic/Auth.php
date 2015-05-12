@@ -104,6 +104,9 @@ class Auth{
 		else
 			$this->algo = PASSWORD_DEFAULT;
 	}
+	function getSession(){
+		return $this->Session;
+	}
 	function sendMail($email, $type, $key, $login){
 		$config = $this->Config('mailer');
 				
