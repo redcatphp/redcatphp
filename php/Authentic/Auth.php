@@ -80,6 +80,7 @@ class Auth{
 	protected $superRoot = 'root';
 	protected $config = [];
 	protected $Session;
+	protected $Server;
 	public function __construct(Session $Session=null){
 		if(!$Session)
 			$Session = new Session();
@@ -667,7 +668,10 @@ class Auth{
 		}
 		exit;
 	}
+	function Server(){
+		return $this->Server?:$this->Server = new AuthServer($this);
+	}
 	function lockServer($r,$redirect=true){
-		return $this->getDependency('_AuthServer',$this)->htmlLock($r,$redirect);
+		return $this->Server()->htmlLock($r,$redirect);
 	}
 }

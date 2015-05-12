@@ -1,15 +1,13 @@
 <?php namespace KungFu\Cms\Service;
-use ObjexLoader\MutatorTrait;
 class Service {
-	use MutatorTrait;
 	function __invoke($func=null){
 		if(!func_num_args()){
-			$this->getDependency('HTTP')->code('404');
+			http_response_code(404);
 			return;
 		}
 		$func = str_replace('/','_',$func);
 		list($c,$m) = self::__funcToCm($func);
-		$this->getDependency($c)->$m();
+		return (new $c())->$m();
 	}
 	protected static function StudlyCaps($str){
 		$str = ucwords(str_replace('_', ' ', $str));
@@ -18,7 +16,7 @@ class Service {
 	}
 	protected static function __funcToCm($func){
 		$pos = strpos($func,'_');
-		$c = 'KungFu\Service\Service_';
+		$c = 'KungFu\Cms\Service\Service_';
 		if($pos){
 			$c .= ucfirst(substr($func,0,$pos));
 			$m = lcfirst(self::StudlyCaps(substr($func,$pos+1)));
