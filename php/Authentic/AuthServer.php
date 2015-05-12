@@ -1,20 +1,26 @@
 <?php namespace Authentic;
 use Authentic\Auth;
 use InterNative\Translator;
-use ObjexLoader\MutatorMagicTrait;
 require_once __DIR__.'/../InterNative/Translator.inc.php';
 class AuthServer{
-	use MutatorMagicTrait;
 	protected $messages = [];
 	protected $lastResult;
 	protected $defaultLogoutKey = 'auth-server-logout';
 	protected $Auth;
 	protected $Session;
-	function __construct(Auth $Auth=null){
+	
+	protected $baseHref;
+	protected $suffixHref;
+	protected $server;
+	
+	function __construct(Auth $Auth=null,$server=null){
 		if(!$Auth)
 			$Auth = new Auth();
 		$this->Auth = $Auth;
 		$this->Session = $this->Auth->getSession();
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
 	}
 	function getResultMessage($widget=false){
 		if($this->lastResult&&!is_bool($this->lastResult)){
@@ -138,7 +144,7 @@ class AuthServer{
 		}
 	}
 	function reloadLocation(){
-		header('Location: '.$this->Unit_Url->getLocation(),false,302);
+		header('Location: '.$this->getLocation(),false,302);
 	}
 	function lougoutBTN($key=null,$ret=false){
 		if(!$key)
@@ -148,7 +154,7 @@ class AuthServer{
 		}
 		else{
 			$html = '
-			<link href="'.$this->Unit_Url->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
+			<link href="'.$this->getBaseHref().'css/font/fontawesome.css" rel="stylesheet" type="text/css">
 			<style type="text/css">
 				a.auth-logout{
 					background: none repeat scroll 0 0 #fff;
@@ -180,10 +186,10 @@ class AuthServer{
 					content: "\f011";
 				}
 			</style>
-			<script type="text/javascript" src="'.$this->Unit_Url->getBaseHref().'js/post.js"></script>
+			<script type="text/javascript" src="'.$this->getBaseHref().'js/post.js"></script>
 			<script type="text/javascript">
 				authServerLogoutCaller = function(){
-					post("'.$this->Unit_Url->getLocation().'",{"'.$key.'":1});
+					post("'.$this->getLocation().'",{"'.$key.'":1});
 					return false;
 				};
 			</script>
@@ -200,7 +206,7 @@ class AuthServer{
 	}
 	
 	function htmlLock($r,$redirect=true){
-		$action = $this->Unit_Url->getLocation();
+		$action = $this->getLocation();
 		if(isset($_POST['__login__'])&&isset($_POST['__password__'])){
 			$lifetime = 0;
 			if(isset($_POST['remember'])&&$_POST['remember']&&isset($_POST['lifetime'])){
@@ -398,5 +404,67 @@ class AuthServer{
 		else{
 			return $this->messages[$lg][$code];
 		}
+	}
+	
+	
+	function setBaseHref($href){
+		$this->baseHref = $href;
+	}
+	function getProtocolHref(){
+		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
+	}
+	function getServerHref(){
+		return $this->server['SERVER_NAME'];
+	}
+	function getPortHref(){
+		$ssl = @$this->server["HTTPS"]=="on";
+		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
+	}
+	function getBaseHref(){
+		if(!isset($this->baseHref)){
+			$this->setBaseHref($this->getProtocolHref().$this->getServerHref().$this->getPortHref().'/');
+		}
+		return $this->baseHref.$this->getSuffixHref();
+	}
+	function setSuffixHref($href){
+		$this->suffixHref = $href;
+	}
+	function getSuffixHref(){
+		if(!isset($this->suffixHref)){
+			if(isset($this->server['SURIKAT_CWD'])){
+				$this->suffixHref = ltrim($this->server['SURIKAT_CWD'],'/');				
+			}
+			else{
+				$docRoot = $this->server['DOCUMENT_ROOT'].'/';
+				if(defined('SURIKAT_CWD'))
+					$cwd = SURIKAT_CWD;
+				else
+					$cwd = getcwd();
+				if($docRoot!=$cwd&&strpos($cwd,$docRoot)===0)
+					$this->suffixHref = substr($cwd,strlen($docRoot));
+			}
+		}
+		return $this->suffixHref;
+	}
+	function getSubdomainHref($sub=''){
+		$lg = $this->getSubdomainLang();
+		$server = $this->getServerHref();
+		if($lg)
+			$server = substr($server,strlen($lg)+1);
+		if($sub)
+			$sub .= '.';
+		return $this->getProtocolHref().$sub.$server.$this->getPortHref().'/'.$this->getSuffixHref();
+	}
+	function getSubdomainLang($domain=null){
+		if(!isset($domain))
+			$domain = $this->getServerHref();
+		$urlParts = explode('.', $domain);
+		if(count($urlParts)>2&&strlen($urlParts[0])==2)
+			return $urlParts[0];
+		else
+			return null;
+	}
+	function getLocation(){
+		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
 	}
 }
