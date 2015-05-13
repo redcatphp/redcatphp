@@ -1,10 +1,8 @@
 <?php
 namespace Database\RedBeanPHP;
 use ObjexLoader\MutatorCallTrait;
-use ObjexLoader\RegistryTrait;
 class DatabaseGroup{
 	use MutatorCallTrait;
-	use RegistryTrait;
 	protected $databases = [];
 	protected $name = '';
 	protected $prefix = '';
