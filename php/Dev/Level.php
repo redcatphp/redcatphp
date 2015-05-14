@@ -1,7 +1,5 @@
 <?php namespace Dev;
-use ObjexLoader\MutatorTrait;
 class Level{
-	use MutatorTrait;
 	private $phpDev;
 	private $level = 0;
 	private $levels;
@@ -81,7 +79,7 @@ class Level{
 			$php = $this->has(self::PHP);
 			if(!isset($this->phpDev)||($php&&!$this->phpDev)||(!$php&&$this->phpDev)){
 				$this->phpDev = $php;
-				$this->getDependency('Dev_Debug')->errorHandler($php);
+				(new Debug)->errorHandler($php);
 			}
 		}
 		return $oldLevel;

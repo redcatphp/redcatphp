@@ -1,7 +1,5 @@
 <?php namespace Unit\File;
-use ObjexLoader\MutatorMagicTrait;
 class Uploader{
-	use MutatorMagicTrait;
 	public $extensionRewrite = [
 		'jpeg'=>'jpg',
 	];
