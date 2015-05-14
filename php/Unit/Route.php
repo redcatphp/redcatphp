@@ -1,7 +1,5 @@
 <?php namespace Unit;
-use ObjexLoader\MutatorTrait;
 class Route implements \ArrayAccess,\Countable{
-	use MutatorTrait;
 	protected $path;
 	protected $uriParams = [];
 	function __invoke($uri){
