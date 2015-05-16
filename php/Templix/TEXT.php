@@ -1,5 +1,5 @@
 <?php namespace Templix;
-class TEXT extends CORE{
+class TEXT extends Tml{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
 	function parse($text){

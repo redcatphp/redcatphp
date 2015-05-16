@@ -1,6 +1,6 @@
 <?php namespace Templix;
 use Templix\Tml;
-class DOCTYPE extends CORE{
+class DOCTYPE extends Tml{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	private $contentText = '';

@@ -1,5 +1,5 @@
 <?php namespace Templix;
-abstract class CALL_SUB extends CORE{
+abstract class CALL_SUB extends Tml{
 	function extendLoad($extend = null){ #untested
 		if($extend || ($extend = $this->closest('extend')))
 			foreach($this->childNodes as $node)

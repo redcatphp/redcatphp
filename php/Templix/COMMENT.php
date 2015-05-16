@@ -1,5 +1,5 @@
 <?php namespace Templix; 
-class COMMENT extends CORE{
+class COMMENT extends Tml{
 	protected $hiddenWrap = true;
 	private $contentText = '';
 	protected $noParseContent = true;
