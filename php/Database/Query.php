@@ -7,9 +7,7 @@ use Database\R;
 use Database\RedBeanPHP\Database;
 use Database\RedBeanPHP\QueryWriter;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
-use ObjexLoader\MutatorMagicTrait;
 class Query {
-	use MutatorMagicTrait;
 	protected $table;
 	protected $pxTable;
 	protected $prefix;
@@ -38,7 +36,7 @@ class Query {
 			$composer = 'select';
 		}
 		if(!$db)
-			$db = $this->Database_R();
+			$db = R::getDb();
 		$this->DataBase = $db;
 		if(!$writer)
 			$writer = $this->DataBase->getWriter();
@@ -73,7 +71,7 @@ class Query {
 	function __clone(){
         $this->composer = clone $this->composer;
     }
-	function ___call($f,$args){
+	function __call($f,$args){
 		if(strpos($f,'get')===0&&ctype_upper(substr($f,3,1))){
 			if(!$this->table||$this->tableExists($this->table)){
 				$params = $this->composer->getParams();

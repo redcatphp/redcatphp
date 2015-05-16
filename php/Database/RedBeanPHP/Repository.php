@@ -16,8 +16,6 @@ use Database\RedBeanPHP\OODB as OODB;
 use Database\RedBeanPHP\Cursor as Cursor;
 use Database\RedBeanPHP\Cursor\NullCursor as NullCursor;
 
-use ObjexLoader\MutatorMagicTrait;
-
 /**
  * Abstract Repository
  *
@@ -39,7 +37,6 @@ use ObjexLoader\MutatorMagicTrait;
  */
 abstract class Repository
 {
-	use MutatorMagicTrait;
 	/**
 	 * @var array
 	 */
@@ -116,8 +113,6 @@ abstract class Repository
 			if ( $addition instanceof OODBBean ) {
 				$this->oodb->getAssociationManager()->associate( $addition, $bean );
 			} else {
-				if($this->Dev_Level->MODEL)
-					var_dump($sharedAdditions);
 				throw new RedException( 'Array may only contain OODBBeans' );
 			}
 		}

@@ -1,7 +1,6 @@
 <?php
 namespace Database\RedBeanPHP\Logger\RDefault;
 
-use ObjexLoader\MutatorMagicTrait;
 use Database\RedBeanPHP\Logger as Logger;
 use Database\RedBeanPHP\Logger\RDefault as RDefault;
 use Database\RedBeanPHP\RedException as RedException;
@@ -23,8 +22,6 @@ use Database\RedBeanPHP\RedException\Security as Security;
  */
 class Debug extends RDefault implements Logger
 {
-	use MutatorMagicTrait;
-	
 	private $strLen = false;
 
 	/**
@@ -167,7 +164,7 @@ class Debug extends RDefault implements Logger
 	public function logOpen(){
 		if(!headers_sent())
 			header('Content-Type: text/html; charset=utf-8');
-		echo '<div style="'.$this->Dev_Debug->debugWrapInlineCSS.'">';
+		echo '<div style="margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;">';
 		
 	}
 	public function logClose(){

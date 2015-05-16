@@ -91,7 +91,7 @@ class Auth{
 			$dbm .= '_'.$this->config['db'];
 		$db = $this->Config($dbm);
 		if((isset($db['name'])&&$db['name'])||(isset($db['file'])&&$db['file'])){
-			$this->db = R::getStatic(isset($this->config['db'])?$this->config['db']:null);
+			$this->db = R::getDb(isset($this->config['db'])?$this->config['db']:null);
 		}
 		$this->siteUrl = $this->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';

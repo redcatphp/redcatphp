@@ -20,14 +20,12 @@ onDelete	R::trash		$model->delete()		DELETE		DELETE	DELETE
 onDeleted	R::trash		$model->after_delete()	DELETE		DELETE	DELETE
 
 */
-use ObjexLoader\MutatorCallTrait;
 use Database\RedBeanPHP\OODBBean;
 use Database\RedBeanPHP\SimpleModel;
 use Database\RedBeanPHP\QueryWriter\AQueryWriter;
 use BadMethodCallException;
 use Database\ValidationException; //for allowing mirrored exception class catching and (optional) hook
 class Model extends SimpleModel implements \ArrayAccess,\IteratorAggregate{
-	use MutatorCallTrait;
 	#<workflow CRUD>
 	function onNew(){}
 	function onCreate(){}

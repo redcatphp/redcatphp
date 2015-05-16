@@ -33,6 +33,12 @@ class Database{
 	use MutatorFacadeTrait;
 	
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
+	
+	const DEV_ERROR = 2;
+	const DEV_STRUCTURE = 4;
+	const DEV_SPEED = 8;
+	const DEV_QUERY = 16;
+	
 	private static $plugins = [];
 	
 	private $name;
@@ -54,6 +60,8 @@ class Database{
 	private $dbgroup;
 	private $DatabaseGroup;
 	
+	private $devLevel = 0;
+	
 	function __construct($name='',DatabaseGroup $DatabaseGroup=null){
 		$this->name = $name;
 		if(false!==$p=strpos($this->name,'.'))
@@ -63,14 +71,14 @@ class Database{
 		else
 			$this->DatabaseGroup = $this->Database_RedBeanPHP_DatabaseGroup($this->dbgroup);
 	}
-	static function getConfigFilename($args){
-		$name = 'db';
-		if(is_array($args)&&!empty($args)){
-			$key = array_shift($args);
-			if(!empty($key))
-				$name .= '.'.$key;
+	function devLevel(){
+		if(func_num_args()){
+			$this->devLevel = 0;
+			foreach(func_get_args() as $l){
+				$this->devLevel = $this->devLevel|$l;
+			}
 		}
-		return $name;
+		return $this->devLevel;
 	}
 	function setConfig($config){
 		if(!isset($config)){
@@ -102,7 +110,7 @@ class Database{
 		if($name)
 			$name = ';dbname='.$name;
 		if(!isset($frozen))
-			$frozen = !$this->Dev_Level->DB;
+			$frozen = !$this->devLevel()&Database::DEV_STRUCTURE;
 		if(!isset($case))
 			$case = true;
 		$dsn = $type.':'.$host.$port.$name;
@@ -122,19 +130,19 @@ class Database{
 		$this->tagManager         = new TagManager( $this->toolbox );
 		
 	}
-	function _getType(){
+	function getType(){
 		return $this->dbType;
 	}
-	function _getName(){
+	function getName(){
 		return $this->name;
 	}
-	function _getPrefix(){
+	function getPrefix(){
 		return $this->prefix;
 	}
-	function _getDatabaseGroup(){
+	function getDatabaseGroup(){
 		return $this->DatabaseGroup;
 	}
-	function _setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
+	function setup( $dsn = NULL, $user = NULL, $pass = NULL, $frozen = FALSE, $prefix = '', $case = true ){
 		$this->dsn = $dsn;
 		if ( is_object($dsn) ) {
 			$db  = new RPDO( $dsn );
@@ -189,13 +197,13 @@ class Database{
 		}
 	}
 	
-	function _exists(){
+	function exists(){
 		if($this->dbType=='sqlite')
 			return is_file(substr($this->dsn,7));
 		else
 			return $this->testConnection();
 	}
-	function _testConnection(){
+	function testConnection(){
 		if ( !isset( $this->adapter ) ) return FALSE;
 
 		$database = $this->adapter->getDatabase();
@@ -205,11 +213,11 @@ class Database{
 		return $database->isConnected();
 	}
 	
-	function _setNarrowFieldMode( $mode ){
+	function setNarrowFieldMode( $mode ){
 		AQueryWriter::setNarrowFieldMode( $mode );
 	}
 	
-	function _transaction( $callback )
+	function transaction( $callback )
 	{
 		if ( !is_callable( $callback ) ) {
 			throw new RedException( 'R::transaction needs a valid callback.' );
@@ -237,7 +245,7 @@ class Database{
 		return $result;
 	}
 
-	function _debug( $tf = TRUE, $mode = 0 ){
+	function debug( $tf = TRUE, $mode = 0 ){
 		if ($mode > 1) {
 			$mode -= 2;
 			$logger = new Debug;
@@ -254,11 +262,11 @@ class Database{
 		return $logger;
 	}
 
-	function _inspect( $type = NULL ){
+	function inspect( $type = NULL ){
 		return ($type === NULL) ? $this->writer->getTables() : $this->writer->getColumns( $this->writer->adaptCase($type) );
 	}
 
-	function _store( $bean ){
+	function store( $bean ){
 		if($bean instanceof SimpleModel)
 			$bean = $bean->unbox();
 		foreach(array_keys($bean->getProperties()) as $k){
@@ -277,11 +285,11 @@ class Database{
 			return $this->redbean->store( $bean );
 	}
 
-	function _freeze( $tf = TRUE ){
+	function freeze( $tf = TRUE ){
 		$this->redbean->freeze( $tf );
 	}
 
-	function _loadMulti( $types, $id ){
+	function loadMulti( $types, $id ){
 		if ( is_string( $types ) ) {
 			$types = explode( ',', $types );
 		}
@@ -297,13 +305,13 @@ class Database{
 		return $types;
 	}
 
-	function _trash($beanOrType,$id=null){
+	function trash($beanOrType,$id=null){
 		if(is_string($beanOrType))
 			return $this->trash( $this->load( $beanOrType, $id ) );
 		return $this->redbean->trash( $beanOrType );
 	}
 
-	function _dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
+	function dispense($typeOrBeanArray,$num=1,$alwaysReturnArray=false){
 		if(is_array($typeOrBeanArray)){
 			if ( !isset( $typeOrBeanArray['_type'] ) ) {
 				$list = array();
@@ -328,7 +336,7 @@ class Database{
 		return $beanOrBeans;
 	}
 
-	function _dispenseAll( $order, $onlyArrays = FALSE )
+	function dispenseAll( $order, $onlyArrays = FALSE )
 	{
 
 		$list = [];
@@ -347,32 +355,32 @@ class Database{
 		return $list;
 	}
 
-	function _findOrDispense( $type, $sql = NULL, $bindings = [] )
+	function findOrDispense( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->findOrDispense( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
-	function _batch( $type, $ids )
+	function batch( $type, $ids )
 	{
 		return $this->redbean->batch( $this->writer->adaptCase($type), $ids );
 	}
 
-	function _loadAll( $type, $ids )
+	function loadAll( $type, $ids )
 	{
 		return $this->redbean->batch( $this->writer->adaptCase($type), $ids );
 	}
 
-	function _exec( $sql, $bindings = [] )
+	function exec( $sql, $bindings = [] )
 	{
 		return $this->query( 'exec', $sql, $bindings );
 	}
 
-	function _getAll( $sql, $bindings = [] )
+	function getAll( $sql, $bindings = [] )
 	{
 		return $this->query( 'get', $sql, $bindings );
 	}
 
-	function _getCell( $sql, $bindings = [] )
+	function getCell( $sql, $bindings = [] )
 	{
 		$sql = (string)$sql;
 		if(stripos($sql,'LIMIT')===false)
@@ -380,119 +388,119 @@ class Database{
 		return $this->query( 'getCell', $sql, $bindings );
 	}
 
-	function _getRow( $sql, $bindings = [] )
+	function getRow( $sql, $bindings = [] )
 	{
 		return $this->query( 'getRow', $sql, $bindings );
 	}
 
-	function _getCol( $sql, $bindings = [] )
+	function getCol( $sql, $bindings = [] )
 	{
 		return $this->query( 'getCol', $sql, $bindings );
 	}
 
-	function _getAssoc( $sql, $bindings = [] )
+	function getAssoc( $sql, $bindings = [] )
 	{
 		return $this->query( 'getAssoc', $sql, $bindings );
 	}
 
-	function _getAssocRow( $sql, $bindings = [] )
+	function getAssocRow( $sql, $bindings = [] )
 	{
 		return $this->query( 'getAssocRow', $sql, $bindings );
 	}
 	
-	function _fetch($sql, $bindings = []){
+	function fetch($sql, $bindings = []){
 		return $this->adapter->fetch( $sql, $bindings );
 	}
 
-	function _duplicate( $bean, $filters = array() ){
+	function duplicate( $bean, $filters = array() ){
 		return $this->dup( $bean, array(), FALSE, $filters );
 	}
 	
-	function _exportAll( $beans, $parents = FALSE, $filters = [])
+	function exportAll( $beans, $parents = FALSE, $filters = [])
 	{
 		return $this->duplicationManager->exportAll( $beans, $parents, $filters, $this->exportCaseStyle );
 	}
 
-	function _useExportCase( $caseStyle = 'default' )
+	function useExportCase( $caseStyle = 'default' )
 	{
 		if ( !in_array( $caseStyle, [ 'default', 'camel', 'dolphin' ] ) ) throw new RedException( 'Invalid case selected.' );
 		$this->exportCaseStyle = $caseStyle;
 	}
 
-	function _convertToBeans( $type, $rows )
+	function convertToBeans( $type, $rows )
 	{
 		return $this->redbean->convertToBeans( $this->writer->adaptCase($type), $rows );
 	}
 
-	function _hasTag( $bean, $tags, $all = FALSE )
+	function hasTag( $bean, $tags, $all = FALSE )
 	{
 		return $this->tagManager->hasTag( $bean, $tags, $all );
 	}
 
-	function _untag( $bean, $tagList )
+	function untag( $bean, $tagList )
 	{
 		$this->tagManager->untag( $bean, $tagList );
 	}
 
-	function _tag( OODBBean $bean, $tagList = NULL )
+	function tag( OODBBean $bean, $tagList = NULL )
 	{
 		return $this->tagManager->tag( $bean, $tagList );
 	}
 
-	function _addTags( OODBBean $bean, $tagList )
+	function addTags( OODBBean $bean, $tagList )
 	{
 		$this->tagManager->addTags( $bean, $tagList );
 	}
 
-	function _tagged( $beanType, $tagList, $sql = '', $bindings = [] )
+	function tagged( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
 		return $this->tagManager->tagged( $beanType, $tagList, $sql, $bindings );
 	}
 
-	function _taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
+	function taggedAll( $beanType, $tagList, $sql = '', $bindings = [] )
 	{
 		return $this->tagManager->taggedAll( $this->writer->adaptCase($beanType), $tagList, $sql, $bindings );
 	}
 
-	function _wipe( $beanType )
+	function wipe( $beanType )
 	{
 		return $this->redbean->wipe( $this->writer->adaptCase($beanType) );
 	}
 
-	function _count( $type, $addSQL = '', $bindings = [] )
+	function count( $type, $addSQL = '', $bindings = [] )
 	{
 		return $this->redbean->count( $this->writer->adaptCase($type), $addSQL, $bindings );
 	}
 	
-	function _begin(){
+	function begin(){
 		if ( !$this->redbean->isFrozen() ) return FALSE;
 		$this->adapter->startTransaction();
 		return TRUE;
 	}
 
-	function _commit(){
+	function commit(){
 		if ( !$this->redbean->isFrozen() ) return FALSE;
 		$this->adapter->commit();
 		return TRUE;
 	}
 
-	function _rollback(){
+	function rollback(){
 		if ( !$this->redbean->isFrozen() ) return FALSE;
 		$this->adapter->rollback();
 		return TRUE;
 	}
 
-	function _getColumns( $table ){
+	function getColumns( $table ){
 		return $this->writer->getColumns( $table );
 	}
 
-	function _nuke(){
+	function nuke(){
 		if ( !$this->redbean->isFrozen() ) {
 			$this->writer->wipeAll();
 		}
 	}
 
-	function _storeAll( $beans )
+	function storeAll( $beans )
 	{
 		$ids = [];
 		foreach ( $beans as $bean ) {
@@ -502,41 +510,41 @@ class Database{
 		return $ids;
 	}
 
-	function _trashAll( $beans )
+	function trashAll( $beans )
 	{
 		foreach ( $beans as $bean ) {
 			$this->trash( $bean );
 		}
 	}
 
-	function _useWriterCache( $yesNo )
+	function useWriterCache( $yesNo )
 	{
 		$this->getWriter()->setUseCache( $yesNo );
 	}
 
-	function _dispenseLabels( $type, $labels )
+	function dispenseLabels( $type, $labels )
 	{
 		return $this->labelMaker->dispenseLabels( $type, $labels );
 	}
 
-	function _enum( $enum )
+	function enum( $enum )
 	{
 		return $this->labelMaker->enum( $enum );
 	}
 
-	function _gatherLabels( $beans )
+	function gatherLabels( $beans )
 	{
 		return $this->labelMaker->gatherLabels( $beans );
 	}
 
-	function _close()
+	function close()
 	{
 		if ( isset( $this->adapter ) ) {
 			$this->adapter->close();
 		}
 	}
 
-	function _isoDate( $time = NULL )
+	function isoDate( $time = NULL )
 	{
 		if ( !$time ) {
 			$time = time();
@@ -545,7 +553,7 @@ class Database{
 		return @date( 'Y-m-d', $time );
 	}
 
-	function _isoDateTime( $time = NULL )
+	function isoDateTime( $time = NULL )
 	{
 		if ( !$time ) $time = time();
 
@@ -567,30 +575,30 @@ class Database{
 		$this->redbean = $redbean;
 	}
 
-	function _getDatabaseAdapter()
+	function getDatabaseAdapter()
 	{
 		return $this->adapter;
 	}
 
-	function _getDuplicationManager()
+	function getDuplicationManager()
 	{
 		return $this->duplicationManager;
 	}
 
-	function _getWriter()
+	function getWriter()
 	{
 		return $this->writer;
 	}
 
-	function _getRedBean(){
+	function getRedBean(){
 		return $this->redbean;
 	}
 
-	function _getToolBox(){
+	function getToolBox(){
 		return $this->toolbox;
 	}
 
-	function _getExtractedToolbox(){
+	function getExtractedToolbox(){
 		return [
 			$this->redbean,
 			$this->adapter,
@@ -599,12 +607,12 @@ class Database{
 		];
 	}
 
-	function _renameAssociation( $from, $to = NULL )
+	function renameAssociation( $from, $to = NULL )
 	{
 		AQueryWriter::renameAssociation( $from, $to );
 	}
 
-	function _beansToArray( $beans )
+	function beansToArray( $beans )
 	{
 		$list = [];
 		foreach( $beans as $bean ) {
@@ -612,12 +620,12 @@ class Database{
 		}
 		return $list;
 	}
-	function _dup( $bean, $trail = [], $pid = FALSE, $filters = [] )
+	function dup( $bean, $trail = [], $pid = FALSE, $filters = [] )
 	{
 		$this->duplicationManager->setFilters( $filters );
 		return $this->duplicationManager->dup( $bean, $trail, $pid );
 	}
-	function _dump( $data )
+	function dump( $data )
 	{
 		$array = [];
 
@@ -639,16 +647,16 @@ class Database{
 		return $array;
 	}
 
-	function _bindFunc( $mode, $field, $function ) {
+	function bindFunc( $mode, $field, $function ) {
 		$this->redbean->bindFunc( $mode, $field, $function );
 	}
 	
 	
 	/* Added APIs */
-	function _create($type,$values=[]){
+	function create($type,$values=[]){
 		return $this->newOne($type,$this->_uniqSetter($type,$values))->box();
 	}
-	function _read($mix){
+	function read($mix){
 		if(func_num_args()>1){
 			$type = $mix;
 			$id = func_get_arg(1);
@@ -657,13 +665,13 @@ class Database{
 			list($type,$id) = explode(':',$mix);
 		return $this->load($type,$id)->box();
 	}
-	function _update($mix,$values){
+	function update($mix,$values){
 		$model = $this->read($mix);
 		foreach($values as $k=>$v)
 			$model->$k = $v;
 		return $model;
 	}
-	function _removeTable($type){
+	function removeTable($type){
 		$type = $this->writer->adaptCase($type);
 		$this->exec('DELETE FROM '.$type);
 		$tables = $this->writer->getTables();
@@ -685,23 +693,23 @@ class Database{
 		$this->dropTable($type);
 		
 	}
-	function _delete($mix){
+	function delete($mix){
 		return $this->trash($this->read($mix));
 	}
-	function _dropTable($type){
+	function dropTable($type){
 		return $this->getWriter()->drop($this->writer->adaptCase($type));
 	}
-	function _execMulti($sql,$bindings=[]){
+	function execMulti($sql,$bindings=[]){
 		$pdo = $this->getDatabaseAdapter()->getDatabase()->getPDO();
 		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
 		$r = $this->exec($sql, $bindings);
 		$pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 		return $r;
 	}
-	function _execFile($file,$bindings=[]){
+	function execFile($file,$bindings=[]){
 		return $this->execMulti(file_get_contents($file),$bindings);
 	}
-	function _getModelClass($type){
+	function getModelClass($type){
 		$type = ucfirst($this->writer->reverseCase($type));
 		if($this->name==''){
 			$name = '';
@@ -721,18 +729,18 @@ class Database{
 		}
 		return 'Database\\Model';
 	}
-	function _getClassModel($c){
+	function getClassModel($c){
 		return lcfirst(ltrim(substr(ltrim($c,'\\'),11),'_'));
 	}
-	function _getTableColumnDef($t,$col,$key=null){
+	function getTableColumnDef($t,$col,$key=null){
 		$c = $this->getModelClass($t);
 		return $c::getColumnDef($col,$key);
 	}
-	function _loadRow($type,$sql,$binds=[]){
+	function loadRow($type,$sql,$binds=[]){
 		$b = $this->convertToBeans($type,[$this->getRow($type,$sql,$binds)]);
 		return $b[0];
 	}
-	function _findOrNewOne($type,$params=[],$insert=null){
+	function findOrNewOne($type,$params=[],$insert=null){
 		$query = [];
 		$bind = [];
 		$params = $this->_uniqSetter($type,$params);
@@ -756,7 +764,7 @@ class Database{
 		}
 		return $bean->box();
 	}
-	function _newOne($type,$params=[]){
+	function newOne($type,$params=[]){
 		$bean = $this->dispense($type);
 		if(is_string($params))
 			$params = ['label'=>$params];
@@ -764,11 +772,11 @@ class Database{
 			$bean->$k = $v;
 		return $bean;
 	}
-	function _storeMultiArray( array $a){
+	function storeMultiArray( array $a){
 		foreach($a as $v)
 			$this->storeArray($v);
 	}
-	function _storeArray( array $a){
+	function storeArray( array $a){
 		$dataO = $this->dispense($a['type']);
 		foreach($a as $k=>$v){
 			if($k=='type')
@@ -797,7 +805,7 @@ class Database{
 		}
 		return $this->store($dataO);
 	}
-	function _loadUniq($table,$id,$column=null){
+	function loadUniq($table,$id,$column=null){
 		if(is_array($table)){
 			foreach($table as $tb)
 				if($r = $this->loadUniq($tb,$id,$column))
@@ -819,7 +827,7 @@ class Database{
 		}
 	}
 	
-	function _load($type,$id,$column=null){
+	function load($type,$id,$column=null){
 		if(is_array($type)){
 			foreach($type as $tb)
 				if($r = $this->load($tb,$id,$column))
@@ -832,27 +840,27 @@ class Database{
 		}
 	}
 
-	function _find( $type, $sql = NULL, $bindings = [] )
+	function find( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->find( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
-	function _findAll( $type, $sql = NULL, $bindings = [] )
+	function findAll( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->find( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
-	function _findAndExport( $type, $sql = NULL, $bindings = [] )
+	function findAndExport( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->findAndExport( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
-	function _findOne( $type, $sql = NULL, $bindings = [] )
+	function findOne( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->findOne( $this->writer->adaptCase($type), $sql, $bindings );
 	}
 
-	function _findLast( $type, $sql = NULL, $bindings = [] )
+	function findLast( $type, $sql = NULL, $bindings = [] )
 	{
 		return $this->finder->findLast( $this->writer->adaptCase($type), $sql, $bindings );
 	}
@@ -867,15 +875,15 @@ class Database{
 	 *
 	 * @return BeanCollection
 	 */
-	public function _findCollection( $type, $sql = NULL, $bindings = array() )
+	public function findCollection( $type, $sql = NULL, $bindings = array() )
 	{
 		return $this->finder->findCollection( $type, $sql, $bindings );
 	}
 	
-	function _safeTable($t){
+	function safeTable($t){
 		return $this->writer->safeTable($t);
 	}
-	function _safeColumn($t){
+	function safeColumn($t){
 		return $this->writer->safeColumn($t);
 	}
 	
@@ -886,7 +894,7 @@ class Database{
 	*
 	* @return void
 	*/
-	public function _aliases( $list ){
+	public function aliases( $list ){
 		OODBBean::aliases( $list );
 	}
 	
@@ -903,7 +911,7 @@ class Database{
 	 *
 	 * @return OODBBean
 	 */
-	public function _findOrCreate( $type, $like = array() )
+	public function findOrCreate( $type, $like = array() )
 	{
 		return $this->finder->findOrCreate( $type, $like );
 	}
@@ -917,7 +925,7 @@ class Database{
 	 *
 	 * @return array
 	 */
-	public function _findLike( $type, $like = array(), $sql = '' )
+	public function findLike( $type, $like = array(), $sql = '' )
 	{
 		return $this->finder->findLike( $type, $like, $sql );
 	}
@@ -933,7 +941,7 @@ class Database{
 	 *
 	 * @return void
 	 */
-	public function _startLogging()
+	public function startLogging()
 	{
 		$this->debug( TRUE, RDefault::C_LOGGER_ARRAY );
 	}
@@ -943,7 +951,7 @@ class Database{
 	 *
 	 * @return void
 	 */
-	public function _stopLogging()
+	public function stopLogging()
 	{
 		$this->debug( FALSE );
 	}
@@ -953,7 +961,7 @@ class Database{
 	 *
 	 * @return array
 	 */
-	public function _getLogs()
+	public function getLogs()
 	{
 		return $this->getLogger()->getLogs();
 	}
@@ -963,7 +971,7 @@ class Database{
 	 *
 	 * @return integer
 	 */
-	public function _resetQueryCount()
+	public function resetQueryCount()
 	{
 		$this->adapter->getDatabase()->resetCounter();
 	}
@@ -973,7 +981,7 @@ class Database{
 	 *
 	 * @return integer
 	 */
-	public function _getQueryCount()
+	public function getQueryCount()
 	{
 		return $this->adapter->getDatabase()->getQueryCount();
 	}
@@ -984,7 +992,7 @@ class Database{
 	 *
 	 * @return Logger
 	 */
-	public function _getLogger()
+	public function getLogger()
 	{
 		return $this->adapter->getDatabase()->getLogger();
 	}
@@ -992,7 +1000,7 @@ class Database{
 	/**
 	 * Turns on the fancy debugger.
 	 */
-	public function _fancyDebug( $toggle )
+	public function fancyDebug( $toggle )
 	{
 		$this->debug( $toggle, 2 );
 	}
@@ -1004,7 +1012,7 @@ class Database{
 	*
 	* @return array
 	*/
-	public function _flat( $array, $result = array() )
+	public function flat( $array, $result = array() )
 	{
 		foreach( $array as $value ) {
 			if ( is_array( $value ) ) $result = $this->flat( $value, $result );
@@ -1020,7 +1028,7 @@ class Database{
 	 *
 	 * @return string
 	 */
-	public function _genSlots( $array, $template = NULL )
+	public function genSlots( $array, $template = NULL )
 	{
 		$str = count( $array ) ? implode( ',', array_fill( 0, count( $array ), '?' ) ) : '';
 		return ( is_null( $template ) ||  $str === '' ) ? $str : sprintf( $template, $str );
@@ -1037,7 +1045,7 @@ class Database{
 	 *
 	 * @return void
 	 */
-	public function _setAutoResolve( $automatic = TRUE )
+	public function setAutoResolve( $automatic = TRUE )
 	{
 		OODBBean::setAutoResolve( (boolean) $automatic );
 	}
@@ -1048,13 +1056,13 @@ class Database{
 	 *
 	 * @return mixed
 	 */
-	public function _getInsertID()
+	public function getInsertID()
 	{
 		return $this->adapter->getInsertID();
 	}
 	
 	
-	function _uniqSetter($type,$values){
+	function uniqSetter($type,$values){
 		if(is_string($values)){
 			$c = $this->getModelClass($type);
 			$values = [$c::getLoadUniq()=>$values];
@@ -1062,7 +1070,7 @@ class Database{
 		return $values;
 	}
 
-	function _setUniqCheck($b=null){
+	function setUniqCheck($b=null){
 		Model::_checkUniq($b);
 	}
 	
@@ -1159,7 +1167,7 @@ class Database{
 		}
 		self::$plugins[$pluginName] = $callable;
 	}
-	static function ___callStatic( $pluginName, $params ){
+	static function __callStatic( $pluginName, $params ){
 		if ( !ctype_alnum( $pluginName) ) {
 			throw new RedException( 'Plugin name may only contain alphanumeric characters.' );
 		}

@@ -1,8 +1,6 @@
 <?php
 namespace Database\RedBeanPHP;
-use ObjexLoader\MutatorCallTrait;
 class DatabaseGroup{
-	use MutatorCallTrait;
 	protected $databases = [];
 	protected $name = '';
 	protected $prefix = '';
@@ -15,7 +13,7 @@ class DatabaseGroup{
 	}
 	function getDb($key=0){
 		if(!isset($this->databases[$key])){
-			$this->databases[$key] = $this->_Database($this->prefix.$key);
+			$this->databases[$key] = new Database($this->prefix.$key);
 		}
 		return $this->databases[$key];
 	}

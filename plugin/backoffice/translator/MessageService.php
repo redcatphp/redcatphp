@@ -9,7 +9,7 @@ class MessageService {
 	var $potfile = 'langs/messages.pot';
 	private $db;
 	function __construct() {
-		$this->db = R::getStatic('translation');
+		$this->db = R::getDb('translation');
 		if(!$this->db->exists()){
 			foreach(explode(';',file_get_contents(__DIR__.'/install.sql')) as $l)
 				$this->db->execMulti($l);
