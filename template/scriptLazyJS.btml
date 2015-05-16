@@ -1,14 +1,14 @@
 <script type="text/javascript" src="js/js-is.pack.js"></script>
 <script type="text/javascript">
-	<?if($this->Dev_Level()->CSS):?>
+	<?if($this->devLevel()&Templix\Templix::DEV_CSS):?>
 		$css().dev=true;
 		//$js('window-size-bookmarklet');
 	<?endif;?>
-	<?if($this->Dev_Level()->JS):?>
+	<?if($this->devLevel()&Templix\Templix::DEV_JS):?>
 		$js().dev=true;
 	<?endif;?>
 	$js('script');
-	<?if($this->Dev_Level()->CONTROL):?>
+	<?if($this->devLevel()&Templix\Templix::DEV_CONTROL):?>
 		if(console){
 			console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$this->Dev_Chrono()->requestTime()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');
 		}
