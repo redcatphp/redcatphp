@@ -51,7 +51,7 @@ class Templix{
 				return;
 			$Toolbox = new Toolbox();
 			$Toolbox->JsIs($Tml);
-			if(!$this->Dev_Level()->VIEW)
+			if(!$Tml->devLevel()&Templix_Templix::DEV_TEMPLATE)
 				$Toolbox->autoMIN($Tml);
 		});
 		$this->display($path.'.tml');

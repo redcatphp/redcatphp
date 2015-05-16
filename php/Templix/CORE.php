@@ -498,7 +498,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return $this->Template&&$this->Template->devLevel()&Templix::DEV_TEMPLATE&&$this->nodeName&&!$this->hiddenWrap;
+		return $this->devLevel()&Templix::DEV_TEMPLATE&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)
@@ -838,6 +838,9 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 				return $c;
 		}
 		return __NAMESPACE__.'\\Tml';
+	}
+	function devLevel(){
+		return $this->Template?call_user_func_array([$this->Template,__FUNCTION__],func_get_args()):'';
 	}
 	function throwException($msg){
 		if($this->Template)

@@ -20,12 +20,18 @@ class Translator {
 	protected $default_domain = 'messages';
 	protected $LC_CATEGORIES = ['LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL'];
 	protected $EMULATEGETTEXT = 1;
+	private $dev = 1;
 	static function initialize(){
 		exec('locale -a',self::$systemLocales);
 	}
 	function __construct($locale=null,$domain=null){
 		if($locale)
 			$this->set($locale,$domain);
+	}
+	function dev(){
+		if(func_num_args())
+			$this->dev = func_get_arg(0);
+		return $this->dev;
 	}
 	function _set($locale=null,$domain=null){
 		if(!isset($domain))
@@ -40,7 +46,7 @@ class Translator {
 		$this->originLocale = $locale;
 		$this->locale = $locale;
 		$this->domain = $domain;
-		if($this->Dev_Level->I18N)
+		if($this->dev)
 			$this->realDomain = $this->getLastMoFile();
 		else
 			$this->realDomain = $this->domain;

@@ -1,8 +1,6 @@
 <?php namespace KungFu\TemplixPlugin;
-use ObjexLoader\MutatorMagicTrait;
-class Toolbox{
-	use MutatorMagicTrait;
-	
+use Templix\Templix;
+class Toolbox{	
 	protected $baseHref;
 	protected $suffixHref;
 	protected $server;
@@ -38,12 +36,12 @@ class Toolbox{
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
 	}
 	function autoMIN($Tml){
-		if(!$this->Dev_Level->CSS){
+		if(!$Tml->devLevel()&Templix::DEV_CSS){
 			foreach($Tml('link[href][rel=stylesheet],link[href][type="text/css"]') as $l)
 				if(strpos($l,'://')===false)
 					$l->href = (strpos($l->href,'/')!==false?dirname($l->href).'/':'').pathinfo($l->href,PATHINFO_FILENAME).'.min.'.pathinfo($l->href,PATHINFO_EXTENSION);
 		}
-		if(!$this->Dev_Level->JS){
+		if(!$Tml->devLevel()&Templix::DEV_JS){
 			foreach($Tml('script[src]') as $s)
 				if(strpos($s->src,'://')===false&&substr($s->src,-8)!='.pack.js')
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
@@ -60,12 +58,12 @@ class Toolbox{
 		}
 		if(substr($url,-1)!='/')
 			$url .= '/';
-		$Tml('script[src],img[src],link[href]')->each(function($el)use($url){
+		$Tml('script[src],img[src],link[href]')->each(function($el)use($url,$Tml){
 			if(
-				($el->nodeName=='link'&&$el->type=='text/css'&&$this->Dev_Level->CSS)
-				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$this->Dev_Level->IMG)
-				|| ($el->nodeName=='img'&&$this->Dev_Level->IMG)
-				|| ($el->nodeName=='script'&&$this->Dev_Level->JS)
+				($el->nodeName=='link'&&$el->type=='text/css'&&$Tml->devLevel()&Templix::DEV_CSS)
+				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$Tml->devLevel()&Templix::DEV_IMG)
+				|| ($el->nodeName=='img'&&$Tml->devLevel()&Templix::DEV_IMG)
+				|| ($el->nodeName=='script'&&$Tml->devLevel()&Templix::DEV_JS)
 			)
 				return;
 			$k = $el->src?'src':'href';

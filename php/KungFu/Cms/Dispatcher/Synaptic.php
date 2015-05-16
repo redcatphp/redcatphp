@@ -1,14 +1,18 @@
 <?php namespace KungFu\Cms\Dispatcher;
 use Unit\Dispatcher;
-use ObjexLoader\MutatorMagicTrait;
+use Stylish\Server as Stylish_Server;
 use KungFu\Tools\JSMin;
 class Synaptic extends Dispatcher{
-	use MutatorMagicTrait;
-	protected $pathFS;
 	
+	const DEV_JS = 2;
+	const DEV_CSS = 4;
+	
+	protected $pathFS;
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	protected $dirs = [''];
+	
+	private $devLevel = 0;
 	
 	function __construct($pathFS=''){
 		$this->pathFS = rtrim($pathFS,'/');
@@ -118,7 +122,7 @@ class Synaptic extends Dispatcher{
 			return false;
 		set_time_limit(0);
 		$c = JSMin::minify(file_get_contents($f));
-		if(!$this->Dev_Level->JS){
+		if(!$this->devLevel&self::DEV_JS){
 			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
@@ -139,7 +143,7 @@ class Synaptic extends Dispatcher{
 				else
 					$c = file_get_contents($f);
 				$c = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    ',"\ r \ n", "\ r", "\ n", "\ t"],'',preg_replace( '! / \ *[^*]* \ *+([^/][^*]* \ *+)*/!','',preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!','',$c)));
-				if(!$this->Dev_Level->CSS){
+				if(!$this->devLevel&self::DEV_CSS){
 					$dir = dirname($file);
 					$min = $dir.'/'.pathinfo($file,PATHINFO_FILENAME).'.min.css';
 					if(!is_dir($dir))
@@ -163,7 +167,8 @@ class Synaptic extends Dispatcher{
 			if(is_dir($dir=$d.dirname($path)))
 				$from[] = $dir;
 		}
-		$this->Stylish_Server->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
+		$scss = new Stylish_Server();
+		$scss->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
 	}
 	function fileCache($output){
 		$mtime = filemtime($output);
@@ -182,5 +187,14 @@ class Synaptic extends Dispatcher{
 	function fileEtag($file){
 		$s = stat($file);
 		return sprintf('%x-%s', $s['size'], base_convert(str_pad($s['mtime'], 16, "0"),10,16));
+	}
+	function devLevel(){
+		if(func_num_args()){
+			$this->devLevel = 0;
+			foreach(func_get_args() as $l){
+				$this->devLevel = $this->devLevel|$l;
+			}
+		}
+		return $this->devLevel;
 	}
 }

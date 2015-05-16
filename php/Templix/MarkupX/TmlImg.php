@@ -11,7 +11,7 @@ class TmlImg extends MarkupHtml5_TmlImg{
 					$this->height = $size[1];
 				}
 			}
-			if($this->Template&&$this->Template->devLevel()&Templix::DEV_IMG&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
+			if($this->devLevel()&Templix::DEV_IMG&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
 				if(strpos($this->src,'?')===false)
 					$this->src .= '?';
 				else
