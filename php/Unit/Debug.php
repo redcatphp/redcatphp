@@ -1,4 +1,4 @@
-<?php namespace Dev;
+<?php namespace Unit;
 class Debug{
 	private static $errorType;
 	private $errorHandler;
