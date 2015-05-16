@@ -1,5 +1,5 @@
 <?php namespace Templix;
-use Templix\Template;
+use Templix\Templix;
 use Templix\Tml;
 use Templix\CssSelector;
 use Templix\MarkupX\TmlApply;
@@ -498,7 +498,7 @@ class CORE extends PARSER implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return $this->Dev_Level()->VIEW&&$this->nodeName&&!$this->hiddenWrap;
+		return $this->Template&&$this->Template->devLevel()&Templix::DEV_TEMPLATE&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)

@@ -2,6 +2,12 @@
 use ObjexLoader\MutatorCallTrait;
 use DomainException;
 class Templix {
+	
+	const DEV_TEMPLATE = 2;
+	const DEV_JS = 4;
+	const DEV_CSS = 8;
+	const DEV_IMG = 16;
+	
 	use MutatorCallTrait;
 	var $forceCompile;
 	var $path;
@@ -20,6 +26,7 @@ class Templix {
 	protected $dirCompileSuffix = '';
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
+	private $devLevel = 0;
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
@@ -152,7 +159,7 @@ class Templix {
 	}
 	function evalue(){
 		$compileFile = $this->dirCompile.$this->dirCompileSuffix.$this->find().'.svar';
-		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||$this->forceCompile||!is_file($compileFile))
+		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||$this->forceCompile||!is_file($compileFile))
 			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
 		else
 			$ev = unserialize(file_get_contents($compileFile,LOCK_EX));
@@ -162,7 +169,7 @@ class Templix {
 	function devRegeneration(){
 		$exist = is_file($this->devCompileFile);
 		if($exist){
-			if(!$this->Dev_Level()->VIEW){
+			if(!$this->devLevel&self::DEV_TEMPLATE){
 				unlink($this->devCompileFile);
 				self::rmdir($this->dirCompile.$this->dirCompileSuffix);
 				self::rmdir($this->dirCache.$this->dirCompileSuffix);
@@ -170,13 +177,13 @@ class Templix {
 			}
 		}
 		else{
-			if($this->Dev_Level()->VIEW){
+			if($this->devLevel&self::DEV_TEMPLATE){
 				@mkdir(dirname($this->devCompileFile),0777,true);
 				file_put_contents($this->devCompileFile,'');
 			}
-			if($this->Dev_Level()->CSS)
+			if($this->devLevel&self::DEV_CSS)
 				$this->cleanRegisterAuto('css');
-			if($this->Dev_Level()->JS)
+			if($this->devLevel&self::DEV_JS)
 				$this->cleanRegisterAuto('js');
 		}
 	}
@@ -191,7 +198,7 @@ class Templix {
 		if(!empty($vars))
 			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&$this->Dev_Level()->VIEW)||!is_file($this->dirCompile.$this->dirCompileSuffix.$this->find()))
+		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||!is_file($this->dirCompile.$this->dirCompileSuffix.$this->find()))
 			$this->writeCompile();
 		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$this->find(),$this->vars);
 		return $this;
@@ -252,13 +259,13 @@ class Templix {
 	}
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file;
-		if(!$this->Dev_Level()->VIEW)
+		if(!$this->devLevel&self::DEV_TEMPLATE)
 			$str = Minify::HTML($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file.'.php';
-		if(!$this->Dev_Level()->VIEW)
+		if(!$this->devLevel&self::DEV_TEMPLATE)
 			$str = Minify::PHP($str);
 		return $this->compileStore($file,$str);
 	}
@@ -275,7 +282,7 @@ class Templix {
 	}
 	protected function compileStore($file,$str){
 		@mkdir(dirname($file),0777,true);
-		if(!$this->Dev_Level()->VIEW)
+		if(!$this->devLevel&self::DEV_TEMPLATE)
 			$str = Minify::PHP($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}
@@ -375,5 +382,14 @@ class Templix {
 			}
 		}
 		return is_dir($dir);
+	}
+	function devLevel(){
+		if(func_num_args()){
+			$this->devLevel = 0;
+			foreach(func_get_args() as $l){
+				$this->devLevel = $this->devLevel|$l;
+			}
+		}
+		return $this->devLevel;
 	}
 }
