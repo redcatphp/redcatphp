@@ -1,5 +1,5 @@
 <?php namespace Templix;
-abstract class CALL_APL extends Tml{
+abstract class CallerMarkup extends Tml{
 	protected $hiddenWrap = true;
 	protected $callback;
 	function callback(){

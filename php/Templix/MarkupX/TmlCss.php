@@ -1,6 +1,6 @@
 <?php namespace Templix\MarkupX; 
-use Templix\CALL_APL;
-class TmlCss extends \Templix\CALL_APL{
+use Templix\CallerMarkup;
+class TmlCss extends \Templix\CallerMarkup{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	protected $callback = 'addCssLink';

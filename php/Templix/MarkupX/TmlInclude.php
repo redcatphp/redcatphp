@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX; 
-class TmlInclude extends \Templix\CALL_SUB{
+class TmlInclude extends \Templix\Tml{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	function load(){
@@ -44,5 +44,18 @@ class TmlInclude extends \Templix\CALL_SUB{
 			$i++;
 		}
 		return substr($relpath, 0, -1);
+	}
+	
+	function extendLoad($extend = null){
+		if($extend || ($extend = $this->closest('extend')))
+			foreach($this->childNodes as $node)
+				if(method_exists($node,'extendLoad'))
+					$node->extendLoad($extend);
+	}
+	function applyLoad($apply = null,$vars = null){
+		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
+			foreach($this->childNodes as $node)
+				if(method_exists($node,'applyLoad'))
+					$node->applyLoad($apply);
 	}
 }

@@ -404,7 +404,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
     }
     
 	function match($selector){
-		$ABS = new ABSTRACTION($this->nodeName,$this->attributes);
+		$ABS = new Abstraction($this->nodeName,$this->attributes);
 		$c = count($ABS->selector($selector));
 		unset($ABS);
 		return $c;

@@ -1,3 +1,3 @@
 <?php
 namespace Templix\MarkupX;
-class TmlAfter extends \Templix\CALL_APL {}
+class TmlAfter extends \Templix\CallerMarkup {}

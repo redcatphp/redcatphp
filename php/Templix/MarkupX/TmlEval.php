@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX;
-class TmlEval extends \Templix\CALL_APL{
+class TmlEval extends \Templix\CallerMarkup{
 	function load(){
 		$vars = isset($this->Template)?$this->Template->getVars():null;
 		$this->replaceWith($this->evalue($this,$vars));

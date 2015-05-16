@@ -1,5 +1,5 @@
 <?php namespace Templix; 
-class ABSTRACTION extends Tml{
+class Abstraction extends Tml{
 	protected $hiddenWrap = true;
 	function __construct($nodeName,$attributes){
 		$this->nodeName = $nodeName;

@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX;
-class TmlAttrappend extends \Templix\CALL_APL {
+class TmlAttrappend extends \Templix\CallerMarkup {
 	protected $selfClosed = true;
 	function extendLoad(){
 		if($extend = $this->closest('extend'))

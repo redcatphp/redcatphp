@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX; 
-class TmlJs extends \Templix\CALL_APL{
+class TmlJs extends \Templix\CallerMarkup{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	protected $callback = 'addJsScript';

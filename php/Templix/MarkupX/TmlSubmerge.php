@@ -1,3 +1,3 @@
 <?php
 namespace Templix\MarkupX;
-class TmlSubmerge extends \Templix\CALL_APL {}
+class TmlSubmerge extends \Templix\CallerMarkup {}
