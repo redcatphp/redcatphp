@@ -1,9 +1,7 @@
 <?php namespace Authentic;
 use Authentic\Auth;
-use InterNative\Translator;
-require_once __DIR__.'/../InterNative/Translator.inc.php';
 class AuthServer{
-	protected $messages = [];
+	protected $messages;
 	protected $lastResult;
 	protected $defaultLogoutKey = 'auth-server-logout';
 	protected $Auth;
@@ -22,9 +20,9 @@ class AuthServer{
 			$server = &$_SERVER;
 		$this->server = $server;
 	}
-	function getResultMessage($widget=false){
+	function getResultMessage($lg=0,$widget=false){
 		if($this->lastResult&&!is_bool($this->lastResult)){
-			return $this->getMessage($this->lastResult,$widget);
+			return $this->getMessage($this->lastResult,$lg,$widget);
 		}
 	}
 	function getResult(){
@@ -283,59 +281,58 @@ class AuthServer{
 	}
 	
 	
-	function getMessage($code,$widget=false){
-		$lg = Translator::getLangCode();
-		if(!isset($this->messages[$lg])){
-			$this->messages[$lg] = [
-				Auth::ERROR_USER_BLOCKED => __("Too many failed attempts, try again in %d seconds",null,'auth'),
-				Auth::ERROR_USER_BLOCKED_2 => __("Too many failed attempts, try again in %d minutes and %d seconds",null,'auth'),
-				Auth::ERROR_USER_BLOCKED_3 => __("Too many failed attempts, try again in :",null,'auth'),
-				Auth::ERROR_LOGIN_SHORT => __("Login is too short",null,'auth'),
-				Auth::ERROR_LOGIN_LONG => __("Login is too long",null,'auth'),
-				Auth::ERROR_LOGIN_INCORRECT => __("Login is incorrect",null,'auth'),
-				Auth::ERROR_LOGIN_INVALID => __("Login is invalid",null,'auth'),
-				Auth::ERROR_NAME_INVALID => __("Name is invalid",null,'auth'),
-				Auth::ERROR_PASSWORD_SHORT => __("Password is too short",null,'auth'),
-				Auth::ERROR_PASSWORD_LONG => __("Password is too long",null,'auth'),
-				Auth::ERROR_PASSWORD_INVALID => __("Password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
-				Auth::ERROR_PASSWORD_NOMATCH => __("Passwords do not match",null,'auth'),
-				Auth::ERROR_PASSWORD_INCORRECT => __("Current password is incorrect",null,'auth'),
-				Auth::ERROR_PASSWORD_NOTVALID => __("Password is invalid",null,'auth'),
-				Auth::ERROR_NEWPASSWORD_SHORT => __("New password is too short",null,'auth'),
-				Auth::ERROR_NEWPASSWORD_LONG => __("New password is too long",null,'auth'),
-				Auth::ERROR_NEWPASSWORD_INVALID => __("New password must contain at least one uppercase and lowercase character, and at least one digit",null,'auth'),
-				Auth::ERROR_NEWPASSWORD_NOMATCH => __("New passwords do not match",null,'auth'),
-				Auth::ERROR_LOGIN_PASSWORD_INVALID => __("Login / Password are invalid",null,'auth'),
-				Auth::ERROR_LOGIN_PASSWORD_INCORRECT => __("Login / Password are incorrect",null,'auth'),
-				Auth::ERROR_EMAIL_INVALID => __("Email address is invalid",null,'auth'),
-				Auth::ERROR_EMAIL_INCORRECT => __("Email address is incorrect",null,'auth'),
-				Auth::ERROR_NEWEMAIL_MATCH => __("New email matches previous email",null,'auth'),
-				Auth::ERROR_ACCOUNT_INACTIVE => __("Account has not yet been activated",null,'auth'),
-				Auth::ERROR_SYSTEM_ERROR => __("A system error has been encountered. Please try again",null,'auth'),
-				Auth::ERROR_LOGIN_TAKEN => __("The login is already taken",null,'auth'),
-				Auth::ERROR_EMAIL_TAKEN => __("The email address is already in use",null,'auth'),
-				Auth::ERROR_AUTHENTICATION_REQUIRED => __("Authentication required",null,'auth'),
-				Auth::ERROR_ALREADY_AUTHENTICATED => __("You are already authenticated",null,'auth'),
-				Auth::ERROR_RESETKEY_INVALID => __("Reset key is invalid",null,'auth'),
-				Auth::ERROR_RESETKEY_INCORRECT => __("Reset key is incorrect",null,'auth'),
-				Auth::ERROR_RESETKEY_EXPIRED => __("Reset key has expired",null,'auth'),
-				Auth::ERROR_ACTIVEKEY_INVALID => __("Activation key is invalid",null,'auth'),
-				Auth::ERROR_ACTIVEKEY_INCORRECT => __("Activation key is incorrect",null,'auth'),
-				Auth::ERROR_ACTIVEKEY_EXPIRED => __("Activation key has expired",null,'auth'),
-				Auth::ERROR_RESET_EXISTS => __("A reset request already exists",null,'auth'),
-				Auth::ERROR_ALREADY_ACTIVATED => __("Account is already activated",null,'auth'),
-				Auth::ERROR_ACTIVATION_EXISTS => __("An activation email has already been sent",null,'auth'),
+	function getMessage($code,$lg=0,$widget=false){
+		if(!isset($this->messages)){
+			$this->messages = [
+				Auth::ERROR_USER_BLOCKED => "Too many failed attempts, try again in %d seconds",
+				Auth::ERROR_USER_BLOCKED_2 => "Too many failed attempts, try again in %d minutes and %d seconds",
+				Auth::ERROR_USER_BLOCKED_3 => "Too many failed attempts, try again in :",
+				Auth::ERROR_LOGIN_SHORT => "Login is too short",
+				Auth::ERROR_LOGIN_LONG => "Login is too long",
+				Auth::ERROR_LOGIN_INCORRECT => "Login is incorrect",
+				Auth::ERROR_LOGIN_INVALID => "Login is invalid",
+				Auth::ERROR_NAME_INVALID => "Name is invalid",
+				Auth::ERROR_PASSWORD_SHORT => "Password is too short",
+				Auth::ERROR_PASSWORD_LONG => "Password is too long",
+				Auth::ERROR_PASSWORD_INVALID => "Password must contain at least one uppercase and lowercase character, and at least one digit",
+				Auth::ERROR_PASSWORD_NOMATCH => "Passwords do not match",
+				Auth::ERROR_PASSWORD_INCORRECT => "Current password is incorrect",
+				Auth::ERROR_PASSWORD_NOTVALID => "Password is invalid",
+				Auth::ERROR_NEWPASSWORD_SHORT => "New password is too short",
+				Auth::ERROR_NEWPASSWORD_LONG => "New password is too long",
+				Auth::ERROR_NEWPASSWORD_INVALID => "New password must contain at least one uppercase and lowercase character, and at least one digit",
+				Auth::ERROR_NEWPASSWORD_NOMATCH => "New passwords do not match",
+				Auth::ERROR_LOGIN_PASSWORD_INVALID => "Login / Password are invalid",
+				Auth::ERROR_LOGIN_PASSWORD_INCORRECT => "Login / Password are incorrect",
+				Auth::ERROR_EMAIL_INVALID => "Email address is invalid",
+				Auth::ERROR_EMAIL_INCORRECT => "Email address is incorrect",
+				Auth::ERROR_NEWEMAIL_MATCH => "New email matches previous email",
+				Auth::ERROR_ACCOUNT_INACTIVE => "Account has not yet been activated",
+				Auth::ERROR_SYSTEM_ERROR => "A system error has been encountered. Please try again",
+				Auth::ERROR_LOGIN_TAKEN => "The login is already taken",
+				Auth::ERROR_EMAIL_TAKEN => "The email address is already in use",
+				Auth::ERROR_AUTHENTICATION_REQUIRED => "Authentication required",
+				Auth::ERROR_ALREADY_AUTHENTICATED => "You are already authenticated",
+				Auth::ERROR_RESETKEY_INVALID => "Reset key is invalid",
+				Auth::ERROR_RESETKEY_INCORRECT => "Reset key is incorrect",
+				Auth::ERROR_RESETKEY_EXPIRED => "Reset key has expired",
+				Auth::ERROR_ACTIVEKEY_INVALID => "Activation key is invalid",
+				Auth::ERROR_ACTIVEKEY_INCORRECT => "Activation key is incorrect",
+				Auth::ERROR_ACTIVEKEY_EXPIRED => "Activation key has expired",
+				Auth::ERROR_RESET_EXISTS => "A reset request already exists",
+				Auth::ERROR_ALREADY_ACTIVATED => "Account is already activated",
+				Auth::ERROR_ACTIVATION_EXISTS => "An activation email has already been sent",
 				
-				Auth::OK_PASSWORD_CHANGED => __("Password changed successfully",null,'auth'),
-				Auth::OK_EMAIL_CHANGED => __("Email address changed successfully",null,'auth'),
-				Auth::OK_ACCOUNT_ACTIVATED => __("Account has been activated. You can now log in",null,'auth'),
-				Auth::OK_ACCOUNT_DELETED => __("Account has been deleted",null,'auth'),
-				Auth::OK_LOGGED_IN => __("You are now logged in",null,'auth'),
-				Auth::OK_LOGGED_OUT => __("You are now logged out",null,'auth'),
-				Auth::OK_REGISTER_SUCCESS => __("Account created. Activation email sent to email",null,'auth'),
-				Auth::OK_PASSWORD_RESET => __("Password reset successfully",null,'auth'),
-				Auth::OK_RESET_REQUESTED => __("Password reset request sent to email address",null,'auth'),
-				Auth::OK_ACTIVATION_SENT => __("Activation email has been sent",null,'auth'),
+				Auth::OK_PASSWORD_CHANGED => "Password changed successfully",
+				Auth::OK_EMAIL_CHANGED => "Email address changed successfully",
+				Auth::OK_ACCOUNT_ACTIVATED => "Account has been activated. You can now log in",
+				Auth::OK_ACCOUNT_DELETED => "Account has been deleted",
+				Auth::OK_LOGGED_IN => "You are now logged in",
+				Auth::OK_LOGGED_OUT => "You are now logged out",
+				Auth::OK_REGISTER_SUCCESS => "Account created. Activation email sent to email",
+				Auth::OK_PASSWORD_RESET => "Password reset successfully",
+				Auth::OK_RESET_REQUESTED => "Password reset request sent to email address",
+				Auth::OK_ACTIVATION_SENT => "Activation email has been sent",
 			];
 		}
 		if(is_array($code)){
@@ -398,12 +395,16 @@ class AuthServer{
 					}
 				break;
 			}
-			array_unshift($code,$this->messages[$lg][$c]);
-			return call_user_func_array('sprintf',$code);
+			array_unshift($code,$this->messages[$c]);
+			$message = call_user_func_array('sprintf',$code);
 		}
 		else{
-			return $this->messages[$lg][$code];
+			$message = $this->messages[$code];
 		}
+		if(function_exists('__')){
+			$message = __($message);
+		}
+		return $message;
 	}
 	
 	
