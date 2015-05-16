@@ -8,9 +8,14 @@
 		$js().dev=true;
 	<?endif;?>
 	$js('script');
-	<?if($this->devLevel()&Templix\Templix::DEV_CONTROL):?>
+	<?if(1||$this->devLevel()&Templix\Templix::DEV_CHRONO):
+		$chrono = microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"];
+		$chrono = sprintf("%.2f", ($chrono>=1?$chrono:$chrono*(float)1000)).' '.($chrono>=1?'s':'ms');
+		$memory = memory_get_peak_usage();
+		$memory = rtrim(sprintf("%.2f",(float)($memory)/(float)pow(1024,$factor=floor((strlen($memory)-1)/3))),'.0').' '.('BKMGTP'[(int)$factor]).($factor?'B':'ytes');
+	?>
 		if(console){
-			console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$this->Dev_Chrono()->requestTime()?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');
+			console.info('Server <?=$timeCompiled===$time?'Compilation+':''?>Exec: <?=$chrono." | ".$memory?> -  Exec <?=@date('jMY-H:m:s',$time)?> - Compiled <?=@date('jMY-H:m:s',$timeCompiled)?>');
 		}
 	<?endif;?>
 </script>

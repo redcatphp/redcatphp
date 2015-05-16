@@ -7,6 +7,7 @@ class Templix {
 	const DEV_JS = 4;
 	const DEV_CSS = 8;
 	const DEV_IMG = 16;
+	const DEV_CHRONO = 32;
 	
 	use MutatorCallTrait;
 	var $forceCompile;
