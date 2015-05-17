@@ -27,10 +27,7 @@ use Database\RedBeanPHP\Driver\RPDO as RPDO;
 use Database\Model;
 use Database\Query;
 
-use ObjexLoader\MutatorFacadeTrait;
-
 class Database{
-	use MutatorFacadeTrait;
 	
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	
@@ -66,10 +63,9 @@ class Database{
 		$this->name = $name;
 		if(false!==$p=strpos($this->name,'.'))
 			$this->dbgroup = substr($this->name,0,$p);
-		if(isset($DatabaseGroup))
-			$this->DatabaseGroup = $DatabaseGroup;
-		else
-			$this->DatabaseGroup = $this->Database_RedBeanPHP_DatabaseGroup($this->dbgroup);
+		if(!isset($DatabaseGroup))
+			$DatabaseGroup = new DatabaseGroup($this->dbgroup);
+		$this->DatabaseGroup = $DatabaseGroup;
 	}
 	function devLevel(){
 		if(func_num_args()){

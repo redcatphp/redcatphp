@@ -48,6 +48,10 @@ class Url {
 		}
 		return $this->suffixHref;
 	}
+	function getLocation(){
+		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+	}
+	
 	function getSubdomainHref($sub=''){
 		$lg = $this->getSubdomainLang();
 		$server = $this->getServerHref();
@@ -65,8 +69,5 @@ class Url {
 			return $urlParts[0];
 		else
 			return null;
-	}
-	function getLocation(){
-		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
 	}
 }

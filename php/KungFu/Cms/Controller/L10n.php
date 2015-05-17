@@ -1,16 +1,26 @@
 <?php
 namespace KungFu\Cms\Controller;
 use KungFu\TemplixPlugin\Toolbox as Templix_Toolbox;
-use InterNative\Translator;
 use KungFu\Cms\Controller\Templix as Controller_Templix;
-use ObjexLoader\MutatorMagicTrait;
+use Unit\Url;
+use InterNative\Translator;
 class L10n extends Controller_Templix{
-	use MutatorMagicTrait;
 	protected $Route;
 	protected $path;
 	protected $params;
 	protected $Templix;
-	function __construct(){
+	protected $Translator;
+	protected $Url;
+	function __construct(Url $Url=null,Translator $Translator=null, $server=null){
+		if(!$Url)
+			$Url = new Url();
+		if(!$Translator)
+			$Translator = new Translator();
+		if(!$server)
+			$server = &$_SERVER;
+		$this->Url = $Url;
+		$this->Translator = $Translator;
+		$this->server = $server;
 	}
 	function __invoke($params,$path,$Route){
 		$this->Route = $Route;
@@ -20,7 +30,7 @@ class L10n extends Controller_Templix{
 		$lang = $this->Route->getLang();
 		$langMap = $this->Route->getLangMap();
 		
-		Translator::set($lang);
+		$this->Translator->set($lang);
 		
 		$this->Templix()->setDirCompileSuffix('.'.$lang.'/');
 		$this->Templix()->onCompile(function($TML)use($lang,$path,$langMap){
@@ -38,7 +48,8 @@ class L10n extends Controller_Templix{
 		parent::__invoke($params,$path,$Route);
 	}
 	function i18nGettext($Tml,$cache=true){
-		$Tml('html')->attr('lang',$this->InterNative_Translator->getLangCode());
+		$Tml->prepend('<?php $GLOBALS[\'SURIKAT\'][\'Translator\'] = new InterNative\Translator(); ?>');
+		$Tml('html')->attr('lang',$this->Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			$rw = "$el";
@@ -58,11 +69,11 @@ class L10n extends Controller_Templix{
 				return;
 			if($el->data('i18n')!==false){
 				if($cache){
-					$rw = $this->InterNative_Translator()->__($rw);
+					$rw = $this->Translator->__($rw);
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo $this->InterNative_Translator()->__(\''.$rw.'\');?>';
+					$rw = '<?php echo $GLOBALS[\'SURIKAT\'][\'Translator\']()->__(\''.$rw.'\');?>';
 				}
 				$el->write($left.$rw.$right);
 			}
@@ -71,7 +82,7 @@ class L10n extends Controller_Templix{
 			foreach($Tml->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
 					$Tml->removeAttr($k);
-					$Tml->attr(substr($k,5),$this->InterNative_Translator()->__($v));
+					$Tml->attr(substr($k,5),$this->Translator()->__($v));
 				}
 			}
 		});

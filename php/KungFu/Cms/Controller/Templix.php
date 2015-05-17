@@ -2,9 +2,7 @@
 namespace KungFu\Cms\Controller;
 use Templix\Templix as Templix_Templix;
 use KungFu\TemplixPlugin\Toolbox;
-use ObjexLoader\MutatorMagicTrait;
 class Templix{
-	use MutatorMagicTrait;
 	protected $Route;
 	protected $path;
 	protected $params;

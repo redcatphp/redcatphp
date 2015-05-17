@@ -1,15 +1,21 @@
 <?php namespace KungFu\Cms\Route;
-use ObjexLoader\MutatorMagicTrait;
+use Unit\Url;
+use Unit\Dispatcher;
 class L10n extends Faceted {
-	use MutatorMagicTrait;	
 	protected $lang;
 	protected $langMap;
+	protected $Url;
+	function __construct(Dispatcher $Dispatcher=null,Url $Url=null){
+		if(!$Url)
+			$Url = new Url();
+		$this->Url = $Url;
+	}
 	function __invoke($uri){
 		parent::__invoke($uri);
 		$path = urldecode($this->uriParams[0]);
 		$templatePath = $path;
 		$this->langMap = false;
-		if($lang=$this->Unit_Url->getSubdomainLang()){
+		if($lang=$this->Url->getSubdomainLang()){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$this->langMap = parse_ini_file($langFile);
 				if(isset($this->langMap[$path]))

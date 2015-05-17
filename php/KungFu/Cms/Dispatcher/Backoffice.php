@@ -34,10 +34,8 @@ class Backoffice extends Dispatcher{
 		$Auth->lockServer(Auth::RIGHT_MANAGE);
 	}
 	function __invoke(){
-		\ObjexLoader\Container::get()
-			->Unit_AutoloadPsr4
-			->addNamespace('',SURIKAT.$this->pathFS.'/php')
-		;
+		global $SURIKAT;
+		$SURIKAT['Autoloader']->addNamespace('',SURIKAT.$this->pathFS.'/php');
 		return $this->run(func_get_arg(0));
 	}
 }

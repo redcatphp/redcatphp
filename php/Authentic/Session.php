@@ -1,7 +1,5 @@
 <?php namespace Authentic;
-use ObjexLoader\MutatorCallTrait;
 class Session{
-	use MutatorCallTrait;
 	private $id;
 	private $key;
 	private $name = 'surikat';
@@ -24,7 +22,11 @@ class Session{
 	protected $SessionHandler;
 	protected $Cookie;
 	protected $handled;
-	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null){
+    
+    protected $baseHref;
+	protected $suffixHref;
+	protected $server;
+	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null,$server=null){
 		if(!$saveRoot){
 			if(defined('SURIKAT_CWD'))
 				$cwd = SURIKAT_CWD;
@@ -37,14 +39,18 @@ class Session{
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = getcwd().'/tmp/attempts/';
-		$this->cookiePath = '/'.$this->Unit_Url()->getSuffixHref();
-		$this->cookieDomain = $this->Unit_Url()->getServerHref();
+		$this->cookiePath = '/'.$this->getSuffixHref();
+		$this->cookieDomain = $this->getServerHref();
 		$this->checkBlocked();
 		if(!isset($sessionHandler))
 			$sessionHandler = new SessionHandler();
 		$this->SessionHandler = $sessionHandler;
 		$this->Cookie = $_COOKIE;
 		$this->garbageCollector();
+		
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
 	}
 	function handleReload(){
 		if($this->handled)
@@ -236,7 +242,7 @@ class Session{
 		$this->SessionHandler->close();
 	}
 	function generateId(){
-		return hash('sha512',$this->_RandomLib_Factory()->getMediumStrengthGenerator()->generate($this->idLength));
+		return hash('sha512',(new RandomLib\Factory())->getMediumStrengthGenerator()->generate($this->idLength));
 	}
 	function getIp(){
 		return $_SERVER['REMOTE_ADDR'];
@@ -303,4 +309,66 @@ class Session{
 			unset($this->Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
     }
+    
+	function setBaseHref($href){
+		$this->baseHref = $href;
+	}
+	function getProtocolHref(){
+		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
+	}
+	function getServerHref(){
+		return $this->server['SERVER_NAME'];
+	}
+	function getPortHref(){
+		$ssl = @$this->server["HTTPS"]=="on";
+		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
+	}
+	function getBaseHref(){
+		if(!isset($this->baseHref)){
+			$this->setBaseHref($this->getProtocolHref().$this->getServerHref().$this->getPortHref().'/');
+		}
+		return $this->baseHref.$this->getSuffixHref();
+	}
+	function setSuffixHref($href){
+		$this->suffixHref = $href;
+	}
+	function getSuffixHref(){
+		if(!isset($this->suffixHref)){
+			if(isset($this->server['SURIKAT_CWD'])){
+				$this->suffixHref = ltrim($this->server['SURIKAT_CWD'],'/');				
+			}
+			else{
+				$docRoot = $this->server['DOCUMENT_ROOT'].'/';
+				//$docRoot = dirname($this->server['SCRIPT_FILENAME']).'/';
+				if(defined('SURIKAT_CWD'))
+					$cwd = SURIKAT_CWD;
+				else
+					$cwd = getcwd();
+				if($docRoot!=$cwd&&strpos($cwd,$docRoot)===0)
+					$this->suffixHref = substr($cwd,strlen($docRoot));
+			}
+		}
+		return $this->suffixHref;
+	}
+	function getSubdomainHref($sub=''){
+		$lg = $this->getSubdomainLang();
+		$server = $this->getServerHref();
+		if($lg)
+			$server = substr($server,strlen($lg)+1);
+		if($sub)
+			$sub .= '.';
+		return $this->getProtocolHref().$sub.$server.$this->getPortHref().'/'.$this->getSuffixHref();
+	}
+	function getSubdomainLang($domain=null){
+		if(!isset($domain))
+			$domain = $this->getServerHref();
+		$urlParts = explode('.', $domain);
+		if(count($urlParts)>2&&strlen($urlParts[0])==2)
+			return $urlParts[0];
+		else
+			return null;
+	}
+	function getLocation(){
+		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+	}
 }

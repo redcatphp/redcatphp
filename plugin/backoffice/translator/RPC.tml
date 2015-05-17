@@ -1,6 +1,6 @@
 <?
-use ObjexLoader\Container;
-ObjexLoader\Container::get()->Unit_AutoloadPsr4->addNamespace('Translator',$this->dirCompileToDirCwd(__DIR__));
+global $SURIKAT;
+$SURIKAT['Autoloader']->addNamespace('Translator',$this->dirCompileToDirCwd(__DIR__));
 header('Content-Type: application/json; charset=UTF-8;');
 $service = new Translator\MessageService();
 $response = ['error'=>null];

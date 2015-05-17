@@ -37,7 +37,7 @@ function page_header($title, $error = "", $breadcrumb = array(), $title2 = "") {
 <?php } ?>
 <body class="<?php echo lang('ltr'); ?> nojs" onkeydown="bodyKeydown(event);" onclick="bodyClick(event);"<?php echo (isset($_COOKIE["adminer_version"]) ? "" : " onload=\"verifyVersion('$VERSION');\""); ?>>
 
-<?php ObjexLoader\Container::get()->Authentic_AuthServer->lougoutBTN();?>
+<?php (new Authentic\AuthServer())->lougoutBTN();?>
 
 <script type="text/javascript">
 document.body.className = document.body.className.replace(/ nojs/, ' js');

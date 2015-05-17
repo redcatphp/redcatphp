@@ -1,15 +1,11 @@
 <?php namespace Authentic;
 use Database\R;
 use Mail\PHPMailer;
-use ObjexLoader\MutatorMagicTrait;
-use ObjexLoader\ConstantTrait;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once __DIR__.'/password-compat.inc.php';
 }
 class Auth{
-	use MutatorMagicTrait;
-	use ConstantTrait;
 	
 	const RIGHT_MANAGE = 2;
 	const RIGHT_EDIT = 4;
@@ -422,7 +418,7 @@ class Auth{
 		if($type == "activation" && isset($user['active']) && $user['active'] == 1){
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
-		$key = $this->_RandomLib_Factory()->getMediumStrengthGenerator()->generate(40);
+		$key = (new RandomLib\Factory())->getMediumStrengthGenerator()->generate(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
 		$user['xown'.ucfirst($this->tableRequests)][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
 		if(!$user->store()){

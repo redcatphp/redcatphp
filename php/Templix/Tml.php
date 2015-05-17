@@ -1,10 +1,6 @@
 <?php namespace Templix;
 use Templix\MarkupX\TmlApply;
-use ObjexLoader\MutatorCallTrait;
-class Tml implements \ArrayAccess,\IteratorAggregate{
-	
-	use MutatorCallTrait;
-	
+class Tml implements \ArrayAccess,\IteratorAggregate{	
 	//Parser
 	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;

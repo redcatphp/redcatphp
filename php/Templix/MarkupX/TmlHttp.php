@@ -4,9 +4,9 @@ class TmlHttp extends \Templix\Tml{
 	protected $hiddenWrap = true;
 	function load(){
 		if($this->__get('static')){
-			if(count($_GET)||(
-				count($this->Template->treeDependency('Templix:Route'))>1
-			)){
+			if(count($_GET)
+				//||(count($this->Template->getModel()->getRoute())>1)
+			){
 				$this->notFound();
 			}
 		}

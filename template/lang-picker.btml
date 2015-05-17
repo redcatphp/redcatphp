@@ -1,39 +1,38 @@
-<eval>
+<?
+	$langDir = SURIKAT_CWD.'langs/';
+	global $SURIKAT;
+	$lgC = $SURIKAT['Translator']->getLangCode();
+	$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
+	$lgD = $config->default;
+	$langs = [$lgD];
+	foreach(glob($langDir.'*.ini') as $langFile)
+		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
+?>
+<foreach "$langs as $lg">
 	<?
-		$langDir = SURIKAT_CWD.'langs/';
-		$lgC = InterNative\Translator::getLangCode();
-		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
-		$lgD = $config->default;
-		$langs = [$lgD];
-		foreach(glob($langDir.'*.ini') as $langFile)
-			$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
-	?>
-	<foreach "$langs as $lg">
-		<?
-			$language = InterNative\Punic\Language::getName($lg,$lg);
-			$language = InterNative\Strings::ucfirst($language);
-			$lcPath = $this->Route[0];
-			if($lg!=$lgC){
-				if($lg==$lgD){
-					$langMap = parse_ini_file($langDir.$lgC.'.ini');
-					if(isset($langMap[$lcPath]))
-						$lcPath = $langMap[$lcPath];
-				}
-				else{
-					$langMap = parse_ini_file($langDir.$lg.'.ini');
-					if(($k=array_search($lcPath,$langMap)))
-						$lcPath = $k;
-				}
+		$language = InterNative\Punic\Language::getName($lg,$lg);
+		$language = InterNative\Strings::ucfirst($language);
+		$lcPath = $this->Route[0];
+		if($lg!=$lgC){
+			if($lg==$lgD){
+				$langMap = parse_ini_file($langDir.$lgC.'.ini');
+				if(isset($langMap[$lcPath]))
+					$lcPath = $langMap[$lcPath];
 			}
-			$lcLink = $this->Unit_Url()->getSubdomainHref($lg!=$lgD?$lg:null);
-			$lcLink .= $lcPath;
-		?>
-		<li>
-			<if "$lg==$lgC">
-				<span><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></span>
-			<else>
-				<a href="<?=$lcLink?>" rel="alternate" hreflang="<?=$lg?>" lang="<?=$lg?>"><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></a>
-			</if>
-		</li>
-	</foreach>
-</eval>
+			else{
+				$langMap = parse_ini_file($langDir.$lg.'.ini');
+				if(($k=array_search($lcPath,$langMap)))
+					$lcPath = $k;
+			}
+		}
+		$lcLink = $SURIKAT['Url']->getSubdomainHref($lg!=$lgD?$lg:null);
+		$lcLink .= $lcPath;
+	?>
+	<li>
+		<if "$lg==$lgC">
+			<span><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></span>
+		<else>
+			<a href="<?=$lcLink?>" rel="alternate" hreflang="<?=$lg?>" lang="<?=$lg?>"><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></a>
+		</if>
+	</li>
+</foreach>

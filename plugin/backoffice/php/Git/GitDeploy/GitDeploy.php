@@ -1,7 +1,5 @@
 <?php namespace Git\GitDeploy;
-use ObjexLoader\MutatorCallTrait;
 class GitDeploy{
-	use MutatorCallTrait;
 	static function factory($repoPath=null){
 		return new self($repoPath);
 	}
