@@ -237,7 +237,7 @@ class DiContainer implements \ArrayAccess{
 	function loadXml($xml,$push=false){
 		if (!($xml instanceof \SimpleXmlElement))
 			$xml = simplexml_load_file($xml);
-		foreach ($xml->rule as $key => $value) {
+		foreach ($xml->class as $key => $value) {
 			$rule = $this->createRule((string) $value['name']);
 			$rule->shared = (((string)$value['shared']) == 'true');
 			$rule->inherit = (((string)$value['inherit']) == 'false') ? false : true;
@@ -249,10 +249,10 @@ class DiContainer implements \ArrayAccess{
 					$rule->call[] = [(string) $call['method'], $callArgs];
 				}
 			}
-			if ($value->instanceof)
-				$rule->instanceOf = (string) $value->instanceof;
-			if ($value->newinstance){
-				foreach ($value->newinstance as $ni){
+			if (isset($value['instanceof']))
+				$rule->instanceOf = (string) $value['instanceof'];
+			if ($value['newinstances']){
+				foreach (explode(',',$value['newinstances']) as $ni){
 					$rule->newInstances[] = (string) $ni;
 				}
 			}
