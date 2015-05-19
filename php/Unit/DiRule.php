@@ -9,14 +9,10 @@ class DiRule {
 	public $call = [];
 	public $inherit = true;
 	public $shareInstances = [];
-	function addConstructParam($param,$instance=false){
-		if($instance)
-			$param = new DiInstance($param);
-		$this->constructParams[] = $param;
+	function addConstructParam($param){
+		$this->constructParams[] = new DiInstance($param);
 	}
-	function addSubstitution($param,$instance=false){
-		if($instance)
-			$param = new DiInstance($param);
-		$this->substitutions[] = $param;
+	function addSubstitution($param){
+		$this->substitutions[] = new DiInstance($param);
 	}
 }
