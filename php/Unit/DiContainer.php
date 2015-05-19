@@ -2,11 +2,13 @@
 
 /*
  * fusion of
- * Pimple 3 - 2009 Fabien Potencier
- * and Dice 1.4 - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
+ * Dice 1.4 - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
+ * and Pimple 3 - 2009 Fabien Potencier
  */
 
 namespace Unit;
+use Unit\DiLoader\Xml;
+use Unit\DiLoader\Json;
 
 class DiContainer implements \ArrayAccess
 {
@@ -191,7 +193,8 @@ class DiContainer implements \ArrayAccess
 					$this->instances[$component] = $object = $class->newInstanceWithoutConstructor();
 					if ($constructor) $constructor->invokeArgs($object, $params($args, $share));
 				}
-				else $object = $params ? new $class->name(...$params($args, $share)) : new $class->name;
+				//else $object = $params ? new $class->name(...$params($args, $share)) : new $class->name;
+				else $object = $params ? (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share)) : new $class->name;
 				if ($rule->call) foreach ($rule->call as $call) $class->getMethod($call[0])->invokeArgs($object, call_user_func($this->getParams($class->getMethod($call[0]), $rule), $this->expand($call[1])));
 				return $object;
 			};
@@ -228,5 +231,20 @@ class DiContainer implements \ArrayAccess
 			}
 			return $parameters;
 		};
+	}
+	function loadXml($xml){
+		static $loader;
+		if(!isset($loader))
+			$loader = new Xml;
+		return $loader->load($xml,$this);
+	}
+	function loadJson($json){
+		static $loader;
+		if(!isset($loader))
+			$loader = new Json;
+		return $loader->load($json,$this);
+	}
+	function loadJsonFile($json){
+		return $this->loadJson(file_get_contents($json));
 	}
 }
