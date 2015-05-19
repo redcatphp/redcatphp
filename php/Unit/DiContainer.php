@@ -1,14 +1,15 @@
 <?php
-
 /*
  * fusion of
  * Dice 1.4 - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
- * and Pimple 3 - 2009 Fabien Potencier
+ *		for clean decoupled dependencies resolution
+ * and Pimple 3 - 2009 Fabien Potencier | http://pimple.sensiolabs.org
+ *		for arbitrary data and manual hook
+ * with Surikat remixs and addons
+ *		for powerfull API and format
  */
 
 namespace Unit;
-use Unit\DiLoader\Xml;
-use Unit\DiLoader\Json;
 
 class DiContainer implements \ArrayAccess
 {
@@ -22,6 +23,14 @@ class DiContainer implements \ArrayAccess
     private $rules = [];
 	private $cache = [];
 	private $instances = [];
+    
+	private static $dicInstance;
+	
+    static function getInstance(){
+		if(!isset($this->dicInstance))
+			$this->dicInstance = new DiContainer();
+		return $this->dicInstance;
+	}
     
     public function __construct(array $values = [])
     {
@@ -45,8 +54,8 @@ class DiContainer implements \ArrayAccess
 
     public function offsetGet($id)
     {
-        if (!isset($this->keys[$id])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+        if(!isset($this->keys[$id])){
+            $this[$id] = $this->create($id);
         }
 
         if (
@@ -166,10 +175,29 @@ class DiContainer implements \ArrayAccess
         return $this;
     }
     
-    
-    
-    public function addRule($name, DiRule $rule) {
+    public function setRule($name, DiRule $rule) {
 		$this->rules[ltrim(strtolower($name), '\\')] = $rule;
+	}
+    public function addRule($name, $rule, $push = false) {
+		if(!($rule instanceof DiRule)){
+			$diRule = new DiRule;
+			foreach($rule as $k=>$v){
+				$diRule->$k = $v;
+			}
+			$rule = $diRule;
+		}
+		$cascade = clone $this->getRule($name);
+		foreach($rule as $k=>$v){
+			if($push&&is_array($cascade->$k)){
+				foreach($v as $_v){
+					$cascade->{$k}[] = $_v;
+				}
+			}
+			else{
+				$cascade->$k = $v;
+			}
+		}
+		$this->rules[ltrim(strtolower($name), '\\')] = $cascade;
 	}
 
 	public function getRule($name) {
@@ -232,19 +260,54 @@ class DiContainer implements \ArrayAccess
 			return $parameters;
 		};
 	}
+	
+	private function getComponent($str, $createInstance = false) {
+		if (strpos((string) $str, '{') === 0)
+			return [new DiCallback($str,$this), 'run'];
+		elseif($createInstance)
+			return new DiInstance((string) $str);
+		else
+			return  (string) $str;
+	}
 	function loadXml($xml){
-		static $loader;
-		if(!isset($loader))
-			$loader = new Xml;
-		return $loader->load($xml,$this);
+		if (!($xml instanceof \SimpleXmlElement))
+			$xml = simplexml_load_file($xml);
+		foreach ($xml as $key => $value) {
+			$rule = clone $this->getRule((string) $value['name']);
+			$rule->shared = (((string)$value['shared']) == 'true');
+			$rule->inherit = (((string)$value['inherit']) == 'false') ? false : true;
+			if($value->call){
+				foreach($value->call as $name=>$call){
+					$callArgs = [];
+						foreach ($call as $key => $param)
+							$callArgs[] = $this->getComponent((string) $param, ($key == 'instance'));
+					$rule->call[] = [(string) $call['method'], $callArgs];
+				}
+			}
+			if ($value->instanceof)
+				$rule->instanceOf = (string) $value->instanceof;
+			if ($value->newinstance){
+				foreach ($value->newinstance as $ni){
+					$rule->newInstances[] = (string) $ni;
+				}
+			}
+			if ($value->substitute)
+				foreach ($value->substitute as $use)
+					$rule->substitutions[(string) $use['as']] = $this->getComponent((string) $use['use'], true);
+			if ($value->construct){
+				foreach ($value->construct as $child){
+					$rule->constructParams[] = $this->getComponent((string) $child);
+				}
+			}
+			if ($value->shareinstance){
+				foreach ($value->shareinstance as $share){
+					$rule->shareInstances[] = $this->getComponent((string) $share);
+				}
+			}
+			$this->addRule((string) $value['name'], $rule);
+		}
 	}
-	function loadJson($json){
-		static $loader;
-		if(!isset($loader))
-			$loader = new Json;
-		return $loader->load($json,$this);
-	}
-	function loadJsonFile($json){
-		return $this->loadJson(file_get_contents($json));
+	function createRule($name){
+		return new DiRule($name);
 	}
 }
