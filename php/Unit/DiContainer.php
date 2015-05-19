@@ -237,7 +237,7 @@ class DiContainer implements \ArrayAccess{
 	function loadXml($xml,$push=false){
 		if (!($xml instanceof \SimpleXmlElement))
 			$xml = simplexml_load_file($xml);
-		foreach ($xml as $key => $value) {
+		foreach ($xml->rule as $key => $value) {
 			$rule = $this->createRule((string) $value['name']);
 			$rule->shared = (((string)$value['shared']) == 'true');
 			$rule->inherit = (((string)$value['inherit']) == 'false') ? false : true;
