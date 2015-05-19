@@ -11,174 +11,140 @@
 
 namespace Unit;
 
-class DiContainer implements \ArrayAccess
-{
-    private $values = [];
-    private $factories;
-    private $protected;
-    private $frozen = [];
-    private $raw = [];
-    private $keys = [];
-    
-    private $rules = [];
+class DiContainer implements \ArrayAccess{
+	private $values = [];
+	private $factories;
+	private $protected;
+	private $frozen = [];
+	private $raw = [];
+	private $keys = [];
+		
+	private $rules = [];
 	private $cache = [];
 	private $instances = [];
-    
+		
 	private static $dicInstance;
 	
-    static function getInstance(){
+	static function getInstance(){
 		if(!isset($this->dicInstance))
 			$this->dicInstance = new DiContainer();
 		return $this->dicInstance;
 	}
-    
-    public function __construct(array $values = [])
-    {
-        $this->factories = new \SplObjectStorage();
-        $this->protected = new \SplObjectStorage();
+		
+	function __construct(array $values = []){
+		$this->factories = new \SplObjectStorage();
+		$this->protected = new \SplObjectStorage();
+		foreach ($values as $key => $value) {
+			$this->offsetSet($key, $value);
+		}
+	}
 
-        foreach ($values as $key => $value) {
-            $this->offsetSet($key, $value);
-        }
-    }
+	function offsetSet($id, $value){
+		if (isset($this->frozen[$id])) {
+			throw new \RuntimeException(sprintf('Cannot override frozen service "%s".', $id));
+		}
+		$this->values[$id] = $value;
+		$this->keys[$id] = true;
+	}
 
-    public function offsetSet($id, $value)
-    {
-        if (isset($this->frozen[$id])) {
-            throw new \RuntimeException(sprintf('Cannot override frozen service "%s".', $id));
-        }
+	function offsetGet($id){
+		if(!isset($this->keys[$id])){
+				$this[$id] = $this->create($id);
+		}
+		if (
+				isset($this->raw[$id])
+				|| !is_object($this->values[$id])
+				|| isset($this->protected[$this->values[$id]])
+				|| !method_exists($this->values[$id], '__invoke')
+		) {
+				return $this->values[$id];
+		}
+		if (isset($this->factories[$this->values[$id]])) {
+				return $this->values[$id]($this);
+		}
+		$raw = $this->values[$id];
+		$val = $this->values[$id] = $raw($this);
+		$this->raw[$id] = $raw;
+		$this->frozen[$id] = true;
+		return $val;
+	}
 
-        $this->values[$id] = $value;
-        $this->keys[$id] = true;
-    }
+	function offsetExists($id){
+		return isset($this->keys[$id]);
+	}
 
-    public function offsetGet($id)
-    {
-        if(!isset($this->keys[$id])){
-            $this[$id] = $this->create($id);
-        }
+	function offsetUnset($id){
+		if (isset($this->keys[$id])) {
+			if (is_object($this->values[$id])) {
+				unset($this->factories[$this->values[$id]], $this->protected[$this->values[$id]]);
+			}
+			unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
+		}
+	}
 
-        if (
-            isset($this->raw[$id])
-            || !is_object($this->values[$id])
-            || isset($this->protected[$this->values[$id]])
-            || !method_exists($this->values[$id], '__invoke')
-        ) {
-            return $this->values[$id];
-        }
+	function factory($callable){
+		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
+			throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
+		}
+		$this->factories->attach($callable);
+		return $callable;
+	}
+	
+	function protect($callable){
+		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
+			throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
+		}
+		$this->protected->attach($callable);
+		return $callable;
+	}
 
-        if (isset($this->factories[$this->values[$id]])) {
-            return $this->values[$id]($this);
-        }
+	function raw($id){
+		if (!isset($this->keys[$id])) {
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+		}
+		if (isset($this->raw[$id])) {
+			return $this->raw[$id];
+		}
+		return $this->values[$id];
+	}
 
-        $raw = $this->values[$id];
-        $val = $this->values[$id] = $raw($this);
-        $this->raw[$id] = $raw;
+	function extend($id, $callable){
+		if (!isset($this->keys[$id])) {
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+		}
+		if (!is_object($this->values[$id]) || !method_exists($this->values[$id], '__invoke')) {
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $id));
+		}
+		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
+			throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
+		}
+		$factory = $this->values[$id];
+		$extended = function ($c) use ($callable, $factory) {
+			return $callable($factory($c), $c);
+		};
+		if (isset($this->factories[$factory])) {
+			$this->factories->detach($factory);
+			$this->factories->attach($extended);
+		}
+		return $this[$id] = $extended;
+	}
 
-        $this->frozen[$id] = true;
+	function keys(){
+		return array_keys($this->values);
+	}
 
-        return $val;
-    }
-
-    public function offsetExists($id)
-    {
-        return isset($this->keys[$id]);
-    }
-
-    public function offsetUnset($id)
-    {
-        if (isset($this->keys[$id])) {
-            if (is_object($this->values[$id])) {
-                unset($this->factories[$this->values[$id]], $this->protected[$this->values[$id]]);
-            }
-
-            unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
-        }
-    }
-
-    public function factory($callable)
-    {
-        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
-        }
-
-        $this->factories->attach($callable);
-
-        return $callable;
-    }
-
-    public function protect($callable)
-    {
-        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
-        }
-
-        $this->protected->attach($callable);
-
-        return $callable;
-    }
-
-    public function raw($id)
-    {
-        if (!isset($this->keys[$id])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
-        }
-
-        if (isset($this->raw[$id])) {
-            return $this->raw[$id];
-        }
-
-        return $this->values[$id];
-    }
-
-    public function extend($id, $callable)
-    {
-        if (!isset($this->keys[$id])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
-        }
-
-        if (!is_object($this->values[$id]) || !method_exists($this->values[$id], '__invoke')) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $id));
-        }
-
-        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
-        }
-
-        $factory = $this->values[$id];
-
-        $extended = function ($c) use ($callable, $factory) {
-            return $callable($factory($c), $c);
-        };
-
-        if (isset($this->factories[$factory])) {
-            $this->factories->detach($factory);
-            $this->factories->attach($extended);
-        }
-
-        return $this[$id] = $extended;
-    }
-
-    public function keys()
-    {
-        return array_keys($this->values);
-    }
-
-    public function register($provider, array $values = [])
-    {
-        $provider->register($this);
-
-        foreach ($values as $key => $value) {
-            $this[$key] = $value;
-        }
-
-        return $this;
-    }
-    
-    public function setRule($name, DiRule $rule) {
+	function register($provider, array $values = []){
+		$provider->register($this);
+		foreach ($values as $key => $value) {
+				$this[$key] = $value;
+		}
+		return $this;
+	}
+	
+	function setRule($name, DiRule $rule) {
 		$this->rules[ltrim(strtolower($name), '\\')] = $rule;
 	}
-    public function addRule($name, $rule, $push = false) {
+	function addRule($name, $rule, $push = false) {
 		if(!($rule instanceof DiRule)){
 			$diRule = new DiRule;
 			foreach($rule as $k=>$v){
@@ -200,7 +166,7 @@ class DiContainer implements \ArrayAccess
 		$this->rules[ltrim(strtolower($name), '\\')] = $cascade;
 	}
 
-	public function getRule($name) {
+	function getRule($name) {
 		if (isset($this->rules[strtolower(ltrim($name, '\\'))])) return $this->rules[strtolower(ltrim($name, '\\'))];
 		foreach ($this->rules as $key => $rule) {
 			if ($rule->instanceOf === null && $key !== '*' && is_subclass_of($name, $key) && $rule->inherit === true) return $rule;
@@ -208,7 +174,7 @@ class DiContainer implements \ArrayAccess
 		return isset($this->rules['*']) ? $this->rules['*'] : new DiRule;
 	}
 
-	public function create($component, array $args = [], $forceNewInstance = false, $share = []) {
+	function create($component, array $args = [], $forceNewInstance = false, $share = []) {
 		if (!$forceNewInstance && isset($this->instances[$component])) return $this->instances[$component];
 		if (empty($this->cache[$component])) {
 			$rule = $this->getRule($component);
@@ -221,7 +187,6 @@ class DiContainer implements \ArrayAccess
 					$this->instances[$component] = $object = $class->newInstanceWithoutConstructor();
 					if ($constructor) $constructor->invokeArgs($object, $params($args, $share));
 				}
-				//else $object = $params ? new $class->name(...$params($args, $share)) : new $class->name;
 				else $object = $params ? (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share)) : new $class->name;
 				if ($rule->call) foreach ($rule->call as $call) $class->getMethod($call[0])->invokeArgs($object, call_user_func($this->getParams($class->getMethod($call[0]), $rule), $this->expand($call[1])));
 				return $object;
@@ -267,13 +232,13 @@ class DiContainer implements \ArrayAccess
 		elseif($createInstance)
 			return new DiInstance((string) $str);
 		else
-			return  (string) $str;
+			return (string) $str;
 	}
-	function loadXml($xml){
+	function loadXml($xml,$push=false){
 		if (!($xml instanceof \SimpleXmlElement))
 			$xml = simplexml_load_file($xml);
 		foreach ($xml as $key => $value) {
-			$rule = clone $this->getRule((string) $value['name']);
+			$rule = $this->createRule((string) $value['name']);
 			$rule->shared = (((string)$value['shared']) == 'true');
 			$rule->inherit = (((string)$value['inherit']) == 'false') ? false : true;
 			if($value->call){
@@ -304,7 +269,7 @@ class DiContainer implements \ArrayAccess
 					$rule->shareInstances[] = $this->getComponent((string) $share);
 				}
 			}
-			$this->addRule((string) $value['name'], $rule);
+			$this->addRule((string) $value['name'], $rule, $push);
 		}
 	}
 	function createRule($name){
