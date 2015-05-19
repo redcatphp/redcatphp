@@ -295,7 +295,7 @@ class DiContainer implements \ArrayAccess
 				foreach ($value->substitute as $use)
 					$rule->substitutions[(string) $use['as']] = $this->getComponent((string) $use['use'], true);
 			if ($value->construct){
-				foreach ($value->construct as $child){
+				foreach ($value->construct->param as $child){
 					$rule->constructParams[] = $this->getComponent((string) $child);
 				}
 			}
