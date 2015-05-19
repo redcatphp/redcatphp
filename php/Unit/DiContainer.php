@@ -23,12 +23,12 @@ class DiContainer implements \ArrayAccess{
 	private $cache = [];
 	private $instances = [];
 		
-	private static $dicInstance;
+	private static $instance;
 	
 	static function getInstance(){
-		if(!isset($this->dicInstance))
-			$this->dicInstance = new DiContainer();
-		return $this->dicInstance;
+		if(!isset(self::$instance))
+			self::$instance = new DiContainer();
+		return self::$instance;
 	}
 		
 	function __construct(array $values = []){

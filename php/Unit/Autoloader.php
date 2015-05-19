@@ -1,11 +1,12 @@
 <?php namespace Unit;
-class AutoloadPsr4{
+class Autoloader{
 	protected $namespaces = [];
 	protected $checked = [];
-	function __construct(){
-		foreach(func_get_args() as $a){
-			$this->addNamespaces($a);
-		}
+	private static $instance;
+	static function getInstance(){
+		if(!isset(self::$instance))
+			self::$instance = new Autoloader;
+		return self::$instance;
 	}
 	function addNamespaces($a){
 		foreach($a as $prefix=>$base_dir){
@@ -35,7 +36,7 @@ class AutoloadPsr4{
 		if(file_exists($file)){
 			require $file;
 			if(!class_exists($class,false)&&!interface_exists($class,false)&&!trait_exists($class,false))
-				throw new \Exception(sprintf('Class "%s" not found as expected in "%s"',$class,$file));
+				throw new \Exception('Class "'.$class.'" not found as expected in "'.$file.'"');
 			$this->checked[] = $class;
 			return true;
 		}
