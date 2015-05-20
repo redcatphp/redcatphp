@@ -1,6 +1,8 @@
 <?php namespace Unit;
 use ReflectionClass;
 use Unit\Route\Route;
+use Unit\Route\Regex;
+use Unit\Route\Prefix;
 class Dispatcher {
 	protected $routes = [];
 	protected $questionMark;
@@ -11,7 +13,14 @@ class Dispatcher {
 		return $this->route($pattern,$callback,$index,true);
 	}
 	function route($route,$callback,$index=0,$prepend=false){
-		$route = RouteFactory::getInstance($route);
+		if(is_string($route)){
+			if(strpos($route,'/^')===0&&strrpos($route,'$/')-strlen($route)===-2){
+				$route = new Regex($route);
+			}
+			else{
+				$route = new Prefix($route);
+			}
+		}
 		$route = [$route,$callback];
 		if(!isset($this->routes[$index]))
 			$this->routes[$index] = [];
