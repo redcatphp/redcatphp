@@ -12,7 +12,7 @@ class DiRule {
 	function addConstructParam($param){
 		$this->constructParams[] = new DiInstance($param);
 	}
-	function addSubstitution($param){
-		$this->substitutions[] = new DiInstance($param);
+	function addSubstitution($use,$as){
+		$this->substitutions[$use] = new DiInstance($as);
 	}
 }
