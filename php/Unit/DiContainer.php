@@ -150,8 +150,12 @@ class DiContainer implements \ArrayAccess{
 		if(!($rule instanceof DiRule)){
 			$diRule = new DiRule;
 			foreach($rule as $k=>$v){
-				if($k=='substitutions'&&!is_object($v)){
-					$v = new DiInstance($v);
+				if($k=='substitutions'){
+					foreach($v as $use=>$as){
+						if(!is_object($as)){
+							$v[$use] = new DiInstance($as);
+						}
+					}
 				}
 				$diRule->$k = $v;
 			}
