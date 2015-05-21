@@ -192,13 +192,16 @@ class DiContainer implements \ArrayAccess{
 	function getRule($name) {
 		if (isset($this->rules[strtolower(ltrim($name, '\\'))])) return $this->rules[strtolower(ltrim($name, '\\'))];
 		foreach ($this->rules as $key => $rule) {
-			if ($rule->instanceOf === null && $key !== '*' && is_subclass_of($name, $key) && $rule->inherit === true) return $rule;
+			if (($rule->instanceOf === null || $rule->instanceOf===$name) && $key !== '*' && is_subclass_of($name, $key) && $rule->inherit === true){
+				return $rule;
+			}
 		}
-		return isset($this->rules['*']) ? $this->rules['*'] : new DiRule;
+		return isset($this->rules['*']) ? $this->rules['*'] : $this->rules['*'] = new DiRule;
 	}
 
 	function create($component, array $args = [], $forceNewInstance = false, $share = []) {
-		if (!$forceNewInstance && isset($this->instances[$component])) return $this->instances[$component];
+		if (!$forceNewInstance && isset($this->instances[$component]))
+			return $this->instances[$component];
 		if (empty($this->cache[$component])) {
 			$rule = $this->getRule($component);
 			$class = new \ReflectionClass($rule->instanceOf ?: $component);
@@ -226,7 +229,7 @@ class DiContainer implements \ArrayAccess{
 
 	private function getParams(\ReflectionMethod $method, DiRule $rule) {
 		$paramInfo = [];
-		foreach ($method->getParameters() as $param) {
+		foreach($method->getParameters() as $param){
 			$class = $param->getClass() ? $param->getClass()->name : null;
 			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule->substitutions), in_array($class, $rule->newInstances)];
 		}
@@ -234,10 +237,11 @@ class DiContainer implements \ArrayAccess{
 			if ($rule->shareInstances){
 				$shareInstances = [];
 				foreach($rule->shareInstances as $v){
-					if(isset($rule->substitutions[$v])){
+					if($this->getRule($v)===$this->getRule('*')&&isset($rule->substitutions[$v])){
 						$v = $rule->substitutions[$v]->name;
 					}
-					$shareInstances[] = $this->create($v);
+					$new = in_array($v,$rule->newInstances);
+					$shareInstances[] = $this->create($v,[],$new);
 				}
 				$share = array_merge($share, $shareInstances);
 			}
