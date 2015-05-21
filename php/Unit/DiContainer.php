@@ -26,8 +26,10 @@ class DiContainer implements \ArrayAccess{
 	private static $instance;
 	
 	static function getInstance(){
-		if(!isset(self::$instance))
+		if(!isset(self::$instance)){
 			self::$instance = new DiContainer();
+			self::$instance->instances[__CLASS__] = self::$instance;
+		}
 		return self::$instance;
 	}
 		
