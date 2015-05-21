@@ -146,28 +146,12 @@ class DiContainer implements \ArrayAccess{
 	function setRule($name, DiRule $rule) {
 		$this->rules[ltrim(strtolower($name), '\\')] = $rule;
 	}
-	function addRule($name, $rule, $push = false) {
-		if(!($rule instanceof DiRule)){
-			$diRule = new DiRule;
-			foreach($rule as $k=>$v){
-				if($k=='substitutions'){
-					foreach($v as $use=>$as){
-						if(!is_object($as)){
-							$v[$use] = new DiInstance($as);
-						}
-					}
-				}
-				if($k=='newInstances'&&is_string($v)){
-					$v = explode(',',$v);
-				}
-				$diRule->$k = $v;
-			}
-			$rule = $diRule;
-		}
+	function addRule($name, $rule = [], $push = false) {
+		$rule = (object)$rule;
 		if(!isset($this->rules[ltrim(strtolower($name), '\\')])
 			&&!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name)
 			&&$rule->instanceOf
-			&&isset($this->rules[ltrim(strtolower($rule->instanceOf), '\\')])
+			&&$this->getRule($rule->instanceOf)!==$this->getRule('*')
 		){
 			$cascade = clone $this->getRule($rule->instanceOf);
 		}
@@ -175,6 +159,16 @@ class DiContainer implements \ArrayAccess{
 			$cascade = clone $this->getRule($name);
 		}
 		foreach($rule as $k=>$v){
+			if($k=='substitutions'){
+				foreach($v as $use=>$as){
+					if(!is_object($as)){
+						$v[$use] = new DiInstance($as);
+					}
+				}
+			}
+			if($k=='newInstances'&&is_string($v)){
+				$v = explode(',',$v);
+			}
 			if(is_array($cascade->$k)){
 				if($push){
 					foreach($v as $_v){
@@ -192,6 +186,7 @@ class DiContainer implements \ArrayAccess{
 			}
 		}
 		$this->setRule($name,$cascade);
+		return $cascade;
 	}
 
 	function getRule($name) {
