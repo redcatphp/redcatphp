@@ -18,11 +18,11 @@ class DiContainer implements \ArrayAccess{
 	private $frozen = [];
 	private $raw = [];
 	private $keys = [];
-		
+
 	private $rules = [];
 	private $cache = [];
 	private $instances = [];
-		
+	
 	private static $instance;
 	
 	static function getInstance(){
@@ -150,6 +150,9 @@ class DiContainer implements \ArrayAccess{
 		if(!($rule instanceof DiRule)){
 			$diRule = new DiRule;
 			foreach($rule as $k=>$v){
+				if($k=='substitutions'&&!is_object($v)){
+					$v = new DiInstance($v);
+				}
 				$diRule->$k = $v;
 			}
 			$rule = $diRule;
