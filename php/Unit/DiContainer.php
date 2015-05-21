@@ -166,7 +166,7 @@ class DiContainer implements \ArrayAccess{
 					}
 				}
 			}
-			if($k=='newInstances'&&is_string($v)){
+			if(($k=='newInstances'||$k=='shareInstances')&&is_string($v)){
 				$v = explode(',',$v);
 			}
 			if(is_array($cascade->$k)){
@@ -230,8 +230,17 @@ class DiContainer implements \ArrayAccess{
 			$class = $param->getClass() ? $param->getClass()->name : null;
 			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule->substitutions), in_array($class, $rule->newInstances)];
 		}
-		return function($args, $share = []) use ($paramInfo, $rule) {
-			if ($rule->shareInstances) $share = array_merge($share, array_map([$this, 'create'], $rule->shareInstances));
+		return function($args, $share = []) use ($paramInfo, $rule){
+			if ($rule->shareInstances){
+				$shareInstances = [];
+				foreach($rule->shareInstances as $v){
+					if(isset($rule->substitutions[$v])){
+						$v = $rule->substitutions[$v]->name;
+					}
+					$shareInstances[] = $this->create($v);
+				}
+				$share = array_merge($share, $shareInstances);
+			}
 			if ($share || $rule->constructParams) $args = array_merge($args, $this->expand($rule->constructParams, $share), $share);
 			$parameters = [];
 
@@ -288,7 +297,7 @@ class DiContainer implements \ArrayAccess{
 				}
 			}
 			if ($value->shareinstance){
-				foreach ($value->shareinstance as $share){
+				foreach(explode(',',$value['shareinstance']) as $ni){
 					$rule->shareInstances[] = $this->getComponent((string) $share);
 				}
 			}
