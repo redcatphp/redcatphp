@@ -157,22 +157,41 @@ class DiContainer implements \ArrayAccess{
 						}
 					}
 				}
+				if($k=='newInstances'&&is_string($v)){
+					$v = explode(',',$v);
+				}
 				$diRule->$k = $v;
 			}
 			$rule = $diRule;
 		}
-		$cascade = clone $this->getRule($name);
+		if(!isset($this->rules[ltrim(strtolower($name), '\\')])
+			&&!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name)
+			&&$rule->instanceOf
+			&&isset($this->rules[ltrim(strtolower($rule->instanceOf), '\\')])
+		){
+			$cascade = clone $this->getRule($rule->instanceOf);
+		}
+		else{
+			$cascade = clone $this->getRule($name);
+		}
 		foreach($rule as $k=>$v){
-			if($push&&is_array($cascade->$k)){
-				foreach($v as $_v){
-					$cascade->{$k}[] = $_v;
+			if(is_array($cascade->$k)){
+				if($push){
+					foreach($v as $_v){
+						$cascade->{$k}[] = $_v;
+					}
+				}
+				else{
+					foreach($v as $_k=>$_v){
+						$cascade->{$k}[$_k] = $_v;
+					}
 				}
 			}
 			else{
 				$cascade->$k = $v;
 			}
 		}
-		$this->rules[ltrim(strtolower($name), '\\')] = $cascade;
+		$this->setRule($name,$cascade);
 	}
 
 	function getRule($name) {
@@ -204,9 +223,9 @@ class DiContainer implements \ArrayAccess{
 		return $this->cache[$component]($args, $share);
 	}
 
-	private function expand($param, array $share = []) {
+	private function expand($param, array $share = [], $forceNewInstance=false) {
 		if (is_array($param)) foreach ($param as &$key) $key = $this->expand($key, $share); 
-		else if ($param instanceof DiInstance) return is_callable($param->name) ? call_user_func($param->name, $this, $share) : $this->create($param->name, [], false, $share);
+		else if ($param instanceof DiInstance) return is_callable($param->name) ? call_user_func($param->name, $this, $share) : $this->create($param->name, [], $forceNewInstance, $share);
 		return $param;
 	}
 
@@ -228,7 +247,7 @@ class DiContainer implements \ArrayAccess{
 						continue 2;
 					}
 				}
-				if ($class) $parameters[] = $sub ? $this->expand($rule->substitutions[$class], $share) : $this->create($class, [], $new, $share);
+				if ($class) $parameters[] = $sub ? $this->expand($rule->substitutions[$class], $share, $new) : $this->create($class, [], $new, $share);
 				else if ($args) $parameters[] = $this->expand(array_shift($args));
 			}
 			return $parameters;
@@ -261,7 +280,7 @@ class DiContainer implements \ArrayAccess{
 			if (isset($value['instanceof']))
 				$rule->instanceOf = (string) $value['instanceof'];
 			if ($value['newinstances']){
-				foreach (explode(',',$value['newinstances']) as $ni){
+				foreach(explode(',',$value['newinstances']) as $ni){
 					$rule->newInstances[] = (string) $ni;
 				}
 			}
