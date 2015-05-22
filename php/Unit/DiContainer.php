@@ -261,13 +261,32 @@ class DiContainer implements \ArrayAccess{
 		};
 	}
 	
-	private function getComponent($str, $createInstance = false) {
-		if (strpos((string) $str, '{') === 0)
-			return [new DiCallback($str,$this), 'run'];
-		elseif($createInstance)
-			return new DiInstance((string) $str);
-		else
-			return (string) $str;
+	private function getComponent($key, $param){
+		switch($key){
+			case 'concat':
+				$r = '';
+				foreach($param->children() as $k=>$p){
+					$r .= $this->getComponent($k,$p);
+				}
+				return $r;
+			break;
+			case 'instance':
+				return new DiInstance((string)$param);
+			break;
+			case 'callback':
+				return [new DiCallback((string)$param,$this), 'run'];
+			break;
+			case 'eval':
+				return eval(' return '.$param.';');
+			break;
+			case 'constant':
+				return constant((string)$param);
+			break;
+			default:
+			case 'string':
+				return (string)$param;
+			break;
+		}
 	}
 	function loadXml($xml,$push=false){
 		if (!($xml instanceof \SimpleXmlElement))
@@ -280,7 +299,7 @@ class DiContainer implements \ArrayAccess{
 				foreach($value->call as $name=>$call){
 					$callArgs = [];
 						foreach ($call as $key => $param)
-							$callArgs[] = $this->getComponent((string) $param, ($key == 'instance'));
+							$callArgs[] = $this->getComponent($key,$param);
 					$rule->call[] = [(string) $call['method'], $callArgs];
 				}
 			}
@@ -293,15 +312,15 @@ class DiContainer implements \ArrayAccess{
 			}
 			if ($value->substitute)
 				foreach ($value->substitute as $use)
-					$rule->substitutions[(string) $use['as']] = $this->getComponent((string) $use['use'], true);
+					$rule->substitutions[(string) $use['as']] = new DiInstance((string) $use['use']);
 			if ($value->construct){
-				foreach ($value->construct->param as $child){
-					$rule->constructParams[] = $this->getComponent((string) $child);
+				foreach ($value->construct->children() as $key=>$param){
+					$rule->constructParams[] = $this->getComponent($key,$param);
 				}
 			}
 			if ($value->shareinstance){
 				foreach(explode(',',$value['shareinstance']) as $ni){
-					$rule->shareInstances[] = $this->getComponent((string) $share);
+					$rule->shareInstances[] = (string) $share;
 				}
 			}
 			$this->addRule((string) $value['name'], $rule, $push);

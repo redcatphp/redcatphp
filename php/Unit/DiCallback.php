@@ -6,7 +6,7 @@ class DiCallback {
 		$this->str = $str;
 	}
 	public function run(\Unit\DiContainer $dic) {
-		$parts = explode('::', trim($this->str, '{}'));
+		$parts = explode('::', $this->str);
 		$object = $dic->create(array_shift($parts));
 		while ($var = array_shift($parts)) {
 			if (strpos($var, '(') !== false) {
