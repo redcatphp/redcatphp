@@ -144,12 +144,14 @@ class DiContainer implements \ArrayAccess{
 	}
 	
 	function setRule($name, DiRule $rule) {
-		$this->rules[ltrim(strtolower($name), '\\')] = $rule;
+		$name = ltrim(strtolower($name), '\\');
+		$this->rules[$name] = $rule;
 	}
 	function addRule($name, $rule = [], $push = false) {
 		$rule = (object)$rule;
-		if(!isset($this->rules[ltrim(strtolower($name), '\\')])
-			&&!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name)
+		$name = ltrim(strtolower($name), '\\');
+		if(!isset($this->rules[$name])
+			&&!preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $name)
 			&&$rule->instanceOf
 			&&$this->getRule($rule->instanceOf)!==$this->getRule('*')
 		){
