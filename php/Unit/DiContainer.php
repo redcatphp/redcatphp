@@ -159,9 +159,9 @@ class DiContainer implements \ArrayAccess{
 		$cascade = clone $this->getRule($cascade);
 		foreach($rule as $k=>$v){
 			if($k=='substitutions'){
-				foreach($v as $use=>$as){
+				foreach($v as $as=>$use){
 					if(!is_object($as)){
-						$v[$use] = new DiInstance($as);
+						$v[$as] = new DiInstance($use);
 					}
 				}
 			}
