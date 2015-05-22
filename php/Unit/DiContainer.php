@@ -199,17 +199,21 @@ class DiContainer implements \ArrayAccess{
 	}
 
 	function create($component, array $args = [], $forceNewInstance = false, $share = []) {
-		if (!$forceNewInstance && isset($this->instances[$component]))
-			return $this->instances[$component];
-		if (empty($this->cache[$component])) {
+		$instance = $component;
+		if(func_num_args()>1){
+			$instance .= '.'.self::hashArguments($args);
+		}
+		if (!$forceNewInstance && isset($this->instances[$instance]))
+			return $this->instances[$instance];
+		if (empty($this->cache[$instance])) {
 			$rule = $this->getRule($component);
 			$class = new \ReflectionClass($rule->instanceOf ?: $component);
 			$constructor = $class->getConstructor();
 			$params = $constructor ? $this->getParams($constructor, $rule) : null;
 
-			$this->cache[$component] = function($args, $share) use ($component, $rule, $class, $constructor, $params) {
+			$this->cache[$instance] = function($args, $share) use ($instance, $rule, $class, $constructor, $params) {
 				if ($rule->shared) {
-					$this->instances[$component] = $object = $class->newInstanceWithoutConstructor();
+					$this->instances[$instance] = $object = $class->newInstanceWithoutConstructor();
 					if ($constructor) $constructor->invokeArgs($object, $params($args, $share));
 				}
 				else $object = $params ? (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share)) : new $class->name;
@@ -217,7 +221,7 @@ class DiContainer implements \ArrayAccess{
 				return $object;
 			};
 		}
-		return $this->cache[$component]($args, $share);
+		return $this->cache[$instance]($args, $share);
 	}
 
 	private function expand($param, array $share = [], $forceNewInstance=false) {
@@ -328,5 +332,25 @@ class DiContainer implements \ArrayAccess{
 	}
 	function createRule($name){
 		return new DiRule($name);
+	}
+	
+	private static function hashArguments($args){
+		static $storage = null;
+		if(!isset($storage))
+			$storage = new \SplObjectStorage();
+		$hash = [];
+		foreach($args as $arg){
+			if(is_array($arg)){
+				$hash[] = self::hashArguments($arg);
+			}
+			elseif(is_object($arg)){
+				$storage->attach($arg);
+				$hash[] = spl_object_hash($arg);
+			}
+			else{
+				$hash[] = sha1($arg);
+			}
+		}
+		return sha1(implode('.',$hash));
 	}
 }
