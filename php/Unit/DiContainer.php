@@ -150,16 +150,13 @@ class DiContainer implements \ArrayAccess{
 	function addRule($name, $rule = [], $push = false) {
 		$rule = (object)$rule;
 		$name = ltrim(strtolower($name), '\\');
-		if(!isset($this->rules[$name])
-			&&!preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $name)
-			&&$rule->instanceOf
-			&&$this->getRule($rule->instanceOf)!==$this->getRule('*')
-		){
-			$cascade = clone $this->getRule($rule->instanceOf);
+		if(!isset($this->rules[$name])&&isset($rule->instanceOf)){
+			$cascade = $rule->instanceOf;
 		}
 		else{
-			$cascade = clone $this->getRule($name);
+			$cascade = $name;
 		}
+		$cascade = clone $this->getRule($cascade);
 		foreach($rule as $k=>$v){
 			if($k=='substitutions'){
 				foreach($v as $use=>$as){
@@ -239,7 +236,7 @@ class DiContainer implements \ArrayAccess{
 			if ($rule->shareInstances){
 				$shareInstances = [];
 				foreach($rule->shareInstances as $v){
-					if($this->getRule($v)===$this->getRule('*')&&isset($rule->substitutions[$v])){
+					if(isset($rule->substitutions[$v])){
 						$v = $rule->substitutions[$v]->name;
 					}
 					$new = in_array($v,$rule->newInstances);
