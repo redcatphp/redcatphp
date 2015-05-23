@@ -1,10 +1,10 @@
-<?php namespace KungFu\Cms\Dispatcher;
-use Unit\Dispatcher;
-use Unit\Route\Extension;
-use KungFu\Cms\Route\ByTml;
+<?php namespace KungFu\Cms\Router;
+use Unit\Router;
+use Unit\RouteMatch\Extension;
+use KungFu\Cms\RouteMatch\ByTml;
 use KungFu\Cms\Controller\L10n as Controller_L10n;
 use KungFu\Cms\Controller\Templix;
-class L10n extends Dispatcher{
+class L10n extends Router{
 	protected $Controller;
 	function __construct($config=[]){
 		$this->append(new ByTml('plugin'),$this);

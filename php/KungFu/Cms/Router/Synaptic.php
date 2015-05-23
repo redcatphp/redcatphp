@@ -1,8 +1,8 @@
-<?php namespace KungFu\Cms\Dispatcher;
-use Unit\Dispatcher;
+<?php namespace KungFu\Cms\Router;
+use Unit\Router;
 use Stylish\Server as Stylish_Server;
 use KungFu\Tools\JSMin;
-class Synaptic extends Dispatcher{
+class Synaptic extends Router{
 	
 	const DEV_JS = 2;
 	const DEV_CSS = 4;

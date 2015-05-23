@@ -1,14 +1,10 @@
-<?php namespace Unit\Route;
-use Unit\Route;
-class Extension extends Route{
-	private $match;
+<?php namespace Unit\RouteMatch;
+use Unit\RouteMatch;
+class Extension extends RouteMatch{
 	private $extension;
-	function __construct($match){
-		$this->match = $match;
+	function __invoke($uri){
 		if(is_string($this->match))
 			$this->match = explode('|',$this->match);
-	}
-	function __invoke($uri){
 		$e = pathinfo($uri,PATHINFO_EXTENSION);
 		$this->extension = strtolower($e);
 		if($e&&in_array($this->extension,$this->match)){

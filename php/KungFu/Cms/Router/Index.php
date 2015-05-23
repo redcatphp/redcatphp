@@ -1,12 +1,12 @@
-<?php namespace KungFu\Cms\Dispatcher;
-use Unit\Dispatcher;
-use Unit\Route\Extension;
-use KungFu\Cms\Route\ByTml;
-use KungFu\Cms\Route\L10n as Route_L10n;
+<?php namespace KungFu\Cms\Router;
+use Unit\Router;
+use Unit\RouteMatch\Extension;
+use KungFu\Cms\RouteMatch\ByTml;
+use KungFu\Cms\RouteMatch\L10n as RouteMatch_L10n;
 use KungFu\Cms\Controller\L10n as Controller_L10n;
 use KungFu\Cms\Controller\Templix;
 use KungFu\Cms\Service\Service;
-class Index extends Dispatcher{
+class Index extends Router{
 	protected $Templix;
 	public $i18nConvention;
 	public $backoffice = 'backend/';
@@ -14,20 +14,20 @@ class Index extends Dispatcher{
 		foreach($config as $k=>$v){
 			$this->$k = $v;
 		}
+		if($this->backoffice)
+			$this->append($this->backoffice,function(){
+				return new Backoffice();
+			});
 		$this->append('service/',new Service());
 		$this->append(new Extension('css|js|png|jpg|jpeg|gif'),function(){
 			return new Synaptic();
 		});
 		if($this->i18nConvention)
-			$this->append(new Route_L10n($this),function(){
+			$this->append(new RouteMatch_L10n($this),function(){
 				return new L10n();
 			});
 		$this->append(new ByTml('plugin'),$this);
 		$this->append(new ByTml(),$this);
-		if($this->backoffice)
-			$this->prepend($this->backoffice,function(){
-				return new Backoffice();
-			});
 	}
 	function Templix(){
 		return $this->Templix?:$this->Templix = new Templix();

@@ -2,7 +2,7 @@
 class Session{
 	private $id;
 	private $key;
-	private $name = 'surikat';
+	private $name;
 	private $maxAttempts = 10;
 	private $cookieLifetime = 0;
 	private $cookiePath;
@@ -26,16 +26,12 @@ class Session{
     protected $baseHref;
 	protected $suffixHref;
 	protected $server;
-	function __construct($name=null,$saveRoot=null,SessionHandlerInterface $sessionHandler=null,$server=null){
-		if(!$saveRoot){
-			if(defined('SURIKAT_CWD'))
-				$cwd = SURIKAT_CWD;
-			else
-				$cwd = getcwd();
-			$saveRoot = $cwd.'/.tmp/sessions/';
-		}
-		if($name)
-			$this->name = $name;
+	function __construct(SessionHandlerInterface $sessionHandler,
+		$name,
+		$saveRoot,
+		$server=null
+	){
+		$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
 		$this->attemptsPath = getcwd().'/tmp/attempts/';

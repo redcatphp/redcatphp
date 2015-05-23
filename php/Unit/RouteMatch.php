@@ -1,10 +1,12 @@
 <?php namespace Unit;
-class Route implements \ArrayAccess,\Countable{
+abstract class RouteMatch implements \ArrayAccess,\Countable{
 	protected $path;
 	protected $uriParams = [];
-	function __invoke($uri){
-		
+	protected $match;
+	function __construct($match){
+		$this->match = $match;
 	}
+	abstract function __invoke($uri);
 	function getPath(){
 		return $this->path;
 	}
@@ -38,11 +40,5 @@ class Route implements \ArrayAccess,\Countable{
 	}
 	function offsetUnset($k){
 		return $this->__unset($k);
-	}
-	static function __set_state($a){
-		$uri = new static();
-		foreach($a as $k=>$v)
-			$uri->$k = $v;
-		return $uri;
 	}
 }

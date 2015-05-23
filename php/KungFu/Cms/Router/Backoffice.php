@@ -1,12 +1,12 @@
-<?php namespace KungFu\Cms\Dispatcher;
+<?php namespace KungFu\Cms\Router;
 use Authentic\Auth;
 use Authentic\Session;
 use KungFu\Cms\Controller\Templix;;
-use Unit\Dispatcher;
-use Unit\Route\Extension;
-use KungFu\Cms\Route\ByTml;
-use KungFu\Cms\Route\ByPhpX;
-class Backoffice extends Dispatcher{
+use Unit\Router;
+use Unit\RouteMatch\Extension;
+use KungFu\Cms\RouteMatch\ByTml;
+use KungFu\Cms\RouteMatch\ByPhpX;
+class Backoffice extends Router{
 	protected $Templix;
 	public $pathFS = 'plugin/backoffice';
 	function __construct(){
