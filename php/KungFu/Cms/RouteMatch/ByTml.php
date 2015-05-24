@@ -1,5 +1,5 @@
 <?php namespace KungFu\Cms\RouteMatch;
-class ByTml extends Faceted{
+class ByTml {
 	protected $match;
 	protected $dir = 'template';
 	protected $dirFS = 'template';

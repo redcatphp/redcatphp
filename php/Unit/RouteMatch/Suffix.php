@@ -1,6 +1,9 @@
 <?php namespace Unit\RouteMatch;
-use Unit\RouteMatch;
-class Suffix extends RouteMatch{
+class Suffix{
+	private $match;
+	function __construct($match){
+		$this->match = $match;
+	}
 	function __invoke($uri){
 		$match = ltrim($this->match,'/');
 		if(strrpos($uri,$match)===strlen($uri)-strlen($match)){

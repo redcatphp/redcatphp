@@ -1,6 +1,9 @@
 <?php namespace Unit\RouteMatch;
-use Unit\RouteMatch;
-class Regex extends RouteMatch{
+class Regex{
+	private $match;
+	function __construct($match){
+		$this->match = $match;
+	}
 	function __invoke($uri){
 		if(preg_match($this->match, $uri, $params)){
 			array_shift($params);

@@ -16,7 +16,7 @@ class Service {
 	}
 	protected static function __funcToCm($func){
 		$pos = strpos($func,'_');
-		$c = 'KungFu\Cms\Service\Service_';
+		$c = 'KungFu\Cms\Service\Service';
 		if($pos){
 			$c .= ucfirst(substr($func,0,$pos));
 			$m = lcfirst(self::StudlyCaps(substr($func,$pos+1)));

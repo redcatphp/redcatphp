@@ -605,8 +605,8 @@ class Auth{
 		$name = $_SERVER['SERVER_NAME'];
 		$ssl = isset($_SERVER["HTTPS"])&&$_SERVER["HTTPS"]==="on";
 		$port = isset($_SERVER['SERVER_PORT'])&&$_SERVER['SERVER_PORT']&&((!$ssl&&(int)$_SERVER['SERVER_PORT']!=80)||($ssl&&(int)$_SERVER['SERVER_PORT']!=443))?':'.$_SERVER['SERVER_PORT']:'';
-		if(isset($_SERVER['SURIKAT_CWD'])){
-			$suffixHref = ltrim($_SERVER['SURIKAT_CWD'],'/');
+		if(isset($_SERVER['SURIKAT_URI'])){
+			$suffixHref = ltrim($_SERVER['SURIKAT_URI'],'/');
 		}
 		else{
 			$docRoot = $_SERVER['DOCUMENT_ROOT'].'/';

@@ -1,6 +1,6 @@
 <?php namespace KungFu\Cms\RouteMatch;
 use Unit\Url;
-class L10n extends Faceted {
+class L10n {
 	protected $lang;
 	protected $langMap;
 	protected $Url;

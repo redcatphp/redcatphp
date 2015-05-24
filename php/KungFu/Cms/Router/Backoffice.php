@@ -1,4 +1,5 @@
-<?php namespace KungFu\Cms\Router;
+<?php
+namespace KungFu\Cms\Router;
 use Authentic\Auth;
 use Authentic\Session;
 use KungFu\Cms\Controller\Templix;;

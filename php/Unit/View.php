@@ -13,8 +13,8 @@ class View {
 	function getTemplate(){
 		return $this->template;
 	}
-	function display(){
-        $template = $this->model->getTemplate();
+	function __invoke($routeParams=null){
+		$template = $this->model->getTemplate();
         return $this->template->display($template);
     }
 }

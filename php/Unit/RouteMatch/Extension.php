@@ -1,17 +1,15 @@
 <?php namespace Unit\RouteMatch;
-use Unit\RouteMatch;
-class Extension extends RouteMatch{
-	private $extension;
+class Extension{
+	private $match;
+	function __construct($match){
+		$this->match = $match;
+	}
 	function __invoke($uri){
 		if(is_string($this->match))
 			$this->match = explode('|',$this->match);
-		$e = pathinfo($uri,PATHINFO_EXTENSION);
-		$this->extension = strtolower($e);
+		$e = strtolower(pathinfo($uri,PATHINFO_EXTENSION));
 		if($e&&in_array($this->extension,$this->match)){
-			return (string)substr($uri,0,-1*(strlen($e)+1));
+			return [(string)substr($uri,0,-1*(strlen($e)+1)),$e];
 		}
-	}
-	function extension(){
-		return $this->extension;
 	}
 }

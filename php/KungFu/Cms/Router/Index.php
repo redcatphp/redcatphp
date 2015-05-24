@@ -1,9 +1,5 @@
 <?php namespace KungFu\Cms\Router;
 use Unit\Router;
-use Unit\RouteMatch\Extension;
-use KungFu\Cms\RouteMatch\ByTml;
-use KungFu\Cms\RouteMatch\L10n as RouteMatch_L10n;
-use KungFu\Cms\Controller\L10n as Controller_L10n;
 use KungFu\Cms\Controller\Templix;
 use KungFu\Cms\Service\Service;
 class Index extends Router{
@@ -15,19 +11,13 @@ class Index extends Router{
 			$this->$k = $v;
 		}
 		if($this->backoffice)
-			$this->append($this->backoffice,function(){
-				return new Backoffice();
-			});
-		$this->append('service/',new Service());
-		$this->append(new Extension('css|js|png|jpg|jpeg|gif'),function(){
-			return new Synaptic();
-		});
+			$this->append($this->backoffice,'new:Backoffice');
+		$this->append('service/','new:Service');
+		$this->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:KungFu\Cms\Router\Synaptic');
 		if($this->i18nConvention)
-			$this->append(new RouteMatch_L10n($this),function(){
-				return new L10n();
-			});
-		$this->append(new ByTml('plugin'),$this);
-		$this->append(new ByTml(),$this);
+			$this->append('new:KungFu\Cms\RouteMatch\L10n','new:KungFu\Cms\Controller\L10n');
+		$this->append(['new:KungFu\Cms\RouteMatch\ByTml','plugin'],$this);
+		$this->append(['new:KungFu\Cms\RouteMatch\ByTml','template'],$this);
 	}
 	function Templix(){
 		return $this->Templix?:$this->Templix = new Templix();

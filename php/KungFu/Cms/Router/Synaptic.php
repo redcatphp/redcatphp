@@ -2,7 +2,7 @@
 use Unit\Router;
 use Stylish\Server as Stylish_Server;
 use KungFu\Tools\JSMin;
-class Synaptic extends Router{
+class Synaptic {
 	
 	const DEV_JS = 2;
 	const DEV_CSS = 4;

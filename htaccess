@@ -177,27 +177,27 @@ RewriteRule "(^|/)\." - [F]
 
 #Get the current CWD
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
-RewriteRule ^.*$ - [E=SURIKAT_CWD:%2]
+RewriteRule ^.*$ - [E=SURIKAT_URI:%2]
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
 RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
-RewriteRule ^robots\.txt$ %{ENV:SURIKAT_CWD}Surikat/robots_cdn.txt [L]
+RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}Surikat/robots_cdn.txt [L]
 
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
-RewriteRule ^robots\.txt$ %{ENV:SURIKAT_CWD}Surikat/robots_ssl.txt [L]
+RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}Surikat/robots_ssl.txt [L]
 
 #Surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/Surikat/
-RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_CWD}Surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|php|txt|xml|html)$ %{ENV:SURIKAT_CWD}Surikat/$1.$2 [L,QSA]
+RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}Surikat/$1.$2 -f
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|php|txt|xml|html)$ %{ENV:SURIKAT_URI}Surikat/$1.$2 [L,QSA]
 
 #Surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/Surikat/
-RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_CWD}Surikat/%{REQUEST_URI}/index.php -f
-RewriteRule ^(.*)$ %{ENV:SURIKAT_CWD}Surikat/$1/index.php [L,QSA]
+RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}Surikat/%{REQUEST_URI}/index.php -f
+RewriteRule ^(.*)$ %{ENV:SURIKAT_URI}Surikat/$1/index.php [L,QSA]
 
 #Avoid Duplicate Content on by removing index.php access
 RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]

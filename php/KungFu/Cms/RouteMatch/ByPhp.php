@@ -1,6 +1,5 @@
 <?php namespace KungFu\Cms\RouteMatch;
-use Unit\RouteMatch;
-class ByPhp extends RouteMatch{
+class ByPhp{
 	protected $dir = '';
 	protected $dirFS = '';
 	protected $dirs = ['','Surikat/'];

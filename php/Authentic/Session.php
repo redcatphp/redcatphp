@@ -330,8 +330,8 @@ class Session{
 	}
 	function getSuffixHref(){
 		if(!isset($this->suffixHref)){
-			if(isset($this->server['SURIKAT_CWD'])){
-				$this->suffixHref = ltrim($this->server['SURIKAT_CWD'],'/');				
+			if(isset($this->server['SURIKAT_URI'])){
+				$this->suffixHref = ltrim($this->server['SURIKAT_URI'],'/');				
 			}
 			else{
 				$docRoot = $this->server['DOCUMENT_ROOT'].'/';

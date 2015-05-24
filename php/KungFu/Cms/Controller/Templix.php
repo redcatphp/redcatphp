@@ -3,7 +3,6 @@ namespace KungFu\Cms\Controller;
 use Templix\Templix as Templix_Templix;
 use KungFu\TemplixPlugin\Toolbox;
 class Templix{
-	protected $RouteMatch;
 	protected $path;
 	protected $params;
 	protected $Templix;
@@ -30,8 +29,8 @@ class Templix{
 		}
 		exit;
 	}
-	function __invoke($params,$path,$RouteMatch){
-		$this->RouteMatch = $RouteMatch;
+	function __invoke($params,$path){
+		$RouteMatch = array_shift($params);
 		$this->path = $path;
 		$this->params = $params;
 		
@@ -43,7 +42,6 @@ class Templix{
 				'Surikat/'.$hook.'/',
 			]);
 		}
-		$this->Templix()->RouteMatch = $this->RouteMatch;
 		$this->Templix()->onCompile(function($Tml){
 			if($Tml->Template->getParent())
 				return;
