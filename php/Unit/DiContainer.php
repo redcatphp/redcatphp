@@ -182,7 +182,7 @@ class DiContainer implements \ArrayAccess{
 			$instance .= '.'.self::hashArguments($args);
 		}
 		if(!$forceNewInstance&&isset($this->instances[$instance])) return $this->instances[$instance];
-		if(empty($this->cache[$name])) $this->cache[$instance] = $this->getClosure($name, $this->getRule($name), $instance);
+		if(empty($this->cache[$name])) $this->cache[$name] = $this->getClosure($name, $this->getRule($name), $instance);
 		return $this->cache[$name]($args, $share);
 	}
 
