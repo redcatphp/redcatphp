@@ -143,6 +143,27 @@ class DiContainer implements \ArrayAccess{
 		return $this;
 	}
 	
+	function objectify($a){
+		if(is_object($a))
+			return $a;
+		if(is_array($a)){
+			if(is_array($a[0])){
+				$a[0] = $this->objectify($a[0]);
+				return $a;
+			}
+			else{
+				$args = $a;
+				$s = array_shift($args);
+			}
+		}
+		else{
+			$args = [];
+			$s = $a;
+		}
+		if(strpos($s,'new:')===0)
+			$a = $this->create(substr($s,4),false,$args);
+		return $a;
+	}
 	function extendRule($name, $key, $value, $push = null){
 		if(!isset($push))
 			$push = is_array($this->rules['*'][$key]);
@@ -206,10 +227,14 @@ class DiContainer implements \ArrayAccess{
 	}
 
 	private function expand($param, array $share = []) {
-		if (is_array($param) && isset($param['instance'])) {
-			return is_callable($param['instance']) ? call_user_func_array($param['instance'], (isset($param['params']) ? $this->expand($param['params']) : [$this])) : $this->create($param['instance'], [], false, $share);
+		if (is_array($param)){
+			if(isset($param['instance'])) {
+				return is_callable($param['instance']) ? call_user_func_array($param['instance'], (isset($param['params']) ? $this->expand($param['params']) : [$this])) : $this->create($param['instance'], [], false, $share);
+			}
+			else{
+				foreach ($param as &$value) $value = $this->expand($value, $share);
+			}
 		}
-		else if (is_array($param)) foreach ($param as &$value) $value = $this->expand($value, $share);
 		return $param;
 	}
 
