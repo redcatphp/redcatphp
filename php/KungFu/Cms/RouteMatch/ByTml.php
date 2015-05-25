@@ -19,13 +19,12 @@ class ByTml {
 	function __invoke($uri){
 		if($this->dirHook&&strpos($uri,$this->dirHook.'/')!==0)
 			return;
-		$params = parent::__invoke($uri);
 		if($this->dirHook)
-			$params[0] = substr($params[0],strlen($this->dirHook));
-		$file = $this->dirFS.'/'.ltrim($params[0],'/').'.tml';
+			$uri = substr($uri,strlen($this->dirHook));
+		$file = $this->dirFS.'/'.ltrim($uri,'/').'.tml';
 		foreach($this->dirs as $d){
 			if(	is_file($d.$file) )
-				return $params;
+				return $uri;
 		}
 	}
 	function getDirHook(){

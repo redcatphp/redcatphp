@@ -7,18 +7,24 @@ class Router {
 	function __construct(DiContainer $di){
 		$this->di = $di;
 	}
-	function append($pattern,$callback,$index=0){
-		return $this->route($pattern,$callback,$index);
+	function map($map,$index=0,$prepend=false){
+		foreach($map as list($match,$route)){
+			$this->route($match,$route,$index,$prepend);
+		}
+		return $this;
 	}
-	function prepend($pattern,$callback,$index=0){
-		return $this->route($pattern,$callback,$index,true);
+	function append($match,$route,$index=0){
+		return $this->route($match,$route,$index);
 	}
-	function find($uri){
+	function prepend($match,$route,$index=0){
+		return $this->route($match,$route,$index,true);
+	}
+	function find($uri,$server=null){
 		$uri = ltrim($uri,'/');
 		ksort($this->routes);
 		foreach($this->routes as $group){
 			foreach($group as list($match,$route)){
-				$routeParams = call_user_func($this->di->objectify($match),$uri);
+				$routeParams = call_user_func($this->di->objectify($match),$uri,$server);
 				if($routeParams!==null){
 					$this->route = $route;
 					$this->routeParams = $routeParams;
@@ -28,37 +34,13 @@ class Router {
 		}
 	}
 	function display(){
-		$callback = $this->route;
-		while(is_callable($callback=$this->di->objectify($callback))){
-			$callback =	call_user_func($callback,$this->routeParams);
+		$route = $this->route;
+		while(is_callable($route=$this->di->objectify($route))){
+			$route = call_user_func($route,$this->routeParams);
 		}
 	}
-	function run($uri){
-		if($this->find($uri)){
-			$this->display();
-			return true;
-		}
-	}
-	function runFromGlobals(){
-		if(isset($_SERVER['SURIKAT_URI'])){
-			$s = strlen($_SERVER['SURIKAT_URI'])-1;
-			$p = strpos($_SERVER['REQUEST_URI'],'?');
-			if($p===false)
-				$path = substr($_SERVER['REQUEST_URI'],$s);
-			else
-				$path = substr($_SERVER['REQUEST_URI'],$s,$p-$s);
-			$path = urldecode($path);
-		}
-		else{
-			$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
-		}
-		$this->run($path);
-	}
-	function __invoke(){
-		return $this->run(func_get_arg(0));
-	}
-	private function route($route,$callback,$index=0,$prepend=false){
-		$pair = [$this->routeType($route),$callback];
+	private function route($match,$route,$index=0,$prepend=false){
+		$pair = [$this->matchType($match),$route];
 		if(!isset($this->routes[$index]))
 			$this->routes[$index] = [];
 		if($prepend)
@@ -67,15 +49,15 @@ class Router {
 			$this->routes[$index][] = $pair;
 		return $this;
 	}
-	private function routeType($route){
-		if(is_string($route)){
-			if(strpos($route,'/^')===0&&strrpos($route,'$/')-strlen($route)===-2){
-				return ['new:Unit\RouteMatch\Regex',$route];
+	private function matchType($match){
+		if(is_string($match)){
+			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
+				return ['new:Unit\RouteMatch\Regex',$match];
 			}
 			else{
-				return ['new:Unit\RouteMatch\Prefix',$route];
+				return ['new:Unit\RouteMatch\Prefix',$match];
 			}
 		}
-		return $route;
+		return $match;
 	}
 }
