@@ -161,7 +161,7 @@ class DiContainer implements \ArrayAccess{
 			$s = $a;
 		}
 		if(strpos($s,'new:')===0)
-			$a = $this->create(substr($s,4),false,$args);
+			$a = $this->create(substr($s,4),$args,[]);
 		return $a;
 	}
 	function extendRule($name, $key, $value, $push = null){
