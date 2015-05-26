@@ -161,14 +161,14 @@ class DiContainer implements \ArrayAccess{
 			$s = $a;
 		}
 		if(strpos($s,'new:')===0)
-			$a = $this->create(substr($s,4),$args,[]);
+			$a = $this->create(substr($s,4),$args);
 		return $a;
 	}
 	function extendRule($name, $key, $value, $push = null){
 		if(!isset($push))
 			$push = is_array($this->rules['*'][$key]);
 		$rule = $this->getRule($name);
-		if($key=='instanceOf'&&$rule===$this->rules['*'])
+		if($key==='instanceOf'&&is_string($value)&&$rule===$this->rules['*'])
 			$rule = $this->getRule($value);
 		if($push){
 			if(is_array($value)){
@@ -185,7 +185,7 @@ class DiContainer implements \ArrayAccess{
 	}
 	function addRule($name, array $rule) {
 		$oldRule = $this->getRule($name);
-		if(isset($rule['instanceOf'])&&$this->rules['*']===$oldRule)
+		if(isset($rule['instanceOf'])&&is_string($rule['instanceOf'])&&$this->rules['*']===$oldRule)
 			$oldRule = $this->getRule($rule['instanceOf']);
 		$this->rules[$name] = self::merge_recursive($oldRule, $rule);
 	}
@@ -211,17 +211,24 @@ class DiContainer implements \ArrayAccess{
 		$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
 		$constructor = $class->getConstructor();
 		$params = $constructor ? $this->getParams($constructor, $rule) : null;
-		if ($rule['shared']) $closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
-			$this->instances[$instance] = $class->newInstanceWithoutConstructor();
-			if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
-			return $this->instances[$instance];
-		};
-		else if ($params) $closure = function (array $args, array $share) use ($class, $params) { return (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share)); };
-		else $closure = function () use ($class) { return new $class->name;	};
-
+		if ($rule['shared']){
+			$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
+				$this->instances[$instance] = $class->newInstanceWithoutConstructor();
+				if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
+				return $this->instances[$instance];
+			};
+		}
+		else if ($params){
+			$closure = function (array $args, array $share) use ($class, $params) {
+				return (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share));
+			};
+		}
+		else{
+			$closure = function () use ($class) { return new $class->name;	};
+		 }
 		return $rule['call'] ? function (array $args, array $share) use ($closure, $class, $rule) {
 			$object = $closure($args, $share);
-			foreach ($rule['call'] as $call) call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand($call[1])));
+			foreach ($rule['call'] as $call) call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
 			return $object;
 		} : $closure;
 	}
@@ -229,7 +236,12 @@ class DiContainer implements \ArrayAccess{
 	private function expand($param, array $share = []) {
 		if (is_array($param)){
 			if(isset($param['instance'])) {
-				return is_callable($param['instance']) ? call_user_func_array($param['instance'], (isset($param['params']) ? $this->expand($param['params']) : [$this])) : $this->create($param['instance'], [], false, $share);
+				if(is_callable($param['instance'])){
+					return call_user_func_array($param['instance'], (isset($param['params']) ? $this->expand($param['params']) : [$this]));
+				}
+				else{
+					return $this->create($param['instance'], [], false, $share);
+				}
 			}
 			else{
 				foreach ($param as &$value) $value = $this->expand($value, $share);
@@ -242,34 +254,76 @@ class DiContainer implements \ArrayAccess{
 		$paramInfo = [];
 		foreach ($method->getParameters() as $param) {
 			$class = $param->getClass() ? $param->getClass()->name : null;
-			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule['substitutions']), in_array($class, $rule['newInstances'])];
+			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule['substitutions']), in_array($class, $rule['newInstances']),$param->getName(),$param->isDefaultValueAvailable()?$param->getDefaultValue():null];
 		}
 		return function (array $args, array $share = []) use ($paramInfo, $rule) {
-			//if ($rule['shareInstances']) $share = array_merge($share, array_map([$this, 'create'], $rule['shareInstances']));
 			if(!empty($rule['shareInstances'])){
 				$shareInstances = [];
 				foreach($rule['shareInstances'] as $v){
 					if(isset($rule['substitutions'][$v])){
 						$v = $rule['substitutions'][$v];
 					}
-					$new = in_array($v,$rule['newInstances']);
-					$shareInstances[] = $this->create($v,[],$new);
+					if(is_object($v)){
+						$shareInstances[] = $v;
+					}
+					else{
+						$new = in_array($v,$rule['newInstances']);
+						$shareInstances[] = $this->create($v,[],$new);
+					}
 				}
 				$share = array_merge($share, $shareInstances);
 			}
-			if ($share || $rule['constructParams']) $args = array_merge($args, $this->expand($rule['constructParams']), $share);
-			$parameters = [];
-
-			foreach ($paramInfo as list($class, $allowsNull, $sub, $new)) {
-				if ($args) foreach ($args as $i => $arg) {
-					if ($class && $arg instanceof $class || ($arg === null && $allowsNull)) {
-						$parameters[] = array_splice($args, $i, 1)[0];
-						continue 2;
+			if($share||!empty($rule['constructParams'])){
+				$nArgs = $args;
+				foreach($this->expand($rule['constructParams']) as $k=>$v){
+					if(is_integer($k)){
+						$nArgs[] = $v;
+					}
+					elseif(!isset($args[$k])){
+						$nArgs[$k] = $v;
 					}
 				}
-				if ($class) $parameters[] = $sub ? $this->expand(['instance'=>$rule['substitutions'][$class]], $share) : $this->create($class, [], $new, $share);
-				else if ($args) $parameters[] = $this->expand(array_shift($args));
+				$args = array_merge($nArgs, $share);
 			}
+			$parameters = [];
+			if (!empty($args)){
+				foreach ($paramInfo as $j=>list(,,,,$name,$default)) {
+					if(false!==$offset=array_search($name, array_keys($args),true)){
+						$parameters[$j] = current(array_splice($args, $offset, 1));
+					}
+				}
+			}
+			foreach ($paramInfo as $j=>list($class, $allowsNull, $sub, $new, $name, $default)) {
+				if(array_key_exists($j,$parameters))
+					continue;
+				if($class){
+					if (!empty($args)){
+						foreach($args as $i=>$arg){
+							if($arg instanceof $class || ($arg === null && $allowsNull) ){
+								$parameters[$j] = $arg;
+								unset($args[$i]);
+								continue 2;
+							}
+						}
+					}
+					if($sub){
+						if(is_string($rule['substitutions'][$class])){
+							$rule['substitutions'][$class] = ['instance'=>$rule['substitutions'][$class]];
+						}
+						$parameters[$j] = $this->expand($rule['substitutions'][$class], $share);
+					}
+					else{
+						$parameters[$j] = $this->create($class, [], $new, $share);
+					}
+				}
+				elseif(!empty($args)){
+					$parameters[$j] = $this->expand(array_shift($args));
+				}
+				else{
+					$parameters[$j] = $default;
+				}
+			}
+			ksort($parameters);
 			return $parameters;
 		};
 	}
@@ -379,8 +433,8 @@ class DiContainer implements \ArrayAccess{
 			if(!is_array($array2)){
 				continue;
 			}
-			foreach($array2 as $key => &$value){
-				if(is_array($value)&&isset($merged [$key])&&is_array($merged[$key])){
+			foreach($array2 as $key => $value){
+				if(is_array($value)&&isset($merged[$key])&&is_array($merged[$key])){
 					$merged[$key] = self::merge_recursive($merged[$key],$value);
 				}
 				else{
