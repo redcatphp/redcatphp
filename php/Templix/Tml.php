@@ -897,7 +897,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		if($this->Template)
 			$namespaces = $this->Template->getPluginNamespace();
 		else
-			$namespaces = Template::getPluginNamespaceDefault();
+			$namespaces = Templix::getPluginNamespaceDefault();
 		foreach($namespaces as $ns){
 			if(false!==$p=strrpos($n,':')){
 				$c = $ns.'\\'.ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ',substr($n,0,$p))))).'\\Tml'.ucfirst(substr($n,$p+1));

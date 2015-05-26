@@ -2,31 +2,26 @@
 namespace KungFu\Cms\FrontController;
 use Authentic\Auth;
 use Authentic\Session;
-use KungFu\Cms\Controller\Templix;;
-use Unit\FrontController;
-use Unit\RouteMatch\Extension;
-use KungFu\Cms\RouteMatch\ByTml;
-use KungFu\Cms\RouteMatch\ByPhpX;
-class Backoffice extends FrontController{
-	protected $Templix;
+use Unit\Autoloader;
+use Unit\Router;
+use Unit\DiContainer;
+class Backoffice extends \Unit\FrontController{
 	public $pathFS = 'plugin/backoffice';
-	function __construct(){
+	function __construct(Router $router,DiContainer $di){
+		parent::__construct($router,$di);
 		$this
-			->append(['new:Extension','css|js|png|jpg|jpeg|gif'],['new:Synaptic',$this->pathFS])
-			->append(['new:ByTml','',$this->pathFS],function(){
+			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:KungFu\Cms\FrontController\Synaptic',$this->pathFS])
+			->append(['new:KungFu\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
 				$this->lock();
-				return $this->Templix();
+				$this->template();
 			})
-			->append(['new:ByPhpX','',$this->pathFS],function($paths){
+			->append(['new:KungFu\Cms\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
 				$this->lock();
 				list($dir,$file,$adir,$afile) = $paths;
 				chdir($adir);
 				include $file;
 			})
 		;
-	}
-	function Templix(){
-		return $this->Templix?:$this->Templix = new Templix();
 	}
 	function lock(){
 		$Session = new Session();
@@ -35,8 +30,7 @@ class Backoffice extends FrontController{
 		$Auth->lockServer(Auth::RIGHT_MANAGE);
 	}
 	function __invoke(){
-		global $SURIKAT;
-		$SURIKAT['Autoloader']->addNamespace('',SURIKAT.$this->pathFS.'/php');
+		Autoloader::getInstance()->addNamespace('',SURIKAT.$this->pathFS.'/php');
 		return $this->run(func_get_arg(0));
 	}
 }

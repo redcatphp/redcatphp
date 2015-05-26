@@ -1,12 +1,12 @@
 <?php
 namespace Unit;
-abstract class FrontController {
-	protected $router;
-	function __construct(Router $router){
+class FrontController {
+	private $router;
+	protected $di;
+	function __construct(Router $router,DiContainer $di){
 		$this->router = $router;
-		$this->build();
+		$this->di = $di;
 	}
-	abstract function build();
 	function map($map,$index=0,$prepend=false){
 		return $this->router->map($map,$index,$prepend);
 	}
@@ -35,7 +35,7 @@ abstract class FrontController {
 		else{
 			$path = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'';
 		}
-		$this->run($path,$_SERVER['SERVER_NAME']);
+		return $this->run($path,$_SERVER['SERVER_NAME']);
 	}
 	function __invoke($uri,$domain=null){
 		return $this->run($uri,$domain);

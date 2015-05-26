@@ -10,7 +10,7 @@ class TmlHttp extends \Templix\Tml{
 		}
 	}
 	function notFound(){
-		if(method_exists($this->Template,'error'))
-			$this->Template->error(404);
+		//if(method_exists($this->Template,'error'))
+			//$this->Template->error(404);
 	}
 }

@@ -24,13 +24,20 @@ class Toolbox{
 		}
 		$s = [];
 		$Tml->recursive(function($el)use($Tml,$head,$href,&$s){
-			if(
-				($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
-				&&!in_array($is,$s)
-				&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
-				&&Toolbox::getHttpResponseCode($this->getBaseHref().$href.strtolower($is).'.css')===200
-			)
-				$s[] = $is;
+			foreach($Tml->Template->getDirCwd() as $d){
+				if(
+					($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
+					&&!in_array($is,$s)
+					&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
+					&&(
+						is_file($d.$href.strtolower($is).'.css')
+						||is_file($d.$href.strtolower($is).'.scss')
+					)
+				){
+					$s[] = $is;
+					break;
+				}
+			}
 		});
 		foreach($s as $is)
 			$head->append('<link href="'.$href.strtolower($is).'.css" rel="stylesheet" type="text/css">');
@@ -47,10 +54,10 @@ class Toolbox{
 					$s->src = (strpos($s->src,'/')!==false?dirname($s->src).'/':'').pathinfo($s->src,PATHINFO_FILENAME).'.min.'.pathinfo($l->src,PATHINFO_EXTENSION);
 		}
 	}
-	static function getHttpResponseCode($theURL) {
-		$headers = get_headers($theURL);
-		return (int)substr($headers[0], 9, 3);
-	}
+	//static function getHttpResponseCode($theURL) {
+		//$headers = get_headers($theURL);
+		//return (int)substr($headers[0], 9, 3);
+	//}
 	function setCDN($Tml,$url=true){
 		if($url===true){
 			$prefix = 'cdn';

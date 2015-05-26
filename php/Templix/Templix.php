@@ -1,5 +1,4 @@
 <?php namespace Templix;
-use DomainException;
 class Templix {
 	
 	const DEV_TEMPLATE = 2;
@@ -25,7 +24,7 @@ class Templix {
 	protected $dirCompileSuffix = '';
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
-	private $devLevel = 0;
+	private $devLevel = 46;
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
@@ -137,10 +136,11 @@ class Templix {
 		return $this->path;
 	}
 	function prepare(){
-		if(!($file=$this->find()))
-			throw new DomainException('404');
+		$file = $this->find();
+		//if(!($file=$this->find()))
+			//throw new \DomainException('404');
 		$node = new Tml();
-		$node->setTemplate($this);
+		$node->setTemplate($this);		
 		$node->parse(file_get_contents($file));
 		ksort($this->compile);
 		foreach($this->compile as $callback)
@@ -246,7 +246,8 @@ class Templix {
 	}
 	function cacheRegen($file,$str){
 		$file = substr($file,0,-4);
-		file_put_contents($file,$str,LOCK_EX);
+		//file_put_contents($file,$str,LOCK_EX);
+		file_put_contents($file,$str);
 		clearstatcache(true,$file);
 		echo $str;
 	}
@@ -280,16 +281,18 @@ class Templix {
 		return $path?$path:$v;
 	}
 	protected function compileStore($file,$str){
-		@mkdir(dirname($file),0777,true);
+		if(!is_dir($dir=dirname($file)))
+			@mkdir($dir,0777,true);
 		if(!$this->devLevel&self::DEV_TEMPLATE)
 			$str = Minify::PHP($str);
-		return file_put_contents($file,$str,LOCK_EX);
+		//return file_put_contents($file,$str,LOCK_EX);
+		return file_put_contents($file,$str);
 	}
 	protected function compilePHP($file,$str){
 		foreach($this->toCachePHP as $cache)
 			$this->_cachePHP($cache[0],$cache[1]);
 		foreach($this->toCacheV as $cache)
-			$this->_cacheV($cache[0],$cache[1]);
+			$this->_cacheV($cache[0],$cache[1]);		
 		return $this->compileStore($file,$str);
 	}
     function get($key=null){

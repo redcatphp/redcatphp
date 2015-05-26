@@ -12,4 +12,5 @@
 		</constructParams>
 	</class>
 	<class name="Session" instanceOf="Authentic\\Session" />
+	
 </config>
