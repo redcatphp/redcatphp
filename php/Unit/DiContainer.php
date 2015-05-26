@@ -25,6 +25,26 @@ class DiContainer implements \ArrayAccess{
 	
 	private static $instance;
 	
+	static function load(array $map,$freeze=false,$file=null){
+		if($freeze){
+			if(!isset($file)){
+				$file = __DIR__.'/'.__CLASS__.'.svar';
+			}
+			if(is_file($file)){
+				self::$instance = unserialize(file_get_contents($file));
+				self::$instance->instances[__CLASS__] = self::$instance;
+			}
+			else{
+				array_map([self::getInstance(),'loadXml'],$map);
+				file_put_contents($file,serialize(self::$instance));
+			}
+		}
+		else{
+			array_map([self::getInstance(),'loadXml'],$map);
+		}
+		return self::$instance;
+	}
+	
 	static function getInstance(){
 		if(!isset(self::$instance)){
 			self::$instance = new DiContainer();
