@@ -378,8 +378,9 @@ class DiContainer implements \ArrayAccess{
 			if($value->call){
 				foreach($value->call as $name=>$call){
 					$callArgs = [];
-						foreach ($call as $key => $param)
-							$callArgs[] = $this->getComponent($key,$param);
+					foreach($call as $key=>$param){
+						$this->buildXmlParam($key,$param,$callArgs);
+					}
 					$rule['call'][] = [(string) $call['method'], $callArgs];
 				}
 			}
@@ -394,8 +395,11 @@ class DiContainer implements \ArrayAccess{
 				foreach ($value->substitution as $use)
 					$rule['substitutions'][(string) $use['as']] = $this->getComponent('instance',(string) $use['use']);
 			if ($value->constructParams){
-				foreach ($value->constructParams->children() as $key=>$param){
-					$rule['constructParams'][] = $this->getComponent($key,$param);
+				foreach($value->constructParams->attributes() as $key=>$param){
+					$this->buildXmlParam($key,$param,$rule['constructParams']);
+				}
+				foreach($value->constructParams->children() as $key=>$param){
+					$this->buildXmlParam($key,$param,$rule['constructParams']);
 				}
 			}
 			if ($value->shareInstance){
@@ -406,7 +410,31 @@ class DiContainer implements \ArrayAccess{
 			$this->addRule((string) $value['name'], $rule);
 		}
 	}
-	
+	private function buildXmlParam($key,$param,&$rulePart){
+		$type = $this->typeofParam($key,$param);
+		$assoc = $this->associativeParam($key,$param);
+		$component = $this->getComponent($type,$param);
+		if($assoc){
+			$rulePart[$assoc] = $component;
+		}
+		else{
+			$rulePart[] = $component;
+		}
+	}
+	private function typeofParam($key,$param=null){
+		if($param instanceof \SimpleXmlElement&&isset($param['type']))
+			return (string)$param['type'];
+		elseif(false!==$p=strpos($key,'-'))
+			return substr($key,0,$p);
+		else
+			return $key;
+	}
+	private function associativeParam($key,$param){
+		if(isset($param['name']))
+			return (string)$param['name'];
+		elseif(false!==$p=strpos($key,'-'))
+			return substr($key,$p+1);
+	}
 	private static function hashArguments($args){
 		static $storage = null;
 		if(!isset($storage))
