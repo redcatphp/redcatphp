@@ -201,6 +201,18 @@ class Templix {
 	function getPath($origin=false){
 		return $origin?$this->path:$this->foundPath;
 	}
+	function exists(){
+		if(func_num_args()){
+			foreach(func_get_args() as $path){
+				if($this->findPath($path)){
+					return true;
+				}
+			}
+		}
+		elseif($this->foundPath){
+			return true;
+		}
+	}
 	function findPath($path){
 		if(strpos($path,'//')===0&&is_file($path=substr($path,1))){
 			return $path;
