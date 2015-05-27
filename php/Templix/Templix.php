@@ -1,4 +1,5 @@
-<?php namespace Templix;
+<?php
+namespace Templix;
 class Templix implements \ArrayAccess {
 	
 	const DEV_TEMPLATE = 2;
@@ -6,26 +7,29 @@ class Templix implements \ArrayAccess {
 	const DEV_CSS = 8;
 	const DEV_IMG = 16;
 	const DEV_CHRONO = 32;
+	
+	private $foundPath;
+	private $devLevel = 46;
 
-	var $forceCompile;
-	var $path;
-	var $parent;
-	var $dirCwd = [];
-	var $dirCompile;
-	var $dirCache;
-	var $dirSync;
-	var $compile = [];
-	var $toCachePHP = [];
-	var $toCacheV = [];
-	var $childNodes = [];
-	var $isXhtml;
 	protected $cleanRegister;
 	protected $devCompileFile;
 	protected $dirCompileSuffix = '';
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
-	private $devLevel = 46;
-	private $foundPath;
+	
+	public $forceCompile;
+	public $path;
+	public $parent;
+	public $dirCwd = [];
+	public $dirCompile;
+	public $dirCache;
+	public $dirSync;
+	public $compile = [];
+	public $toCachePHP = [];
+	public $toCacheV = [];
+	public $childNodes = [];
+	public $isXhtml;
+	
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
