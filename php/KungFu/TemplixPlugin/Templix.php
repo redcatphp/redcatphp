@@ -15,20 +15,13 @@ class Templix extends \Templix\Templix{
 				$toolbox->autoMIN($tml);
 		});
 	}
-	function query($file=null,$vars=[]){
-		if(!pathinfo($file,PATHINFO_EXTENSION))
-			$file .= '.tml';
-		//try{
-			$this->display($file,$vars);
-		//}
-		//catch(\DomainException $e){
-			//try{
-				//$this->display($e->getMessage().'.tml',$vars);
-			//}
-			//catch(\DomainException $e){
-				//http_response_code($e->getMessage());
-			//}
-		//}
+	function query($path=null,$vars=[]){
+		if(!pathinfo($path,PATHINFO_EXTENSION))
+			$path .= '.tml';
+		if($this->setPath($path)||$this->setPath('404'))
+			$this->display(null,$vars);
+		else
+			http_response_code(404);
 	}
 	function __invoke($file){
 		if(is_array($file)){

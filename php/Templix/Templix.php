@@ -196,7 +196,7 @@ class Templix {
 	}
 	function setPath($path){
 		$this->path = $path;
-		$this->foundPath = $this->findPath($path);
+		return $this->foundPath = $this->findPath($path);
 	}
 	function getPath($origin=false){
 		return $origin?$this->path:$this->foundPath;
