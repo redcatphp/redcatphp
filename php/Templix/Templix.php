@@ -1,5 +1,5 @@
 <?php namespace Templix;
-class Templix {
+class Templix implements \ArrayAccess {
 	
 	const DEV_TEMPLATE = 2;
 	const DEV_JS = 4;
