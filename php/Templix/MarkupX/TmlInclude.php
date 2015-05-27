@@ -13,12 +13,12 @@ class TmlInclude extends \Templix\Tml{
 		$Template = clone $this->Template;
 		$Template->setParent($this->Template);
 		$Template->setPath($file);
-		$find = $Template->find();
+		$find = $Template->getPath();
 		if(!$find)
 			$this->throwException('&lt;include "'.$file.'"&gt; template not found ');
 		$Template->writeCompile();
 		
-		$r = self::findRelativePath($this->Template->find(),$find);
+		$r = self::findRelativePath($this->Template->getPath(),$find);
 		$relativity = "__DIR__.'/".addslashes($r)."'";
 		$this->innerHead('<?php include '.$relativity.';?>');
 	}

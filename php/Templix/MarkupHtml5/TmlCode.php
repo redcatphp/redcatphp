@@ -4,7 +4,7 @@ class TmlCode extends \Templix\Tml{
 	function load(){
 		$this->remapAttr('file');
 		if($this->file){
-			if($this->Template&&($find = $this->Template->find($this->file))){
+			if($this->Template&&($find = $this->Template->findPath($this->file))){
 				$text = file_get_contents($find);
 			}
 			else

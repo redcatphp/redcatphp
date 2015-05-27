@@ -25,6 +25,7 @@ class Templix {
 	protected $__pluginNamespaces = [];
 	protected $vars = [];
 	private $devLevel = 46;
+	private $foundPath;
 	function __construct($file=null,$vars=null,$options=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
@@ -51,9 +52,6 @@ class Templix {
 			else
 				$this->$k = $v;
 		}
-	}
-	function setPath($path){
-		$this->path = $path;
 	}
 	function getPluginNamespace(){
 		return $this->__pluginNamespaces;
@@ -132,38 +130,12 @@ class Templix {
 		else
 			array_unshift($this->compile,$call);
 	}
-	function getPath(){
-		return $this->path;
-	}
-	function prepare(){
-		$file = $this->find();
-		//if(!($file=$this->find()))
-			//throw new \DomainException('404');
-		$node = new Tml();
-		$node->setTemplate($this);		
-		$node->parse(file_get_contents($file));
-		ksort($this->compile);
-		foreach($this->compile as $callback)
-			call_user_func($callback,$node);
-		$this->removeTmp($node);
-		$this->childNodes[] = $node;
-		return $node;
-	}
 	function removeTmp($node){
 		$node('[tmp-wrap]')->each(function($el){
 			$el->replaceWith($el->getInnerTml());
 		});
 		$node('[tmp-tag]')->remove();
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
-	}
-	function evalue(){
-		$compileFile = $this->dirCompile.$this->dirCompileSuffix.$this->find().'.svar';
-		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||$this->forceCompile||!is_file($compileFile))
-			$this->compileStore($compileFile,serialize($ev=$this->prepare()));
-		else
-			$ev = unserialize(file_get_contents($compileFile,LOCK_EX));
-		eval('?>'.$ev);
-		return $this;
 	}
 	function devRegeneration(){
 		$exist = is_file($this->devCompileFile);
@@ -194,38 +166,61 @@ class Templix {
 	function display($file=null,$vars=[]){
 		if(isset($file))
 			$this->setPath($file);
+		$file = $this->getPath();
+		if(!$file)
+			throw new TemplixException('&lt;display "'.$this->path.'"&gt; template not found ');
 		if(!empty($vars))
 			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||!is_file($this->dirCompile.$this->dirCompileSuffix.$this->find()))
+		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
 			$this->writeCompile();
-		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$this->find(),$this->vars);
+		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
 		return $this;
 	}
 	function writeCompile(){
-		$this->compilePHP($this->dirCompile.$this->dirCompileSuffix.$this->find(),(string)$this->prepare());
+		$file = $this->getPath();
+		$node = new Tml();
+		$node->setTemplate($this);		
+		$node->parse(file_get_contents($file));
+		ksort($this->compile);
+		foreach($this->compile as $callback)
+			call_user_func($callback,$node);
+		$this->removeTmp($node);
+		$this->childNodes[] = $node;
+		$this->compilePHP($this->dirCompile.$this->dirCompileSuffix.$file,(string)$node);
 	}
 	function includeVars(){
 		if(func_num_args()>1&&count(func_get_arg(1)))
 			extract(func_get_arg(1));
 		return include(func_get_arg(0));
 	}
-	function find(){
-		$path = func_num_args()?func_get_arg(0):$this->path;
-		if(strpos($path,'//')===0&&is_file($path=substr($path,1)))
+	function setPath($path){
+		$this->path = $path;
+		$this->foundPath = $this->findPath($path);
+	}
+	function getPath($origin=false){
+		return $origin?$this->path:$this->foundPath;
+	}
+	function findPath($path){
+		if(strpos($path,'//')===0&&is_file($path=substr($path,1))){
 			return $path;
-		foreach($this->dirCwd as $d){
-			if(strpos($path,'/')===0&&is_file($file=$d.$path))
-				return $file;
-			$template = $this;
-			do{
-				$local = $d.dirname($template->path).'/'.$path;
-				if(is_file($local))
-					return str_replace('/./','/',$local);
+		}
+		else{
+			foreach($this->dirCwd as $d){
+				if(strpos($path,'/')===0&&is_file($file=$d.$path))
+					return $file;
+				$template = $this;
+				do{
+					$local = $d.dirname($template->path).'/'.$path;
+					if(is_file($local)){
+						return str_replace('/./','/',$local);
+					}
+				}
+				while($template=$template->parent);
+				if(strpos($path,'./')!==0&&is_file($file=$d.$path)){
+					return $file;
+				}
 			}
-			while($template=$template->parent);
-			if(strpos($path,'./')!==0&&is_file($file=$d.$path))
-				return $file;
 		}
 	}
 	function mtime($file,$sync,$forceCache=true){
@@ -246,8 +241,7 @@ class Templix {
 	}
 	function cacheRegen($file,$str){
 		$file = substr($file,0,-4);
-		//file_put_contents($file,$str,LOCK_EX);
-		file_put_contents($file,$str);
+		file_put_contents($file,$str,LOCK_EX);
 		clearstatcache(true,$file);
 		echo $str;
 	}
@@ -285,8 +279,7 @@ class Templix {
 			@mkdir($dir,0777,true);
 		if(!$this->devLevel&self::DEV_TEMPLATE)
 			$str = Minify::PHP($str);
-		//return file_put_contents($file,$str,LOCK_EX);
-		return file_put_contents($file,$str);
+		return file_put_contents($file,$str,LOCK_EX);
 	}
 	protected function compilePHP($file,$str){
 		foreach($this->toCachePHP as $cache)

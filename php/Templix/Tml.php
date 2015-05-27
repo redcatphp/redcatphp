@@ -16,35 +16,27 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	const STATE_ATTR_VALUE = 11;
 	const PIO = '*~#@?!?#+1';
 	const PIC = '0+#@!?!#~*';	
+	
 	private static $PIO_L;
 	private static $PIC_L;
 	private static $PI_STR = [self::PIO,self::PIC];
 	private static $PI_HEX;
 	
 	private $__phpSRC = [];
-	
-	protected $parseReplacement = [
+	private $parseReplacement = [
 		'\\<'=>'&lt;',
 		'\\>'=>'&gt;',
 		'\\"'=>'&quot;',
 	];
-
-	protected $onLoad = [];
-	protected $onLoaded = [];
-	protected $currentTag;
-	protected $lineNumber = 1;
-	protected $characterNumber = 1;
+	private $onLoad = [];
+	private $onLoaded = [];
+	private $currentTag;
+	private $lineNumber = 1;
+	private $characterNumber = 1;
 	
 	//Core
-	var $nodeName;
-	var $parent;
-	var $constructor;
-	var $childNodes = [];
-	var $attributes = [];
-	var $metaAttribution = [];
-	var $previousSibling;
-	var $nextSibling;
-	var $Template;
+	private static $loadVarsIndex = 100;
+	private $selectorService;
 	
 	protected $hiddenWrap;
 	protected $preventLoad;
@@ -52,13 +44,20 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	protected $__closed;
 	protected $noParseContent;
 	protected $footIndentationForce;
-	
 	protected $foot = [];
 	protected $head = [];
 	protected $innerFoot = [];
 	protected $innerHead = [];
 	
-	private $selectorService;
+	public $nodeName;
+	public $parent;
+	public $constructor;
+	public $childNodes = [];
+	public $attributes = [];
+	public $metaAttribution = [];
+	public $previousSibling;
+	public $nextSibling;
+	public $Template;
 	
 	function loaded(){
 		
@@ -78,7 +77,6 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		$this->cacheForge(null,false,true);
 	}
 	
-	private static $loadVarsIndex = 100;
 	function loadVars($v){
 		if(!$this->Template)
 			return;
@@ -168,7 +166,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		return $this->Template;
 	}
 	function getFile($file,$c=null){
-		if(!is_file($real=$this->Template->find($file)))
+		if(!is_file($real=$this->Template->findPath($file)))
 			$this->throwException('&lt;'.$c.' "'.$file.'"&gt; template not found ');
 		return file_get_contents($real);
 	}

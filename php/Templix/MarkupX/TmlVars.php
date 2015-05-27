@@ -10,7 +10,7 @@ class TmlVars extends \Templix\Tml{
 		if(!pathinfo($file,PATHINFO_EXTENSION))
 			$file .= '.php';
 		$file = $prefix.$file;
-		$file = $this->Template->find($file);
+		$file = $this->Template->findPath($file);
 		if(!$file)
 			return;
 		if($this->__get('static')){
