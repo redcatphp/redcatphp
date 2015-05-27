@@ -1,4 +1,4 @@
-<?php namespace KungFu\Cms\Router;
+<?php namespace KungFu\Cms\FrontController;
 use Unit\Router;
 use Unit\RouteMatch\Extension;
 use KungFu\Cms\RouteMatch\ByTml;

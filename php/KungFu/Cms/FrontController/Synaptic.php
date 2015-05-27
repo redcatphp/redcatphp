@@ -1,4 +1,4 @@
-<?php namespace KungFu\Cms\Router;
+<?php namespace KungFu\Cms\FrontController;
 use Unit\Router;
 use Stylish\Server as Stylish_Server;
 use KungFu\Tools\JSMin;
@@ -12,17 +12,17 @@ class Synaptic {
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	protected $dirs = [''];
 	
-	private $devLevel = 0;
+	private $devLevel = 6;
 	
 	function __construct($pathFS=''){
 		$this->pathFS = rtrim($pathFS,'/');
 		if(!empty($this->pathFS))
 			$this->pathFS .= '/';
 	}
-	function __invoke(){
-		list($filename,$file) = func_get_args();
+	function __invoke($params){
+		list($filename,$extension) = $params;
 		$this->appendDir('Surikat');
-		$this->load($this->pathFS.$file);
+		$this->load($this->pathFS.$filename.'.'.$extension);
 	}
 	
 	

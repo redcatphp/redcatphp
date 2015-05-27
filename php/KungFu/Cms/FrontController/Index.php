@@ -8,7 +8,7 @@ class Index extends \Unit\FrontController{
 		$this->map([
 			//['backend/','new:Backoffice'],
 			//['service/','new:KungFu\Cms\Service\Service'],
-			[['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:KungFu\Cms\Router\Synaptic'],
+			[['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:KungFu\Cms\FrontController\Synaptic'],
 			//['new:KungFu\Cms\RouteMatch\L10n','new:KungFu\Cms\Controller\L10n'],
 			//[['new:KungFu\Cms\RouteMatch\ByTml','plugin'],[$this,'template']],
 			//[['new:KungFu\Cms\RouteMatch\ByTml','Surikat/plugin'],[$this,'template']],
