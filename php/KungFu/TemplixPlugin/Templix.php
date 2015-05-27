@@ -7,7 +7,7 @@ class Templix extends \Templix\Templix{
 		parent::__construct($file,$vars,$options);
 		$this->di = $di;
 		$this->onCompile(function($tml){
-			if($tml->Template->getParent())
+			if($tml->templix->getParent())
 				return;
 			$toolbox = $this->di->create(__NAMESPACE__.'\Toolbox');
 			$toolbox->JsIs($tml);

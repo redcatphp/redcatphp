@@ -24,7 +24,7 @@ class Toolbox{
 		}
 		$s = [];
 		$Tml->recursive(function($el)use($Tml,$head,$href,&$s){
-			foreach($Tml->Template->getDirCwd() as $d){
+			foreach($Tml->templix->getDirCwd() as $d){
 				if(
 					($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
 					&&!in_array($is,$s)

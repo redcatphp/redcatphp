@@ -9,8 +9,8 @@ class DOCTYPE extends Tml{
 	function parse($text){
 		$this->contentText = self::phpImplode($text,$this->constructor);
 		$this->__compat = substr($this->contentText,10,-1);
-		if($this->__compat!='html'&&$this->Template)
-			$this->Template->isXhtml = true;
+		if($this->__compat!='html'&&$this->templix)
+			$this->templix->isXhtml = true;
 	}
 	function getInner(){
 		return $this->contentText;

@@ -5,7 +5,7 @@ class TmlApply extends \Templix\Tml {
 	var $_extender;
 	var $_extended;
 	function load(){
-		//if(!$this->Template)
+		//if(!$this->templix)
 			//return;
 		$this->remapAttr('file');
 		if(!$this->_extended){

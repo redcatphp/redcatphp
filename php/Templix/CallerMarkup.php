@@ -25,7 +25,7 @@ abstract class CallerMarkup extends Tml{
 		return $this->callback;
 	}
 	function load(){
-		//if(!$this->Template)
+		//if(!$this->templix)
 			//return;
 		$this->callback();
 	}

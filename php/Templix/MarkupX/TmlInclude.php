@@ -3,22 +3,22 @@ class TmlInclude extends \Templix\Tml{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	function load(){
-		//if(!$this->Template)
+		//if(!$this->templix)
 			//return;
 		$this->remapAttr('file');
 		$file = $this->__get('file');
 		if(!pathinfo($file,PATHINFO_EXTENSION))
 			$file .= '.tml';
 		
-		$Template = clone $this->Template;
-		$Template->setParent($this->Template);
-		$Template->setPath($file);
-		$find = $Template->getPath();
+		$templix = clone $this->templix;
+		$templix->setParent($this->templix);
+		$templix->setPath($file);
+		$find = $templix->getPath();
 		if(!$find)
 			$this->throwException('&lt;include "'.$file.'"&gt; template not found ');
-		$Template->writeCompile();
+		$templix->writeCompile();
 		
-		$r = self::findRelativePath($this->Template->getPath(),$find);
+		$r = self::findRelativePath($this->templix->getPath(),$find);
 		$relativity = "__DIR__.'/".addslashes($r)."'";
 		$this->innerHead('<?php include '.$relativity.';?>');
 	}

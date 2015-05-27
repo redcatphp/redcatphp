@@ -10,11 +10,11 @@ class TmlVars extends \Templix\Tml{
 		if(!pathinfo($file,PATHINFO_EXTENSION))
 			$file .= '.php';
 		$file = $prefix.$file;
-		$file = $this->Template->findPath($file);
+		$file = $this->templix->findPath($file);
 		if(!$file)
 			return;
 		if($this->__get('static')){
-			$var = var_export($this->Template->includeVars($file,$this->Template->get()),true);
+			$var = var_export($this->templix->includeVars($file,$this->templix->get()),true);
 		}
 		else{
 			$var = '$this->includeVars("'.str_replace('"','\"',$file).'",get_defined_vars())';

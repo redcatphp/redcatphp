@@ -98,8 +98,8 @@ class Templix implements \ArrayAccess {
 			return $this;
 		return $this->parent;
 	}
-	function setParent($Template){
-		$this->parent = $Template;
+	function setParent($templix){
+		$this->parent = $templix;
 	}
 	function setDirCompile($d){
 		$this->dirCompile = rtrim($d,'/').'/';
@@ -184,7 +184,7 @@ class Templix implements \ArrayAccess {
 	function writeCompile(){
 		$file = $this->getPath();
 		$node = new Tml();
-		$node->setTemplate($this);		
+		$node->settemplix($this);		
 		$node->parse(file_get_contents($file));
 		ksort($this->compile);
 		foreach($this->compile as $callback)

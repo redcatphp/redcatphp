@@ -57,7 +57,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	public $metaAttribution = [];
 	public $previousSibling;
 	public $nextSibling;
-	public $Template;
+	public $templix;
 	
 	function loaded(){
 		
@@ -78,12 +78,12 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	}
 	
 	function loadVars($v){
-		if(!$this->Template)
+		if(!$this->templix)
 			return;
 		$index = uniqid();
 		$this->attr('compileVars',$index);
 		$this->removeAttr('vars');
-		$this->Template->onCompile(function($Tml)use($v,$index){
+		$this->templix->onCompile(function($Tml)use($v,$index){
 			$el = $Tml->find("[compileVars=$index]",0);
 			if(!$el)
 				return;
@@ -116,19 +116,19 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 				$prev->nextSibling = &$this;
 				$this->previousSibling = &$prev;
 			}
-			if(!$this->Template&&$this->parent->Template){
-				$this->Template = $this->parent->Template;
+			if(!$this->templix&&$this->parent->templix){
+				$this->templix = $this->parent->templix;
 			}
 		}
 	}
 	function setBuilder($tml){
 		$this->constructor = $tml;
-		if($this->constructor&&!$this->Template&&$this->constructor->Template){
-			$this->Template = $this->constructor->Template;
+		if($this->constructor&&!$this->templix&&$this->constructor->templix){
+			$this->templix = $this->constructor->templix;
 		}
 	}
-	function setTemplate($template){
-		$this->Template = $template;
+	function settemplix($template){
+		$this->templix = $template;
 	}
 	function setNodeName($nodeName){
 		$this->nodeName = $nodeName;
@@ -162,25 +162,25 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		}
 		call_user_func_array($callback,[&$node,&$break]);
 	}
-	function Template(){
-		return $this->Template;
+	function templix(){
+		return $this->templix;
 	}
 	function getFile($file,$c=null){
-		if(!is_file($real=$this->Template->findPath($file)))
+		if(!is_file($real=$this->templix->findPath($file)))
 			$this->throwException('&lt;'.$c.' "'.$file.'"&gt; template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
-		if($this->Template)
+		if($this->templix)
 			return $this->parse($this->getFile($file,$c),$params);
 	}
 	protected function cacheForge($extra=null,$php=true,$ev=false){
 		$code = "$this";
 		$h = sha1($code);
 		if($php)
-			$this->Template->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
+			$this->templix->cachePHP($h,'<?php ob_start();?>'.$code.'<?php $this->cacheRegen(__FILE__,ob_get_clean());',true);
 		if($ev)
-			$this->Template->cacheV($h,$this->evaluate());
+			$this->templix->cacheV($h,$this->evaluate());
 		$this->clear();
 		$this->head('<?php if($__including=$this->cacheInc(\''.$h.'\''.($extra!==null?(','.(is_string($extra)?"'".str_replace("'","\'",$extra)."'":'unserialize('.serialize($extra).')')):'').'))include $__including;?>');
 	}
@@ -594,7 +594,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 					$str .= $this->indentationTab();
 				}
 				if(is_integer($k)){
-					if($this->Template&&$this->Template->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
 					else
 						$str .= ' '.$v;
@@ -604,7 +604,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 				}
 				$lp = is_integer($k)&&($v instanceof PHP);
 			}
-			if($this->selfClosed&&$this->Template&&$this->Template->isXhtml)
+			if($this->selfClosed&&$this->templix&&$this->templix->isXhtml)
 				$str .= '></'.$this->nodeName;
 			elseif($this->selfClosed>1)
 				$str .= ' /';
@@ -892,8 +892,8 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	}
 	function getClass($n){
 		$n = str_replace(' ','_',ucwords(preg_replace("/[^A-Za-z0-9 ]/", ' ', $n)));
-		if($this->Template)
-			$namespaces = $this->Template->getPluginNamespace();
+		if($this->templix)
+			$namespaces = $this->templix->getPluginNamespace();
 		else
 			$namespaces = Templix::getPluginNamespaceDefault();
 		foreach($namespaces as $ns){
@@ -908,10 +908,10 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		return __NAMESPACE__.'\\Tml';
 	}
 	function devLevel(){
-		return $this->Template?call_user_func_array([$this->Template,__FUNCTION__],func_get_args()):'';
+		return $this->templix?call_user_func_array([$this->templix,__FUNCTION__],func_get_args()):'';
 	}
 	function exceptionContext(){
-		return ' on "'.$this->Template->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
+		return ' on "'.$this->templix->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
 	}
 	
 	
@@ -1518,7 +1518,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		$this->opened();
 	}
 	protected function throwException($msg){
-		if($this->Template)
+		if($this->templix)
 			$msg .= $this->exceptionContext();
 		throw new MarkupException($msg);
 	}
