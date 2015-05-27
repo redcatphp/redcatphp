@@ -15,4 +15,4 @@ global $SURIKAT;
 $SURIKAT = Unit\DiContainer::load([
 	SURIKAT.'.config.xml',
 	SURIKAT_CWD.'.config.xml'
-],SURIKAT_FREEZE_DI,__DIR__.'/SURIKAT.svar');
+],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/SURIKAT.svar');

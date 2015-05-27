@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config>
-	<class name="Authentic\\Session" shared="true" newInstances="Authentic\\SessionHandlerInterface">
-		<substitution use="Authentic\\SessionHandler" as="Authentic\\SessionHandlerInterface" />
+	<class name="Authentic\Session" shared="true" newInstances="Authentic\SessionHandlerInterface">
+		<substitution use="Authentic\SessionHandler" as="Authentic\SessionHandlerInterface" />
 		<constructParams>
 			<string>surikat</string>
 			<!--<eval>SURIKAT_CWD.'.tmp/sessions/'</eval>-->
@@ -11,6 +11,10 @@
 			</concat>
 		</constructParams>
 	</class>
-	<class name="Session" instanceOf="Authentic\\Session" />
+	<class name="Session" instanceOf="Authentic\Session" />
+	
+	<class name="KungFu\Cms\RouteMatch\ByTmlL10n">
+		<constructParams string-langDefault="en" />
+	</class>
 	
 </config>

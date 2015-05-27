@@ -36,6 +36,9 @@ class DiContainer implements \ArrayAccess{
 			}
 			else{
 				array_map([self::getInstance(),'loadXml'],$map);
+				$dir = dirname($file);
+				if(!is_dir($dir))
+					@mkdir($dir,0777,true);
 				file_put_contents($file,serialize(self::$instance));
 			}
 		}

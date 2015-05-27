@@ -2,12 +2,11 @@
 class ByTmlL10n extends ByTml {
 	private $langDefault;
 	private $lang;
-	function __construct($langDefault=null,$dir=null,$dirFS=null){
+	function __construct($dir=null,$dirFS=null,$langDefault='en'){
 		parent::__construct($dir,$dirFS);
 		$this->langDefault = $langDefault;
 	}
-	function __invoke($uri,$domain){
-		$path = urldecode($this->uriParams[0]);
+	function __invoke($path,$domain){
 		$templatePath = $path;
 		$langMap = false;
 		if($lang=$this->extractLang($domain)){
@@ -25,7 +24,7 @@ class ByTmlL10n extends ByTml {
 			$lang = $this->langDefault;
 		}
 		$uri = parent::__invoke($templatePath);
-		return [$lang,$uri];
+		return [$lang,$langMap,$uri];
 	}
 	function extractLang($domain){
 		$urlParts = explode('.', $domain);
