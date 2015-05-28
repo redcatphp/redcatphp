@@ -4,10 +4,10 @@ use Authentic\Auth;
 use Authentic\Session;
 use Unit\Autoloader;
 use Unit\Router;
-use Unit\DiContainer;
+use Unit\Di;
 class Backoffice extends \Unit\FrontController{
 	public $pathFS = 'plugin/backoffice';
-	function __construct(Router $router,DiContainer $di){
+	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
 			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:KungFu\Cms\FrontController\Synaptic',$this->pathFS])

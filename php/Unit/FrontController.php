@@ -3,7 +3,7 @@ namespace Unit;
 class FrontController {
 	private $router;
 	protected $di;
-	function __construct(Router $router,DiContainer $di){
+	function __construct(Router $router,Di $di){
 		$this->router = $router;
 		$this->di = $di;
 	}

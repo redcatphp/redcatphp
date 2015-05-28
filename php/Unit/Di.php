@@ -11,7 +11,7 @@
 
 namespace Unit;
 
-class DiContainer implements \ArrayAccess{
+class Di implements \ArrayAccess{
 	private $values = [];
 	private $factories;
 	private $protected;
@@ -50,7 +50,7 @@ class DiContainer implements \ArrayAccess{
 	
 	static function getInstance(){
 		if(!isset(self::$instance)){
-			self::$instance = new DiContainer();
+			self::$instance = new Di();
 			self::$instance->instances[__CLASS__] = self::$instance;
 		}
 		return self::$instance;

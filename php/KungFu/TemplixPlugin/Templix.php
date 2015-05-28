@@ -1,9 +1,9 @@
 <?php
 namespace KungFu\TemplixPlugin;
-use Unit\DiContainer;
+use Unit\Di;
 class Templix extends \Templix\Templix{
 	private $di;
-	function __construct($file=null,$vars=null,$options=null,DiContainer $di){
+	function __construct($file=null,$vars=null,$options=null,Di $di){
 		parent::__construct($file,$vars,$options);
 		$this->di = $di;
 		$this->onCompile(function($tml){

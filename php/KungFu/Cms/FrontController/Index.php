@@ -1,9 +1,9 @@
 <?php
 namespace KungFu\Cms\FrontController;
 use Unit\Router;
-use Unit\DiContainer;
+use Unit\Di;
 class Index extends \Unit\FrontController{
-	function __construct(Router $router,DiContainer $di){
+	function __construct(Router $router,Di $di,$config=[]){
 		parent::__construct($router,$di);
 		$this->map([
 			['backend/','new:KungFu\Cms\FrontController\Backoffice'],

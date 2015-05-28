@@ -12,7 +12,7 @@ Unit\Autoloader::getInstance()->addNamespace('',[
 
 
 global $SURIKAT;
-$SURIKAT = Unit\DiContainer::load([
+$SURIKAT = Unit\Di::load([
 	SURIKAT.'.config.xml',
 	SURIKAT_CWD.'.config.xml'
 ],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/SURIKAT.svar');

@@ -4,7 +4,7 @@ class Router {
 	private $route;
 	private $routeParams;
 	private $di;
-	function __construct(DiContainer $di){
+	function __construct(Di $di){
 		$this->di = $di;
 	}
 	function map($map,$index=0,$prepend=false){

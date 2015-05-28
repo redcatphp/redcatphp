@@ -4,7 +4,7 @@ class RouteMvc {
 	private $view;
     private $controller;
     private $di;
-    function __construct($model, $view, $controller = null, DiContainer $di){
+    function __construct($model, $view, $controller = null, Di $di){
         $this->model = $model;
         $this->view = $view;
         $this->controller = $controller;

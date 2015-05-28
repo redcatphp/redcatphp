@@ -18,8 +18,12 @@ class ByTmlL10n extends ByTml {
 					exit;
 				}
 			}
-			return [$lang,$langMap,$uri];
 		}
+		else{
+			$lang = $this->langDefault;
+			$langMap = false;
+		}
+		return [$lang,$langMap,$path];
 	}
 	function extractLang($domain){
 		$urlParts = explode('.', $domain);
