@@ -8,7 +8,6 @@ class ByTmlL10n extends ByTml {
 	}
 	function __invoke($path,$domain){
 		$templatePath = $path;
-		$langMap = false;
 		if($lang=$this->extractLang($domain)){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
@@ -19,12 +18,8 @@ class ByTmlL10n extends ByTml {
 					exit;
 				}
 			}
+			return [$lang,$langMap,$uri];
 		}
-		else{
-			$lang = $this->langDefault;
-		}
-		$uri = parent::__invoke($templatePath);
-		return [$lang,$langMap,$uri];
 	}
 	function extractLang($domain){
 		$urlParts = explode('.', $domain);

@@ -2,15 +2,16 @@
 namespace KungFu\TemplixPlugin;
 use Unit\Url;
 use InterNative\Translator;
+use Unit\DiContainer;
 class TemplixL10n extends Templix{
 	protected $Templix;
 	protected $Translator;
 	protected $Url;
-	function __construct(Url $Url=null,Translator $Translator=null, $server=null){
-		if(!$Url)
-			$Url = new Url();
-		if(!$Translator)
-			$Translator = new Translator();
+	function __construct($file=null,$vars=null,$options=null,DiContainer $di
+						,Url $Url=null,Translator $Translator=null, $server=null
+	){
+		parent::__construct($file,$vars,$options,$di);
+		$this->di = $di;
 		if(!$server)
 			$server = &$_SERVER;
 		$this->Url = $Url;
