@@ -463,17 +463,19 @@ class DiContainer implements \ArrayAccess{
 		if(!isset($storage))
 			$storage = new \SplObjectStorage();
 		$hash = [];
-		foreach($args as $arg){
+		ksort($args);
+		foreach($args as $k=>$arg){
 			if(is_array($arg)){
-				$hash[] = self::hashArguments($arg);
+				$h = self::hashArguments($arg);
 			}
 			elseif(is_object($arg)){
 				$storage->attach($arg);
-				$hash[] = spl_object_hash($arg);
+				$h = spl_object_hash($arg);
 			}
 			else{
-				$hash[] = sha1($arg);
+				$h = sha1($arg);
 			}
+			$hash[] = sha1($k).'='.$h;
 		}
 		return sha1(implode('.',$hash));
 	}
