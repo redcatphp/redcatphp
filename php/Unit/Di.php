@@ -222,8 +222,10 @@ class Di implements \ArrayAccess{
 
 	function create($name, array $args = [], $forceNewInstance = false, $share = []) {
 		$instance = $name;
-		if(!empty($args)){
-			$instance .= '.'.self::hashArguments($args);
+		if($p=strpos($name,':')){
+			$this->addRule($name,['instanceOf'=>substr($name,0,$p),'shared'=>true]);
+			if(substr($instance,$p+1)==='$')
+				$instance = $name.':'.self::hashArguments($args);
 		}
 		if(!$forceNewInstance&&isset($this->instances[$instance])) return $this->instances[$instance];
 		if(empty($this->cache[$name])) $this->cache[$name] = $this->getClosure($name, $this->getRule($name), $instance);
