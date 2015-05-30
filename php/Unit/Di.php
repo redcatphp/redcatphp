@@ -190,9 +190,12 @@ class Di implements \ArrayAccess{
 	function extendRule($name, $key, $value, $push = null){
 		if(!isset($push))
 			$push = is_array($this->rules['*'][$key]);
-		$rule = $this->getRule($name);
-		if($key==='instanceOf'&&is_string($value)&&$rule===$this->rules['*'])
-			$rule = $this->getRule($value);
+		if(isset($this->rules[$name]))
+			$rule = $this->rules[$name];
+		elseif($key==='instanceOf'&&is_string($value)&&isset($this->rules[$value]))
+			$rule = $this->rules[$value];
+		else
+			$rule = [];
 		if($push){
 			if(is_array($value)){
 				$rule[$key] = array_merge($rule[$key],$value);
@@ -206,18 +209,29 @@ class Di implements \ArrayAccess{
 		}
 		$this->rules[$name] = $rule;
 	}
-	function addRule($name, array $rule) {
-		$oldRule = $this->getRule($name);
-		if(isset($rule['instanceOf'])&&is_string($rule['instanceOf'])&&$this->rules['*']===$oldRule)
-			$oldRule = $this->getRule($rule['instanceOf']);
-		$this->rules[$name] = self::merge_recursive($oldRule, $rule);
-	}
-	function getRule($name) {
-		if (isset($this->rules[$name])) return $this->rules[$name];
-		foreach ($this->rules as $key => $rule) {
-			if ($rule['instanceOf'] === null && $key !== '*' && is_subclass_of($name, $key) && $rule['inherit'] === true) return $rule;
+	function addRule($name, array $rule){
+		if(isset($this->rules[$name])){
+			$this->rules[$name] = self::merge_recursive($this->rules[$name], $rule);
 		}
-		return $this->rules['*'];
+		elseif(isset($rule['instanceOf'])&&is_string($rule['instanceOf'])&&isset($this->rules[$rule['instanceOf']])){
+			$this->rules[$name] = self::merge_recursive($this->rules[$rule['instanceOf']], $rule);
+		}
+		else{
+			$this->rules[$name] = $rule;
+		}
+	}
+	function getRule($name){
+		$rules = $this->rules;
+		$rule = $rules['*'];
+		unset($rules['*']);
+		foreach($rules as $key=>$r){
+			if($rule['instanceOf']===null&&(!isset($r['inherit'])||$r['inherit']===true)&&self::is_subclass_of($name, $key)){
+				$rule = self::merge_recursive($rule, $r);
+			}
+		}
+		if(isset($this->rules[$name]))
+			$rule = self::merge_recursive($rule, $this->rules[$name]);
+		return $rule;
 	}
 
 	function create($name, array $args = [], $forceNewInstance = false, $share = []) {
@@ -244,8 +258,8 @@ class Di implements \ArrayAccess{
 			};
 		}
 		else if ($params){
-			$closure = function (array $args, array $share) use ($class, $params) {
-				return (new \ReflectionClass($class->name))->newInstanceArgs($params($args, $share));
+			$closure = function (array $args, array $share) use ($class, $params, $class){
+				return $class->newInstanceArgs($params($args, $share));
 			};
 		}
 		else{
@@ -459,6 +473,18 @@ class Di implements \ArrayAccess{
 			return (string)$param['name'];
 		elseif(false!==$p=strpos($key,'-'))
 			return substr($key,$p+1);
+	}
+	private static function is_subclass_of($className,$search){
+		if(!preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $className))
+			return;
+		$class = new \ReflectionClass($className);
+		if(in_array($search, $class->getInterfaceNames()))
+			return true;
+		do{
+			if($search===$class->getName())
+				return true;
+		}while($class=$class->getParentClass());
+		return false;
 	}
 	private static function hashArguments($args){
 		static $storage = null;
