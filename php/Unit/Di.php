@@ -224,6 +224,20 @@ class Di implements \ArrayAccess{
 		$rules = $this->rules;
 		$rule = $rules['*'];
 		unset($rules['*']);
+		
+		if(preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $name)){
+			$class = new \ReflectionClass($name);
+			$classNames = $class->getInterfaceNames();
+			do{
+				$classNames[] = $class->getName();
+			}while($class=$class->getParentClass());
+			$rules = array_filter($rules,function($k)use($classNames){
+				return in_array($k,$classNames);
+			},ARRAY_FILTER_USE_KEY);
+			uksort($rules,function($a,$b)use($classNames){
+				return array_search($a,$classNames)>array_search($b,$classNames);
+			});
+		}
 		foreach($rules as $key=>$r){
 			if($rule['instanceOf']===null&&(!isset($r['inherit'])||$r['inherit']===true)&&self::is_subclass_of($name, $key)){
 				$rule = self::merge_recursive($rule, $r);
