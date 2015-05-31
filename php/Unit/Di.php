@@ -227,15 +227,15 @@ class Di implements \ArrayAccess{
 		
 		if(preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $name)){
 			$class = new \ReflectionClass($name);
-			$classNames = $class->getInterfaceNames();
+			$classNames = [];
+			$interfaces = $class->getInterfaceNames();
 			do{
 				$classNames[] = $class->getName();
 			}while($class=$class->getParentClass());
-			$rules = array_filter($rules,function($k)use($classNames){
-				return in_array($k,$classNames);
-			},ARRAY_FILTER_USE_KEY);
+			$classNames = array_merge($classNames,$interfaces);
+			$rules = array_intersect_key($rules, array_flip($classNames));
 			uksort($rules,function($a,$b)use($classNames){
-				return array_search($a,$classNames)>array_search($b,$classNames);
+				return array_search($a,$classNames)<array_search($b,$classNames);
 			});
 		}
 		foreach($rules as $key=>$r){
