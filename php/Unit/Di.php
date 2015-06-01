@@ -231,7 +231,9 @@ class Di implements \ArrayAccess{
 		return $rule;
 	}
 
-	function create($name, array $args = [], $forceNewInstance = false, $share = []) {
+	function create($name, $args = [], $forceNewInstance = false, $share = []) {
+		if(!is_array($args))
+			$args = (array)$args;
 		$instance = $name;
 		if($p=strpos($name,':')){
 			$this->addRule($name,['instanceOf'=>substr($name,0,$p),'shared'=>true]);
@@ -253,14 +255,25 @@ class Di implements \ArrayAccess{
 	
 	private function getClosure($name, array $rule, $instance){
 		$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
-		$constructor = $class->getConstructor();
+		if(is_string($rule['shared']))
+			$constructor = $class->getMethod($rule['shared']);
+		else
+			$constructor = $class->getConstructor();
 		$params = $constructor ? $this->getParams($constructor, $rule) : null;
-		if ($rule['shared']){
-			$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
-				$this->instances[$instance] = $class->newInstanceWithoutConstructor();
-				if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
-				return $this->instances[$instance];
-			};
+		if($rule['shared']){
+			if(is_string($rule['shared'])){
+				$method = $rule['shared'];
+				$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
+					return $this->instances[$instance] = $constructor->invokeArgs(null,$params($args, $share));
+				};
+			}
+			else{
+				$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
+					$this->instances[$instance] = $class->newInstanceWithoutConstructor();
+					if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
+					return $this->instances[$instance];
+				};
+			}
 		}
 		else if ($params){
 			$closure = function (array $args, array $share) use ($class, $params, $class){
@@ -269,7 +282,7 @@ class Di implements \ArrayAccess{
 		}
 		else{
 			$closure = function () use ($class) { return new $class->name;	};
-		 }
+		}
 		return $rule['call'] ? function (array $args, array $share) use ($closure, $class, $rule) {
 			$object = $closure($args, $share);
 			foreach ($rule['call'] as $call) call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
@@ -423,7 +436,11 @@ class Di implements \ArrayAccess{
 			$xml = simplexml_load_file($xml);
 		foreach ($xml->class as $key => $value) {
 			$rule = [];
-			$rule['shared'] = (((string)$value['shared']) == 'true');
+			$rule['shared'] = (string)$value['shared'];
+			if($rule['shared']=='true')
+				$rule['shared'] = true;
+			elseif($rule['shared']=='false'||!trim($rule['shared']))
+				$rule['shared'] = false;
 			$rule['inherit'] = (((string)$value['inherit']) == 'false') ? false : true;
 			if($value->call){
 				foreach($value->call as $name=>$call){
@@ -449,6 +466,7 @@ class Di implements \ArrayAccess{
 					$this->buildXmlParam($key,$param,$rule['constructParams']);
 				}
 				foreach($value->constructParams->children() as $key=>$param){
+					
 					$this->buildXmlParam($key,$param,$rule['constructParams']);
 				}
 			}
