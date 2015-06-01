@@ -44,7 +44,7 @@ class TemplixL10n extends Templix{
 		return $this->query($file);
 	}
 	function i18nGettext($Tml,$cache=true){
-		$Tml->prepend('<?php $GLOBALS[\'SURIKAT\'][\'Translator\'] = new InterNative\Translator(); ?>');
+		$Tml->prepend('<?php include SURIKAT.\'php/InterNative/__.php\'; ?>');
 		$Tml('html')->attr('lang',$this->Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){
@@ -69,7 +69,7 @@ class TemplixL10n extends Templix{
 				}
 				else{
 					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo $GLOBALS[\'SURIKAT\'][\'Translator\']()->__(\''.$rw.'\');?>';
+					$rw = '<?php echo __(\''.$rw.'\');?>';
 				}
 				$el->write($left.$rw.$right);
 			}

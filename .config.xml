@@ -17,4 +17,11 @@
 		<constructParams string-langDefault="en" />
 	</class>
 	
+	<class name="InterNative\Translator" shared="true">
+		<constructParams
+			string-timezone="Europe/Paris"
+			string-langDefault="en"
+		/>
+	</class>
+	
 </config>

@@ -10,7 +10,6 @@ Unit\Autoloader::getInstance()->addNamespace('',[
 		SURIKAT.'php'
 ])->splRegister();
 
-
 global $SURIKAT;
 $SURIKAT = Unit\Di::load([
 	SURIKAT.'.config.xml',

@@ -16,8 +16,10 @@ class Templix extends \Templix\Templix{
 		});
 	}
 	function query($path=null,$vars=[]){
-		if(!pathinfo($path,PATHINFO_EXTENSION))
-			$path .= '.tml';
+		$vars = array_merge([
+			'URI'=>$path,
+		],$vars);
+		$path .= '.tml';
 		if($this->setPath($path)||$this->setPath('404'))
 			$this->display(null,$vars);
 		else

@@ -1,9 +1,9 @@
+<eval>
 <?
 	$langDir = SURIKAT_CWD.'langs/';
 	global $SURIKAT;
-	$lgC = $SURIKAT['Translator']->getLangCode();
-	$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
-	$lgD = $config->default;
+	$lgC = $SURIKAT->create('InterNative\Translator')->getLangCode();
+	$lgD = 'en';
 	$langs = [$lgD];
 	foreach(glob($langDir.'*.ini') as $langFile)
 		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
@@ -12,7 +12,7 @@
 	<?
 		$language = InterNative\Punic\Language::getName($lg,$lg);
 		$language = InterNative\Strings::ucfirst($language);
-		$lcPath = $this->Route[0];
+		$lcPath = $URI;
 		if($lg!=$lgC){
 			if($lg==$lgD){
 				$langMap = parse_ini_file($langDir.$lgC.'.ini');
@@ -25,7 +25,7 @@
 					$lcPath = $k;
 			}
 		}
-		$lcLink = $SURIKAT['Url']->getSubdomainHref($lg!=$lgD?$lg:null);
+		$lcLink = $SURIKAT->create('Unit\Url')->getSubdomainHref($lg!=$lgD?$lg:null);
 		$lcLink .= $lcPath;
 	?>
 	<li>
@@ -36,3 +36,4 @@
 		</if>
 	</li>
 </foreach>
+</eval>

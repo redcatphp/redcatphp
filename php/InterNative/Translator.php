@@ -20,30 +20,39 @@ class Translator {
 	protected $EMULATEGETTEXT = 1;
 	protected $GettextEmulators = [];
 	private $dev = 1;
+	private static $instance;
 	static function initialize(){
 		exec('locale -a',self::$systemLocales);
 	}
-	function __construct($locale=null,$domain=null){
-		if($locale)
-			$this->set($locale,$domain);
+	static function getInstance(){
+		if(!isset(self::$instance)){
+			if(class_exists('Unit\Di'))
+				self::$instance = Unit\Di::getInstance()->create(__CLASS__);
+			else
+				self::$instance = new self;
+		}
+		return self::$instance;
 	}
 	function dev(){
 		if(func_num_args())
 			$this->dev = func_get_arg(0);
 		return $this->dev;
 	}
-	function set($locale=null,$domain=null){
+	function __construct($locale=null,$domain=null,$timezone=null){
+		if(isset($locale)){
+			$this->set($locale,$domain,$timezone);
+		}
+	}
+	function set($locale=null,$domain=null,$timezone=null){
 		if(!isset($domain))
 			$domain = self::$defaultDomain;
+		if(!$timezone)
+			$timezone = @date_default_timezone_get();
+		date_default_timezone_set($timezone);
 		$this->defaultLocalesRoot = 'langs';
-		$config = ((object)include(is_file($f=SURIKAT_CWD.'config/langs.php')?$f:SURIKAT.'config/langs.php'));
-		$tz = $config->timezone;
-		if(!$tz)
-			$tz = @date_default_timezone_get();
-		date_default_timezone_set($tz);
 		$this->localesRoot = $this->defaultLocalesRoot;
 		$this->originLocale = $locale;
-		$this->locale = $locale;
+		$this->locale = $locale?:$this->defaultLocale;
 		$this->domain = $domain;
 		if($this->dev)
 			$this->realDomain = $this->getLastMoFile();
@@ -136,7 +145,7 @@ class Translator {
 		if(false!==$p=strpos($this->locale,'_')){
 			return substr($this->locale,0,$p);
 		}
-		return $this->locale;	
+		return $this->locale;
 	}
 	function getLastMoFile(){
 		$mo = glob($this->localesRoot.'/'.$this->locale.'/LC_MESSAGES/'.$this->domain.'.*.mo');
