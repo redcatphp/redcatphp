@@ -255,25 +255,14 @@ class Di implements \ArrayAccess{
 	
 	private function getClosure($name, array $rule, $instance){
 		$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
-		if(is_string($rule['shared']))
-			$constructor = $class->getMethod($rule['shared']);
-		else
-			$constructor = $class->getConstructor();
+		$constructor = $class->getConstructor();
 		$params = $constructor ? $this->getParams($constructor, $rule) : null;
 		if($rule['shared']){
-			if(is_string($rule['shared'])){
-				$method = $rule['shared'];
-				$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
-					return $this->instances[$instance] = $constructor->invokeArgs(null,$params($args, $share));
-				};
-			}
-			else{
-				$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
-					$this->instances[$instance] = $class->newInstanceWithoutConstructor();
-					if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
-					return $this->instances[$instance];
-				};
-			}
+			$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
+				$this->instances[$instance] = $class->newInstanceWithoutConstructor();
+				if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
+				return $this->instances[$instance];
+			};
 		}
 		else if ($params){
 			$closure = function (array $args, array $share) use ($class, $params, $class){
@@ -436,11 +425,7 @@ class Di implements \ArrayAccess{
 			$xml = simplexml_load_file($xml);
 		foreach ($xml->class as $key => $value) {
 			$rule = [];
-			$rule['shared'] = (string)$value['shared'];
-			if($rule['shared']=='true')
-				$rule['shared'] = true;
-			elseif($rule['shared']=='false'||!trim($rule['shared']))
-				$rule['shared'] = false;
+			$rule['shared'] = ((string)$value['shared'])=='true';
 			$rule['inherit'] = (((string)$value['inherit']) == 'false') ? false : true;
 			if($value->call){
 				foreach($value->call as $name=>$call){
