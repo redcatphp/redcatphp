@@ -1,5 +1,5 @@
 <?php namespace Templix;
-class TEXT extends Tml{
+class TEXT extends Markup{
 	var $nodeName = 'TEXT';
 	protected $hiddenWrap = true;
 	function parse($text){
@@ -11,7 +11,7 @@ class TEXT extends Tml{
 	}
 	function biohazard(){
 		if(!$this->parent||!$this->parent->antibiotique)
-			$this->write(new Tml('<loremipsum mini>'));
+			$this->write(new Markup('<loremipsum mini>'));
 	}
 	function textInject($text){
 		if(strpos($text,'<?php ')===false)

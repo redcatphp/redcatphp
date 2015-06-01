@@ -7,7 +7,7 @@ class TmlMarkdown extends \Templix\Tml {
 		if($this->file)
 			$text = file_get_contents($this->file);
 		else{
-			$text = $this->getInnerTml();
+			$text = $this->getInnerMarkups();
 			$x = explode("\n",$text);
 			foreach($x as &$v)
 				$v = ltrim($v);

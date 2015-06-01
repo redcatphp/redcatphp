@@ -1,5 +1,5 @@
 <?php namespace Templix; 
-class CDATA extends Tml{
+class CDATA extends Markup{
 	var $nodeName = 'CDATA';
 	protected $hiddenWrap = true;
 	private $contentText = '';

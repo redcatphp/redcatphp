@@ -1,5 +1,5 @@
 <?php namespace Templix; 
-class PHP extends Tml{
+class PHP extends Markup{
 	protected $hiddenWrap = true;
 	var $nodeName = 'PHP';
 	function parse($text){

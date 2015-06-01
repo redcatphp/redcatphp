@@ -1,6 +1,6 @@
 <?php namespace Templix;
-use Templix\Tml;
-class Group extends Tml{
+use Templix\Markup;
+class Group extends Markup{
 	protected $hiddenWrap = true;
 	function addToGroup($node){
 		parent::offsetSet(null,$node);

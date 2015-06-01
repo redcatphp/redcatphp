@@ -136,7 +136,7 @@ class Templix implements \ArrayAccess {
 	}
 	function removeTmp($node){
 		$node('[tmp-wrap]')->each(function($el){
-			$el->replaceWith($el->getInnerTml());
+			$el->replaceWith($el->getInnerMarkups());
 		});
 		$node('[tmp-tag]')->remove();
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
@@ -183,7 +183,7 @@ class Templix implements \ArrayAccess {
 	}
 	function writeCompile(){
 		$file = $this->getPath();
-		$node = new Tml();
+		$node = new Markup();
 		$node->settemplix($this);		
 		$node->parse(file_get_contents($file));
 		ksort($this->compile);
