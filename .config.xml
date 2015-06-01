@@ -14,13 +14,14 @@
 	<class name="Session" instanceOf="Authentic\Session" />
 	
 	<class name="KungFu\Cms\RouteMatch\ByTmlL10n">
-		<constructParams string-langDefault="en" />
+		<constructParams
+			string-langDefault="en"
+		/>
 	</class>
 	
 	<class name="InterNative\Translator" shared="true">
 		<constructParams
 			string-timezone="Europe/Paris"
-			string-langDefault="en"
 		/>
 	</class>
 	

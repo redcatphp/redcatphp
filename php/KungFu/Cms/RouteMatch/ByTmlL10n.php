@@ -7,12 +7,11 @@ class ByTmlL10n extends ByTml {
 		$this->langDefault = $langDefault;
 	}
 	function __invoke($path,$domain){
-		$templatePath = $path;
 		if($lang=$this->extractLang($domain)){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
 				if(isset($langMap[$path]))
-					$templatePath = $langMap[$path];
+					$path = $langMap[$path];
 				elseif(($k=array_search($path,$langMap))!==false){
 					header('Location: /'.$k,false,301);
 					exit;
