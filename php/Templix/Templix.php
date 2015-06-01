@@ -172,7 +172,7 @@ class Templix implements \ArrayAccess {
 			$this->setPath($file);
 		$file = $this->getPath();
 		if(!$file)
-			throw new TemplixException('&lt;display "'.$this->path.'"&gt; template not found ');
+			throw new TemplixException('<display "'.$this->path.'"> template not found ');
 		if(!empty($vars))
 			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();

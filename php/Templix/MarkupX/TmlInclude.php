@@ -15,7 +15,7 @@ class TmlInclude extends \Templix\Tml{
 		$templix->setPath($file);
 		$find = $templix->getPath();
 		if(!$find)
-			$this->throwException('&lt;include "'.$file.'"&gt; template not found ');
+			$this->throwException('<include "'.$file.'"> template not found ');
 		$templix->writeCompile();
 		
 		$r = self::findRelativePath($this->templix->getPath(),$find);

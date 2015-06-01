@@ -2,7 +2,6 @@
 use Templix\MarkupX\TmlApply;
 class Tml implements \ArrayAccess,\IteratorAggregate{	
 	//Parser
-	const STATE_PROLOG_NONE = 0;
 	const STATE_PROLOG_EXCLAMATION = 1;
 	const STATE_PROLOG_DTD = 2;
 	const STATE_PROLOG_INLINEDTD = 3;
@@ -167,7 +166,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 	}
 	function getFile($file,$c=null){
 		if(!is_file($real=$this->templix->findPath($file)))
-			$this->throwException('&lt;'.$c.' "'.$file.'"&gt; template not found ');
+			$this->throwException('<'.$c.' "'.$file.'"> template not found ');
 		return file_get_contents($real);
 	}
 	function parseFile($file,$params=null,$c=null){
@@ -1029,7 +1028,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		
 		$xmlText = str_replace(array_keys($this->parseReplacement),array_values($this->parseReplacement),$xmlText);
 		
-		$state = self::STATE_PROLOG_NONE;
+		$state = self::STATE_PARSING;
 		$charContainer = '';
 		$quoteType = '';
 		$total = strlen($xmlText);
@@ -1116,7 +1115,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 								$charContainer .= $currentChar;							
 						break;
 						case self::STATE_PROLOG_EXCLAMATION:
-							$state = self::STATE_PROLOG_COMMENT;	
+							$state = self::STATE_PROLOG_COMMENT;
 							$charContainer = '';
 						break;
 						case self::STATE_PROLOG_COMMENT:
@@ -1246,18 +1245,18 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 							}
 						break;
 						case self::STATE_PROLOG_COMMENT:
-							$state = self::STATE_PROLOG_NONE;
+							$state = self::STATE_PARSING;
 							$this->fireComment($charContainer);
 							$charContainer = '';
 						break;
 						case self::STATE_PROLOG_DTD:
-							$state = self::STATE_PROLOG_NONE;
+							$state = self::STATE_PARSING;
 							$this->fireDTD($charContainer.$currentChar);
 							$charContainer = '';
 						break;
 						case self::STATE_PROLOG_INLINEDTD:
 							if($xmlText{($i-1)}==']'){
-								$state = self::STATE_PROLOG_NONE;
+								$state = self::STATE_PARSING;
 								$this->fireDTD($charContainer.$currentChar);						
 								$charContainer = '';
 							}
@@ -1310,15 +1309,15 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 		$this->fireCharacterData($charContainer);
 		switch($state){
 			case self::STATE_NOPARSING:
-				$this->throwException('Unexpected end of file, expected end of noParse Tag &lt;/'.$this->currentTag->nodeName.'&gt;');
+				$this->throwException('Unexpected end of file, expected end of noParse Tag </'.$this->currentTag->nodeName.'>');
 			break;
 			case self::STATE_PARSING_COMMENT:
-				$this->throwException('Unexpected end of file, expected end of comment Tag --&gt;');
+				$this->throwException('Unexpected end of file, expected end of comment Tag -->');
 			break;
 			case self::STATE_PARSING:
 			default:
 				if($this->currentTag&&$this->currentTag->nodeName&&!$this->currentTag->__closed&&!$this->currentTag->selfClosed)
-					$this->throwException('Unexpected end of file, expected end of Tag &lt;/'.$this->currentTag->nodeName.'&gt;');
+					$this->throwException('Unexpected end of file, expected end of Tag </'.$this->currentTag->nodeName.'>');
 			break;
 		}
 	}
@@ -1459,7 +1458,7 @@ class Tml implements \ArrayAccess,\IteratorAggregate{
 				$this->fireEndElement($n);
 		}
 		if($name!=$this->currentTag->nodeName)
-			$this->throwException('Unexpected &lt;/'.$name.'&gt;, expected &lt;/'.$this->currentTag->nodeName.'&gt;');
+			$this->throwException('Unexpected </'.$name.'>, expected </'.$this->currentTag->nodeName.'>');
 		$this->currentTag->closed();
 		if($this->currentTag->parent)
 			$this->currentTag = $this->currentTag->parent;
