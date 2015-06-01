@@ -50,7 +50,7 @@ class Di implements \ArrayAccess{
 	
 	static function getInstance(){
 		if(!isset(self::$instance)){
-			self::$instance = new Di();
+			self::$instance = new self;
 			self::$instance->instances[__CLASS__] = self::$instance;
 		}
 		return self::$instance;
@@ -63,7 +63,6 @@ class Di implements \ArrayAccess{
 			$this->offsetSet($key, $value);
 		}
 	}
-
 	function offsetSet($id, $value){
 		if (isset($this->frozen[$id])) {
 			throw new \RuntimeException(sprintf('Cannot override frozen service "%s".', $id));
@@ -71,7 +70,6 @@ class Di implements \ArrayAccess{
 		$this->values[$id] = $value;
 		$this->keys[$id] = true;
 	}
-
 	function offsetGet($id){
 		if(!isset($this->keys[$id])){
 				$this[$id] = $this->create($id);
@@ -93,11 +91,9 @@ class Di implements \ArrayAccess{
 		$this->frozen[$id] = true;
 		return $val;
 	}
-
 	function offsetExists($id){
 		return isset($this->keys[$id]);
 	}
-
 	function offsetUnset($id){
 		if (isset($this->keys[$id])) {
 			if (is_object($this->values[$id])) {
@@ -106,7 +102,6 @@ class Di implements \ArrayAccess{
 			unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
 		}
 	}
-
 	function factory($callable){
 		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
 			throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
@@ -114,7 +109,6 @@ class Di implements \ArrayAccess{
 		$this->factories->attach($callable);
 		return $callable;
 	}
-	
 	function protect($callable){
 		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
 			throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
@@ -122,7 +116,6 @@ class Di implements \ArrayAccess{
 		$this->protected->attach($callable);
 		return $callable;
 	}
-
 	function raw($id){
 		if (!isset($this->keys[$id])) {
 			throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
@@ -132,7 +125,6 @@ class Di implements \ArrayAccess{
 		}
 		return $this->values[$id];
 	}
-
 	function extend($id, $callable){
 		if (!isset($this->keys[$id])) {
 			throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
@@ -153,17 +145,8 @@ class Di implements \ArrayAccess{
 		}
 		return $this[$id] = $extended;
 	}
-
 	function keys(){
 		return array_keys($this->values);
-	}
-
-	function register($provider, array $values = []){
-		$provider->register($this);
-		foreach ($values as $key => $value) {
-				$this[$key] = $value;
-		}
-		return $this;
 	}
 	
 	function objectify($a){
@@ -306,7 +289,13 @@ class Di implements \ArrayAccess{
 	private function getParams(\ReflectionMethod $method, array $rule) {
 		$paramInfo = [];
 		foreach ($method->getParameters() as $param) {
-			$class = $param->getClass() ? $param->getClass()->name : null;
+			try{
+				$class = $param->getClass() ? $param->getClass()->name : null;
+			}
+			catch(\ReflectionException $e){
+				if($param->allowsNull()) $class = null;
+				else throw $e;
+			}
 			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule['substitutions']), in_array($class, $rule['newInstances']),$param->getName(),$param->isDefaultValueAvailable()?$param->getDefaultValue():null];
 		}
 		return function (array $args, array $share = []) use ($paramInfo, $rule) {
