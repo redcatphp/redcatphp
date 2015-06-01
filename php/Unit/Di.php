@@ -242,7 +242,15 @@ class Di implements \ArrayAccess{
 		if(empty($this->cache[$name])) $this->cache[$name] = $this->getClosure($name, $this->getRule($name), $instance);
 		return $this->cache[$name]($args, $share);
 	}
-
+	
+	function share($obj,$instance=null){
+		if(!isset($instance))
+			$instance = get_class($obj);
+		elseif(is_array($instance))
+			$instance = get_class($obj).':'.self::hashArguments($instance);
+		$this->instances[$instance] = $obj;
+	}
+	
 	private function getClosure($name, array $rule, $instance){
 		$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
 		$constructor = $class->getConstructor();
