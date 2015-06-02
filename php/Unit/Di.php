@@ -1,12 +1,13 @@
 <?php
 /*
- * fusion of
+ * inspired from a fusion of
  * Dice 2.0-Transitional - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
  *		for clean decoupled dependencies resolution
  * and Pimple 3 - 2009 Fabien Potencier | http://pimple.sensiolabs.org
  *		for arbitrary data and manual hook
- * with Surikat remixs and addons
- *		for powerfull API and format
+ * with lot of Surikat improvements, addons and remixs
+ *		for powerfull API, lazy load cascade rules resolution,
+ *		full registry implementation, full xml API, freeze optimisation
  */
 
 namespace Unit;
