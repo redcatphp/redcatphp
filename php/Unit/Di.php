@@ -222,7 +222,7 @@ class Di implements \ArrayAccess{
 			});
 		}
 		foreach($rules as $key=>$r){
-			if($rule['instanceOf']===null&&(!isset($r['inherit'])||$r['inherit']===true)&&self::is_subclass_of($name, $key)){
+			if($rule['instanceOf']===null&&(!isset($r['inherit'])||$r['inherit']===true)){
 				$rule = self::merge_recursive($rule, $r);
 			}
 		}
@@ -495,18 +495,6 @@ class Di implements \ArrayAccess{
 			return (string)$param['name'];
 		elseif(false!==$p=strpos($key,'-'))
 			return substr($key,$p+1);
-	}
-	private static function is_subclass_of($className,$search){
-		if(!preg_match('(^(?>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\\?)+$)', $className))
-			return;
-		$class = new \ReflectionClass($className);
-		if(in_array($search, $class->getInterfaceNames()))
-			return true;
-		do{
-			if($search===$class->getName())
-				return true;
-		}while($class=$class->getParentClass());
-		return false;
 	}
 	private static function hashArguments($args){
 		static $storage = null;
