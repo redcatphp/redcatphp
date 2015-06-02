@@ -414,6 +414,14 @@ class Di implements \ArrayAccess{
 			case 'constant':
 				return constant((string)$param);
 			break;
+			case 'int':
+			case 'integer':
+				return (int)$param;
+			break;
+			case 'boolean':
+			case 'bool':
+				return ((string)$param)==='true'||((string)$param)==='1';
+			break;
 			default:
 			case 'string':
 				return (string)$param;
