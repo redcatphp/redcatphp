@@ -427,7 +427,7 @@ class Di implements \ArrayAccess{
 			break;
 			default:
 				$param = (string)$param;
-				if(is_numeric($param)&&is_int(($param+0))){
+				if(((int)$param)===$param){
 					$param = (int)$param;
 				}
 				elseif($param==='true'||$param==='false'){
@@ -454,7 +454,7 @@ class Di implements \ArrayAccess{
 			$this->keys[$offset] = true;
 		}
 		foreach($value->attributes() as $key=>$param){
-			$this->buildXmlParam($key,$param,$this->values[$offset]);
+			$this->buildXmlParam($key,$param,$this->values[$offset],true);
 		}
 		foreach($value->children() as $key=>$param){
 			$this->buildXmlParam($key,$param,$this->values[$offset]);
@@ -467,7 +467,10 @@ class Di implements \ArrayAccess{
 		if($value->call){
 			foreach($value->call as $name=>$call){
 				$callArgs = [];
-				foreach($call as $key=>$param){
+				foreach($call->attributes() as $key=>$param){
+					$this->buildXmlParam($key,$param,$callArgs,true);
+				}
+				foreach($call->children() as $key=>$param){
 					$this->buildXmlParam($key,$param,$callArgs);
 				}
 				$rule['call'][] = [(string) $call['method'], $callArgs];
@@ -485,10 +488,9 @@ class Di implements \ArrayAccess{
 				$rule['substitutions'][(string) $use['as']] = $this->getComponent('instance',(string) $use['use']);
 		if ($value->constructParams){
 			foreach($value->constructParams->attributes() as $key=>$param){
-				$this->buildXmlParam($key,$param,$rule['constructParams']);
+				$this->buildXmlParam($key,$param,$rule['constructParams'],true);
 			}
 			foreach($value->constructParams->children() as $key=>$param){
-				
 				$this->buildXmlParam($key,$param,$rule['constructParams']);
 			}
 		}
@@ -499,9 +501,9 @@ class Di implements \ArrayAccess{
 		}
 		$this->addRule((string) $value['name'], $rule);
 	}
-	private function buildXmlParam($key,$param,&$rulePart){
+	private function buildXmlParam($key,$param,&$rulePart,$forceAssoc=false){
 		$type = $this->typeofParam($key,$param);
-		$assoc = $this->associativeParam($key,$param);
+		$assoc = $this->associativeParam($key,$param,$forceAssoc);
 		$component = $this->getComponent($type,$param);
 		if($assoc){
 			$rulePart[$assoc] = $component;
@@ -518,11 +520,13 @@ class Di implements \ArrayAccess{
 		else
 			return $key;
 	}
-	private function associativeParam($key,$param){
+	private function associativeParam($key,$param,$forceAssoc=false){
 		if(isset($param['name']))
 			return (string)$param['name'];
 		elseif(false!==$p=strpos($key,'-'))
 			return substr($key,$p+1);
+		elseif($forceAssoc)
+			return $key;
 	}
 	private static function hashArguments($args){
 		static $storage = null;
