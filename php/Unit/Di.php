@@ -25,6 +25,10 @@ class Di implements \ArrayAccess{
 	
 	private static $instance;
 	
+	static function make($name, $args = [], $forceNewInstance = false, $share = []){
+		return self::getInstance()->create($name, $args, $forceNewInstance, $share);
+	}
+	
 	static function load(array $map,$freeze=false,$file=null){
 		if($freeze){
 			if(!isset($file)){
@@ -231,7 +235,7 @@ class Di implements \ArrayAccess{
 		return $rule;
 	}
 
-	function create($name, $args = [], $forceNewInstance = false, $share = []) {
+	function create($name, $args = [], $forceNewInstance = false, $share = []){
 		if(!is_array($args))
 			$args = (array)$args;
 		$instance = $name;
