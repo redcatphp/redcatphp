@@ -272,9 +272,14 @@ class Di implements \ArrayAccess{
 		else{
 			$closure = function () use ($class) { return new $class->name;	};
 		}
-		return $rule['call'] ? function (array $args, array $share) use ($closure, $class, $rule) {
+		return !empty($rule['call']) ? function (array $args, array $share) use ($closure, $class, $rule) {
 			$object = $closure($args, $share);
-			foreach ($rule['call'] as $call) call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
+			foreach ($rule['call'] as $k=>$call){
+				if(!is_integer($k)){
+					$call = [$k,(array)$call];
+				}
+				call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
+			}
 			return $object;
 		} : $closure;
 	}
