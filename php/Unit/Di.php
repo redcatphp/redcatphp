@@ -72,7 +72,7 @@ class Di implements \ArrayAccess{
 	}
 	function offsetGet($id){
 		if(!isset($this->keys[$id])){
-				$this[$id] = $this->create($id);
+			$this[$id] = $this->create($id);
 		}
 		if (
 				isset($this->raw[$id])
@@ -422,54 +422,82 @@ class Di implements \ArrayAccess{
 			case 'bool':
 				return ((string)$param)==='true'||((string)$param)==='1';
 			break;
-			default:
 			case 'string':
 				return (string)$param;
+			break;
+			default:
+				$param = (string)$param;
+				if(is_numeric($param)&&is_int(($param+0))){
+					$param = (int)$param;
+				}
+				elseif($param==='true'||$param==='false'){
+					$param = (bool)$param;
+				}
+				return $param;
 			break;
 		}
 	}
 	function loadXml($xml){
 		if (!($xml instanceof \SimpleXmlElement))
 			$xml = simplexml_load_file($xml);
-		foreach ($xml->class as $key => $value) {
-			$rule = [];
-			$rule['shared'] = ((string)$value['shared'])=='true';
-			$rule['inherit'] = (((string)$value['inherit']) == 'false') ? false : true;
-			if($value->call){
-				foreach($value->call as $name=>$call){
-					$callArgs = [];
-					foreach($call as $key=>$param){
-						$this->buildXmlParam($key,$param,$callArgs);
-					}
-					$rule['call'][] = [(string) $call['method'], $callArgs];
-				}
+		foreach($xml as $key=>$value){
+			if($key==='class'){
+				$this->defineClass($value);
 			}
-			if (isset($value['instanceOf']))
-				$rule['instanceOf'] = (string) $value['instanceOf'];
-			if ($value['newInstances']){
-				foreach(explode(',',$value['newInstances']) as $ni){
-					$rule['newInstances'][] = (string) $ni;
-				}
+			else{
+				$this->defineOffset($key,$value);
 			}
-			if ($value->substitution)
-				foreach ($value->substitution as $use)
-					$rule['substitutions'][(string) $use['as']] = $this->getComponent('instance',(string) $use['use']);
-			if ($value->constructParams){
-				foreach($value->constructParams->attributes() as $key=>$param){
-					$this->buildXmlParam($key,$param,$rule['constructParams']);
-				}
-				foreach($value->constructParams->children() as $key=>$param){
-					
-					$this->buildXmlParam($key,$param,$rule['constructParams']);
-				}
-			}
-			if ($value->shareInstance){
-				foreach(explode(',',$value['shareInstance']) as $ni){
-					$rule['shareInstances'][] = (string) $share;
-				}
-			}
-			$this->addRule((string) $value['name'], $rule);
 		}
+	}
+	private function defineOffset($offset,$value){
+		if(!isset($this->keys[$offset])){
+			$this->keys[$offset] = true;
+		}
+		foreach($value->attributes() as $key=>$param){
+			$this->buildXmlParam($key,$param,$this->values[$offset]);
+		}
+		foreach($value->children() as $key=>$param){
+			$this->buildXmlParam($key,$param,$this->values[$offset]);
+		}
+	}
+	private function defineClass($value){
+		$rule = [];
+		$rule['shared'] = ((string)$value['shared'])=='true';
+		$rule['inherit'] = (((string)$value['inherit']) == 'false') ? false : true;
+		if($value->call){
+			foreach($value->call as $name=>$call){
+				$callArgs = [];
+				foreach($call as $key=>$param){
+					$this->buildXmlParam($key,$param,$callArgs);
+				}
+				$rule['call'][] = [(string) $call['method'], $callArgs];
+			}
+		}
+		if (isset($value['instanceOf']))
+			$rule['instanceOf'] = (string) $value['instanceOf'];
+		if ($value['newInstances']){
+			foreach(explode(',',$value['newInstances']) as $ni){
+				$rule['newInstances'][] = (string) $ni;
+			}
+		}
+		if ($value->substitution)
+			foreach ($value->substitution as $use)
+				$rule['substitutions'][(string) $use['as']] = $this->getComponent('instance',(string) $use['use']);
+		if ($value->constructParams){
+			foreach($value->constructParams->attributes() as $key=>$param){
+				$this->buildXmlParam($key,$param,$rule['constructParams']);
+			}
+			foreach($value->constructParams->children() as $key=>$param){
+				
+				$this->buildXmlParam($key,$param,$rule['constructParams']);
+			}
+		}
+		if ($value->shareInstance){
+			foreach(explode(',',$value['shareInstance']) as $ni){
+				$rule['shareInstances'][] = (string) $share;
+			}
+		}
+		$this->addRule((string) $value['name'], $rule);
 	}
 	private function buildXmlParam($key,$param,&$rulePart){
 		$type = $this->typeofParam($key,$param);
