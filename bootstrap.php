@@ -15,3 +15,12 @@ $SURIKAT = Unit\Di::load([
 	SURIKAT.'.config.xml',
 	SURIKAT_CWD.'.config.xml'
 ],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/SURIKAT.svar');
+
+if($SURIKAT['dev']['php']){
+	$SURIKAT->create('Unit\Debug')->handleErrors();
+}
+else{
+	error_reporting(0);
+	ini_set('display_startup_errors',false);
+	ini_set('display_errors',false);
+}

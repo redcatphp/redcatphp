@@ -15,7 +15,7 @@
 	
 	<class name="KungFu\Cms\RouteMatch\ByTmlL10n">
 		<constructParams
-			string-langDefault="en"
+			langDefault="en"
 		/>
 	</class>
 	
@@ -25,4 +25,7 @@
 		/>
 	</class>
 	
+	<class name="Unit\Debug" shared="true" />
+	
+	<dev php="true" />
 </config>
