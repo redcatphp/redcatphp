@@ -30,7 +30,7 @@ class Templix implements \ArrayAccess {
 	public $childNodes = [];
 	public $isXhtml;
 	
-	function __construct($file=null,$vars=null,$options=null){
+	function __construct($file=null,$vars=null){
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
 		$this->setDirSync('.tmp/sync/');
@@ -44,18 +44,6 @@ class Templix implements \ArrayAccess {
 			$this->setPath($file);
 		if(isset($vars))
 			$this->set($vars);
-		if(isset($options))
-			$this->setOptions($options);
-	}
-	function setOptions($options=[]){
-		foreach($options as $k=>$v){
-			if(is_integer($k))
-				continue;
-			if(is_array($v)&&is_array($this->$k))
-				$this->$k = array_merge($this->$k,$v);
-			else
-				$this->$k = $v;
-		}
 	}
 	function getPluginNamespace(){
 		return $this->__pluginNamespaces;

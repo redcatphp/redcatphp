@@ -3,8 +3,8 @@ namespace KungFu\TemplixPlugin;
 use Unit\Di;
 class Templix extends \Templix\Templix{
 	private $di;
-	function __construct($file=null,$vars=null,$options=null,Di $di){
-		parent::__construct($file,$vars,$options);
+	function __construct($file=null,$vars=null,Di $di){
+		parent::__construct($file,$vars);
 		$this->di = $di;
 		$this->onCompile(function($tml){
 			if($tml->templix->getParent())

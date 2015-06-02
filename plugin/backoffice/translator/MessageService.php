@@ -1,6 +1,6 @@
 <?php namespace Translator;
 use InterNative\msgfmt;
-use InterNative\getTextExtractorTML;
+use InterNative\getTextExtractorTemplix;
 use InterNative\getTextExtractorPHP;
 use InterNative\Gettext\Extractors\Po;
 use Database\R;
@@ -105,7 +105,7 @@ class MessageService {
 			$cwd = SURIKAT_CWD;
 		else
 			$cwd = getcwd();
-		$pot .= getTextExtractorTML::parse('tml',$cwd);
+		$pot .= getTextExtractorTemplix::parse('tml',$cwd);
 		$pot .= getTextExtractorPHP::parse('tml',$cwd);
 		$pot .= getTextExtractorPHP::parse('php',$cwd);
 		file_put_contents($potfile,$pot);

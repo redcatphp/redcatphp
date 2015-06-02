@@ -1,6 +1,6 @@
 <?php namespace InterNative;
-use Templix\TML;
-class getTextExtractorTML extends getTextExtractor{
+use Templix\Markup;
+class getTextExtractorTemplix extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		$filename = $file;
 		if($sourceDir)
@@ -9,7 +9,7 @@ class getTextExtractorTML extends getTextExtractor{
 		if(empty($content))
 			return;
 		$msg = '';
-		$TML = new TML($content);
+		$TML = new Markup($content);
 		$TML('*[ni18n]')->remove();
 		$TML('TEXT:hasnt(PHP)')->each(function($el)use(&$msg,$filename){
 			$el = trim("$el");

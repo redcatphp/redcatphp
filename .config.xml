@@ -27,5 +27,12 @@
 	
 	<class name="Unit\Debug" shared="true" />
 	
-	<dev php="true" />
+	<dev
+		php="true"
+		tml="true"
+		js="true"
+		css="true"
+		img="false"
+		chrono="true"
+	/>
 </config>

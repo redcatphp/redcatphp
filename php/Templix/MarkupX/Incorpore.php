@@ -1,5 +1,5 @@
 <?php namespace Templix\MarkupX; 
-class Incorpore extends MarkupInclude{
+class Incorpore extends _Include{
 	function load(){
 		$this->remapAttr('file');
 		$file = $this->__get('file');
