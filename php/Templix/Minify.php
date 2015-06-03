@@ -106,30 +106,7 @@ class Minify {
 			$this->tokens[] = $t;        
 			$pending_whitespace = "";
 		}
-	}
-	private function encode_id($value) {                                
-		$result = "";            
-		if($value > 52) {
-			$result .= $this->encode_id_digit($value % 53);
-			$value = floor($value / 53);
-		}            
-		while($value > 62) {
-			$result .= $this->encode_id_digit($value % 63);
-			$value = floor($value / 63);
-		}
-		$result .= $this->encode_id_digit($value);
-		return $result;
-	}
-	private function encode_id_digit($digit) {
-		if($digit < 26)
-			return chr(65 + $digit);
-		if($digit < 52)
-			return chr(71 + $digit);
-		if($digit == 52)
-			return "_";
-		return chr($digit - 5);
-	}
-	
+	}	
 	
 	protected $_isXhtml = null;
     protected $_replacementHash = null;
