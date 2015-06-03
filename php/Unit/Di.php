@@ -291,17 +291,12 @@ class Di implements \ArrayAccess{
 
 	private function expand($param, array $share = []) {
 		if (is_array($param)){
-			if(isset($param['instance'])) {
-				if(is_callable($param['instance'])){
-					return call_user_func_array($param['instance'], (isset($param['params']) ? $this->expand($param['params']) : [$this]));
-				}
-				else{
-					return $this->create($param['instance'], [], false, $share);
-				}
+			foreach($param as &$value){
+				$value = $this->expand($value, $share);
 			}
-			else{
-				foreach ($param as &$value) $value = $this->expand($value, $share);
-			}
+		}
+		elseif($param instanceof DiExpand){
+			$param = $param($this,$share);
 		}
 		return $param;
 	}
@@ -369,10 +364,10 @@ class Di implements \ArrayAccess{
 						}
 					}
 					if($sub){
-						if(is_string($rule['substitutions'][$class])){
-							$rule['substitutions'][$class] = ['instance'=>$rule['substitutions'][$class]];
-						}
-						$parameters[$j] = $this->expand($rule['substitutions'][$class], $share);
+						if(is_string($rule['substitutions'][$class]))
+							$parameters[$j] = $this->create($rule['substitutions'][$class],[],false,$share);
+						else
+							$parameters[$j] = $rule['substitutions'][$class];
 					}
 					else{
 						$parameters[$j] = $this->create($class, [], $new, $share);
@@ -404,12 +399,12 @@ class Di implements \ArrayAccess{
 				return $r;
 			break;
 			case 'instance':
-				return ['instance'=>(string)$param];
+				return new DiExpand((string)$param);
 			break;
 			case 'callback':
 				$dic = $this;
 				$str = (string)$param;
-				return ['instance'=>function()use($dic,$str){
+				return new DiExpand(function()use($dic,$str){
 					$parts = explode('::', $str);
 					$object = $dic->create(array_shift($parts));
 					while ($var = array_shift($parts)){
@@ -420,7 +415,7 @@ class Di implements \ArrayAccess{
 						else $object = $object->$var;
 					}
 					return $object;
-				}];
+				});
 			break;
 			case 'eval':
 				return eval(' return '.$param.';');
