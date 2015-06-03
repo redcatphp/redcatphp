@@ -429,7 +429,7 @@ class Di implements \ArrayAccess{
 			break;
 			case 'boolean':
 			case 'bool':
-				return ((string)$param)==='true'||((string)$param)==='1';
+				return !(((string)$param)==='false'||((string)$param)==='0');
 			break;
 			case 'string':
 				return (string)$param;
@@ -446,6 +446,21 @@ class Di implements \ArrayAccess{
 					$v = $v[$k];
 				}
 				return $v;
+			break;
+			case 'var':
+				$param = explode('.',(string)$param);
+				return new DiExpand(function()use($param){
+					$k = array_shift($param);
+					if(!isset($this->keys[$k]))
+						return;
+					$v = $this[$k];
+					while($k = array_shift($param)){
+						if(!isset($v[$k]))
+							return;
+						$v = $v[$k];
+					}
+					return $v;
+				 });
 			break;
 			default:
 				$param = (string)$param;
