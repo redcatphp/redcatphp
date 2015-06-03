@@ -435,6 +435,19 @@ class Di implements \ArrayAccess{
 			case 'string':
 				return (string)$param;
 			break;
+			case 'config':
+				$param = explode('.',(string)$param);
+				$k = array_shift($param);
+				if(!isset($this->keys[$k]))
+					return;
+				$v = $this[$k];
+				while($k = array_shift($param)){
+					if(!isset($v[$k]))
+						return;
+					$v = $v[$k];
+				}
+				return $v;
+			break;
 			default:
 				$param = (string)$param;
 				if(((int)$param)===$param){
