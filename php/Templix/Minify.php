@@ -83,7 +83,7 @@ class Minify {
 		for($i = 0; $i < count($this->tokens) - 1; $i++) {
 			if($this->tokens[$i][0] == T_PUBLIC){
 				if($this->tokens[$i-1][0] == T_STATIC){
-					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? ["", ""] : [-1, ""]; //added by surikat
+					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? ["", ""] : [-1, ""];
 				}
 				else{
 					$this->tokens[$i] = $this->tokens[$i + 1][1][0] == '$' ? [T_VAR, "var"] : [-1, ""];
