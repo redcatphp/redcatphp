@@ -316,7 +316,7 @@ class Di implements \ArrayAccess{
 				if($param->allowsNull()) $class = null;
 				else throw $e;
 			}
-			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule['substitutions']), in_array($class, $rule['newInstances']),$param->getName(),$param->isDefaultValueAvailable()?$param->getDefaultValue():null,$param->isPassedByReference()];
+			$paramInfo[] = [$class, $param->allowsNull(), array_key_exists($class, $rule['substitutions']), in_array($class, $rule['newInstances']),$param->getName(),$param->isDefaultValueAvailable()?$param->getDefaultValue():null];
 		}
 		return function (array $args, array $share = []) use ($paramInfo, $rule) {
 			if(!empty($rule['shareInstances'])){
@@ -355,17 +355,14 @@ class Di implements \ArrayAccess{
 					}
 				}
 			}
-			foreach($paramInfo as $j=>list($class, $allowsNull, $sub, $new, $name, $default, $isReference)){
+			foreach($paramInfo as $j=>list($class, $allowsNull, $sub, $new, $name, $default)){
 				if(array_key_exists($j,$parameters))
 					continue;
 				if($class){
 					if (!empty($args)){
 						foreach($args as $i=>$arg){
 							if($arg instanceof $class || ($arg === null && $allowsNull) ){
-								if($isReference)
-									$parameters[$j] = $arg;
-								else
-									$parameters[$j] = &$args[$i];
+								$parameters[$j] = &$args[$i];
 								unset($args[$i]);
 								continue 2;
 							}
@@ -383,10 +380,7 @@ class Di implements \ArrayAccess{
 				}
 				elseif(!empty($args)){
 					$k = key($args);
-					if($isReference)
-						$parameters[$j] = &$args[$k];
-					else
-						$parameters[$j] = $args[$k];
+					$parameters[$j] = &$args[$k];
 					unset($args[$k]);
 					$parameters[$j] = $this->expand($parameters[$j]);
 				}
