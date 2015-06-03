@@ -1,14 +1,10 @@
 <?php
 define('SURIKAT',__DIR__.'/');
 define('SURIKAT_CWD',getcwd().'/');
-if(!defined('SURIKAT_FREEZE_DI'))
-	define('SURIKAT_FREEZE_DI',false);
+if(!defined('SURIKAT_FREEZE_DI')) define('SURIKAT_FREEZE_DI',false);
 
 require_once __DIR__.'/php/Unit/Autoloader.php';
-Unit\Autoloader::getInstance()->addNamespace('',[
-		SURIKAT_CWD.'php',
-		SURIKAT.'php'
-])->splRegister();
+Unit\Autoloader::register([SURIKAT_CWD.'php',SURIKAT.'php']);
 
 $di = Unit\Di::load([
 	SURIKAT.'.config.xml',

@@ -3,6 +3,9 @@ class Autoloader{
 	protected $namespaces = [];
 	protected $checked = [];
 	private static $instance;
+	static function register($base_dir,$prefix=''){
+		return self::getInstance()->addNamespace($prefix,$base_dir)->splRegister();
+	}
 	static function getInstance(){
 		if(!isset(self::$instance))
 			self::$instance = new self;
