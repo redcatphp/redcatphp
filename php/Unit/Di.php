@@ -379,6 +379,7 @@ class Di implements \ArrayAccess{
 					}
 				}
 				elseif(!empty($args)){
+					reset($args);
 					$k = key($args);
 					$parameters[$j] = &$args[$k];
 					unset($args[$k]);
