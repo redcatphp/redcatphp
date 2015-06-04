@@ -302,8 +302,8 @@ class Di implements \ArrayAccess{
 
 	private function expand($param, array $share = []) {
 		if (is_array($param)){
-			foreach($param as &$value){
-				$value = $this->expand($value, $share);
+			foreach($param as $k=>$value){
+				$param[$k] = $this->expand($value, $share);
 			}
 		}
 		elseif($param instanceof DiExpand){
@@ -377,6 +377,8 @@ class Di implements \ArrayAccess{
 					if($sub){
 						if(is_string($rule['substitutions'][$class]))
 							$parameters[$j] = $this->create($rule['substitutions'][$class],[],false,$share);
+						elseif($rule['substitutions'][$class] instanceof DiExpand)
+							$parameters[$j] = $rule['substitutions'][$class]->__invoke($this,$share);
 						else
 							$parameters[$j] = $rule['substitutions'][$class];
 					}
