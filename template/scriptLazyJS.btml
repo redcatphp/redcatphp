@@ -1,14 +1,14 @@
 <script type="text/javascript" src="js/js-is.pack.js"></script>
 <script type="text/javascript">
-	<?if($this->devLevel()&Templix\Templix::DEV_CSS):?>
+	<?if($this->devCss):?>
 		$css().dev=true;
 		//$js('window-size-bookmarklet');
 	<?endif;?>
-	<?if($this->devLevel()&Templix\Templix::DEV_JS):?>
+	<?if($this->devJs):?>
 		$js().dev=true;
 	<?endif;?>
 	$js('script');
-	<?if(1||$this->devLevel()&Templix\Templix::DEV_CHRONO):
+	<?if(Unit\Di::getInstance()->dev['chrono']):
 		$chrono = microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"];
 		$chrono = sprintf("%.2f", ($chrono>=1?$chrono:$chrono*(float)1000)).' '.($chrono>=1?'s':'ms');
 		$memory = memory_get_peak_usage();
