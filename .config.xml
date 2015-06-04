@@ -7,10 +7,14 @@
 		css="true"
 		img="false"
 		chrono="true"
+		localization="true"
+		dbStructure="true"
+		dbQuery="true"
+		dbSpeed="true"
 	/>
 	
-	<class name="Authentic\Session" shared="true" newInstances="Authentic\SessionHandlerInterface">
-		<substitution use="Authentic\SessionHandler" as="Authentic\SessionHandlerInterface" />
+	<class name="Authentic/Session" shared="true" newInstances="Authentic/SessionHandlerInterface">
+		<substitution use="Authentic/SessionHandler" as="Authentic/SessionHandlerInterface" />
 		<constructParams>
 			<string>surikat</string>
 			<!--<eval>SURIKAT_CWD.'.tmp/sessions/'</eval>-->
@@ -20,23 +24,23 @@
 			</concat>
 		</constructParams>
 	</class>
-	<class name="Session" instanceOf="Authentic\Session" />
+	<class name="Session" instanceOf="Authentic/Session" />
 	
-	<class name="KungFu\Cms\RouteMatch\ByTmlL10n">
+	<class name="KungFu/Cms/RouteMatch/ByTmlL10n">
 		<constructParams
 			langDefault="en"
 		/>
 	</class>
 	
-	<class name="InterNative\Translator" shared="true">
+	<class name="InterNative/Translator" shared="true">
 		<constructParams
 			string-timezone="Europe/Paris"
 		/>
 	</class>
 	
-	<class name="Unit\Debug" shared="true" />
+	<class name="Unit/Debug" shared="true" />
 	
-	<class name="Templix\Templix">
+	<class name="Templix/Templix">
 		<constructParams
 			var-devTemplate="dev.tml"
 			var-devCss="dev.css"
@@ -44,7 +48,7 @@
 			var-devImg="dev.img"
 		/>
 	</class>
-	
-	
-	
+	<class name="KungFu/Cms/FrontController/Synaptic">
+		<constructParams var-devCss="dev.css" var-devJs="dev.js" />
+	</class>
 </config>
