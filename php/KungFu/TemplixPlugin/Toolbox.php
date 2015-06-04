@@ -1,5 +1,5 @@
-<?php namespace KungFu\TemplixPlugin;
-use Templix\Templix;
+<?php
+namespace KungFu\TemplixPlugin;
 class Toolbox{	
 	protected $baseHref;
 	protected $suffixHref;
