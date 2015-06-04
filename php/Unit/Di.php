@@ -40,7 +40,7 @@ class Di implements \ArrayAccess{
 				self::$instance->instances[__CLASS__] = self::$instance;
 			}
 			else{
-				array_map([self::getInstance(),'loadXml'],$map);
+				self::getInstance()->loadXmlMap($map);
 				$dir = dirname($file);
 				if(!is_dir($dir))
 					@mkdir($dir,0777,true);
@@ -48,7 +48,7 @@ class Di implements \ArrayAccess{
 			}
 		}
 		else{
-			array_map([self::getInstance(),'loadXml'],$map);
+			self::getInstance()->loadXmlMap($map);
 		}
 		return self::$instance;
 	}
@@ -434,7 +434,7 @@ class Di implements \ArrayAccess{
 			case 'string':
 				return (string)$param;
 			break;
-			case 'config':
+			case 'var':
 				$param = explode('.',(string)$param);
 				$k = array_shift($param);
 				if(!isset($this->keys[$k]))
@@ -447,7 +447,7 @@ class Di implements \ArrayAccess{
 				}
 				return $v;
 			break;
-			case 'var':
+			case 'this':
 				$param = explode('.',(string)$param);
 				return new DiExpand(function()use($param){
 					$k = array_shift($param);
@@ -475,8 +475,7 @@ class Di implements \ArrayAccess{
 		}
 	}
 	function loadXml($xml){
-		if (!($xml instanceof \SimpleXmlElement))
-			$xml = simplexml_load_file($xml);
+		$xml = $this->xmlLoadFile($xml);
 		foreach($xml as $key=>$value){
 			if($key==='class'){
 				$this->defineClass($value);
@@ -485,6 +484,28 @@ class Di implements \ArrayAccess{
 				$this->defineOffset($key,$value);
 			}
 		}
+	}
+	function loadXmlMap($map){
+		$map = array_map([$this,'xmlLoadFile'],$map);
+		array_map([$this,'loadXmlVar'],$map);
+		array_map([$this,'loadXmlClass'],$map);
+	}
+	function loadXmlVar($xml){
+		foreach($xml as $key=>$value){
+			if($key!=='class')
+				$this->defineOffset($key,$value);
+		}
+	}
+	function loadXmlClass($xml){
+		foreach($xml as $key=>$value){
+			if($key==='class')
+				$this->defineClass($value);
+		}
+	}
+	private function xmlLoadFile($xml){
+		if(!($xml instanceof \SimpleXmlElement))
+			$xml = simplexml_load_file($xml);
+		return $xml;
 	}
 	private function defineOffset($offset,$value){
 		if(!isset($this->keys[$offset])){
