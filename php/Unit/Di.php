@@ -188,7 +188,6 @@ class Di implements \ArrayAccess{
 		return $a;
 	}
 	function extendRule($name, $key, $value, $push = null){
-		$name = str_replace('/','\\',$name);
 		if(!isset($push))
 			$push = is_array($this->rules['*'][$key]);
 		if(isset($this->rules[$name]))
@@ -211,7 +210,6 @@ class Di implements \ArrayAccess{
 		$this->rules[$name] = $rule;
 	}
 	function addRule($name, array $rule){
-		$name = str_replace('/','\\',$name);
 		if(isset($this->rules[$name])){
 			$this->rules[$name] = self::merge_recursive($this->rules[$name], $rule);
 		}
@@ -223,7 +221,6 @@ class Di implements \ArrayAccess{
 		}
 	}
 	function getRule($name){
-		$name = str_replace('/','\\',$name);
 		$rules = $this->rules;
 		$rule = $rules['*'];
 		unset($rules['*']);
