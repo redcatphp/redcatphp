@@ -4,12 +4,6 @@ class Templix implements \ArrayAccess {
 	
 	private $foundPath;
 	
-	public $devTemplate = true;
-	public $devJs = true;
-	public $devCss = true;
-	public $devChrono = true;
-	public $devImg;
-
 	protected $cleanRegister;
 	protected $devCompileFile;
 	protected $dirCompileSuffix = '';
@@ -29,7 +23,18 @@ class Templix implements \ArrayAccess {
 	public $childNodes = [];
 	public $isXhtml;
 	
-	function __construct($file=null,$vars=null){
+	public $devTemplate;
+	public $devJs;
+	public $devCss;
+	public $devImg;
+	
+	function __construct($file=null,$vars=null,
+		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false
+	){
+		$this->devTemplate = $devTemplate;
+		$this->devCss = $devCss;
+		$this->devJs = $devJs;
+		$this->devImg = $devImg;
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
 		$this->setDirSync('.tmp/sync/');

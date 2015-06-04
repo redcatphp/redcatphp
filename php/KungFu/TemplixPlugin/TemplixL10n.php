@@ -7,10 +7,11 @@ class TemplixL10n extends Templix{
 	protected $Templix;
 	protected $Translator;
 	protected $Url;
-	function __construct($file=null,$vars=null,Di $di
-						,Url $Url=null,Translator $Translator=null, $server=null
+	function __construct($file=null,$vars=null,
+		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
+		Di $di,Url $Url=null,Translator $Translator=null, $server=null
 	){
-		parent::__construct($file,$vars,$di);
+		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg,$di);
 		$this->di = $di;
 		if(!$server)
 			$server = &$_SERVER;

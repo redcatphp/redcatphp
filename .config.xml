@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 <config>
+	<dev
+		php="true"
+		tml="true"
+		js="true"
+		css="true"
+		img="false"
+		chrono="true"
+	/>
+	
 	<class name="Authentic\Session" shared="true" newInstances="Authentic\SessionHandlerInterface">
 		<substitution use="Authentic\SessionHandler" as="Authentic\SessionHandlerInterface" />
 		<constructParams>
@@ -27,12 +36,15 @@
 	
 	<class name="Unit\Debug" shared="true" />
 	
-	<dev
-		php="true"
-		tml="true"
-		js="true"
-		css="true"
-		img="false"
-		chrono="true"
-	/>
+	<class name="Templix\Templix">
+		<constructParams
+			var-devTemplate="dev.tml"
+			var-devCss="dev.css"
+			var-devJs="dev.js"
+			var-devImg="dev.img"
+		/>
+	</class>
+	
+	
+	
 </config>
