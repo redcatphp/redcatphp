@@ -565,7 +565,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return $this->temlix&&$this->temlix->devTemplate&&$this->nodeName&&!$this->hiddenWrap;
+		return (!$this->temlix||$this->temlix->devTemplate)&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)
