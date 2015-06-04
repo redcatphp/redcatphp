@@ -138,7 +138,7 @@ class RPDO implements Driver
 	protected function runQuery( $sql, $bindings, $options = [] )
 	{
 		$this->connect();
-		if($this->DB->devLevel()&Database::DEV_QUERY||$this->DB->devLevel()&Database::DEV_SPEED)
+		if($this->DB->devQuery||$this->DB->devSpeed)
 			$this->debugger()->logOpen();
 		
 		$sql = str_replace('{#prefix}',$this->DB->getPrefix(),$sql);
@@ -146,7 +146,7 @@ class RPDO implements Driver
 		if ( $this->loggingEnabled && $this->logger ) {
 			$this->logger->log( $sql, $bindings );
 		}
-		if($this->DB->devLevel()&Database::DEV_QUERY)
+		if($this->DB->devQuery)
 			$this->debugger()->log(SqlFormatter::format($sql), $bindings);
 
 		try {
@@ -158,10 +158,10 @@ class RPDO implements Driver
 
 			$this->bindParams( $statement, $bindings );
 
-			if($this->DB->devLevel()&Database::DEV_SPEED)
+			if($this->DB->devSpeed)
 				$start = microtime(true);
 			$statement->execute();
-			if($this->DB->devLevel()&Database::DEV_SPEED){
+			if($this->DB->devSpeed){
 				$chrono = microtime(true)-$start;
 				if($chrono>=1){
 					$u = 's';
@@ -205,7 +205,7 @@ class RPDO implements Driver
 						$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
 					}
 					
-					if($this->DB->devLevel()&Database::DEV_QUERY)
+					if($this->DB->devQuery)
 						$this->debugger()->log('resultset: <span style="color:#d00;">' . count( $this->resultArray ) . ' rows</span>');
 				}
 				else{
@@ -223,13 +223,13 @@ class RPDO implements Driver
 			if ( $this->loggingEnabled && $this->logger )
 				$this->logger->log( 'An error occurred: ' . $err );
 			
-			if($this->DB->devLevel()&Database::DEV_QUERY||$this->DB->devLevel()&Database::DEV_STRUCTURE||$this->DB->devLevel()&Database::DEV_ERROR){
-				if(!($this->DB->devLevel()&Database::DEV_SPEED||$this->DB->devLevel()&Database::DEV_QUERY))
+			if($this->DB->devQuery||$this->DB->devStructure||$this->DB->devError){
+				if(!($this->DB->devSpeed||$this->DB->devQuery))
 					$this->debugger()->logOpen();
 					$this->debugger()->log('An error occurred: '.$err);
-				if(!$this->DB->devLevel()&Database::DEV_QUERY)
+				if(!$this->DB->devQuery)
 					$this->debugger()->log(SqlFormatter::format($sql), $bindings);
-				if(!($this->DB->devLevel()&Database::DEV_SPEED||$this->DB->devLevel()&Database::DEV_QUERY))
+				if(!($this->DB->devSpeed||$this->DB->devQuery))
 					$this->debugger()->logClose();
 			}
 				
@@ -239,7 +239,7 @@ class RPDO implements Driver
 			throw $exception;
 		}
 		
-		if($this->DB->devLevel()&Database::DEV_QUERY||$this->DB->devLevel()&Database::DEV_SPEED)
+		if($this->DB->devQuery||$this->DB->devSpeed)
 			$this->debugger()->logClose();
 	}
 
@@ -362,7 +362,7 @@ class RPDO implements Driver
 
 			$dbname  = ( preg_match( '/dbname=(\w+)/', $this->dsn, $matches ) ) ? $matches[1] : '?';
 			$msg = 'Could not connect to database (' . $dbname . ').';
-			if($this->DB->devLevel()&Database::DEV_QUERY)
+			if($this->DB->devQuery)
 				$msg .= ' '.$exception->getMessage();
 			throw new\PDOException( $msg, $exception->getCode() );
 		}

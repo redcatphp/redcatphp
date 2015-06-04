@@ -11,6 +11,7 @@
 		dbStructure="true"
 		dbQuery="true"
 		dbSpeed="true"
+		dbError="true"
 	/>
 	
 	<class name="Authentic/Session" shared="true" newInstances="Authentic/SessionHandlerInterface">
@@ -53,5 +54,8 @@
 	</class>
 	<class name="InterNative/Translator">
 		<constructParams var-dev="dev.localization" />
+	</class>
+	<class name="RedBase/RedBeanPHP/Database">
+		<constructParams var-devStructure="dev.dbStructure" var-devQuery="dev.dbQuery" var-devSpeed="dev.dbSpeed" var-devError="dev.dbError" />
 	</class>
 </config>

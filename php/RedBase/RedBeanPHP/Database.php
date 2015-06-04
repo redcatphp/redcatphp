@@ -31,11 +31,6 @@ class Database{
 	
 	const C_REDBEANPHP_VERSION = '4.2-Surikat-Forked';
 	
-	const DEV_ERROR = 2;
-	const DEV_STRUCTURE = 4;
-	const DEV_SPEED = 8;
-	const DEV_QUERY = 16;
-	
 	private static $plugins = [];
 	
 	private $name;
@@ -57,24 +52,22 @@ class Database{
 	private $dbgroup;
 	private $DatabaseGroup;
 	
-	private $devLevel = 0;
+	public $devStructure;
+	public $devQuery;
+	public $devSpeed;
+	public $devError;
 	
-	function __construct($name='',DatabaseGroup $DatabaseGroup=null){
+	function __construct($name='',DatabaseGroup $DatabaseGroup=null,$devStructure=true,$devQuery=false,$devSpeed=false,$devError=true){
 		$this->name = $name;
 		if(false!==$p=strpos($this->name,'.'))
 			$this->dbgroup = substr($this->name,0,$p);
 		if(!isset($DatabaseGroup))
 			$DatabaseGroup = new DatabaseGroup($this->dbgroup);
 		$this->DatabaseGroup = $DatabaseGroup;
-	}
-	function devLevel(){
-		if(func_num_args()){
-			$this->devLevel = 0;
-			foreach(func_get_args() as $l){
-				$this->devLevel = $this->devLevel|$l;
-			}
-		}
-		return $this->devLevel;
+		$this->devStructure = $devStructure;
+		$this->devQuery = $devQuery;
+		$this->devSpeed = $devSpeed;
+		$this->devError = $devError;
 	}
 	function setConfig($config){
 		if(!isset($config)){
@@ -106,7 +99,7 @@ class Database{
 		if($name)
 			$name = ';dbname='.$name;
 		if(!isset($frozen))
-			$frozen = !$this->devLevel()&Database::DEV_STRUCTURE;
+			$frozen = !$this->devStructure;
 		if(!isset($case))
 			$case = true;
 		$dsn = $type.':'.$host.$port.$name;

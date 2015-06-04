@@ -7,7 +7,10 @@ class R {
 		if(empty($key))
 			$key = 0;
 		if(!isset(self::$instances[$key])){
-			self::$instances[$key] = new Database($key);
+			if(class_exists('Unit\Di'))
+				self::$instances[$key] = Unit\Di::make(__NAMESPACE__.'\Database',[$key]);
+			else
+				self::$instances[$key] = new Database($key);
 			$config = defined('SURIKAT_CWD')?SURIKAT_CWD:'';
 			$config .= 'config/db'.($key?'.'.$key:'').'.php';
 			self::$instances[$key]->setConfig(include($config));

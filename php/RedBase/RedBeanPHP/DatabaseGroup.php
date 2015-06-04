@@ -13,7 +13,10 @@ class DatabaseGroup{
 	}
 	function getDb($key=0){
 		if(!isset($this->databases[$key])){
-			$this->databases[$key] = new Database($this->prefix.$key);
+			if(class_exists('Unit\Di'))
+				$this->databases[$key] = Unit\Di::make(__NAMESPACE__.'\Database',[$this->prefix.$key]);
+			else
+				$this->databases[$key] = new Database($this->prefix.$key);
 		}
 		return $this->databases[$key];
 	}
