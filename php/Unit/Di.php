@@ -107,6 +107,18 @@ class Di implements \ArrayAccess{
 			unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
 		}
 	}
+	function __set($k,$v){
+		$this->offsetSet($k,$v);
+	}
+	function __get($k){
+		return $this->offsetGet($k);
+	}
+	function __unset($k){
+		$this->offsetUnset($k);
+	}
+	function __isset($k){
+		$this->offsetExists($k);
+	}
 	function factory($callable){
 		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
 			throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
@@ -464,12 +476,12 @@ class Di implements \ArrayAccess{
 			break;
 			default:
 				$param = (string)$param;
-				if(((int)$param)===$param){
+				if(((int)$param)===$param)
 					$param = (int)$param;
-				}
-				elseif($param==='true'||$param==='false'){
-					$param = (bool)$param;
-				}
+				elseif($param==='true')
+					$param = true;
+				elseif($param==='false')
+					$param = false;
 				return $param;
 			break;
 		}
@@ -497,10 +509,8 @@ class Di implements \ArrayAccess{
 		}
 	}
 	function loadXmlClass($xml){
-		foreach($xml as $key=>$value){
-			if($key==='class')
+		foreach($xml->class as $key=>$value)
 				$this->defineClass($value);
-		}
 	}
 	private function xmlLoadFile($xml){
 		if(!($xml instanceof \SimpleXmlElement))
