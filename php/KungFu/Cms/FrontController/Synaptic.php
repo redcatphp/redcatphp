@@ -4,20 +4,20 @@ use Stylish\Server as Stylish_Server;
 use KungFu\Tools\JSMin;
 class Synaptic {
 	
-	const DEV_JS = 2;
-	const DEV_CSS = 4;
-	
 	protected $pathFS;
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	protected $dirs = [''];
 	
-	private $devLevel = 6;
+	public $devJs;
+	public $devCss;
 	
-	function __construct($pathFS=''){
+	function __construct($pathFS='',$devJs=true,$devCss=true){
 		$this->pathFS = rtrim($pathFS,'/');
 		if(!empty($this->pathFS))
 			$this->pathFS .= '/';
+		$this->devJs = $devJs;
+		$this->devCss = $devCss;
 	}
 	function __invoke($params){
 		list($filename,$extension) = $params;
@@ -122,7 +122,7 @@ class Synaptic {
 			return false;
 		set_time_limit(0);
 		$c = JSMin::minify(file_get_contents($f));
-		if(!$this->devLevel&self::DEV_JS){
+		if(!$this->devJs){
 			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
@@ -143,7 +143,7 @@ class Synaptic {
 				else
 					$c = file_get_contents($f);
 				$c = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    ',"\ r \ n", "\ r", "\ n", "\ t"],'',preg_replace( '! / \ *[^*]* \ *+([^/][^*]* \ *+)*/!','',preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!','',$c)));
-				if(!$this->devLevel&self::DEV_CSS){
+				if(!$this->devCss){
 					$dir = dirname($file);
 					$min = $dir.'/'.pathinfo($file,PATHINFO_FILENAME).'.min.css';
 					if(!is_dir($dir))
