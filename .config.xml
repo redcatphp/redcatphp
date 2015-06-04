@@ -51,4 +51,7 @@
 	<class name="KungFu/Cms/FrontController/Synaptic">
 		<constructParams var-devCss="dev.css" var-devJs="dev.js" />
 	</class>
+	<class name="InterNative/Translator">
+		<constructParams var-dev="dev.localization" />
+	</class>
 </config>

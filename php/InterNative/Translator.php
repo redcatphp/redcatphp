@@ -3,6 +3,7 @@ class Translator {
 	protected static $systemLocales;
 	protected static $bindStack = [];
 	protected static $defaultDomain = 'messages';
+	
 	private $locale;
 	private $domain;
 	private $originLocale;
@@ -10,6 +11,7 @@ class Translator {
 	private $localesRoot;
 	private $gettext;
 	private $altLocales;
+	
 	protected $countryAuto = true;
 	protected $defaultLocale = 'en_US';
 	protected $defaultLocalesRoot;
@@ -19,8 +21,10 @@ class Translator {
 	protected $LC_CATEGORIES = ['LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL'];
 	protected $EMULATEGETTEXT = 1;
 	protected $GettextEmulators = [];
-	private $dev = 1;
 	private static $instance;
+	
+	public $dev;
+	
 	static function initialize(){
 		exec('locale -a',self::$systemLocales);
 	}
@@ -33,12 +37,8 @@ class Translator {
 		}
 		return self::$instance;
 	}
-	function dev(){
-		if(func_num_args())
-			$this->dev = func_get_arg(0);
-		return $this->dev;
-	}
-	function __construct($locale=null,$domain=null,$timezone=null){
+	function __construct($locale=null,$domain=null,$timezone=null,$dev=true){
+		$this->dev = $dev;
 		if(isset($locale)){
 			$this->set($locale,$domain,$timezone);
 		}
