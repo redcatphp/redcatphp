@@ -1,6 +1,5 @@
 <?php namespace Templix\MarkupX;
 use Templix\MarkupHtml5\Img as MarkupHtml5_Img;
-use Templix\Templix;
 class Img extends MarkupHtml5_Img{
 	function loaded(){
 		if($this->src&&strpos($this->src,'://')===false){
@@ -11,7 +10,7 @@ class Img extends MarkupHtml5_Img{
 					$this->height = $size[1];
 				}
 			}
-			if($this->devLevel()&Templix::DEV_IMG&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
+			if($this->temlix&&$this->temlix->devImg&&$this->src&&strpos($this->src,'://')===false&&strpos($this->src,'_t=')===false){
 				if(strpos($this->src,'?')===false)
 					$this->src .= '?';
 				else

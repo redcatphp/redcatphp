@@ -2,14 +2,13 @@
 namespace Templix;
 class Templix implements \ArrayAccess {
 	
-	const DEV_TEMPLATE = 2;
-	const DEV_JS = 4;
-	const DEV_CSS = 8;
-	const DEV_IMG = 16;
-	const DEV_CHRONO = 32;
-	
 	private $foundPath;
-	private $devLevel = 46;
+	
+	public $devTemplate = true;
+	public $devJs = true;
+	public $devCss = true;
+	public $devChrono = true;
+	public $devImg;
 
 	protected $cleanRegister;
 	protected $devCompileFile;
@@ -132,7 +131,7 @@ class Templix implements \ArrayAccess {
 	function devRegeneration(){
 		$exist = is_file($this->devCompileFile);
 		if($exist){
-			if(!$this->devLevel&self::DEV_TEMPLATE){
+			if(!$this->devTemplate){
 				unlink($this->devCompileFile);
 				self::rmdir($this->dirCompile.$this->dirCompileSuffix);
 				self::rmdir($this->dirCache.$this->dirCompileSuffix);
@@ -140,13 +139,13 @@ class Templix implements \ArrayAccess {
 			}
 		}
 		else{
-			if($this->devLevel&self::DEV_TEMPLATE){
+			if($this->devTemplate){
 				@mkdir(dirname($this->devCompileFile),0777,true);
 				file_put_contents($this->devCompileFile,'');
 			}
-			if($this->devLevel&self::DEV_CSS)
+			if($this->devCss)
 				$this->cleanRegisterAuto('css');
-			if($this->devLevel&self::DEV_JS)
+			if($this->devJs)
 				$this->cleanRegisterAuto('js');
 		}
 	}
@@ -164,7 +163,7 @@ class Templix implements \ArrayAccess {
 		if(!empty($vars))
 			$this->vars = array_merge($this->vars,$vars);
 		$this->devRegeneration();
-		if((!isset($this->forceCompile)&&$this->devLevel&self::DEV_TEMPLATE)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
+		if((!isset($this->forceCompile)&&$this->devTemplate)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
 			$this->writeCompile();
 		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
 		return $this;
@@ -257,13 +256,13 @@ class Templix implements \ArrayAccess {
 	}
 	protected function _cacheV($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file;
-		if(!$this->devLevel&self::DEV_TEMPLATE)
+		if(!$this->devTemplate)
 			$str = Minify::HTML($str);
 		return $this->compileStore($file,$str);
 	}
 	protected function _cachePHP($file,$str){
 		$file = $this->dirCache.$this->dirCompileSuffix.$this->path.'/'.$file.'.php';
-		if(!$this->devLevel&self::DEV_TEMPLATE)
+		if(!$this->devTemplate)
 			$str = Minify::PHP($str);
 		return $this->compileStore($file,$str);
 	}
@@ -281,7 +280,7 @@ class Templix implements \ArrayAccess {
 	protected function compileStore($file,$str){
 		if(!is_dir($dir=dirname($file)))
 			@mkdir($dir,0777,true);
-		if(!$this->devLevel&self::DEV_TEMPLATE)
+		if(!$this->devTemplate)
 			$str = Minify::PHP($str);
 		return file_put_contents($file,$str,LOCK_EX);
 	}
@@ -381,14 +380,5 @@ class Templix implements \ArrayAccess {
 			}
 		}
 		return is_dir($dir);
-	}
-	function devLevel(){
-		if(func_num_args()){
-			$this->devLevel = 0;
-			foreach(func_get_args() as $l){
-				$this->devLevel = $this->devLevel|$l;
-			}
-		}
-		return $this->devLevel;
 	}
 }

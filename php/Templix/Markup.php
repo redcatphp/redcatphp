@@ -565,7 +565,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
 	}
 	protected function isIndented(){
-		return $this->devLevel()&Templix::DEV_TEMPLATE&&$this->nodeName&&!$this->hiddenWrap;
+		return $this->temlix&&$this->temlix->devTemplate&&$this->nodeName&&!$this->hiddenWrap;
 	}
 	protected function indentationTab($force=null){
 		if($this->isIndented()||$force)
@@ -911,9 +911,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				return $c;
 		}
 		return __NAMESPACE__.'\\Markup';
-	}
-	function devLevel(){
-		return $this->templix?call_user_func_array([$this->templix,__FUNCTION__],func_get_args()):'';
 	}
 	function exceptionContext(){
 		return ' on "'.$this->templix->getPath().':'.$this->lineNumber.'#'.$this->characterNumber.'"';
