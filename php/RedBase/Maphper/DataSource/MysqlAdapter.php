@@ -92,7 +92,8 @@ class MySqlAdapter implements DatabaseAdapter {
 		else if (is_int($val)) return  'INT(11)';
 		else if (is_double($val)) return 'DECIMAL(9,' . strlen($val) - strrpos($val, '.') - 1 . ')';
 		else if (is_string($val) && strlen($val) < 256) return 'VARCHAR(255)';
-		else if (is_string($val) && strlen($val) > 256) return 'LONGBLOG';
+		//else if (is_string($val) && strlen($val) > 256) return 'LONGBLOG';
+		else if (is_string($val) && strlen($val) > 256) return 'TEXT';
 		else return 'VARCHAR(255)';		
 	}
 	
