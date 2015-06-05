@@ -14,34 +14,34 @@
 		dbError="true"
 	/>
 	
-	<class name="Authentic\Session" shared="true" newInstances="Authentic\SessionHandlerInterface">
-		<substitution use="Authentic\SessionHandler" as="Authentic\SessionHandlerInterface" />
+	<class name="Authentic/Session" shared="true" newInstances="Authentic/SessionHandlerInterface">
+		<substitution use="Authentic/SessionHandler" as="Authentic/SessionHandlerInterface" />
 		<constructParams>
 			<string>surikat</string>
-			<!--<eval>SURIKAT_CWD.'.tmp\sessions\'</eval>-->
+			<!--<eval>SURIKAT_CWD.'.tmp/sessions/'</eval>-->
 			<concat>
 				<constant>SURIKAT_CWD</constant>
 				<string>.tmp/sessions/</string>
 			</concat>
 		</constructParams>
 	</class>
-	<class name="Session" instanceOf="Authentic\Session" />
+	<class name="Session" instanceOf="Authentic/Session" />
 	
-	<class name="KungFu\Cms\RouteMatch\ByTmlL10n">
+	<class name="KungFu/Cms/RouteMatch/ByTmlL10n">
 		<constructParams
 			langDefault="en"
 		/>
 	</class>
 	
-	<class name="InterNative\Translator" shared="true">
+	<class name="InterNative/Translator" shared="true">
 		<constructParams
-			string-timezone="Europe\Paris"
+			string-timezone="Europe/Paris"
 		/>
 	</class>
 	
-	<class name="Unit\Debug" shared="true" />
+	<class name="Unit/Debug" shared="true" />
 	
-	<class name="Templix\Templix">
+	<class name="Templix/Templix">
 		<constructParams
 			var-devTemplate="dev.tml"
 			var-devCss="dev.css"
@@ -49,13 +49,13 @@
 			var-devImg="dev.img"
 		/>
 	</class>
-	<class name="KungFu\Cms\FrontController\Synaptic">
+	<class name="KungFu/Cms/FrontController/Synaptic">
 		<constructParams var-devCss="dev.css" var-devJs="dev.js" />
 	</class>
-	<class name="InterNative\Translator">
+	<class name="InterNative/Translator">
 		<constructParams var-dev="dev.localization" />
 	</class>
-	<class name="RedBase\RedBeanPHP\Database">
+	<class name="RedBase/RedBeanPHP/Database">
 		<constructParams var-devStructure="dev.dbStructure" var-devQuery="dev.dbQuery" var-devSpeed="dev.dbSpeed" var-devError="dev.dbError" />
 	</class>
 </config>

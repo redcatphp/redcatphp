@@ -412,7 +412,7 @@ class Di implements \ArrayAccess{
 				return $r;
 			break;
 			case 'instance':
-				return new DiExpand((string)$param);
+				return new DiExpand(str_replace('/','\\',(string)$param));
 			break;
 			case 'callback':
 				$dic = $this;
@@ -546,15 +546,15 @@ class Di implements \ArrayAccess{
 			}
 		}
 		if (isset($value['instanceOf']))
-			$rule['instanceOf'] = (string) $value['instanceOf'];
+			$rule['instanceOf'] = str_replace('/','\\',(string)$value['instanceOf']);
 		if ($value['newInstances']){
-			foreach(explode(',',$value['newInstances']) as $ni){
-				$rule['newInstances'][] = (string) $ni;
+			foreach(explode(',',str_replace('/','\\',$value['newInstances'])) as $ni){
+				$rule['newInstances'][] = (string)$ni;
 			}
 		}
 		if ($value->substitution)
 			foreach ($value->substitution as $use)
-				$rule['substitutions'][(string) $use['as']] = $this->getComponent('instance',(string) $use['use']);
+				$rule['substitutions'][str_replace('/','\\',(string)$use['as'])] = $this->getComponent('instance',str_replace('/','\\',(string)$use['use']));
 		if ($value->constructParams){
 			foreach($value->constructParams->attributes() as $key=>$param){
 				$this->buildXmlParam($key,$param,$rule['constructParams'],true);
@@ -564,11 +564,11 @@ class Di implements \ArrayAccess{
 			}
 		}
 		if ($value->shareInstance){
-			foreach(explode(',',$value['shareInstance']) as $ni){
-				$rule['shareInstances'][] = (string) $share;
+			foreach(explode(',',str_replace('/','\\',$value['shareInstance'])) as $ni){
+				$rule['shareInstances'][] = (string)$share;
 			}
 		}
-		$this->addRule((string) $value['name'], $rule);
+		$this->addRule(str_replace('/','\\',(string)$value['name']), $rule);
 	}
 	private function buildXmlParam($key,$param,&$rulePart,$forceAssoc=false){
 		$type = $this->typeofParam($key,$param);
