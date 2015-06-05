@@ -21,7 +21,7 @@
 			<!--<eval>SURIKAT_CWD.'.tmp\sessions\'</eval>-->
 			<concat>
 				<constant>SURIKAT_CWD</constant>
-				<string>.tmp\sessions\</string>
+				<string>.tmp/sessions/</string>
 			</concat>
 		</constructParams>
 	</class>
