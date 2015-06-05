@@ -20,7 +20,7 @@ class Di implements \ArrayAccess{
 	private $raw = [];
 	private $keys = [];
 
-	private $rules = ['*' => ['shared' => false, 'constructParams' => [], 'shareInstances' => [], 'call' => [], 'inherit' => true, 'substitutions' => [], 'instanceOf' => null, 'newInstances' => []]];
+	private $rules = ['*' => ['shared' => false, 'construct' => [], 'shareInstances' => [], 'call' => [], 'inherit' => true, 'substitutions' => [], 'instanceOf' => null, 'newInstances' => []]];
 	private $cache = [];
 	private $instances = [];
 	
@@ -40,7 +40,7 @@ class Di implements \ArrayAccess{
 				self::$instance->instances[__CLASS__] = self::$instance;
 			}
 			else{
-				self::getInstance()->loadXmlMap($map);
+				self::getInstance()->loadPhpMap($map);
 				$dir = dirname($file);
 				if(!is_dir($dir))
 					@mkdir($dir,0777,true);
@@ -48,7 +48,7 @@ class Di implements \ArrayAccess{
 			}
 		}
 		else{
-			self::getInstance()->loadXmlMap($map);
+			self::getInstance()->loadPhpMap($map);
 		}
 		return self::$instance;
 	}
@@ -341,9 +341,9 @@ class Di implements \ArrayAccess{
 				}
 				$share = array_merge($share, $shareInstances);
 			}
-			if($share||!empty($rule['constructParams'])){
+			if($share||!empty($rule['construct'])){
 				$nArgs = $args;
-				foreach($this->expand($rule['constructParams']) as $k=>$v){
+				foreach($this->expand($rule['construct']) as $k=>$v){
 					if(is_integer($k)){
 						$nArgs[] = $v;
 					}
@@ -401,201 +401,99 @@ class Di implements \ArrayAccess{
 			return $parameters;
 		};
 	}
-	
-	private function getComponent($key, $param){
-		switch($key){
-			case 'concat':
-				$r = '';
-				foreach($param->children() as $k=>$p){
-					$r .= $this->getComponent($k,$p);
+	function loadPhp($php){
+		$php = $this->phpLoadFile($php);
+		if(isset($php['$']))
+			foreach($php['$'] as $key=>$value)
+				$this[$key] = $value;
+		if(isset($php['rules']))
+			foreach($php['rules'] as $key=>$value)
+				$this->defineClass($key,$value);
+	}
+	function loadPhpMap($map){
+		$map = array_map([$this,'phpLoadFile'],$map);
+		array_map([$this,'loadPhpVar'],$map);
+		array_map([$this,'loadPhpClass'],$map);
+	}
+	function loadPhpVar($php){
+		if(isset($php['$']))
+			foreach($php['$'] as $key=>$value)
+				$this[$key] = $value;
+	}
+	function loadPhpClass($php){
+		if(isset($php['rules']))
+			foreach($php['rules'] as $key=>$value)
+				$this->defineClass($key,$value);
+	}
+	private function phpLoadFile($php){
+		if(!is_array($php)&&is_file($php))
+			$php = include($php);
+		return $php;
+	}
+	private function defineClass($class,$rule){
+		if(isset($rule['instanceOf']))
+			$rule['instanceOf'] = str_replace('/','\\',$rule['instanceOf']);
+		if(isset($rule['newInstances'])&&is_string($rule['newInstances']))
+			$rule['newInstances'] = explode(',',str_replace('/','\\',$rule['newInstances']));
+		if(isset($rule['shareInstances'])&&is_string($rule['shareInstances']))
+			$rule['shareInstances'] = explode(',',str_replace('/','\\',$rule['shareInstances']));
+		if (isset($rule['substitutions'])){
+			$substitutions = $rule['substitutions'];
+			$rule['substitutions'] = [];
+			foreach ($substitutions as $as=>$use)
+				$rule['substitutions'][str_replace('/','\\',$as)] = str_replace('/','\\',$use);
+		}
+		if(isset($rule['construct'])){
+			$construct = $rule['construct'];
+			$rule['construct'] = [];
+			foreach($construct as $key=>$param){
+				if(strpos($key,'$')===0){
+					$key = substr($key,1);
+					$param = $this->getDotOffset($param);
 				}
-				return $r;
-			break;
-			case 'instance':
-				return new DiExpand(str_replace('/','\\',(string)$param));
-			break;
-			case 'callback':
-				$dic = $this;
-				$str = (string)$param;
-				return new DiExpand(function()use($dic,$str){
-					$parts = explode('::', $str);
-					$object = $dic->create(array_shift($parts));
-					while ($var = array_shift($parts)){
-						if (strpos($var, '(') !== false) {
-							$args = explode(',', substr($var, strpos($var, '(')+1, strpos($var, ')')-strpos($var, '(')-1));
-							$object = call_user_func_array([$object, substr($var, 0, strpos($var, '('))], ($args[0] == null) ? [] : $args);
-						}
-						else $object = $object->$var;
-					}
-					return $object;
-				});
-			break;
-			case 'eval':
-				return eval(' return '.$param.';');
-			break;
-			case 'constant':
-				return constant((string)$param);
-			break;
-			case 'int':
-			case 'integer':
-				return (int)$param;
-			break;
-			case 'boolean':
-			case 'bool':
-				return !(((string)$param)==='false'||((string)$param)==='0');
-			break;
-			case 'string':
-				return (string)$param;
-			break;
-			case 'var':
-				$param = explode('.',(string)$param);
-				$k = array_shift($param);
-				if(!isset($this->keys[$k]))
-					return;
-				$v = $this[$k];
-				while($k = array_shift($param)){
-					if(!isset($v[$k]))
-						return;
-					$v = $v[$k];
+				$rule['construct'][$key] = $param;
+			}
+		}
+		if(isset($rule['call'])){
+			$construct = $rule['call'];
+			$rule['call'] = [];
+			foreach($construct as $key=>$param){
+				if(strpos($key,'$')===0){
+					$key = substr($key,1);
+					$param = $this->getDotOffset($param);
 				}
-				return $v;
-			break;
-			case 'this':
-				$param = explode('.',(string)$param);
-				return new DiExpand(function()use($param){
-					$k = array_shift($param);
-					if(!isset($this->keys[$k]))
-						return;
-					$v = $this[$k];
-					while($k = array_shift($param)){
-						if(!isset($v[$k]))
-							return;
-						$v = $v[$k];
-					}
-					return $v;
-				 });
-			break;
-			default:
-				$param = (string)$param;
-				if(((int)$param)===$param)
-					$param = (int)$param;
-				elseif($param==='true')
-					$param = true;
-				elseif($param==='false')
-					$param = false;
-				return $param;
-			break;
-		}
-	}
-	function loadXml($xml){
-		$xml = $this->xmlLoadFile($xml);
-		foreach($xml as $key=>$value){
-			if($key==='class'){
-				$this->defineClass($value);
-			}
-			else{
-				$this->defineOffset($key,$value);
+				$rule['call'][$key] = $param;
 			}
 		}
+		$this->addRule($class, $rule);
 	}
-	function loadXmlMap($map){
-		$map = array_map([$this,'xmlLoadFile'],$map);
-		array_map([$this,'loadXmlVar'],$map);
-		array_map([$this,'loadXmlClass'],$map);
-	}
-	function loadXmlVar($xml){
-		foreach($xml as $key=>$value){
-			if($key!=='class')
-				$this->defineOffset($key,$value);
+	function getDotOffset($param){
+		$param = explode('.',$param);
+		$k = array_shift($param);
+		if(!isset($this->keys[$k]))
+			return;
+		$v = $this[$k];
+		while($k = array_shift($param)){
+			if(!isset($v[$k]))
+				return;
+			$v = $v[$k];
 		}
+		return $v;
 	}
-	function loadXmlClass($xml){
-		foreach($xml->class as $key=>$value)
-				$this->defineClass($value);
-	}
-	private function xmlLoadFile($xml){
-		if(!($xml instanceof \SimpleXmlElement))
-			$xml = simplexml_load_file($xml);
-		return $xml;
-	}
-	private function defineOffset($offset,$value){
-		if(!isset($this->keys[$offset])){
-			$this->keys[$offset] = true;
-		}
-		foreach($value->attributes() as $key=>$param){
-			$this->buildXmlParam($key,$param,$this->values[$offset],true);
-		}
-		foreach($value->children() as $key=>$param){
-			$this->buildXmlParam($key,$param,$this->values[$offset]);
-		}
-	}
-	private function defineClass($value){
-		$rule = [];
-		$rule['shared'] = ((string)$value['shared'])=='true';
-		$rule['inherit'] = (((string)$value['inherit']) == 'false') ? false : true;
-		if($value->call){
-			foreach($value->call as $name=>$call){
-				$callArgs = [];
-				foreach($call->attributes() as $key=>$param){
-					$this->buildXmlParam($key,$param,$callArgs,true);
+	function buildCallbackFromString($str){
+		$dic = $this;
+		return new DiExpand(function()use($dic,$str){
+			$parts = explode('::', $str);
+			$object = $dic->create(array_shift($parts));
+			while ($var = array_shift($parts)){
+				if (strpos($var, '(') !== false) {
+					$args = explode(',', substr($var, strpos($var, '(')+1, strpos($var, ')')-strpos($var, '(')-1));
+					$object = call_user_func_array([$object, substr($var, 0, strpos($var, '('))], ($args[0] == null) ? [] : $args);
 				}
-				foreach($call->children() as $key=>$param){
-					$this->buildXmlParam($key,$param,$callArgs);
-				}
-				$rule['call'][] = [(string) $call['method'], $callArgs];
+				else $object = $object->$var;
 			}
-		}
-		if (isset($value['instanceOf']))
-			$rule['instanceOf'] = str_replace('/','\\',(string)$value['instanceOf']);
-		if ($value['newInstances']){
-			foreach(explode(',',str_replace('/','\\',$value['newInstances'])) as $ni){
-				$rule['newInstances'][] = (string)$ni;
-			}
-		}
-		if ($value->substitution)
-			foreach ($value->substitution as $use)
-				$rule['substitutions'][str_replace('/','\\',(string)$use['as'])] = $this->getComponent('instance',str_replace('/','\\',(string)$use['use']));
-		if ($value->constructParams){
-			foreach($value->constructParams->attributes() as $key=>$param){
-				$this->buildXmlParam($key,$param,$rule['constructParams'],true);
-			}
-			foreach($value->constructParams->children() as $key=>$param){
-				$this->buildXmlParam($key,$param,$rule['constructParams']);
-			}
-		}
-		if ($value->shareInstance){
-			foreach(explode(',',str_replace('/','\\',$value['shareInstance'])) as $ni){
-				$rule['shareInstances'][] = (string)$share;
-			}
-		}
-		$this->addRule(str_replace('/','\\',(string)$value['name']), $rule);
-	}
-	private function buildXmlParam($key,$param,&$rulePart,$forceAssoc=false){
-		$type = $this->typeofParam($key,$param);
-		$assoc = $this->associativeParam($key,$param,$forceAssoc);
-		$component = $this->getComponent($type,$param);
-		if($assoc){
-			$rulePart[$assoc] = $component;
-		}
-		else{
-			$rulePart[] = $component;
-		}
-	}
-	private function typeofParam($key,$param=null){
-		if($param instanceof \SimpleXmlElement&&isset($param['type']))
-			return (string)$param['type'];
-		elseif(false!==$p=strpos($key,'-'))
-			return substr($key,0,$p);
-		else
-			return $key;
-	}
-	private function associativeParam($key,$param,$forceAssoc=false){
-		if(isset($param['name']))
-			return (string)$param['name'];
-		elseif(false!==$p=strpos($key,'-'))
-			return substr($key,$p+1);
-		elseif($forceAssoc)
-			return $key;
+			return $object;
+		});
 	}
 	private static function hashArguments($args){
 		static $storage = null;

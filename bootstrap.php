@@ -7,8 +7,8 @@ require_once __DIR__.'/php/Unit/Autoloader.php';
 Unit\Autoloader::register([SURIKAT_CWD.'php',SURIKAT.'php']);
 
 $di = Unit\Di::load([
-	SURIKAT.'.config.xml',
-	SURIKAT_CWD.'.config.xml'
+	SURIKAT.'.config.php',
+	SURIKAT_CWD.'.config.php'
 ],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/SURIKAT.svar');
 
 if($di['dev']['php']){
