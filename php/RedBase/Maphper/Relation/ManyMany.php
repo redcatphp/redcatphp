@@ -1,6 +1,6 @@
 <?php 
-namespace Maphper\Relation;
-class ManyMany implements \Iterator, \ArrayAccess, \Countable, \Maphper\Relation {
+namespace RedBase\Maphper\Relation;
+class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\Relation {
 	private $results;
 	private $localField;
 	private $parentField;
@@ -12,7 +12,7 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \Maphper\Relation
 	private $object;
 	private $intermediateName;
 	
-	public function __construct(\Maphper\Maphper $intermediateMapper, \Maphper\Maphper $relatedMapper, $localField, $parentField, $intermediateName = null) {
+	public function __construct(\RedBase\Maphper\Maphper $intermediateMapper, \RedBase\Maphper\Maphper $relatedMapper, $localField, $parentField, $intermediateName = null) {
 		$this->intermediateMapper = $intermediateMapper;
 		$this->relatedMapper = $relatedMapper;
 		$this->localField = $localField;

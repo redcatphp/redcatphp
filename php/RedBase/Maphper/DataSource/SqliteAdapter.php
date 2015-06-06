@@ -1,5 +1,5 @@
 <?php
-namespace Maphper\DataSource;
+namespace RedBase\Maphper\DataSource;
 class SqliteAdapter implements DatabaseAdapter {
 	private $pdo;
 	private $queryCache = [];

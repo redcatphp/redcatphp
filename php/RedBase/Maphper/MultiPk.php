@@ -1,5 +1,5 @@
 <?php 
-namespace Maphper;
+namespace RedBase\Maphper;
 class MultiPk implements \ArrayAccess {
 	private $parent;
 	private $primaryKey;

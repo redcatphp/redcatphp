@@ -1,5 +1,5 @@
 <?php 
-namespace Maphper\DataSource;
+namespace RedBase\Maphper\DataSource;
 interface DatabaseAdapter {
 	public function quote($str);
 	public function delete($table, array $criteria, $args, $limit = null, $offset = null);

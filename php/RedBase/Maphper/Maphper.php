@@ -1,5 +1,5 @@
 <?php 
-namespace Maphper;
+namespace RedBase\Maphper;
 class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	const FIND_EXACT 	= 	0x1;
 	const FIND_LIKE 	= 	0x2;

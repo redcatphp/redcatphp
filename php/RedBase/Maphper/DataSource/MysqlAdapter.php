@@ -1,5 +1,5 @@
 <?php
-namespace Maphper\DataSource;
+namespace RedBase\Maphper\DataSource;
 class MySqlAdapter implements DatabaseAdapter {
 	private $pdo;
 	private $queryCache = [];

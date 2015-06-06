@@ -1,12 +1,12 @@
 <?php 
-namespace Maphper\Relation;
-class Many implements \Maphper\Relation {
+namespace RedBase\Maphper\Relation;
+class Many implements \RedBase\Maphper\Relation {
 	private $mapper;
 	private $parentField;
 	private $localField;
 	private $criteria = [];
 	
-	public function __construct(\Maphper\Maphper $mapper, $parentField, $localField, array $critiera = []) {
+	public function __construct(\RedBase\Maphper\Maphper $mapper, $parentField, $localField, array $critiera = []) {
 		$this->mapper = $mapper;
 		$this->parentField = $parentField;
 		$this->localField = $localField;

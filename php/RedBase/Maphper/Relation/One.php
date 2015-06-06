@@ -1,6 +1,6 @@
 <?php
-namespace Maphper\Relation;
-class One implements \Maphper\Relation {
+namespace RedBase\Maphper\Relation;
+class One implements \RedBase\Maphper\Relation {
 	private $mapper;
 	private $parentField;
 	private $localField;
@@ -8,7 +8,7 @@ class One implements \Maphper\Relation {
 	private $criteria = [];
 	private $data;
 	
-	public function __construct(\Maphper\Maphper $mapper, $parentField, $localField, array $criteria = []) {
+	public function __construct(\RedBase\Maphper\Maphper $mapper, $parentField, $localField, array $criteria = []) {
 		$this->mapper = $mapper;
 		$this->parentField = $parentField;
 		$this->localField = $localField;

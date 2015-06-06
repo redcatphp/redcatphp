@@ -1,5 +1,5 @@
 <?php 
-namespace Maphper;
+namespace RedBase\Maphper;
 interface DataSource {
 	public function getPrimaryKey();
 	public function findById($id);

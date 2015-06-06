@@ -1,6 +1,6 @@
 <?php 
-namespace Maphper\DataSource;
-class Database implements \Maphper\DataSource {
+namespace RedBase\Maphper\DataSource;
+class Database implements \RedBase\Maphper\DataSource {
 	const EDIT_STRUCTURE = 1;
 	const EDIT_INDEX = 2;
 	const EDIT_OPTIMISE = 4;
@@ -32,7 +32,7 @@ class Database implements \Maphper\DataSource {
 	}
 
 	private function getAdapter(\PDO $pdo) {
-		$adapter = '\\Maphper\\DataSource\\' . $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) . 'Adapter';
+		$adapter = '\\RedBase\\Maphper\\DataSource\\' . ucfirst($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME)) . 'Adapter';
 		return new $adapter($pdo);
 	}
 	
@@ -74,7 +74,7 @@ class Database implements \Maphper\DataSource {
 				foreach ($result['sql'] as $arg) $sql[] = $arg;
 				continue;
 			}
-			else if (\Maphper\Maphper::FIND_BETWEEN & $mode) {
+			else if (\RedBase\Maphper\Maphper::FIND_BETWEEN & $mode) {
 				$sql[] = $this->adapter->quote($key) . '>= :' . $key . 'from';
 				$sql[] = $this->adapter->quote($key) . ' <= :' . $key . 'to';
 			
@@ -94,29 +94,29 @@ class Database implements \Maphper\DataSource {
 				continue;
 			}
 			else {
-				if (\Maphper\Maphper::FIND_EXACT & $mode) $operator = '=';
-				else if (\Maphper\Maphper::FIND_LIKE & $mode) {
+				if (\RedBase\Maphper\Maphper::FIND_EXACT & $mode) $operator = '=';
+				else if (\RedBase\Maphper\Maphper::FIND_LIKE & $mode) {
 					$operator = 'LIKE';
 					$value = '%' . $value . '%';
 				}
-				else if (\Maphper\Maphper::FIND_STARTS & $mode) {
+				else if (\RedBase\Maphper\Maphper::FIND_STARTS & $mode) {
 					$operator = 'LIKE';
 					$value = $value . '%';
 				}
-				else if (\Maphper\Maphper::FIND_NOCASE & $mode) {
+				else if (\RedBase\Maphper\Maphper::FIND_NOCASE & $mode) {
 					$operator = 'LIKE';
 				}
-				else if (\Maphper\Maphper::FIND_BIT & $mode) $operator = '&';
-				else if (\Maphper\Maphper::FIND_GREATER & $mode) $operator = '>';
-				else if (\Maphper\Maphper::FIND_LESS & $mode) $operator = '<';
-				else if (\Maphper\Maphper::FIND_NOT & $mode) $operator = '!=';
+				else if (\RedBase\Maphper\Maphper::FIND_BIT & $mode) $operator = '&';
+				else if (\RedBase\Maphper\Maphper::FIND_GREATER & $mode) $operator = '>';
+				else if (\RedBase\Maphper\Maphper::FIND_LESS & $mode) $operator = '<';
+				else if (\RedBase\Maphper\Maphper::FIND_NOT & $mode) $operator = '!=';
 				
 				$args[$key] = $value;
 				$sql[] = $this->adapter->quote($key) . ' ' . $operator . ' :' . $key;
 			}
 		}
 		
-		if (\Maphper\Maphper::FIND_OR & $mode) $query = implode(' OR  ', $sql);
+		if (\RedBase\Maphper\Maphper::FIND_OR & $mode) $query = implode(' OR  ', $sql);
 		else $query = implode(' AND ', $sql);
 		
 		return ['args' => $args, 'sql' => [$query]];
@@ -142,7 +142,7 @@ class Database implements \Maphper\DataSource {
 		//Cannot count/sum/max multiple fields, pick the first one. This should only come into play when trying to count() a mapper with multiple primary keys
 		if (is_array($field)) $field = $field[0];
 		
-		$query = $this->buildFindQuery($criteria, \Maphper\Maphper::FIND_EXACT | \Maphper\Maphper::FIND_AND);
+		$query = $this->buildFindQuery($criteria, \RedBase\Maphper\Maphper::FIND_EXACT | \RedBase\Maphper\Maphper::FIND_AND);
 		$args = $query['args'];
 		$sql = $query['sql'];
 		try {
@@ -163,7 +163,7 @@ class Database implements \Maphper\DataSource {
 	public function findByField(array $fields, $options = []) {
 		$cacheId = md5(serialize(func_get_args()));	
 		if (!isset($this->resultCache[$cacheId])) {
-			$query = $this->buildFindQuery($fields, \Maphper\Maphper::FIND_EXACT | \Maphper\Maphper::FIND_AND);
+			$query = $this->buildFindQuery($fields, \RedBase\Maphper\Maphper::FIND_EXACT | \RedBase\Maphper\Maphper::FIND_AND);
 			$args = $query['args'];
 			$sql = $query['sql'];
 	
@@ -188,7 +188,7 @@ class Database implements \Maphper\DataSource {
 
 	
 	public function deleteByField(array $fields, array $options = [], $mode = null) {
-		if ($mode == null) $mode = \Maphper\Maphper::FIND_EXACT | \Maphper\Maphper::FIND_AND;
+		if ($mode == null) $mode = \RedBase\Maphper\Maphper::FIND_EXACT | \RedBase\Maphper\Maphper::FIND_AND;
 	
 		$query = $this->buildFindQuery($fields, $mode);
 		$args = $query['args'];
