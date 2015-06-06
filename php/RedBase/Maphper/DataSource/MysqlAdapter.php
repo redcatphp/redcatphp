@@ -6,6 +6,7 @@ class MySqlAdapter implements DatabaseAdapter {
 	
 	public function __construct(\PDO $pdo) {
 		$this->pdo = $pdo;
+		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION );
 		//Set to strict mode to detect 'out of range' errors, action at a distance but it needs to be set for all INSERT queries		
 		$this->pdo->query('SET sql_mode = STRICT_ALL_TABLES');
 	}
@@ -89,7 +90,7 @@ class MySqlAdapter implements DatabaseAdapter {
 	
 	private function getType($val) {
 		if ($val instanceof \DateTime) return 'DATETIME';
-		else if (is_int($val)) return  'INT(11)';
+		else if (is_int($val)||(string)(int)$val===$val) return  'INT(11)';
 		else if (is_double($val)) return 'DECIMAL(9,' . strlen($val) - strrpos($val, '.') - 1 . ')';
 		else if (is_string($val) && strlen($val) < 256) return 'VARCHAR(255)';
 		//else if (is_string($val) && strlen($val) > 256) return 'LONGBLOG';
@@ -98,7 +99,7 @@ class MySqlAdapter implements DatabaseAdapter {
 	}
 	
 	//Alter the database so that it can store $data
-	public function alterDatabase($table, array $primaryKey, $data) {		
+	public function alterDatabase($table, array $primaryKey, $data, $relations) {		
 		$parts = [];
 		foreach ($primaryKey as $key) {
 			$pk = $data->$key;
@@ -107,9 +108,8 @@ class MySqlAdapter implements DatabaseAdapter {
 		}
 		
 		$pkField = implode(', ', $parts) . ', PRIMARY KEY(' . implode(', ', $primaryKey) . ')';
-		$this->pdo->query('CREATE TABLE IF NOT EXISTS ' . $table . ' (' . $pkField . ')');
-	
-
+		$this->pdo->exec('CREATE TABLE IF NOT EXISTS ' . $table . ' (' . $pkField . ')');
+		
 		foreach ($data as $key => $value) {
 			if (is_array($value) || (is_object($value) && !($value instanceof \DateTime))) continue;
 			if (in_array($key, $primaryKey)) continue;
@@ -117,10 +117,32 @@ class MySqlAdapter implements DatabaseAdapter {
 			$type = $this->getType($value);
 		
 			try {
-				if (!$this->pdo->query('ALTER TABLE ' . $table . ' ADD ' . $this->quote($key) . ' ' . $type)) throw new \Exception('Could not alter table');
+				if (!$this->pdo->exec('ALTER TABLE ' . $table . ' ADD ' . $this->quote($key) . ' ' . $type)) throw new \Exception('Could not alter table');
 			}
 			catch (\Exception $e) {
-				$this->pdo->query('ALTER TABLE ' . $table . ' MODIFY ' . $this->quote($key) . ' ' . $type);
+				$this->pdo->exec('ALTER TABLE ' . $table . ' MODIFY ' . $this->quote($key) . ' ' . $type);
+			}
+		}
+		
+		foreach($relations as $key => $relation){
+			if($relation instanceof \RedBase\Maphper\Relation\One){
+				$fieldNoQ = $relation->parentField();
+				$targetFieldNoQ = $relation->localField();
+				$isDependent = $relation->isDependent();
+				$fkName = 'fk_'.$table.'_'.$fieldNoQ;
+				$cName = 'c_'.$fkName;
+				$parentTable = $this->quote($table);
+				$targetTable = $this->quote($key);
+				$targetField = $this->quote($targetFieldNoQ);
+				$parentField = $this->quote($fieldNoQ);
+				$query = "ALTER TABLE $parentTable ADD CONSTRAINT $cName FOREIGN KEY $fkName
+						( $parentField ) REFERENCES $targetTable ( $targetField ) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';';
+				try {
+					$this->pdo->exec($query);
+				}
+				catch ( \PDOException $e ) {
+					// Failure of fk-constraints is not a problem
+				}
 			}
 		}
 	}
@@ -136,7 +158,7 @@ class MySqlAdapter implements DatabaseAdapter {
 		$fields = array_map('trim', $fields);
 		$keyName = $this->quote(implode('_', $fields));
 		
-		$results = $this->pdo->query('SHOW INDEX FROM ' . $this->quote($table) . ' WHERE Key_Name = "' . $keyName . '"');
+		$results = $this->query('SHOW INDEX FROM ' . $this->quote($table) . ' WHERE Key_Name = "' . $keyName . '"');
 		if ($results && count($results->fetchAll()) == 0)  $this->pdo->query('CREATE INDEX ' . $keyName . ' ON ' . $this->quote($table) . '(' . implode(', ', $fields) . ')');
 	}
 	
@@ -181,5 +203,8 @@ class MySqlAdapter implements DatabaseAdapter {
 		}
 		//Sometimes a second pass is needed, if a column has gone from varchar -> int(11) a better int type may be needed
 		if ($runAgain) $this->optimiseColumns($table);
+	}
+	function execute($query,$params=[]){
+		return $this->pdo->prepare($query)->execute($params);
 	}
 }

@@ -7,6 +7,6 @@ interface DataSource {
 	public function findAggregate($function, $field, $group = null, array $criteria = [], array $options = []);
 	public function deleteById($id);
 	public function deleteByField(array $fields);
-	public function save($data);
+	public function save($data,$relations);
 	public function getErrors();
 }

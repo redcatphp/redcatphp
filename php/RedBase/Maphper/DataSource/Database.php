@@ -205,7 +205,7 @@ class Database implements \RedBase\Maphper\DataSource {
 		$this->resultCache = [];
 	}
 	
-	public function save($data) {
+	public function save($data,$relations) {
 		$pk = $this->primaryKey;	
 
 		$new = false;
@@ -230,7 +230,7 @@ class Database implements \RedBase\Maphper\DataSource {
 		}
 		catch (\Exception $e) {
 			if (self::EDIT_STRUCTURE & $this->alterDb) {
-				$this->adapter->alterDatabase($this->table, $this->primaryKey, $writeData);
+				$this->adapter->alterDatabase($this->table, $this->primaryKey, $writeData, $relations);
 				$this->adapter->insert($this->table, $this->primaryKey, $writeData);				
 			}
 			else throw $e;

@@ -85,7 +85,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		
 		$pk = $this->dataSource->getPrimaryKey();
 		if ($offset !== null) $value->{$pk[0]} = $offset;
-		$this->dataSource->save($value);		
+		$this->dataSource->save($value,$this->relations);		
 	}
 	
 	public function offsetExists($offset) {

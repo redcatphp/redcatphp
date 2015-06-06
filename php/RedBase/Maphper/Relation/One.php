@@ -7,12 +7,24 @@ class One implements \RedBase\Maphper\Relation {
 	private $parentObject;
 	private $criteria = [];
 	private $data;
+	private $isDependent;
 	
-	public function __construct(\RedBase\Maphper\Maphper $mapper, $parentField, $localField, array $criteria = []) {
+	public function __construct(\RedBase\Maphper\Maphper $mapper, $parentField, $localField, array $criteria = [], $isDependent=true) {
 		$this->mapper = $mapper;
 		$this->parentField = $parentField;
 		$this->localField = $localField;
 		$this->criteria = $criteria;
+		$this->isDependent = $isDependent;
+	}
+	
+	function isDependent(){
+		return $this->isDependent;
+	}
+	function parentField(){
+		return $this->parentField;
+	}
+	function localField(){
+		return $this->localField;
 	}
 	
 	public function getData($parentObject) {

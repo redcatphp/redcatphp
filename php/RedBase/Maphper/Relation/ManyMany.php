@@ -12,14 +12,14 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 	private $object;
 	private $intermediateName;
 	
-	public function __construct(\RedBase\Maphper\Maphper $intermediateMapper, \RedBase\Maphper\Maphper $relatedMapper, $localField, $parentField, $intermediateName = null) {
+	public function __construct(\RedBase\Maphper\Maphper $intermediateMapper, \RedBase\Maphper\Maphper $relatedMapper, $localField, $parentField, $intermediateName = null, $isDependent=true) {
 		$this->intermediateMapper = $intermediateMapper;
 		$this->relatedMapper = $relatedMapper;
 		$this->localField = $localField;
 		$this->parentField = $parentField;
 		$this->autoTraverse = $intermediateName ? false : true;
 		$this->intermediateName = $intermediateName ?: 'rel_' . $parentField;
-		$this->intermediateMapper->addRelation($this->intermediateName, new One($this->relatedMapper, $parentField, $localField));
+		$this->intermediateMapper->addRelation($this->intermediateName, new One($this->relatedMapper, $parentField, $localField, [], $isDependent));
 		
 	}
 	
