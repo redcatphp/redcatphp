@@ -30,7 +30,15 @@ class Database implements \RedBase\Maphper\DataSource {
 
 		if (self::EDIT_OPTIMISE & $this->alterDb && rand(0,500) == 1) $this->adapter->optimiseColumns($table);
 	}
-
+	
+	function adapter(){
+		return $this->adapter;
+	}
+	
+	function alterDb(){
+		return $this->alterDb;
+	}
+	
 	private function getAdapter(\PDO $pdo) {
 		$adapter = '\\RedBase\\Maphper\\DataSource\\' . ucfirst($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME)) . 'Adapter';
 		return new $adapter($pdo);
@@ -228,7 +236,7 @@ class Database implements \RedBase\Maphper\DataSource {
 			return $data;
 		};
 		$read = $readClosure->bindTo($data, $data);
-		$writeData = $read();			
+		$writeData = $read();
 		try {
 			$result = $this->adapter->insert($this->table, $this->primaryKey, $writeData);
 			//PDO may be silent so throw an exeption if the insert failed
@@ -247,5 +255,9 @@ class Database implements \RedBase\Maphper\DataSource {
 		//Something has changed, clear any cached results as they may now be incorrect
 		$this->resultCache = [];
 		$this->cache[$this->primaryKey[0]] = $data;
+	}
+	
+	function getName(){
+		return $this->table;
 	}
 }

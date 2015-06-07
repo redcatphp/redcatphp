@@ -9,4 +9,9 @@ interface DataSource {
 	public function deleteByField(array $fields);
 	public function save($data,$relations);
 	public function getErrors();
+	
+	public function getName();
+	
+	public function adapter();
+	public function alterDb();
 }

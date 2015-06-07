@@ -27,6 +27,25 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		$this->relations = $relations;		
 	}
 	
+	public function addRelationManyMany(Maphper $map, Maphper $intermediateMap=null, $primaryRel='id', $primaryInter='id', $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$intermediateMap){
+			$a = [$map->dataSource->getName(),$this->dataSource->getName()];
+			sort($a);
+			$intermediateName = implode('_',$a);
+			$intermediateMap = new Maphper(new DataSource\Database($this->dataSource->adapter(), $intermediateName, $primaryInter, ['editmode' => $this->dataSource->alterDb()]));
+		}
+		else{
+			$intermediateName = $intermediateMap->dataSource->getName();
+		}
+		if(!$foreignKeyRel)
+			$foreignKeyRel = $this->dataSource->getName().'Id';
+		if(!$foreignKeyInter)
+			$foreignKeyInter = $map->dataSource->getName().'Id';
+		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $map, $primaryRel, $foreignKeyRel, $this->dataSource->getName()));
+		$this->addRelation($map->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyInter, $map->dataSource->getName()));
+		return $intermediateMap;
+	}
+	
 	public function addRelation($name, Relation $relation) {
 		$this->relations[$name] = $relation;
 	}
