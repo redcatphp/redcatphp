@@ -176,7 +176,13 @@ class Database implements \RedBase\Maphper\DataSource {
 			try {
 				$this->resultCache[$cacheId] = $this->adapter->select($this->table, $sql, $args, $order, $limit, $offset);
 				$this->addIndex(array_keys($args));
-				$this->addIndex(explode(',', $order));
+				
+				$addIndex = explode(',',$order);
+				foreach($this->primaryKey as $primaryKey){
+					if(false!==$i=array_search($primaryKey,$addIndex))
+						unset($addIndex[$i]);
+				}
+				$this->addIndex($addIndex);
 			}
 			catch (\Exception $e) {
 				$this->errors[] = $e;
