@@ -26,6 +26,10 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		$this->dataSource = $dataSource;
 		$this->settings($settings);
 		$this->relations = $relations;
+		if(!$repository){
+			if($dataSource instanceof DataSource\Database)
+				$repository = new RepositoryPDO($this->dataSource->adapter()->getPDO());
+		}
 		$this->repository = $repository;
 	}
 	public function settings(array $settings = null){
