@@ -12,7 +12,7 @@ class Repository implements \ArrayAccess{
 		return $this->primary;
 	}
 	private function create($table){
-		return new Maphper(call_user_func($this->factory,$table,$this->primary));
+		return new Maphper(call_user_func($this->factory,$table,$this->primary),null,[],$this);
 	}
 	function __isset($k){
 		return $this->offsetExists($k);

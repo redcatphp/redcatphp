@@ -20,19 +20,26 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	private $settings = ['filter' => [], 'sort' => null, 'limit' => null, 'offset' => null, 'resultClass' => '\\stdClass'];	
 	private $array = [];
 	private $iterator = 0;
+	private $repository;
 
-	public function __construct(DataSource $dataSource, array $settings = null, array $relations = []) {
+	public function __construct(DataSource $dataSource, array $settings = null, array $relations = [], Repository $repository=null) {
 		$this->dataSource = $dataSource;
 		$this->settings($settings);
-		$this->relations = $relations;		
+		$this->relations = $relations;
+		$this->repository = $repository;
 	}
 	public function settings(array $settings = null){
 		if ($settings) $this->settings = array_replace($this->settings, $settings);
 		return $this->settings;
 	}
-	public function addRelationManyMany(Maphper $map, Maphper $intermediateMap=null, $primaryRel='id', $primaryInter='id', $foreignKeyRel=null, $foreignKeyInter=null){
+	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $primaryInter='id', $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$relatedMapper instanceof Maphper)
+			$relatedMapper = $this->repository[$relatedMapper];
+		if($intermediateMap && !$intermediateMap instanceof Maphper)
+			$intermediateMap = $this->repository[$intermediateMap];
+		
 		if(!$intermediateMap){
-			$a = [$map->dataSource->getName(),$this->dataSource->getName()];
+			$a = [$relatedMapper->dataSource->getName(),$this->dataSource->getName()];
 			sort($a);
 			$intermediateName = implode('_',$a);
 			$intermediateMap = new Maphper(new DataSource\Database($this->dataSource->adapter(), $intermediateName, $primaryInter, ['editmode' => $this->dataSource->alterDb()]));
@@ -43,10 +50,23 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(!$foreignKeyRel)
 			$foreignKeyRel = $this->dataSource->getName().'_id';
 		if(!$foreignKeyInter)
-			$foreignKeyInter = $map->dataSource->getName().'_id';
-		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $map, $primaryRel, $foreignKeyRel, $this->dataSource->getName()));
-		$this->addRelation($map->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyInter, $map->dataSource->getName()));
+			$foreignKeyInter = $relatedMapper->dataSource->getName().'_id';
+		$relatedMapper->addRelation($this->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyInter, $this->dataSource->getName()));
+		$this->addRelation($relatedMapper->dataSource->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyRel, $relatedMapper->dataSource->getName()));
 		return $intermediateMap;
+	}
+	
+	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
+		if($relatedMapper instanceof Maphper){
+			$name = $relatedMapper->dataSource->getName();
+		}
+		else{
+			$name = $relatedMapper;
+			$relatedMapper = $this->repository[$name];
+		}
+		if(!$foreignKey)
+			$foreignKey = $name.'_id';
+		$this->addRelation($name, new Relation\One($relatedMapper, $foreignKey, $primary));
 	}
 	
 	public function addRelation($name, Relation $relation) {
