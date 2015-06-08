@@ -41,9 +41,9 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$intermediateName = $intermediateMap->dataSource->getName();
 		}
 		if(!$foreignKeyRel)
-			$foreignKeyRel = $this->dataSource->getName().'Id';
+			$foreignKeyRel = $this->dataSource->getName().'_id';
 		if(!$foreignKeyInter)
-			$foreignKeyInter = $map->dataSource->getName().'Id';
+			$foreignKeyInter = $map->dataSource->getName().'_id';
 		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $map, $primaryRel, $foreignKeyRel, $this->dataSource->getName()));
 		$this->addRelation($map->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyInter, $map->dataSource->getName()));
 		return $intermediateMap;
