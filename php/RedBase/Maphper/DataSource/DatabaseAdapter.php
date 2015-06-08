@@ -9,4 +9,6 @@ interface DatabaseAdapter {
 	public function alterDatabase($table, array $primaryKey, $data, $relations);
 	public function addIndex($table, array $fields);
 	public function lastInsertId();
+	
+	public function getPDO();
 }

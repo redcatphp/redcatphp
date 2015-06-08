@@ -207,4 +207,7 @@ class MySqlAdapter implements DatabaseAdapter {
 	function execute($query,$params=[]){
 		return $this->pdo->prepare($query)->execute($params);
 	}
+	function getPDO(){
+		return $this->pdo;
+	}
 }
