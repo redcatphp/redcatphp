@@ -5,7 +5,10 @@ class RepositoryPDO extends Repository{
 	private $options;
 	function __construct($dsn,$user=null,$password=null,$primary='id',$options=null){
 		parent::__construct([$this,'dbFactory'],$primary);
-		$this->pdo = new \PDO($dsn,$user,$password);
+		if($dsn instanceof \PDO)
+			$this->pdo = $dsn;
+		else
+			$this->pdo = new \PDO($dsn,$user,$password);
 		$this->options = $options;
 	}
 	function dbFactory($table){
