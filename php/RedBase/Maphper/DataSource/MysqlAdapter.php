@@ -108,7 +108,7 @@ class MySqlAdapter implements DatabaseAdapter {
 		}
 		
 		$pkField = implode(', ', $parts) . ', PRIMARY KEY(' . implode(', ', $primaryKey) . ')';
-		$this->pdo->exec('CREATE TABLE IF NOT EXISTS ' . $table . ' (' . $pkField . ')');
+		$this->pdo->exec('CREATE TABLE IF NOT EXISTS ' . $this->quote($table) . ' (' . $pkField . ')');
 		
 		foreach ($data as $key => $value) {
 			if (is_array($value) || (is_object($value) && !($value instanceof \DateTime))) continue;

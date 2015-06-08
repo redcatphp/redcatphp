@@ -23,10 +23,13 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 
 	public function __construct(DataSource $dataSource, array $settings = null, array $relations = []) {
 		$this->dataSource = $dataSource;
-		if ($settings) $this->settings = array_replace($this->settings, $settings);
+		$this->settings($settings);
 		$this->relations = $relations;		
 	}
-	
+	public function settings(array $settings = null){
+		if ($settings) $this->settings = array_replace($this->settings, $settings);
+		return $this->settings;
+	}
 	public function addRelationManyMany(Maphper $map, Maphper $intermediateMap=null, $primaryRel='id', $primaryInter='id', $foreignKeyRel=null, $foreignKeyInter=null){
 		if(!$intermediateMap){
 			$a = [$map->dataSource->getName(),$this->dataSource->getName()];
@@ -88,7 +91,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	
 	private function processFilters($value) {
 		//When saving to a mapper with filters, write the filters back into the object being stored
-		foreach ($this->settings['filter'] as $key => $filterValue) {			
+		foreach ($this->settings['filter'] as $key => $filterValue) {
 			if (empty($value->$key) && !is_array($filterValue)) $value->$key = $filterValue;
 		}
 		return $value;
@@ -102,8 +105,9 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			if (isset($value->$name) &&	!($value->$name instanceof Relation\One)) $relation->overwrite($value, $value->$name);			
 		}
 		
-		$value = $this->wrap($this->processFilters($value), true);
+		$value = $this->relationalSet($value);
 		
+		$value = $this->wrap($this->processFilters($value), true);
 		$pk = $this->dataSource->getPrimaryKey();
 		if ($offset !== null) $value->{$pk[0]} = $offset;
 		$this->dataSource->save($value,$this->relations);		
@@ -174,5 +178,14 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	public function delete() {
 		$this->array = [];
 		$this->dataSource->deleteByField($this->settings['filter'], ['order' => $this->settings['sort'], 'limit' => $this->settings['limit'], 'offset' => $this->settings['offset']]);
+	}
+	
+	private function relationalSet($value){
+		foreach($value as $k=>$v){
+			if(is_array($v)){
+				
+			}
+		}
+		return $value;
 	}
 }
