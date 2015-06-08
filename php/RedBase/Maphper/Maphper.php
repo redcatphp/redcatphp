@@ -95,6 +95,8 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	}
 
 	public function offsetSet($offset, $value) {
+		if(is_array($value))
+			$value = (object)$value;
 		foreach ($this->relations as $name => $relation) {
 			//If a relation has been overridden, run the overwrite	
 			if (isset($value->$name) &&	!($value->$name instanceof Relation\One)) $relation->overwrite($value, $value->$name);			
