@@ -221,7 +221,6 @@ class Database implements \RedBase\Maphper\DataSource {
 	
 	public function save($data,$relations) {
 		$pk = $this->primaryKey;	
-
 		$new = false;
 		foreach ($pk as $k) {
 			if (!isset($data->$k) || $data->$k == '') {
@@ -249,12 +248,14 @@ class Database implements \RedBase\Maphper\DataSource {
 			}
 			else throw $e;
 		}		
+		
 
 		//TODO: This will error if the primary key is a private field
 		if ($new && count($this->primaryKey) == 1) $data->{$this->primaryKey[0]} = $this->adapter->lastInsertId();
 		//Something has changed, clear any cached results as they may now be incorrect
 		$this->resultCache = [];
 		$this->cache[$this->primaryKey[0]] = $data;
+		
 	}
 	
 	function getName(){

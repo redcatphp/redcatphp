@@ -43,7 +43,7 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 			foreach ($this->intermediateMapper->getRelations() as $relation) {		
 				$propertyReader = $propertyReader->bindTo($relation, $relation);
 				if ($propertyReader('parentField') != $this->parentField) {
-					$relation = $relation->getData($this->object);					
+					//$relation = $relation->getData($this->object);
 					$this->otherInfo = [$propertyReader('localField'),  $propertyReader('parentField'), $propertyReader('mapper')];
 				}
 			}

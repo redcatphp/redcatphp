@@ -74,6 +74,19 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		$this->addRelation($name, new Relation\One($relatedMapper, $foreignKey, $primary));
 	}
 	
+	public function addRelationMany($relatedMapper,$foreignKey=null,$primary='id'){
+		if($relatedMapper instanceof Maphper){
+			$name = $relatedMapper->dataSource->getName();
+		}
+		else{
+			$name = $relatedMapper;
+			$relatedMapper = $this->repository[$name];
+		}
+		if(!$foreignKey)
+			$foreignKey = $name.'_id';
+		$this->addRelation($name, new Relation\One($relatedMapper, $foreignKey, $primary));
+	}
+	
 	public function addRelation($name, Relation $relation) {
 		$this->relations[$name] = $relation;
 	}
@@ -126,16 +139,17 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(is_array($value))
 			$value = (object)$value;
 		foreach ($this->relations as $name => $relation) {
-			//If a relation has been overridden, run the overwrite	
+			//If a relation has been overridden, run the overwrite
 			if (isset($value->$name) &&	!($value->$name instanceof Relation\One)) $relation->overwrite($value, $value->$name);			
 		}
 		
 		$value = $this->relationalSet($value);
 		
-		$value = $this->wrap($this->processFilters($value), true);
+		$value = $this->processFilters($value);
+		$value = $this->wrap($value, true);
 		$pk = $this->dataSource->getPrimaryKey();
 		if ($offset !== null) $value->{$pk[0]} = $offset;
-		$this->dataSource->save($value,$this->relations);		
+		$this->dataSource->save($value,$this->relations);
 	}
 	
 	public function offsetExists($offset) {
@@ -174,7 +188,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$new = $updateExisting ? $object : $this->createNew();
 			$write = $writeClosure->bindTo($new, $new);
 			foreach ($object as $key => $value) $write($key, $this->dataSource->processDates($value));			
-			foreach ($this->relations as $name => $relation) $new->$name = $relation->getData($new); 
+			foreach ($this->relations as $name => $relation) $new->$name = $relation->getData($new);
 
 			$new->__maphperRelationsAttached = $this;
 			return $new;
@@ -212,5 +226,9 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			}
 		}
 		return $value;
+	}
+	
+	function getName(){
+		return $this->dataSource->getName();
 	}
 }

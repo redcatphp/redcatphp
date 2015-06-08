@@ -57,7 +57,7 @@ class MySqlAdapter implements DatabaseAdapter {
 				if ($value->format('H:i:s')  == '00:00:00') $value = $value->format('Y-m-d');
 				else $value = $value->format('Y-m-d H:i:s');
 			}
-			if (is_object($value)) continue;
+			if (is_object($value)||is_array($value)) continue;
 			$sql[] = $this->quote($field) . ' = :' . $field . $affix;
 			$args[$field . $affix] = $value;
 		}
@@ -67,7 +67,12 @@ class MySqlAdapter implements DatabaseAdapter {
 	public function insert($table, array $primaryKey, $data) {
 		$query = $this->buildSaveQuery($data);
 		$query1 = $this->buildSaveQuery($data, 1);
-		return $this->query('INSERT INTO ' . $table . ' SET ' . implode(',', $query['sql']) . ' ON DUPLICATE KEY UPDATE ' . implode(',', $query1['sql']), array_merge($query['args'], $query1['args']));
+		$stmt = $this->query('INSERT INTO ' . $table . ' SET ' . implode(',', $query['sql']) . ' ON DUPLICATE KEY UPDATE ' . implode(',', $query1['sql']), array_merge($query['args'], $query1['args']));
+		foreach($data as $o){
+			if($o instanceof \Closure)
+				$o($this->lastInsertId());
+		}
+		return $stmt;
 	}
 	
 	private function query($query, $args = []) {
@@ -143,6 +148,30 @@ class MySqlAdapter implements DatabaseAdapter {
 				catch ( \PDOException $e ) {
 					// Failure of fk-constraints is not a problem
 				}
+			}
+			elseif($relation instanceof \RedBase\Maphper\Relation\Many){
+				$c = $data->$key;
+				$pdo = $this->pdo;
+				$data->$key = function($id)use($c,$relation,$table,$key,$pdo){
+					$c($id);
+					$fieldNoQ = $relation->localField();
+					$targetFieldNoQ = $relation->parentField();
+					$isDependent = $relation->isDependent();
+					$fkName = 'fk_'.$table.'_'.$fieldNoQ;
+					$cName = 'c_'.$fkName;
+					$parentTable = $this->quote($key);
+					$targetTable = $this->quote($table);
+					$targetField = $this->quote($targetFieldNoQ);
+					$parentField = $this->quote($fieldNoQ);
+					$query = "ALTER TABLE $parentTable ADD CONSTRAINT $cName FOREIGN KEY $fkName
+							( $parentField ) REFERENCES $targetTable ( $targetField ) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';';
+					try {
+						$pdo->exec($query);
+					}
+					catch ( \PDOException $e ) {
+						// Failure of fk-constraints is not a problem
+					}
+				};
 			}
 		}
 	}
