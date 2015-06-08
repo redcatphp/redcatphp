@@ -36,7 +36,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if ($settings) $this->settings = array_replace($this->settings, $settings);
 		return $this->settings;
 	}
-	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $primaryInter='id', $foreignKeyRel=null, $foreignKeyInter=null){
+	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
 		if(!$relatedMapper instanceof Maphper)
 			$relatedMapper = $this->repository[$relatedMapper];
 		if($intermediateMap && !$intermediateMap instanceof Maphper)
@@ -46,7 +46,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$a = [$relatedMapper->dataSource->getName(),$this->dataSource->getName()];
 			sort($a);
 			$intermediateName = implode('_',$a);
-			$intermediateMap = new Maphper(new DataSource\Database($this->dataSource->adapter(), $intermediateName, $primaryInter, ['editmode' => $this->dataSource->alterDb()]));
+			$intermediateMap = $this->repository[$intermediateName];
 		}
 		else{
 			$intermediateName = $intermediateMap->dataSource->getName();
@@ -55,8 +55,9 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$foreignKeyRel = $this->dataSource->getName().'_id';
 		if(!$foreignKeyInter)
 			$foreignKeyInter = $relatedMapper->dataSource->getName().'_id';
-		$relatedMapper->addRelation($this->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyInter, $this->dataSource->getName()));
-		$this->addRelation($relatedMapper->dataSource->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyRel, $relatedMapper->dataSource->getName()));
+		$primaryInter = $this->repository->getPrimaryKey();
+		$relatedMapper->addRelation($this->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->dataSource->getName()));
+		$this->addRelation($relatedMapper->dataSource->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->dataSource->getName()));
 		return $intermediateMap;
 	}
 	
