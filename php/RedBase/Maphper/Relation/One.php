@@ -17,6 +17,9 @@ class One implements \RedBase\Maphper\Relation {
 		$this->isDependent = $isDependent;
 	}
 	
+	function mapper(){
+		return $this->mapper;
+	}
 	function isDependent(){
 		return $this->isDependent;
 	}

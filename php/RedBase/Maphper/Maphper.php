@@ -37,18 +37,22 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		return $this->settings;
 	}
 	
-	public function addRelationManyToOne($relatedMapper,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany='id',$primaryOne='id'){
-		if(!$relatedMapper instanceof Maphper)
-			$relatedMapper = $this->repository[$relatedMapper];
-		$this->addRelationMany($relatedMapper,$foreignKeyMany,$primaryMany);
-		$relatedMapper->addRelationOne($this,$foreignKeyOne,$primaryOne);
-	}
 	public function addRelationOneToMany($relatedMapper,$foreignKeyOne=null,$foreignKeyMany=null,$primaryOne='id',$primaryMany='id'){
 		if(!$relatedMapper instanceof Maphper)
 			$relatedMapper = $this->repository[$relatedMapper];
 		$this->addRelationOne($relatedMapper,$foreignKeyOne,$primaryOne);
 		$relatedMapper->addRelationMany($this,$foreignKeyMany,$primaryMany);
 	}
+	public function addRelationManyToOne($relatedMapper,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany='id',$primaryOne='id'){
+		if(!$relatedMapper instanceof Maphper)
+			$relatedMapper = $this->repository[$relatedMapper];
+		$this->addRelationMany($relatedMapper,$foreignKeyMany,$primaryMany);
+		$relatedMapper->addRelationOne($this,$foreignKeyOne,$primaryOne);
+	}
+	public function addRelationManyToMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+		
+	}
+	
 	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
 		if($relatedMapper instanceof Maphper){
 			$name = $relatedMapper->getName();

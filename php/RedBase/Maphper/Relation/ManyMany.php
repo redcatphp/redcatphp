@@ -12,6 +12,8 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 	private $object;
 	private $intermediateName;
 	
+	private $isDependent;
+	
 	public function __construct(\RedBase\Maphper\Maphper $intermediateMapper, \RedBase\Maphper\Maphper $relatedMapper, $localField='id', $parentField, $intermediateName = null, $isDependent=true) {
 		$this->intermediateMapper = $intermediateMapper;
 		$this->relatedMapper = $relatedMapper;
@@ -20,7 +22,20 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 		$this->autoTraverse = $intermediateName ? false : true;
 		$this->intermediateName = $intermediateName ?: 'rel_' . $parentField;
 		$this->intermediateMapper->addRelation($this->intermediateName, new One($this->relatedMapper, $parentField, $localField, [], $isDependent));
-		
+		$this->isDependent = $isDependent;
+	}
+	
+	function mapper(){
+		return $this->mapper;
+	}
+	function isDependent(){
+		return $this->isDependent;
+	}
+	function parentField(){
+		return $this->parentField;
+	}
+	function localField(){
+		return $this->localField;
 	}
 	
 	public function getData($parentObject) {
@@ -35,16 +50,11 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 	
 	//bit hacky, breaking encapsulation, but simplest way to work out the info for the other side of the many:many relationship.
 	private function getOtherFieldNameInfo() {
-		if ($this->otherInfo == null) {
-			$propertyReader = function($name) {
-				return $this->$name;
-			};
-			
+		if ($this->otherInfo == null) {			
 			foreach ($this->intermediateMapper->getRelations() as $relation) {		
-				$propertyReader = $propertyReader->bindTo($relation, $relation);
-				if ($propertyReader('parentField') != $this->parentField) {
+				if ($relation->parentField() != $this->parentField) {
 					//$relation = $relation->getData($this->object);
-					$this->otherInfo = [$propertyReader('localField'),  $propertyReader('parentField'), $propertyReader('mapper')];
+					$this->otherInfo = [$relation->localField(),  $relation->parentField(), $relation->mapper()];
 				}
 			}
 		}
