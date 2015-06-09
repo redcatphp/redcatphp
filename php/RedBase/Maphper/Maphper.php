@@ -43,27 +43,27 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$intermediateMap = $this->repository[$intermediateMap];
 		
 		if(!$intermediateMap){
-			$a = [$relatedMapper->dataSource->getName(),$this->dataSource->getName()];
+			$a = [$relatedMapper->getName(),$this->getName()];
 			sort($a);
 			$intermediateName = implode('_',$a);
 			$intermediateMap = $this->repository[$intermediateName];
 		}
 		else{
-			$intermediateName = $intermediateMap->dataSource->getName();
+			$intermediateName = $intermediateMap->getName();
 		}
 		if(!$foreignKeyRel)
-			$foreignKeyRel = $this->dataSource->getName().'_id';
+			$foreignKeyRel = $this->getName().'_id';
 		if(!$foreignKeyInter)
-			$foreignKeyInter = $relatedMapper->dataSource->getName().'_id';
+			$foreignKeyInter = $relatedMapper->getName().'_id';
 		$primaryInter = $this->repository->getPrimaryKey();
-		$relatedMapper->addRelation($this->dataSource->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->dataSource->getName()));
-		$this->addRelation($relatedMapper->dataSource->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->dataSource->getName()));
+		$relatedMapper->addRelation($this->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
+		$this->addRelation($relatedMapper->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
 		return $intermediateMap;
 	}
 	
 	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
 		if($relatedMapper instanceof Maphper){
-			$name = $relatedMapper->dataSource->getName();
+			$name = $relatedMapper->getName();
 		}
 		else{
 			$name = $relatedMapper;
@@ -76,15 +76,15 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	
 	public function addRelationMany($relatedMapper,$foreignKey=null,$primary='id'){
 		if($relatedMapper instanceof Maphper){
-			$name = $relatedMapper->dataSource->getName();
+			$name = $relatedMapper->getName();
 		}
 		else{
 			$name = $relatedMapper;
 			$relatedMapper = $this->repository[$name];
 		}
 		if(!$foreignKey)
-			$foreignKey = $name.'_id';
-		$this->addRelation($name, new Relation\One($relatedMapper, $foreignKey, $primary));
+			$foreignKey = $this->getName().'_id';
+		$this->addRelation($name, new Relation\Many($relatedMapper, $primary, $foreignKey));
 	}
 	
 	public function addRelation($name, Relation $relation) {
