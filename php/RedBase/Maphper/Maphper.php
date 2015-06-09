@@ -36,31 +36,19 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if ($settings) $this->settings = array_replace($this->settings, $settings);
 		return $this->settings;
 	}
-	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+	
+	public function addRelationManyToOne($relatedMapper,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany='id',$primaryOne='id'){
 		if(!$relatedMapper instanceof Maphper)
 			$relatedMapper = $this->repository[$relatedMapper];
-		if($intermediateMap && !$intermediateMap instanceof Maphper)
-			$intermediateMap = $this->repository[$intermediateMap];
-		
-		if(!$intermediateMap){
-			$a = [$relatedMapper->getName(),$this->getName()];
-			sort($a);
-			$intermediateName = implode('_',$a);
-			$intermediateMap = $this->repository[$intermediateName];
-		}
-		else{
-			$intermediateName = $intermediateMap->getName();
-		}
-		if(!$foreignKeyRel)
-			$foreignKeyRel = $this->getName().'_id';
-		if(!$foreignKeyInter)
-			$foreignKeyInter = $relatedMapper->getName().'_id';
-		$primaryInter = $this->repository->getPrimaryKey();
-		$relatedMapper->addRelation($this->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
-		$this->addRelation($relatedMapper->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
-		return $intermediateMap;
+		$this->addRelationMany($relatedMapper,$foreignKeyMany,$primaryMany);
+		$relatedMapper->addRelationOne($this,$foreignKeyOne,$primaryOne);
 	}
-	
+	public function addRelationOneToMany($relatedMapper,$foreignKeyOne=null,$foreignKeyMany=null,$primaryOne='id',$primaryMany='id'){
+		if(!$relatedMapper instanceof Maphper)
+			$relatedMapper = $this->repository[$relatedMapper];
+		$this->addRelationOne($relatedMapper,$foreignKeyOne,$primaryOne);
+		$relatedMapper->addRelationMany($this,$foreignKeyMany,$primaryMany);
+	}
 	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
 		if($relatedMapper instanceof Maphper){
 			$name = $relatedMapper->getName();
@@ -85,6 +73,30 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(!$foreignKey)
 			$foreignKey = $this->getName().'_id';
 		$this->addRelation($name, new Relation\Many($relatedMapper, $primary, $foreignKey));
+	}
+	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$relatedMapper instanceof Maphper)
+			$relatedMapper = $this->repository[$relatedMapper];
+		if($intermediateMap && !$intermediateMap instanceof Maphper)
+			$intermediateMap = $this->repository[$intermediateMap];
+		
+		if(!$intermediateMap){
+			$a = [$relatedMapper->getName(),$this->getName()];
+			sort($a);
+			$intermediateName = implode('_',$a);
+			$intermediateMap = $this->repository[$intermediateName];
+		}
+		else{
+			$intermediateName = $intermediateMap->getName();
+		}
+		if(!$foreignKeyRel)
+			$foreignKeyRel = $this->getName().'_id';
+		if(!$foreignKeyInter)
+			$foreignKeyInter = $relatedMapper->getName().'_id';
+		$primaryInter = $this->repository->getPrimaryKey();
+		$relatedMapper->addRelation($this->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
+		$this->addRelation($relatedMapper->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
+		return $intermediateMap;
 	}
 	
 	public function addRelation($name, Relation $relation) {
