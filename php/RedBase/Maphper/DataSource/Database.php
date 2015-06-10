@@ -138,6 +138,7 @@ class Database implements \RedBase\Maphper\DataSource {
 			}
 			catch (\Exception $e) {
 				$this->errors[] = $e;
+				//throw $e;
 			}
 				
 			if (isset($result[0])) 	$this->cache[$id] = $result[0];
@@ -159,6 +160,7 @@ class Database implements \RedBase\Maphper\DataSource {
 			return $this->adapter->aggregate($this->table, $function, $field, $sql, $args, $group);
 		}
 		catch (\Exception $e) {
+			//throw $e;
 			$this->errors[] = $e;
 			return $group ? [] : 0;
 		}
@@ -188,6 +190,7 @@ class Database implements \RedBase\Maphper\DataSource {
 			catch (\Exception $e) {
 				$this->errors[] = $e;
 				$this->resultCache[$cacheId] = [];
+				//throw $e;
 			}
 			try {
 				$this->addIndex(array_keys($args));

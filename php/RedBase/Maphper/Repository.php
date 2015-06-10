@@ -11,6 +11,22 @@ class Repository implements \ArrayAccess{
 	function getPrimaryKey(){
 		return $this->primary;
 	}
+	function linkOneToMany($one,$many,$foreignKeyOne=null,$foreignKeyMany=null,$primaryOne='id',$primaryMany='id'){
+		if(!$one instanceof Maphper)
+			$one = $this[$one];
+		if(!$many instanceof Maphper)
+			$many = $this[$many];
+		$many->addRelationOne($one,$foreignKeyOne,$primaryOne);
+		$one->addRelationMany($many,$foreignKeyMany,$primaryMany);
+	}
+	function linkManyToOne($many,$one,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany='id',$primaryOne='id'){
+		$this->linkOneToMany($one,$many,$foreignKeyOne,$foreignKeyMany,$primaryOne,$primaryMany);
+	}
+	function linkManyToMany($many1,$many2,$intermediateMap=null,$primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$many1 instanceof Maphper)
+			$many1 = $this[$many1];
+		return $many1->addRelationManyToMany($many2,$intermediateMap,$primaryRel, $foreignKeyRel, $foreignKeyInter);
+	}
 	private function create($table){
 		return new Maphper(call_user_func($this->factory,$table,$this->primary),null,[],$this);
 	}

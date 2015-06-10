@@ -77,7 +77,7 @@ class MySqlAdapter implements DatabaseAdapter {
 	
 	private function query($query, $args = []) {
 		$queryId = md5($query);
-		
+
 		if (isset($this->queryCache[$queryId])) $stmt = $this->queryCache[$queryId];
 		else {
 			$stmt = $this->pdo->prepare($query, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);			
@@ -126,6 +126,7 @@ class MySqlAdapter implements DatabaseAdapter {
 			}
 			catch (\Exception $e) {
 				$this->pdo->exec('ALTER TABLE ' . $table . ' MODIFY ' . $this->quote($key) . ' ' . $type);
+				//throw $e;
 			}
 		}
 		
@@ -153,7 +154,8 @@ class MySqlAdapter implements DatabaseAdapter {
 				$c = $data->$key;
 				$pdo = $this->pdo;
 				$data->$key = function($id)use($c,$relation,$table,$key,$pdo){
-					$c($id);
+					if($c instanceof \Closure)
+						$c($id);
 					$fieldNoQ = $relation->localField();
 					$targetFieldNoQ = $relation->parentField();
 					$isDependent = $relation->isDependent();

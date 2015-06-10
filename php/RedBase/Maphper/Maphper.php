@@ -50,7 +50,18 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		$relatedMapper->addRelationOne($this,$foreignKeyOne,$primaryOne);
 	}
 	public function addRelationManyToMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
-		
+		if(!$relatedMapper instanceof Maphper)
+			$relatedMapper = $this->repository[$relatedMapper];
+		if($intermediateMap && !$intermediateMap instanceof Maphper)
+			$intermediateMap = $this->repository[$intermediateMap];
+		if(!$intermediateMap){
+			$a = [$relatedMapper->getName(),$this->getName()];
+			sort($a);
+			$intermediateMap = $this->repository[implode('_',$a)];
+		}
+		$intermediateMap->addRelationOneToMany($this);
+		$intermediateMap->addRelationOneToMany($relatedMapper);
+		return $this->addRelationManyMany($relatedMapper, $intermediateMap, $primaryRel, $foreignKeyRel, $foreignKeyInter);
 	}
 	
 	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
@@ -98,8 +109,10 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(!$foreignKeyInter)
 			$foreignKeyInter = $relatedMapper->getName().'_id';
 		$primaryInter = $this->repository->getPrimaryKey();
-		$relatedMapper->addRelation($this->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
-		$this->addRelation($relatedMapper->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
+		$relatedMapper->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
+		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
+		//$relatedMapper->addRelation($this->getName(),new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
+		//$this->addRelation($relatedMapper->getName(),new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
 		return $intermediateMap;
 	}
 	
