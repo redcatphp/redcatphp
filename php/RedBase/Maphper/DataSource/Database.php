@@ -165,7 +165,8 @@ class Database implements \RedBase\Maphper\DataSource {
 	}
 	
 	private function addIndex($args) {
-		if (self::EDIT_INDEX & $this->alterDb) $this->adapter->addIndex($this->table, $args);
+		if (!empty($args) && self::EDIT_INDEX & $this->alterDb)
+			$this->adapter->addIndex($this->table, $args);
 	}
 
 	public function findByField(array $fields, $options = []) {
@@ -183,8 +184,13 @@ class Database implements \RedBase\Maphper\DataSource {
 			$order = (!isset($options['order'])) ? $this->defaultSort : $order = $options['order'];
 			try {
 				$this->resultCache[$cacheId] = $this->adapter->select($this->table, $sql, $args, $order, $limit, $offset);
+			}
+			catch (\Exception $e) {
+				$this->errors[] = $e;
+				$this->resultCache[$cacheId] = [];
+			}
+			try {
 				$this->addIndex(array_keys($args));
-				
 				$addIndex = explode(',',$order);
 				foreach($this->primaryKey as $primaryKey){
 					if(false!==$i=array_search($primaryKey,$addIndex))
@@ -194,7 +200,6 @@ class Database implements \RedBase\Maphper\DataSource {
 			}
 			catch (\Exception $e) {
 				$this->errors[] = $e;
-				$this->resultCache[$cacheId] = [];
 			}
 		}
 		return $this->resultCache[$cacheId];

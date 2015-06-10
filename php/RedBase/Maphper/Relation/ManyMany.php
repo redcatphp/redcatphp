@@ -48,12 +48,11 @@ class ManyMany implements \Iterator, \ArrayAccess, \Countable, \RedBase\Maphper\
 		foreach ($data as $d) $this[] = $d;
 	}
 	
-	//bit hacky, breaking encapsulation, but simplest way to work out the info for the other side of the many:many relationship.
 	private function getOtherFieldNameInfo() {
 		if ($this->otherInfo == null) {			
 			foreach ($this->intermediateMapper->getRelations() as $relation) {		
 				if ($relation->parentField() != $this->parentField) {
-					//$relation = $relation->getData($this->object);
+					$relation = $relation->getData($this->object);
 					$this->otherInfo = [$relation->localField(),  $relation->parentField(), $relation->mapper()];
 				}
 			}

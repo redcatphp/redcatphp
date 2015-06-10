@@ -31,7 +31,7 @@ class Many implements \RedBase\Maphper\Relation {
 	}
 	
 	public function getData($parentObject){
-		//return $this->mapper->filter([$this->localField => $parentObject->{$this->parentField}]);
+		return $this->mapper->filter([$this->localField => $parentObject->{$this->parentField}]);
 		$writeCallback = $this->writeCallback;
 		return function($id)use($writeCallback){
 			foreach($writeCallback as $c)
