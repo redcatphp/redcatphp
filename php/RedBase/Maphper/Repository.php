@@ -27,8 +27,19 @@ class Repository implements \ArrayAccess{
 			$many1 = $this[$many1];
 		return $many1->addRelationManyToMany($many2,$intermediateMap,$primaryRel, $foreignKeyRel, $foreignKeyInter);
 	}
-	private function create($table){
-		return new Maphper(call_user_func($this->factory,$table,$this->primary),null,[],$this);
+	private function create($table,$primary=null){
+		if(!$primary)
+			$primary = $this->primary;
+		return new Maphper(call_user_func($this->factory,$table,$primary),null,[],$this);
+	}
+	function get($table,$primary=null){
+		if(!$primary||$primary===$this->primary)
+			return $this->offsetGet($table);
+		$k = $table.':'.$primary;
+		if(!isset($this->registry[$k]))
+			$this->registry[$k] = $this->create($table,$primary);
+		return $this->registry[$k];
+			
 	}
 	function __isset($k){
 		return $this->offsetExists($k);

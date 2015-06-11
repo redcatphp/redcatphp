@@ -37,69 +37,85 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		return $this->settings;
 	}
 	
-	public function addRelationOneToMany($relatedMapper,$foreignKeyOne=null,$foreignKeyMany=null,$primaryOne='id',$primaryMany='id'){
+	public function addRelationOneToMany($relatedMapper,$foreignKeyOne=null,$foreignKeyMany=null,$primaryOne=null,$primaryMany=null){
+		if(!$primaryOne)
+			$primaryOne = $this->repository->getPrimaryKey();
 		if(!$relatedMapper instanceof Maphper)
-			$relatedMapper = $this->repository[$relatedMapper];
+			$relatedMapper = $this->repository->get($relatedMapper,$primaryOne);
 		$this->addRelationOne($relatedMapper,$foreignKeyOne,$primaryOne);
 		$relatedMapper->addRelationMany($this,$foreignKeyMany,$primaryMany);
 	}
-	public function addRelationManyToOne($relatedMapper,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany='id',$primaryOne='id'){
+	public function addRelationManyToOne($relatedMapper,$foreignKeyMany=null,$foreignKeyOne=null,$primaryMany=null,$primaryOne=null){
+		if(!$primaryMany)
+			$primaryMany = $this->repository->getPrimaryKey();
 		if(!$relatedMapper instanceof Maphper)
-			$relatedMapper = $this->repository[$relatedMapper];
+			$relatedMapper = $this->repository->get($relatedMapper,$primaryMany);
 		$this->addRelationMany($relatedMapper,$foreignKeyMany,$primaryMany);
 		$relatedMapper->addRelationOne($this,$foreignKeyOne,$primaryOne);
 	}
-	public function addRelationManyToMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+	public function addRelationManyToMany($relatedMapper, $intermediateMap=null, $primaryRel=null, $primaryInter=null, $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$primaryRel)
+			$primaryRel = $this->repository->getPrimaryKey();
+		if(!$primaryInter)
+			$primaryInter = $this->repository->getPrimaryKey();
 		if(!$relatedMapper instanceof Maphper)
-			$relatedMapper = $this->repository[$relatedMapper];
+			$relatedMapper = $this->repository->get($relatedMapper,$primaryRel);
 		if($intermediateMap && !$intermediateMap instanceof Maphper)
-			$intermediateMap = $this->repository[$intermediateMap];
+			$intermediateMap = $this->repository->get($intermediateMap,$primaryInter);
 		if(!$intermediateMap){
 			$a = [$relatedMapper->getName(),$this->getName()];
 			sort($a);
-			$intermediateMap = $this->repository[implode('_',$a)];
+			$intermediateMap = $this->repository->get(implode('_',$a),$primaryInter);
 		}
 		$intermediateMap->addRelationOneToMany($this);
 		$intermediateMap->addRelationOneToMany($relatedMapper);
 		return $this->addRelationManyMany($relatedMapper, $intermediateMap, $primaryRel, $foreignKeyRel, $foreignKeyInter);
 	}
 	
-	public function addRelationOne($relatedMapper,$foreignKey=null,$primary='id'){
+	public function addRelationOne($relatedMapper,$foreignKey=null,$primary=null){
+		if(!$primary)
+			$primary = $this->repository->getPrimaryKey();
 		if($relatedMapper instanceof Maphper){
 			$name = $relatedMapper->getName();
 		}
 		else{
 			$name = $relatedMapper;
-			$relatedMapper = $this->repository[$name];
+			$relatedMapper = $this->repository->get($name,$primary);
 		}
 		if(!$foreignKey)
 			$foreignKey = $name.'_id';
 		$this->addRelation($name, new Relation\One($relatedMapper, $foreignKey, $primary));
 	}
 	
-	public function addRelationMany($relatedMapper,$foreignKey=null,$primary='id'){
+	public function addRelationMany($relatedMapper,$foreignKey=null,$primary=null){
+		if(!$primary)
+			$primary = $this->repository->getPrimaryKey();
 		if($relatedMapper instanceof Maphper){
 			$name = $relatedMapper->getName();
 		}
 		else{
 			$name = $relatedMapper;
-			$relatedMapper = $this->repository[$name];
+			$relatedMapper = $this->repository->get($name,$primary);
 		}
 		if(!$foreignKey)
 			$foreignKey = $this->getName().'_id';
 		$this->addRelation($name, new Relation\Many($relatedMapper, $primary, $foreignKey));
 	}
-	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel='id', $foreignKeyRel=null, $foreignKeyInter=null){
+	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel=null, $primaryInter=null, $foreignKeyRel=null, $foreignKeyInter=null){
+		if(!$primaryRel)
+			$primaryRel = $this->repository->getPrimaryKey();
+		if(!$primaryInter)
+			$primaryInter = $this->repository->getPrimaryKey();
 		if(!$relatedMapper instanceof Maphper)
-			$relatedMapper = $this->repository[$relatedMapper];
+			$relatedMapper = $this->repository->get($relatedMapper,$primaryRel);
 		if($intermediateMap && !$intermediateMap instanceof Maphper)
-			$intermediateMap = $this->repository[$intermediateMap];
+			$intermediateMap = $this->repository->get($intermediateMap,$primaryInter);
 		
 		if(!$intermediateMap){
 			$a = [$relatedMapper->getName(),$this->getName()];
 			sort($a);
 			$intermediateName = implode('_',$a);
-			$intermediateMap = $this->repository[$intermediateName];
+			$intermediateMap = $this->repository->get($intermediateName,$primaryInter);
 		}
 		else{
 			$intermediateName = $intermediateMap->getName();
