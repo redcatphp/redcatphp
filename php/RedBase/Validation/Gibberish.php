@@ -1,4 +1,5 @@
-<?php namespace RedBase\Validation;
+<?php
+namespace RedBase\Validation;
 
 //  Copyright Oliver Lillie 2011
 //  $Id: Whitechars.php 1938 2011-06-09 13:25:22Z buggedcom $ $Rev: 1938 $
@@ -173,4 +174,3 @@
             return exp($log_prob / max($transition_ct, 1));
         }
     }
-
