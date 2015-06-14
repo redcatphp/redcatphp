@@ -46,7 +46,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if($intermediateMap && !$intermediateMap instanceof Maphper)
 			$intermediateMap = $this->repository->get($intermediateMap,$primaryInter);
 		if(!$intermediateMap){
-			$a = [$relatedMapper->getName(),$this->getName()];
+			$a = [$relatedMapper->getTable(),$this->getTable()];
 			sort($a);
 			$intermediateMap = $this->repository->get(implode('_',$a),$primaryInter);
 		}
@@ -59,7 +59,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(!$primary)
 			$primary = $this->repository->getPrimaryKey();
 		if($relatedMapper instanceof Maphper){
-			$name = $relatedMapper->getName();
+			$name = $relatedMapper->getTable();
 		}
 		else{
 			$name = $relatedMapper;
@@ -74,14 +74,14 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		if(!$primary)
 			$primary = $this->repository->getPrimaryKey();
 		if($relatedMapper instanceof Maphper){
-			$name = $relatedMapper->getName();
+			$name = $relatedMapper->getTable();
 		}
 		else{
 			$name = $relatedMapper;
 			$relatedMapper = $this->repository->get($name,$primary);
 		}
 		if(!$foreignKey)
-			$foreignKey = $this->getName().'_id';
+			$foreignKey = $this->getTable().'_id';
 		$this->addRelation($name, new Relation\Many($relatedMapper, $primary, $foreignKey));
 	}
 	public function addRelationManyMany($relatedMapper, $intermediateMap=null, $primaryRel=null, $primaryInter=null, $foreignKeyRel=null, $foreignKeyInter=null){
@@ -95,21 +95,21 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 			$intermediateMap = $this->repository->get($intermediateMap,$primaryInter);
 		
 		if(!$intermediateMap){
-			$a = [$relatedMapper->getName(),$this->getName()];
+			$a = [$relatedMapper->getTable(),$this->getTable()];
 			sort($a);
 			$intermediateName = implode('_',$a);
 			$intermediateMap = $this->repository->get($intermediateName,$primaryInter);
 		}
 		else{
-			$intermediateName = $intermediateMap->getName();
+			$intermediateName = $intermediateMap->getTable();
 		}
 		if(!$foreignKeyRel)
-			$foreignKeyRel = $this->getName().'_id';
+			$foreignKeyRel = $this->getTable().'_id';
 		if(!$foreignKeyInter)
-			$foreignKeyInter = $relatedMapper->getName().'_id';
+			$foreignKeyInter = $relatedMapper->getTable().'_id';
 		$primaryInter = $this->repository->getPrimaryKey();
-		$relatedMapper->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getName()));
-		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getName()));
+		$relatedMapper->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $this, $primaryInter, $foreignKeyRel, $this->getTable()));
+		$this->addRelation($intermediateName,new Relation\ManyMany($intermediateMap, $relatedMapper, $primaryRel, $foreignKeyInter, $relatedMapper->getTable()));
 		return $intermediateMap;
 	}
 	
@@ -145,7 +145,7 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 
 	public function rewind() {
 		$this->iterator = 0;
-		if (empty($this->array)) $this->array = $this->dataSource->findByField($this->settings['filter'], ['order' => $this->settings['sort'], 'limit' => $this->settings['limit'], 'offset' => $this->settings['offset'] ]);
+		if (empty($this->array)) $this->array = $this->dataSource->findByField($this->settings['filter'], ['sort' => $this->settings['sort'], 'limit' => $this->settings['limit'], 'offset' => $this->settings['offset'] ]);
 	}
 	
 	public function item($n) {
@@ -207,21 +207,13 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 		}
 		else if (is_object($object)) {
 			if (isset($object->__maphperRelationsAttached)) return $object;			
-			$writeClosure = function($field, $value) {	$this->$field = $value;	};
-			
 			$new = $updateExisting ? $object : $this->createNew();
-			$write = $writeClosure->bindTo($new, $new);
-			foreach ($object as $key => $value) $write($key, $this->dataSource->processDates($value));			
-			foreach ($this->relations as $name => $relation) $new->$name = $relation->getData($new);
-
+			foreach ($this->relations as $name => $relation)
+				$new->$name = $relation->getData($new);
 			$new->__maphperRelationsAttached = $this;
 			return $new;
 		}
 		return $object;
-	}
-
-	public function getErrors() {
-		return $this->dataSource->getErrors();
 	}
 	
 	public function __call($method, $args) {
@@ -240,10 +232,10 @@ class Maphper implements \Countable, \ArrayAccess, \Iterator {
 	
 	public function delete() {
 		$this->array = [];
-		$this->dataSource->deleteByField($this->settings['filter'], ['order' => $this->settings['sort'], 'limit' => $this->settings['limit'], 'offset' => $this->settings['offset']]);
+		$this->dataSource->deleteByField($this->settings['filter'], ['sort' => $this->settings['sort'], 'limit' => $this->settings['limit'], 'offset' => $this->settings['offset']]);
 	}
 	
-	function getName(){
-		return $this->dataSource->getName();
+	function getTable(){
+		return $this->dataSource->getTable();
 	}
 }

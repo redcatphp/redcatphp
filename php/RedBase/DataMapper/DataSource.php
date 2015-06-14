@@ -1,7 +1,7 @@
 <?php 
 namespace RedBase\DataMapper;
 interface DataSource {
-	public function getName();
+	public function getTable();
 	public function getPrimaryKey();
 	public function findById($id);
 	public function findByField(array $fields, $options);
@@ -9,5 +9,4 @@ interface DataSource {
 	public function deleteById($id);
 	public function deleteByField(array $fields);
 	public function save($data,$relations);
-	public function getErrors();
 }
