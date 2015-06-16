@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an data file has not been found
  */
-class DataFileNotFound extends \InterNative\Punic\Exception
+class DataFileNotFound extends \InterEthnic\Punic\Exception
 {
     protected $identifier;
     protected $locale;
@@ -33,7 +33,7 @@ class DataFileNotFound extends \InterNative\Punic\Exception
                 $message = "Unable to find the data file '$identifier', neither for '$locale' nor for '$fallbackLocale'";
             }
         }
-        parent::__construct($message, \InterNative\Punic\Exception::DATA_FILE_NOT_FOUND, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::DATA_FILE_NOT_FOUND, $previous);
     }
 
     /**

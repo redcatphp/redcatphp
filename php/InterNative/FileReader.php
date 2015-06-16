@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 class FileReader {
   var $_pos;
   var $_fd;

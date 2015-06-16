@@ -1,7 +1,7 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
-use InterNative\Gettext\Translations;
+use InterEthnic\Gettext\Translations;
 
 interface ExtractorInterface
 {

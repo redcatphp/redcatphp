@@ -1,8 +1,8 @@
 <?php
-namespace InterNative\Gettext\Utils;
+namespace InterEthnic\Gettext\Utils;
 
 use Exception;
-use InterNative\Gettext\Translations;
+use InterEthnic\Gettext\Translations;
 
 abstract class FunctionsScanner
 {

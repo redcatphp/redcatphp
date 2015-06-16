@@ -1,7 +1,7 @@
 <?php
 namespace KungFu\TemplixPlugin;
 use Unit\Url;
-use InterNative\Translator;
+use InterEthnic\Translator;
 use Unit\Di;
 class TemplixL10n extends Templix{
 	protected $Templix;
@@ -45,7 +45,7 @@ class TemplixL10n extends Templix{
 		return $this->query($file);
 	}
 	function i18nGettext($Tml,$cache=true){
-		$Tml->prepend('<?php include SURIKAT.\'php/InterNative/__.php\'; ?>');
+		$Tml->prepend('<?php include SURIKAT.\'php/InterEthnic/__.php\'; ?>');
 		$Tml('html')->attr('lang',$this->Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP)')->data('i18n',false);
 		$Tml('*[i18n] TEXT:hasnt(PHP)')->each(function($el)use($cache){

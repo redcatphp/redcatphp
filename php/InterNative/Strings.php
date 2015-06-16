@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 abstract class Strings{
 	static function ucfirst($str){
 		return self::toupper(mb_substr($str,0,1,mb_detect_encoding($str))).mb_substr($str,1,null,mb_detect_encoding($str));

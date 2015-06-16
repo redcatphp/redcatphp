@@ -34,7 +34,7 @@
 				'langDefault'=>'en',
 			],
 		],
-		'InterNative\Translator'=>[
+		'InterEthnic\Translator'=>[
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
@@ -57,7 +57,7 @@
 				'$devJs'=>'dev.js',
 			],
 		],
-		'InterNative\Translator'=>[
+		'InterEthnic\Translator'=>[
 			'construct'=>[
 				'$dev'=>'dev.l10n',
 			],

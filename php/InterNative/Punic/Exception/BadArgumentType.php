@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class BadArgumentType extends \InterNative\Punic\Exception
+class BadArgumentType extends \InterEthnic\Punic\Exception
 {
     protected $argumentValue;
 
@@ -39,7 +39,7 @@ class BadArgumentType extends \InterNative\Punic\Exception
                 break;
         }
         $message = "Can't convert $shownName to a $destinationTypeDescription";
-        parent::__construct($message, \InterNative\Punic\Exception::BAD_ARGUMENT_TYPE, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::BAD_ARGUMENT_TYPE, $previous);
     }
 
     /**

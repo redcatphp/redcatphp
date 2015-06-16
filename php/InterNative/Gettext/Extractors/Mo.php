@@ -1,8 +1,8 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
-use InterNative\Gettext\Translations;
-use InterNative\Gettext\Utils\StringReader;
+use InterEthnic\Gettext\Translations;
+use InterEthnic\Gettext\Utils\StringReader;
 
 /**
  * Class to get gettext strings from .mo files

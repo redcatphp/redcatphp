@@ -1,7 +1,7 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
-use InterNative\Gettext\Translations;
+use InterEthnic\Gettext\Translations;
 
 /**
  * Class to get gettext strings from json files

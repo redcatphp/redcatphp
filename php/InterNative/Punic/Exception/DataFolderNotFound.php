@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an data folder has not been found
  */
-class DataFolderNotFound extends \InterNative\Punic\Exception
+class DataFolderNotFound extends \InterEthnic\Punic\Exception
 {
     protected $locale;
     protected $fallbackLocale;
@@ -24,7 +24,7 @@ class DataFolderNotFound extends \InterNative\Punic\Exception
         } else {
             $message = "Unable to find the specified locale folder, neither for '$locale' nor for '$fallbackLocale'";
         }
-        parent::__construct($message, \InterNative\Punic\Exception::DATA_FOLDER_NOT_FOUND, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::DATA_FOLDER_NOT_FOUND, $previous);
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 class msgfmt{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/php-msgfmt/msgfmt-functions.php
 	static function convert($input, $output=null){
 		if(!isset($output))

@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 use Templix\Markup;
 class getTextExtractorTemplix extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){

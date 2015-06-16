@@ -1,8 +1,8 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
-use InterNative\Gettext\Translations;
-use InterNative\Gettext\Translation;
+use InterEthnic\Gettext\Translations;
+use InterEthnic\Gettext\Translation;
 
 /**
  * Class to get gettext strings from php files returning arrays

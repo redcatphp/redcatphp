@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Punic;
+namespace InterEthnic\Punic;
 
 /**
  * Units helper stuff
@@ -12,11 +12,11 @@ class Unit
      * @param int|float|string $number The unit amount
      * @param string $unit The unit identifier (eg 'duration/millisecond' or 'millisecond')
      * @param string $width = 'short' The format name; it can be 'long' (eg '3 milliseconds'), 'short' (eg '3 ms') or 'narrow' (eg '3ms'). You can also add a precision specifier ('long,2' or just '2')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterNative\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterEthnic\Punic\Data
      */
     public static function format($number, $unit, $width = 'short', $locale = '')
     {
-        $data = \InterNative\Punic\Data::get('units', $locale);
+        $data = \InterEthnic\Punic\Data::get('units', $locale);
         $precision = null;
         if (is_int($width)) {
             $precision = $width;
@@ -72,9 +72,9 @@ class Unit
                     }
                 }
             }
-            throw new \InterNative\Punic\Exception\ValueNotInList($unit, $units);
+            throw new \InterEthnic\Punic\Exception\ValueNotInList($unit, $units);
         }
-        $pluralRule = \InterNative\Punic\Plural::getRule($number, $locale);
+        $pluralRule = \InterEthnic\Punic\Plural::getRule($number, $locale);
         //@codeCoverageIgnoreStart
         // These checks aren't necessary since $pluralRule should always be in $rules, but they don't hurt ;)
         if (!array_key_exists($pluralRule, $rules)) {
@@ -86,6 +86,6 @@ class Unit
             }
         }
         //@codeCoverageIgnoreEnd
-        return sprintf($rules[$pluralRule], \InterNative\Punic\Number::format($number, $precision, $locale));
+        return sprintf($rules[$pluralRule], \InterEthnic\Punic\Number::format($number, $precision, $locale));
     }
 }

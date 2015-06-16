@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Punic;
+namespace InterEthnic\Punic;
 
 /**
  * Plural helper stuff
@@ -9,12 +9,12 @@ class Plural
 
     /**
      * Return the list of applicable plural rule for a locale
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterNative\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterEthnic\Punic\Data
      * @return array[string] Returns a list containing some the following values: 'zero', 'one', 'two', 'few', 'many', 'other' ('other' will be always there)
      */
     public static function getRules($locale = '')
     {
-        $node = \InterNative\Punic\Data::getLanguageNode(\InterNative\Punic\Data::getGeneric('plurals'), $locale);
+        $node = \InterEthnic\Punic\Data::getLanguageNode(\InterEthnic\Punic\Data::getGeneric('plurals'), $locale);
 
         return array_merge(
             array_keys($node),
@@ -25,9 +25,9 @@ class Plural
     /**
      * Return the plural rule ('zero', 'one', 'two', 'few', 'many' or 'other') for a number and a locale
      * @param string|int|float $number The number to check the plural rule for for
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterNative\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterEthnic\Punic\Data
      * @return string Returns one of the following values: 'zero', 'one', 'two', 'few', 'many', 'other'
-     * @throws \InterNative\Punic\Exception\BadArgumentType Throws a \InterNative\Punic\Exception\BadArgumentType if $number is not a valid number
+     * @throws \InterEthnic\Punic\Exception\BadArgumentType Throws a \InterEthnic\Punic\Exception\BadArgumentType if $number is not a valid number
      * @throws \Exception Throws a \Exception if there were problems calculating the plural rule
      */
     public static function getRule($number, $locale = '')
@@ -75,7 +75,7 @@ class Plural
             $v6 = '0';
         }
         $result = 'other';
-        $node = \InterNative\Punic\Data::getLanguageNode(\InterNative\Punic\Data::getGeneric('plurals'), $locale);
+        $node = \InterEthnic\Punic\Data::getLanguageNode(\InterEthnic\Punic\Data::getGeneric('plurals'), $locale);
         foreach ($node as $rule => $formulaPattern) {
             $formula = sprintf($formulaPattern, $v1, $v2, $v3, $v4, $v5, $v6);
             $check = str_replace(array('static::inRange(', ' and ', ' or ', ', false, ', ', true, ', ', array('), ' , ', $formula);

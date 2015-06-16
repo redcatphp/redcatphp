@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 class Translator {
 	protected static $systemLocales;
 	protected static $bindStack = [];

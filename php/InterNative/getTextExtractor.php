@@ -1,4 +1,4 @@
-<?php namespace InterNative;
+<?php namespace InterEthnic;
 class getTextExtractor{
 	static function parse($sources,$sourceDir=null){
 		$msg = '';

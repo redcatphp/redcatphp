@@ -1,7 +1,7 @@
 <?php
-namespace InterNative\Gettext\Generators;
+namespace InterEthnic\Gettext\Generators;
 
-use InterNative\Gettext\Translations;
+use InterEthnic\Gettext\Translations;
 
 abstract class Generator
 {

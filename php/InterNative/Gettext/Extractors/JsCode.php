@@ -1,8 +1,8 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
-use InterNative\Gettext\Translations;
-use InterNative\Gettext\Utils\JsFunctionsScanner;
+use InterEthnic\Gettext\Translations;
+use InterEthnic\Gettext\Utils\JsFunctionsScanner;
 
 /**
  * Class to get gettext strings from javascript files

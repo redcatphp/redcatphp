@@ -1,5 +1,5 @@
-<?php namespace InterNative;
-use InterNative\Gettext\Extractors\PhpCode;
+<?php namespace InterEthnic;
+use InterEthnic\Gettext\Extractors\PhpCode;
 class getTextExtractorPHP extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		if($sourceDir){

@@ -1,7 +1,7 @@
 <?php
-namespace InterNative\Gettext;
+namespace InterEthnic\Gettext;
 
-use InterNative\Gettext\Generators\PhpArray;
+use InterEthnic\Gettext\Generators\PhpArray;
 
 class Translator
 {

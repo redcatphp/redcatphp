@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Gettext;
+namespace InterEthnic\Gettext;
 
 /**
  * Class to manage a translation string

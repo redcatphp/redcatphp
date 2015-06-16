@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Punic;
+namespace InterEthnic\Punic;
 
 /**
  * Common data helper stuff
@@ -53,7 +53,7 @@ class Data
     /**
      * Set the current default locale and language
      * @param string $locale
-     * @throws \InterNative\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
+     * @throws \InterEthnic\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
      */
     public static function setDefaultLocale($locale)
     {
@@ -86,7 +86,7 @@ class Data
     /**
      * Set the current fallback locale and language
      * @param string $locale
-     * @throws \InterNative\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
+     * @throws \InterEthnic\Punic\Exception\InvalidLocale Throws an exception if $locale is not a valid string
      */
     public static function setFallbackLocale($locale)
     {
@@ -104,7 +104,7 @@ class Data
      * @param string $identifier The data identifier
      * @param string $locale ='' The locale identifier (if empty we'll use the current default locale)
      * @return array
-     * @throws \InterNative\Punic\Exception Throws an exception in case of problems
+     * @throws \InterEthnic\Punic\Exception Throws an exception in case of problems
      * @internal
      */
     public static function get($identifier, $locale = '')

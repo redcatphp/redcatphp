@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Gettext\Utils;
+namespace InterEthnic\Gettext\Utils;
 
 class JsFunctionsScanner extends FunctionsScanner
 {

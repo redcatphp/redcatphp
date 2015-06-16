@@ -1,11 +1,11 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an data file has been hit
  */
 
-class InvalidDataFile extends \InterNative\Punic\Exception
+class InvalidDataFile extends \InterEthnic\Punic\Exception
 {
     protected $identifier;
 
@@ -23,7 +23,7 @@ class InvalidDataFile extends \InterNative\Punic\Exception
         } else {
             $message = "A valid identifier should be a string, $type received";
         }
-        parent::__construct($message, \InterNative\Punic\Exception::INVALID_DATAFILE, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::INVALID_DATAFILE, $previous);
     }
 
     /**

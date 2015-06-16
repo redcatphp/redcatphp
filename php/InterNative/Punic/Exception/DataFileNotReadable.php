@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an data file was not read
  */
-class DataFileNotReadable extends \InterNative\Punic\Exception
+class DataFileNotReadable extends \InterEthnic\Punic\Exception
 {
     protected $dataFilePath;
 
@@ -17,7 +17,7 @@ class DataFileNotReadable extends \InterNative\Punic\Exception
     {
         $this->dataFilePath = $dataFilePath;
         $message = "Unable to read from the data file '$dataFilePath'";
-        parent::__construct($message, \InterNative\Punic\Exception::DATA_FILE_NOT_READABLE, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::DATA_FILE_NOT_READABLE, $previous);
     }
 
     /**

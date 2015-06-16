@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class NotImplemented extends \InterNative\Punic\Exception
+class NotImplemented extends \InterEthnic\Punic\Exception
 {
     protected $function;
     /**
@@ -16,7 +16,7 @@ class NotImplemented extends \InterNative\Punic\Exception
     {
         $this->function = $function;
         $message = "$function is not implemented";
-        parent::__construct($message, \InterNative\Punic\Exception::NOT_IMPLEMENTED, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::NOT_IMPLEMENTED, $previous);
     }
 
     /**

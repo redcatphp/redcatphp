@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when a function meets an argument of an unsupported type
  */
-class ValueNotInList extends \InterNative\Punic\Exception
+class ValueNotInList extends \InterEthnic\Punic\Exception
 {
     protected $value;
 
@@ -20,7 +20,7 @@ class ValueNotInList extends \InterNative\Punic\Exception
         $this->value = $value;
         $this->allowedValues = $allowedValues;
         $message = "'$value' is not valid. Acceptable values are: '" . implode("', '", $allowedValues) . "'";
-        parent::__construct($message, \InterNative\Punic\Exception::VALUE_NOT_IN_LIST, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::VALUE_NOT_IN_LIST, $previous);
     }
 
     /**

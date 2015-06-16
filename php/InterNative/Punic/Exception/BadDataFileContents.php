@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an data file contains malformed data
  */
-class BadDataFileContents extends \InterNative\Punic\Exception
+class BadDataFileContents extends \InterEthnic\Punic\Exception
 {
     protected $dataFilePath;
 
@@ -21,7 +21,7 @@ class BadDataFileContents extends \InterNative\Punic\Exception
         $this->dataFilePath = $dataFilePath;
         $this->dataFileContents = $dataFileContents;
         $message = "The file '$dataFilePath' contains malformed data";
-        parent::__construct($message, \InterNative\Punic\Exception::BAD_DATA_FILE_CONTENTS, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::BAD_DATA_FILE_CONTENTS, $previous);
     }
 
     /**

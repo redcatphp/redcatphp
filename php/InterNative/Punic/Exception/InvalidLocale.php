@@ -1,10 +1,10 @@
 <?php
-namespace InterNative\Punic\Exception;
+namespace InterEthnic\Punic\Exception;
 
 /**
  * An exception raised when an invalid locale specification has been hit
  */
-class InvalidLocale extends \InterNative\Punic\Exception
+class InvalidLocale extends \InterEthnic\Punic\Exception
 {
     protected $locale;
 
@@ -22,7 +22,7 @@ class InvalidLocale extends \InterNative\Punic\Exception
         } else {
             $message = "A valid locale should be a string, $type received";
         }
-        parent::__construct($message, \InterNative\Punic\Exception::INVALID_LOCALE, $previous);
+        parent::__construct($message, \InterEthnic\Punic\Exception::INVALID_LOCALE, $previous);
     }
 
     /**

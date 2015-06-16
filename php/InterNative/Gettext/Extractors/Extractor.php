@@ -1,9 +1,9 @@
 <?php
-namespace InterNative\Gettext\Extractors;
+namespace InterEthnic\Gettext\Extractors;
 
 use Exception;
 use InvalidArgumentException;
-use InterNative\Gettext\Translations;
+use InterEthnic\Gettext\Translations;
 
 abstract class Extractor
 {

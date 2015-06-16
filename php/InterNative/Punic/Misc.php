@@ -1,5 +1,5 @@
 <?php
-namespace InterNative\Punic;
+namespace InterEthnic\Punic;
 
 /**
  * Various helper stuff
@@ -9,7 +9,7 @@ class Misc
     /**
      * Concatenates a list of items returning a localized string (for instance: array(1, 2, 3) will result in '1, 2, and 3' for English or '1, 2 e 3' for Italian)
      * @param array $list The list to concatenate
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterNative\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterEthnic\Punic\Data
      * @return string Returns an empty string if $list is not an array of it it's empty, the joined items otherwise.
      */
     public static function join($list, $locale = '')
@@ -21,7 +21,7 @@ class Misc
      * Concatenates a list of unit items returning a localized string (for instance: array('3 ft', '2 in') will result in '3 ft, 2 in'
      * @param array $list The list to concatenate
      * @param string $width = '' The preferred width ('' for default, or 'short' or 'narrow')
-     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterNative\Punic\Data
+     * @param string $locale = '' The locale to use. If empty we'll use the default locale set in \InterEthnic\Punic\Data
      * @return string Returns an empty string if $list is not an array of it it's empty, the joined items otherwise.
      */
     public static function joinUnits($list, $width = '', $locale = '')
@@ -36,7 +36,7 @@ class Misc
                     $keys = array('unit-short', 'unit-narrow');
                     break;
                 default:
-                    throw new \InterNative\Punic\Exception\ValueNotInList($width, array('', 'short', 'narrow'));
+                    throw new \InterEthnic\Punic\Exception\ValueNotInList($width, array('', 'short', 'narrow'));
             }
         }
         $keys[] = 'unit';
@@ -57,7 +57,7 @@ class Misc
                     $result = strval($list[0]);
                     break;
                 default:
-                    $allData = \InterNative\Punic\Data::get('listPatterns', $locale);
+                    $allData = \InterEthnic\Punic\Data::get('listPatterns', $locale);
                     $data = null;
                     if (!empty($keys)) {
                         foreach ($keys as $key) {

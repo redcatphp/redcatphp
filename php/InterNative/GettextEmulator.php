@@ -1,7 +1,7 @@
-<?php namespace InterNative;
-use InterNative\FileReader;
-use InterNative\domain;
-use InterNative\gettext_reader;
+<?php namespace InterEthnic;
+use InterEthnic\FileReader;
+use InterEthnic\domain;
+use InterEthnic\gettext_reader;
 if (!defined('LC_MESSAGES'))
 	define('LC_MESSAGES',5);
 class GettextEmulator{

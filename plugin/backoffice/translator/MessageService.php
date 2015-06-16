@@ -1,8 +1,8 @@
 <?php namespace Translator;
-use InterNative\msgfmt;
-use InterNative\getTextExtractorTemplix;
-use InterNative\getTextExtractorPHP;
-use InterNative\Gettext\Extractors\Po;
+use InterEthnic\msgfmt;
+use InterEthnic\getTextExtractorTemplix;
+use InterEthnic\getTextExtractorPHP;
+use InterEthnic\Gettext\Extractors\Po;
 use Database\R;
 use Database\Query;
 class MessageService {
