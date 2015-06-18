@@ -17,16 +17,16 @@ class Relational extends DataSource{
 		$this->query = new $c($this->pdo,$primaryKey,$frozen);
 	}
 	function createRow($obj){
-		return $this->dataSource->createRow($obj);
+		return $this->query->createRow($obj);
 	}
 	function readRow($id){
-		return $this->dataSource->readRow($id);
+		return $this->query->readRow($id);
 	}
 	function updateRow($obj,$id=null){
-		return $this->dataSource->updateRow($obj,$id);
+		return $this->query->updateRow($obj,$id);
 	}
 	function deleteRow($id){
-		return $this->dataSource->deleteRow($id);
+		return $this->query->deleteRow($id);
 	}
 	private function buildPdo($config){
 		if(isset($config[0]))

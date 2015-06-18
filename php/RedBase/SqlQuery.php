@@ -9,4 +9,8 @@ abstract class SqlQuery{
 		$this->primaryKey = $primaryKey;
 		$this->frozen = $frozen;
 	}
+	abstract function createRow($obj);
+	abstract function readRow($id);
+	abstract function updateRow($obj,$id=null);
+	abstract function deleteRow($id);
 }
