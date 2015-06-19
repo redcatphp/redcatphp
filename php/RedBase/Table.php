@@ -22,6 +22,8 @@ class Table implements \ArrayAccess{
 		return $this->data[$id];
 	}
 	function offsetSet($id,$obj){
+		if(is_array($obj))
+			$obj = (object)$obj;
 		if(!$id)
 			$id = $this->createRow($obj);
 		else

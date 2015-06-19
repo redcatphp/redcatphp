@@ -1,7 +1,6 @@
 <?php
-namespace RedBase\SqlQuery;
-use RedBase\SqlQuery;
-class Mysql extends SqlQuery{
+namespace RedBase\DataSource\Relational\Cubrid;
+class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	function createRow($obj){
 		
 	}

@@ -1,6 +1,6 @@
 <?php
-namespace RedBase;
-abstract class SqlQuery{
+namespace RedBase\DataSource\Relational;
+abstract class AbstractQuery{
 	protected $pdo;
 	protected $frozen;
 	protected $primaryKey;

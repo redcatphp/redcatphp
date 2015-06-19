@@ -1,6 +1,6 @@
 <?php
 namespace RedBase;
-abstract class DataSource implements DataSourceInterface{
+abstract class AbstractDataSource implements DataSourceInterface{
 	protected $globality;
 	protected $entityClassPrefix;
 	protected $entityClassDefault;
