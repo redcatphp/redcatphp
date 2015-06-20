@@ -11,7 +11,6 @@ class Relational extends AbstractDataSource{
 		$entityClassDefault='stdClass',$primaryKey='id',array $config)
 	{
 		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey);
-		$frozen = isset($config[4])?$config[4]:(isset($config['frozen'])?$config['frozen']:null);
 		
 		if(isset($config[0]))
 			$this->dsn = $config[0];
@@ -32,24 +31,62 @@ class Relational extends AbstractDataSource{
 			$options = $config[3];
 		else
 			$options = isset($config['options'])?$config['options']:[];
+		
+		$frozen = isset($config[4])?$config[4]:(isset($config['frozen'])?$config['frozen']:null);
+		$createDb = isset($config[5])?$config[5]:(isset($config['createDb'])?$config['createDb']:null);
 
+		$tablePrefix = isset($config['tablePrefix'])?$config['tablePrefix']:null;
+		
 		$c = __CLASS__.'\\'.ucfirst($this->type).'\\PDO';
-		$this->pdo = new $c($this->dsn,$user,$password,$options);
+		$this->pdo = new $c($this->dsn,$user,$password,$options,$createDb);
 		
 		$c = __CLASS__.'\\'.ucfirst($this->type).'\\Query';
-		$this->query = new $c($this->pdo,$primaryKey,$frozen);
+		$this->query = new $c($this->pdo,$primaryKey,$frozen,$this,$tablePrefix);
 	}
-	function createRow($obj){
-		return $this->query->createRow($obj);
+	function createRow($type,$obj,$primaryKey='id'){
+		$properies = [];
+		$postInsert = [];
+		foreach($obj as $k=>$v){
+			if(!is_scalar($v)){
+				$pk = $this[$k]->primaryKey;
+				if(is_object($v)){
+					if(isset($v->{$pk}))
+						$this[$k][$v->{$pk}] = $v;
+					else
+						$this[$k][] = $v;
+					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
+				}
+				elseif(is_array($v)){
+					foreach($v as $val){
+						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
+						$postInsert[$k][] = $val;
+					}
+				}
+				else{
+					throw new \InvalidArgumentException('createRow doesn\'t accepts ressources, type: "'.get_resource_type($v).'"');
+				}
+			}
+			else{
+				$properies[$k] = $v;
+			}
+		}
+		$r = $this->query->createRow($type,$properies,$primaryKey);
+		foreach($postInsert as $k=>$v){
+			$this[$k][] = $v;
+		}
+		return $r;
 	}
-	function readRow($id){
-		return $this->query->readRow($id);
+	function readRow($type,$id,$primaryKey='id'){
+		return $this->query->readRow($type,$id,$primaryKey);
 	}
-	function updateRow($obj,$id=null){
-		return $this->query->updateRow($obj,$id);
+	function updateRow($type,$obj,$id=null,$primaryKey='id'){
+		return $this->query->updateRow($type,$obj,$id,$primaryKey);
 	}
-	function deleteRow($id){
-		return $this->query->deleteRow($id);
+	function deleteRow($type,$id,$primaryKey='id'){
+		return $this->query->deleteRow($type,$id,$primaryKey);
+	}
+	function getPDO(){
+		return $this->pdo;
 	}
 	private function buildDsnFromArray($config){
 		$type = $config['type'].':';

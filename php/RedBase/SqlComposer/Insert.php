@@ -4,7 +4,7 @@ use RedBase\SqlComposer;
 class Insert extends Base {
 	protected $ignore = false;
 	protected $select;
-	protected $on_duplicate = [ ];
+	protected $on_duplicate = [];
 	function __construct($table = null) {
 		if (isset($table)) $this->into($table);
 	}

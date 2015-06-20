@@ -1,16 +1,16 @@
 <?php
 namespace RedBase\DataSource\Relational\Sqlite;
 class Query extends \RedBase\DataSource\Relational\AbstractQuery{
-	function createRow($obj){
+	function createRow($type,$obj,$primaryKey='id'){
 		
 	}
-	function readRow($id){
+	function readRow($type,$id,$primaryKey='id'){
 		
 	}
-	function updateRow($obj,$id=null){
+	function updateRow($type,$obj,$id=null,$primaryKey='id'){
 		
 	}
-	function deleteRow($id){
+	function deleteRow($type,$id,$primaryKey='id'){
 		
 	}
 }

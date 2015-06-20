@@ -6,10 +6,10 @@ abstract class AbstractDataSource implements DataSourceInterface{
 	protected $entityClassDefault;
 	protected $primaryKey;
 	protected $tableMap = [];
-	abstract function createRow($obj);
-	abstract function readRow($id);
-	abstract function updateRow($obj,$id=null);
-	abstract function deleteRow($id);
+	abstract function createRow($type,$obj,$primaryKey='id');
+	abstract function readRow($type,$id,$primaryKey='id');
+	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
+	abstract function deleteRow($type,$id,$primaryKey='id');
 	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',array $config){
 		$this->globality = $globality;
 		$this->entityClassPrefix = (array)$entityClassPrefix;

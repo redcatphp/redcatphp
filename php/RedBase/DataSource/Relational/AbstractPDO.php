@@ -12,11 +12,18 @@ class AbstractPDO {
 	protected $logger;
 	protected $options;
 	protected $max = PHP_INT_MAX;
-	function __construct( $dsn, $user = null, $pass = null, $options = [] ){
+	protected $createDb;
+	protected $unknownDatabaseCode;
+	protected $encoding = 'utf8';
+	function __construct( $dsn, $user = null, $pass = null, $options = [], $createDb = null ){
 		$this->dsn = $dsn;
 		$this->connectUser = $user;
 		$this->connectPass = $pass;
 		$this->options = $options;
+		$this->createDb = $createDb;
+	}
+	function getEncoding(){
+		return $this->encoding;
 	}
 	protected function bindParams( $statement, $bindings ){
 		foreach ( $bindings as $key => &$value ) {
@@ -76,28 +83,41 @@ class AbstractPDO {
 		$this->max = $max;
 		return $oldMax;
 	}
+	private function setPDO($dsn){
+		$this->pdo = new \PDO($dsn,$this->connectUser,$this->connectPass);
+		$this->pdo->setAttribute( \PDO::ATTR_STRINGIFY_FETCHES, TRUE );
+		$this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+		$this->pdo->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
+		if(!empty($this->options)) foreach($this->options as $opt=>$attr) $this->pdo->setAttribute($opt,$attr);
+	}
 	function connect(){
 		if($this->isConnected)
 			return;
 		try {
-			$user = $this->connectUser;
-			$pass = $this->connectPass;
-			$this->pdo = new \PDO(
-				$this->dsn,
-				$user,
-				$pass,
-				$this->options
-			);
-			$this->pdo->setAttribute( \PDO::ATTR_STRINGIFY_FETCHES, TRUE );
-			//cant pass these as argument to constructor, CUBRID driver does not understand...
-			$this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-			$this->pdo->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
-			$this->isConnected = TRUE;
+			$this->setPDO($this->dsn);
+			$this->isConnected = true;
 		}
 		catch ( \PDOException $exception ) {
-			$matches = [];
-			$dbname  = ( preg_match( '/dbname=(\w+)/', $this->dsn, $matches ) ) ? $matches[1] : '?';
-			throw new \PDOException( 'Could not connect to database (' . $dbname . ').', $exception->getCode() );
+			if($this->createDb&&(!$this->unknownDatabaseCode||$this->unknownDatabaseCode==$exception->getCode())){				
+				$dsn = $this->dsn;
+				$p = strpos($this->dsn,'dbname=')+7;
+				$p2 = strpos($dsn,';',$p);
+				if($p2===false){
+					$dbname = substr($dsn,$p);
+					$dsn = substr($dsn,0,$p-8);
+				}
+				else{
+					$dbname = substr($dsn,$p,$p2-$p);
+					$dsn = substr($dsn,0,$p-8).substr($dsn,$p2);
+				}
+				$this->setPDO($dsn);
+				$this->pdo->exec("CREATE DATABASE `$dbname` COLLATE 'utf8_bin'");
+				$this->pdo->exec("use $dbname");
+				$this->isConnected = true;
+			}
+			else{
+				throw $exception;
+			}
 		}
 	}
 	function getAll( $sql, $bindings = [] ){
@@ -187,5 +207,8 @@ class AbstractPDO {
 	}
 	function getIntegerBindingMax(){
 		return $this->max;
+	}
+	function __call($f,$args){
+		return call_user_func_array([$this->getPDO(),$f],$args);
 	}
 }
