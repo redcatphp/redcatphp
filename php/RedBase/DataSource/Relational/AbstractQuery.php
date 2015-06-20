@@ -22,7 +22,7 @@ abstract class AbstractQuery{
 			$this->createTable($type);
 		$columns = $this->getColumns($type);
 		foreach($properties as $column=>$value){
-			if(!in_array($column,$columns)){
+			if(!isset($columns[$column])){
 				$this->addColumn($type,$column,$this->scanType($value,true));
 			}
 		}
