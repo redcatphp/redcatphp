@@ -10,7 +10,7 @@ class PDO extends AbstractPDO{
 		$version = floatval( $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION ) );
 		if($version >= 5.5)
 			$this->encoding =  'utf8mb4';
-		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$encoding ); //on every re-connect
-		$this->pdo->exec(' SET NAMES '. $encoding); //also for current connection
+		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
+		$this->pdo->exec(' SET NAMES '. $this->encoding); //also for current connection
 	}
 }

@@ -25,4 +25,7 @@ abstract class AbstractQuery{
 	function escTable($table){
 		return $this->quoteCharacter.$this->tablePrefix.$table.$this->quoteCharacter;
 	}
+	function tableExists($table){
+		return in_array($table, $this->getTables());
+	}
 }

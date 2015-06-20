@@ -40,7 +40,9 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	}
 	
 	function createRow($type,$properies,$primaryKey='id'){
-		
+		if(!$this->frozen&&!$this->tableExists($type)){
+			$this->createTable($type);
+		}
 	}
 	function readRow($type,$id,$primaryKey='id'){
 		
@@ -53,64 +55,47 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	}
 	
 	function scanType( $value, $flagSpecial = FALSE ){
-
-		if ( is_null( $value ) ) return self::C_DATATYPE_BOOL;
-		if ( $value === INF ) return self::C_DATATYPE_TEXT7;
-
-		if ( $flagSpecial ) {
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) ) {
-				return self::C_DATATYPE_SPECIAL_DATE;
-			}
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d$/', $value ) ) {
-				return self::C_DATATYPE_SPECIAL_DATETIME;
-			}
-			if ( preg_match( '/^POINT\(/', $value ) ) {
-				return self::C_DATATYPE_SPECIAL_POINT;
-			}
-			if ( preg_match( '/^LINESTRING\(/', $value ) ) {
-				return self::C_DATATYPE_SPECIAL_LINESTRING;
-			}
-			if ( preg_match( '/^POLYGON\(/', $value ) ) {
-				return self::C_DATATYPE_SPECIAL_POLYGON;
-			}
-		}
-
-		//setter turns TRUE FALSE into 0 and 1 because database has no real bools (TRUE and FALSE only for test?).
-		if ( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' ) {
+		if(is_null( $value ))
 			return self::C_DATATYPE_BOOL;
-		}
-
-		if ( is_float( $value ) ) return self::C_DATATYPE_DOUBLE;
-
-		if ( !$this->startsWithZeros( $value ) ) {
-
-			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 ) {
-				return self::C_DATATYPE_UINT32;
-			}
-
-			if ( is_numeric( $value ) ) {
-				return self::C_DATATYPE_DOUBLE;
-			}
-		}
-
-		if ( mb_strlen( $value, 'UTF-8' ) <= 191 ) {
+		if($value === INF)
 			return self::C_DATATYPE_TEXT7;
+		if($flagSpecial){
+			if(preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) )
+				return self::C_DATATYPE_SPECIAL_DATE;
+			if(preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d$/', $value ) )
+				return self::C_DATATYPE_SPECIAL_DATETIME;
+			if(preg_match( '/^POINT\(/', $value ) )
+				return self::C_DATATYPE_SPECIAL_POINT;
+			if(preg_match( '/^LINESTRING\(/', $value ) )
+				return self::C_DATATYPE_SPECIAL_LINESTRING;
+			if(preg_match( '/^POLYGON\(/', $value ) )
+				return self::C_DATATYPE_SPECIAL_POLYGON;
 		}
-
-		if ( mb_strlen( $value, 'UTF-8' ) <= 255 ) {
+		//setter turns TRUE FALSE into 0 and 1 because database has no real bools (TRUE and FALSE only for test?).
+		if( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' )
+			return self::C_DATATYPE_BOOL;
+		if( is_float( $value ) )
+			return self::C_DATATYPE_DOUBLE;
+		if( !$this->startsWithZeros( $value ) ) {
+			if( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 )
+				return self::C_DATATYPE_UINT32;
+			if( is_numeric( $value ) )
+				return self::C_DATATYPE_DOUBLE;
+		}
+		if( mb_strlen( $value, 'UTF-8' ) <= 191 )
+			return self::C_DATATYPE_TEXT7;
+		if( mb_strlen( $value, 'UTF-8' ) <= 255 )
 			return self::C_DATATYPE_TEXT8;
-		}
-
-		if ( mb_strlen( $value, 'UTF-8' ) <= 65535 ) {
+		if( mb_strlen( $value, 'UTF-8' ) <= 65535 )
 			return self::C_DATATYPE_TEXT16;
-		}
-
 		return self::C_DATATYPE_TEXT32;
+	}
+	public function getTables(){
+		return $this->pdo->getCol('show tables');
 	}
 	function createTable($table){
 		$table = $this->escTable($table);
-		$pdo = $this->dataSource->getPDO();
-		$encoding = $pdo->getEncoding();
-		$pdo->execute("CREATE TABLE {$table} (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET={$encoding} COLLATE={$encoding}_unicode_ci ");
+		$encoding = $this->pdo->getEncoding();
+		$this->pdo->execute("CREATE TABLE {$table} (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET={$encoding} COLLATE={$encoding}_unicode_ci ");
 	}
 }
