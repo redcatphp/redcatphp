@@ -20,6 +20,12 @@ abstract class AbstractQuery{
 	function createRow($type,$properties,$primaryKey='id'){
 		if(!$this->frozen&&!$this->tableExists($type))
 			$this->createTable($type);
+		$columns = $this->getColumns($type);
+		foreach($properties as $column=>$value){
+			if(!in_array($column,$columns)){
+				$this->addColumn($type,$column,$this->scanType($value,true));
+			}
+		}
 		return $this->create($type,$properties,$primaryKey);
 	}
 	function readRow($type,$id,$primaryKey='id'){
@@ -42,8 +48,8 @@ abstract class AbstractQuery{
 	abstract function read($type,$id,$primaryKey='id');
 	abstract function update($type,$properties,$id=null,$primaryKey='id');
 	abstract function delete($type,$id,$primaryKey='id');
-	
 	abstract function createTable($table);
+	
 	function esc($esc){
 		return $this->quoteCharacter.$esc.$this->quoteCharacter;
 	}
@@ -53,4 +59,9 @@ abstract class AbstractQuery{
 	function tableExists($table){
 		return in_array($table, $this->getTables());
 	}
+	function startsWithZeros($value){
+		$value = strval($value);
+		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
+	}
+	
 }

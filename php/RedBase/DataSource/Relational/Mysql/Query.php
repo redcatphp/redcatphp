@@ -88,12 +88,35 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 			return self::C_DATATYPE_TEXT16;
 		return self::C_DATATYPE_TEXT32;
 	}
-	public function getTables(){
+	function getTables(){
 		return $this->pdo->getCol('show tables');
+	}
+	function getColumns($table){
+		$columns = [];
+		foreach($this->pdo->getAll('DESCRIBE '.$this->escTable($table)) as $r)
+			$columns[$r['Field']] = $r['Type'];
+		return $columns;
 	}
 	function createTable($table){
 		$table = $this->escTable($table);
 		$encoding = $this->pdo->getEncoding();
-		$this->pdo->execute("CREATE TABLE {$table} (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET={$encoding} COLLATE={$encoding}_unicode_ci ");
+		$this->pdo->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+	}
+	function addColumn($type, $column, $field){
+		$table  = $type;
+		$type   = $field;
+		$table  = $this->escTable($table);
+		$column = $this->esc($column);
+		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
+		$this->pdo->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
+	}
+	function changeColumn( $type, $property, $dataType ){
+		if(!isset($this->typeno_sqltype[$dataType]))
+			return false;
+		$table   = $this->escTable( $type );
+		$column  = $this->esc( $property );
+		$newType = $this->typeno_sqltype[$dataType];
+		$this->pdo->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$newType);
+		return true;
 	}
 }
