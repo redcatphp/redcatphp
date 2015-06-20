@@ -22,8 +22,11 @@ abstract class AbstractQuery{
 	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
 	abstract function deleteRow($type,$id,$primaryKey='id');
 	abstract function createTable($table);
+	function esc($esc){
+		return $this->quoteCharacter.$esc.$this->quoteCharacter;
+	}
 	function escTable($table){
-		return $this->quoteCharacter.$this->tablePrefix.$table.$this->quoteCharacter;
+		return $this->esc($this->tablePrefix.$table);
 	}
 	function tableExists($table){
 		return in_array($table, $this->getTables());
