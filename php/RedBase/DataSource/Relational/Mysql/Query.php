@@ -39,18 +39,16 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		}
 	}
 	
-	function createRow($type,$properies,$primaryKey='id'){
-		if(!$this->frozen&&!$this->tableExists($type)){
-			$this->createTable($type);
-		}
-	}
-	function readRow($type,$id,$primaryKey='id'){
+	function create($type,$properties,$primaryKey='id'){
 		
 	}
-	function updateRow($type,$obj,$id=null,$primaryKey='id'){
+	function read($type,$id,$primaryKey='id'){
 		
 	}
-	function deleteRow($type,$id,$primaryKey='id'){
+	function update($type,$properties,$id=null,$primaryKey='id'){
+		
+	}
+	function delete($type,$id,$primaryKey='id'){
 		
 	}
 	

@@ -17,10 +17,32 @@ abstract class AbstractQuery{
 		$this->dataSource = $dataSource;
 		$this->tablePrefix = $tablePrefix;
 	}
-	abstract function createRow($type,$obj,$primaryKey='id');
-	abstract function readRow($type,$id,$primaryKey='id');
-	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
-	abstract function deleteRow($type,$id,$primaryKey='id');
+	function createRow($type,$properties,$primaryKey='id'){
+		if(!$this->frozen&&!$this->tableExists($type))
+			$this->createTable($type);
+		return $this->create($type,$properties,$primaryKey);
+	}
+	function readRow($type,$id,$primaryKey='id'){
+		if(!$this->tableExists($type))
+			return false;
+		return $this->read($type,$id,$primaryKey);
+	}
+	function updateRow($type,$properties,$id=null,$primaryKey='id'){
+		if(!$this->tableExists($type))
+			return false;
+		return $this->update($type,$properties,$id,$primaryKey);
+	}
+	function deleteRow($type,$id,$primaryKey='id'){
+		if(!$this->tableExists($type))
+			return false;
+		return $this->delete($type,$id,$primaryKey);
+	}
+	
+	abstract function create($type,$properties,$primaryKey='id');
+	abstract function read($type,$id,$primaryKey='id');
+	abstract function update($type,$properties,$id=null,$primaryKey='id');
+	abstract function delete($type,$id,$primaryKey='id');
+	
 	abstract function createTable($table);
 	function esc($esc){
 		return $this->quoteCharacter.$esc.$this->quoteCharacter;
