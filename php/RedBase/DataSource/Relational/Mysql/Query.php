@@ -52,7 +52,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		
 	}
 	
-	function scanType( $value, $flagSpecial = FALSE ){
+	function scanType($value,$flagSpecial=false){
 		if(is_null( $value ))
 			return self::C_DATATYPE_BOOL;
 		if($value === INF)
@@ -102,7 +102,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		$encoding = $this->pdo->getEncoding();
 		$this->pdo->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
-	function addColumn($type, $column, $field){
+	function addColumn($type,$column,$field){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable($table);
@@ -110,7 +110,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 		$this->pdo->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumn( $type, $property, $dataType ){
+	function changeColumn($type,$property,$dataType ){
 		if(!isset($this->typeno_sqltype[$dataType]))
 			return false;
 		$table   = $this->escTable( $type );

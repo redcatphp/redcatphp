@@ -2,6 +2,7 @@
 namespace RedBase\DataSource\Relational;
 use RedBase\DataSourceInterface;
 abstract class AbstractQuery{
+	const C_DATATYPE_RANGE_SPECIAL   = 80;
 	protected $pdo;
 	protected $primaryKey;
 	protected $frozen;
@@ -25,6 +26,15 @@ abstract class AbstractQuery{
 			if(!isset($columns[$column])){
 				$this->addColumn($type,$column,$this->scanType($value,true));
 			}
+			else{
+				$typeno = $this->scanType($value,false);
+				$typedesc = $columns[$column];
+				if(isset($this->sqltype_typeno[$typedesc])
+					&&$this->sqltype_typeno[$typedesc]<self::C_DATATYPE_RANGE_SPECIAL
+					&&$this->sqltype_typeno[$typedesc]<$typeno
+				)
+					$this->changeColumn($type,$column,$typeno);
+			}
 		}
 		return $this->create($type,$properties,$primaryKey);
 	}
@@ -43,13 +53,6 @@ abstract class AbstractQuery{
 			return false;
 		return $this->delete($type,$id,$primaryKey);
 	}
-	
-	abstract function create($type,$properties,$primaryKey='id');
-	abstract function read($type,$id,$primaryKey='id');
-	abstract function update($type,$properties,$id=null,$primaryKey='id');
-	abstract function delete($type,$id,$primaryKey='id');
-	abstract function createTable($table);
-	
 	function esc($esc){
 		return $this->quoteCharacter.$esc.$this->quoteCharacter;
 	}
@@ -64,4 +67,15 @@ abstract class AbstractQuery{
 		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
 	}
 	
+	
+	abstract function create($type,$properties,$primaryKey='id');
+	abstract function read($type,$id,$primaryKey='id');
+	abstract function update($type,$properties,$id=null,$primaryKey='id');
+	abstract function delete($type,$id,$primaryKey='id');
+	abstract function scanType($value,$flagSpecial=false);
+	abstract function getTables();
+	abstract function getColumns($table);
+	abstract function createTable($table);
+	abstract function addColumn($type,$column,$field);
+	abstract function changeColumn($type,$property,$dataType);
 }
