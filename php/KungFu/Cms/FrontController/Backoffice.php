@@ -6,14 +6,14 @@ use Unit\Autoloader;
 use Unit\Router;
 use Unit\Di;
 class Backoffice extends \Unit\FrontController{
-	public $pathFS = 'plugin/backoffice';
+	public $pathFS = 'Surikat/plugin/backoffice';
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
 			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:KungFu\Cms\FrontController\Synaptic',$this->pathFS])
 			->append(['new:KungFu\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
 				$this->lock();
-				$this->template();
+				return 'new:KungFu\TemplixPlugin\Templix';
 			})
 			->append(['new:KungFu\Cms\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
 				$this->lock();
@@ -24,10 +24,10 @@ class Backoffice extends \Unit\FrontController{
 		;
 	}
 	function lock(){
-		$Session = new Session();
-		$Session->setName('surikat_backoffice');
-		$Auth = new Auth($Session);
-		$Auth->lockServer(Auth::RIGHT_MANAGE);
+		//$Session = new Session();
+		//$Session->setName('surikat_backoffice');
+		//$Auth = new Auth($Session);
+		//$Auth->lockServer(Auth::RIGHT_MANAGE);
 	}
 	function __invoke(){
 		Autoloader::getInstance()->addNamespace('',SURIKAT.$this->pathFS.'/php');

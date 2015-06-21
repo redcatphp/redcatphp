@@ -69,36 +69,63 @@ class Auth{
 	public $siteUrl;
 	private $db;
 	private $right;
-	protected $tableRequests = 'request';
-	protected $tableUsers = 'user';
 	protected $cost = 10;
-	protected $algo;
 	protected $superRoot = 'root';
-	protected $config = [];
 	protected $Session;
 	protected $Server;
-	public function __construct(Session $Session=null){
+	
+	protected $root;
+	protected $rootName;
+	protected $siteLoginUri;
+	protected $siteActivateUri;
+	protected $siteResetUri;
+	protected $tableUsers;
+	protected $tableRequests;
+	protected $algo;
+	protected $mailSendmail;
+	protected $mailHost;
+	protected $mailUsername;
+	protected $mailPassword;
+	protected $mailPort;
+	protected $mailSecure;
+	
+	function __construct(Session $Session=null,
+		$root = 'root',
+		$rootName	= 'Developer',
+		$siteLoginUri = 'Login',
+		$siteActivateUri = 'Signin',
+		$siteResetUri ='Signin',
+		$tableUsers = 'user',
+		$tableRequests = 'request',
+		$algo = PASSWORD_DEFAULT,
+		$mailSendmail = true,
+		$mailHost=null,
+		$mailUsername=null,
+		$mailPassword= null,
+		$mailPort=25,
+		$mailSecure='tls'
+	){
+		$this->root = $root;
+		$this->rootName = $rootName;
+		$this->siteLoginUri = $siteLoginUri;
+		$this->siteActivateUri = $siteActivateUri;
+		$this->siteResetUri = $siteResetUri;
+		$this->tableUsers = $tableUsers;
+		$this->tableRequests = $tableRequests;
+		$this->algo = $algo;
+		$this->mailSendmail = $mailSendmail;
+		$this->mailHost = $mailHost;
+		$this->mailUsername = $mailUsername;
+		$this->mailPassword = $mailPassword;
+		$this->mailPort = $mailPort;
+		$this->mailSecure = $mailSecure;
+		
 		if(!$Session)
 			$Session = new Session();
 		$this->Session = $Session;
-		$this->config = $this->Config('auth');
-		$dbm = 'db';
-		if(isset($this->config['db'])&&$this->config['db'])
-			$dbm .= '_'.$this->config['db'];
-		$db = $this->Config($dbm);
-		if((isset($db['name'])&&$db['name'])||(isset($db['file'])&&$db['file'])){
-			$this->db = R::getDb(isset($this->config['db'])?$this->config['db']:null);
-		}
+		//$this->db = 
 		$this->siteUrl = $this->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
-		if(isset($this->config['tableUsers'])&&$this->config['tableUsers'])
-			$this->tableUsers = $this->config['tableUsers'];
-		if(isset($this->config['tableRequests'])&&$this->config['tableRequests'])
-			$this->tableRequests = $this->config['tableRequests'];
-		if(isset($this->config['algo'])&&$this->config['algo'])
-			$this->algo = $this->config['algo'];
-		else
-			$this->algo = PASSWORD_DEFAULT;
 	}
 	function getSession(){
 		return $this->Session;
