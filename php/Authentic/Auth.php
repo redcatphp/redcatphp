@@ -131,15 +131,13 @@ class Auth{
 		return $this->Session;
 	}
 	function sendMail($email, $type, $key, $login){
-		$config = $this->Config('mailer');
-				
-		$fromName = isset($config['fromName'])?$config['fromName']:null;
-		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
-		$replyName = isset($config['replyName'])?$config['replyName']:null;
-		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
-		$siteLoginUri = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:null;
-		$siteActivateUri = isset($this->config['siteActivateUri'])?$this->config['siteActivateUri']:null;
-		$siteResetUri = isset($this->config['siteResetUri'])?$this->config['siteResetUri']:null;
+		$fromName = isset($this->mailFromName)?$this->mailFromName:null;
+		$fromEmail = isset($this->mailFromEmail)?$this->mailFromEmail:null;
+		$replyName = isset($this->mailReplyName)?$this->mailReplyName:null;
+		$replyEmail = isset($this->mailReplyEmail)?$this->mailReplyEmail:null;
+		$siteLoginUri = isset($this->siteLoginUri)?$this->siteLoginUri:null;
+		$siteActivateUri = isset($this->siteActivateUri)?$this->siteActivateUri:null;
+		$siteResetUri = isset($this->siteResetUri)?$this->siteResetUri:null;
 		
 		if($type=="activation"){
 			$subject = "{$fromName} - Account Activation";
@@ -152,7 +150,7 @@ class Auth{
 		return PHPMailer::mail([$email=>$login],$subject,$message);
 	}
 	public function loginRoot($password,$lifetime=0){
-		$pass = $this->config['root'];
+		$pass = $this->root;
 		if(!$pass)
 			return self::ERROR_SYSTEM_ERROR;
 		$id = 0;
@@ -170,11 +168,11 @@ class Auth{
 			else{
 				$options = ['cost' => $this->cost];
 				if(password_needs_rehash($pass, $this->algo, $options)){
-					$this->config['root'] = password_hash($password, $this->algo, $options);
-					$this->Config('auth')->root = $this->config['root'];
-					if(!$this->Config('auth')->store()){
-						return self::ERROR_SYSTEM_ERROR;
-					}
+					$this->root = password_hash($password, $this->algo, $options);
+					//$this->Config('auth')->root = $this->root;
+					//if(!$this->Config('auth')->store()){
+						//return self::ERROR_SYSTEM_ERROR;
+					//}
 				}
 			}
 		}
@@ -184,8 +182,8 @@ class Auth{
 				$id = $this->db
 					->newOne($this->tableUsers,[
 						'login'=>$this->superRoot,
-						'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
-						'email'=>isset($this->config['rootEmail'])?$this->config['rootEmail']:null,
+						'name'=>isset($this->rootName)?$this->rootName:$this->superRoot,
+						'email'=>isset($this->rootEmail)?$this->rootEmail:null,
 						'active'=>1,
 						'right'=>static::ROLE_ADMIN,
 						'type'=>'root'
@@ -200,8 +198,8 @@ class Auth{
 		$this->addSession([
 			'id'=>$id,
 			'login'=>$this->superRoot,
-			'name'=>isset($this->config['rootName'])?$this->config['rootName']:$this->superRoot,
-			'email'=>isset($this->config['email'])?$this->config['email']:null,
+			'name'=>isset($this->rootName)?$this->rootName:$this->superRoot,
+			'email'=>isset($this->email)?$this->email:null,
 			'right'=>static::ROLE_ADMIN,
 			'type'=>'root'
 		],$lifetime);
@@ -626,8 +624,8 @@ class Auth{
 		return self::OK_EMAIL_CHANGED;
 	}
 	function getBaseHref(){
-		if(isset($this->config['siteUrl'])&&$this->config['siteUrl'])
-			return $this->config['siteUrl'];
+		if(isset($this->siteUrl)&&$this->siteUrl)
+			return $this->siteUrl;
 		$protocol = 'http'.(isset($_SERVER["HTTPS"])&&$_SERVER["HTTPS"]=="on"?'s':'').'://';
 		$name = $_SERVER['SERVER_NAME'];
 		$ssl = isset($_SERVER["HTTPS"])&&$_SERVER["HTTPS"]==="on";
@@ -686,7 +684,7 @@ class Auth{
 			if($this->connected())
 				$redirect = '403';
 			if($redirect===true)
-				$redirect = isset($this->config['siteLoginUri'])?$this->config['siteLoginUri']:'403';
+				$redirect = isset($this->siteLoginUri)?$this->siteLoginUri:'403';
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{

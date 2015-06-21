@@ -15,6 +15,24 @@
 		],
 	],
 	'rules'=>[
+		'Authentic\Auth'=>[
+			'construct'=>[
+				'root' => 'root',
+				'rootName'	=> 'Developer',
+				'siteLoginUri' => 'Login',
+				'siteActivateUri' => 'Signin',
+				'siteResetUri' => 'Signin',
+				'tableUsers' => 'user',
+				'tableRequests' => 'request',
+				'algo' => PASSWORD_DEFAULT,
+				'mailSendmail' => true,
+				'mailHost' => null,
+				'mailUsername' => null,
+				'mailPassword' => null,
+				'mailPort' => 25,
+				'mailSecure' => 'tls',
+			],
+		],
 		'Authentic\Session'=>[
 			'shared'=>true,
 			'newInstances'=>'Authentic\SessionHandlerInterface',
