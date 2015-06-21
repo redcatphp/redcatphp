@@ -13,4 +13,7 @@ class PDO extends AbstractPDO{
 		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
 		$this->pdo->exec(' SET NAMES '. $this->encoding); //also for current connection
 	}
+	function createDatabase($dbname){
+		$this->pdo->exec('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
+	}
 }

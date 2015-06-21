@@ -53,10 +53,17 @@ abstract class AbstractQuery{
 			return false;
 		return $this->delete($type,$id,$primaryKey);
 	}
+	function check($struct){
+		if(!preg_match('/^[a-zA-Z0-9_-]+$/',$struct))
+			throw new \InvalidArgumentException('Table or Column name does not conform to RedBase security policies' );
+		return $struct;
+	}
 	function esc($esc){
+		$this->check($esc);
 		return $this->quoteCharacter.$esc.$this->quoteCharacter;
 	}
 	function escTable($table){
+		$this->check($table);
 		return $this->esc($this->tablePrefix.$table);
 	}
 	function tableExists($table){

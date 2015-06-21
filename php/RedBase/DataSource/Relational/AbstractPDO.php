@@ -1,6 +1,6 @@
 <?php
 namespace RedBase\DataSource\Relational;
-class AbstractPDO {
+abstract class AbstractPDO {
 	protected $dsn;
 	protected $pdo;
 	protected $affectedRows;
@@ -111,8 +111,8 @@ class AbstractPDO {
 					$dsn = substr($dsn,0,$p-8).substr($dsn,$p2);
 				}
 				$this->setPDO($dsn);
-				$this->pdo->exec("CREATE DATABASE `$dbname` COLLATE 'utf8_bin'");
-				$this->pdo->exec("use $dbname");
+				$this->createDatabase($dbname);
+				$this->pdo->exec('use '.$dbname);
 				$this->isConnected = true;
 			}
 			else{
@@ -211,4 +211,5 @@ class AbstractPDO {
 	function __call($f,$args){
 		return call_user_func_array([$this->getPDO(),$f],$args);
 	}
+	abstract function createDatabase($dbname);
 }
