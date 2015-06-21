@@ -17,7 +17,9 @@
 		<![endif]-->
 	</head>
 	<body>
-		<?$this->Authentic_AuthServer()->lougoutBTN();?>
+		<?
+		 Unit\Di::make('Authentic\AuthServer')->lougoutBTN();
+		?>
 		<?
 			$db=(object)@include('model/config.php');
 			$config=(object)[];
