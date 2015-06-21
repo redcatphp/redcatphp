@@ -126,8 +126,8 @@ namespace Unit{
 			return isset(self::$errorType[$code])?self::$errorType[$code]:null;
 		}
 		static function var_debug_html($variable,$strlen=100,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
-			$search = array("\r", "\n", ' ','&','"',"'",'<','>');
-			$replace = array("<br />", "<br />", '&nbsp;','&amp;','&quot;','&#039;','&lt;','&gt;');
+			$search = array('&',"\r", "\n", ' ','"',"'",'<','>');
+			$replace = array('&#039;',"<br />", "<br />", '&nbsp;','&amp;','&quot;','&lt;','&gt;');
 			$string = '';
 			switch(gettype($variable)) {
 				case 'boolean':			$string.= $variable?'true':'false'; break;
