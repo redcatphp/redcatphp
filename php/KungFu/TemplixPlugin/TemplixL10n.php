@@ -79,7 +79,7 @@ class TemplixL10n extends Templix{
 			foreach($Tml->attributes as $k=>$v){
 				if(strpos($k,'i18n-')===0){
 					$Tml->removeAttr($k);
-					$Tml->attr(substr($k,5),$this->Translator()->__($v));
+					$Tml->attr(substr($k,5),$this->Translator->__($v));
 				}
 			}
 		});
