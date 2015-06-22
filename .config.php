@@ -40,8 +40,8 @@
 				'Authentic\SessionHandlerInterface'=>'Authentic\SessionHandler',
 			],
 			'construct'=>[
-				'surikat',
-				SURIKAT_CWD.'.tmp/sessions/',
+				'name'=>'surikat',
+				'saveRoot'=>SURIKAT_CWD.'.tmp/sessions/',
 			],
 		],
 		'Session'=>[

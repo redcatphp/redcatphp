@@ -13,7 +13,7 @@ class ByPhpX extends ByPhp {
 		}
 		$file = $this->dirFS.'/'.$path;
 		foreach($this->dirs as $d){
-			if($f=realpath(($adir=$d.'/').$file))
+			if($f=realpath(($adir=$d?$d.'/':'').$file))
 				return [$this->dirFS,$path,$adir.$this->dirFS,$f];
 		}
 		if(!$index){

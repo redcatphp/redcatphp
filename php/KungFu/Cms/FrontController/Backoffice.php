@@ -24,10 +24,10 @@ class Backoffice extends \Unit\FrontController{
 		;
 	}
 	function lock(){
-		//$Session = new Session();
-		//$Session->setName('surikat_backoffice');
-		//$Auth = new Auth($Session);
-		//$Auth->lockServer(Auth::RIGHT_MANAGE);
+		$Session = $this->di->create('Authentic\Session',['name'=>'surikat_backoffice']);
+		$Auth = $this->di->create('Authentic\Auth',[$Session]);
+		$AuthServer = $this->di->create('Authentic\AuthServer',[$Auth]);
+		$AuthServer->htmlLock('RIGHT_MANAGE',true);
 	}
 	function __invoke(){
 		Autoloader::getInstance()->addNamespace('',SURIKAT.$this->pathFS.'/php');

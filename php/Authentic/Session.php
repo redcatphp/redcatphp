@@ -34,19 +34,19 @@ class Session{
 		$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
 		$this->savePath = $this->saveRoot.$this->name.'/';
-		$this->attemptsPath = getcwd().'/tmp/attempts/';
-		$this->cookiePath = '/'.$this->getSuffixHref();
+		$this->attemptsPath = getcwd().'/.tmp/attempts/';
+		if(!$server)
+			$server = &$_SERVER;
+		$this->server = $server;
+		$this->cookiePath = $this->getSuffixHref();
 		$this->cookieDomain = $this->getServerHref();
 		$this->checkBlocked();
 		if(!isset($sessionHandler))
 			$sessionHandler = new SessionHandler();
 		$this->SessionHandler = $sessionHandler;
-		$this->Cookie = $_COOKIE;
+		$this->Cookie = &$_COOKIE;
 		$this->garbageCollector();
 		
-		if(!$server)
-			$server = &$_SERVER;
-		$this->server = $server;
 	}
 	function handleReload(){
 		if($this->handled)
@@ -241,7 +241,7 @@ class Session{
 		return hash('sha512',(new RandomLib\Factory())->getMediumStrengthGenerator()->generate($this->idLength));
 	}
 	function getIp(){
-		return $_SERVER['REMOTE_ADDR'];
+		return $this->server['REMOTE_ADDR'];
 	}
 	function addAttempt(){
 		$ip = $this->getIp();
@@ -331,7 +331,7 @@ class Session{
 	function getSuffixHref(){
 		if(!isset($this->suffixHref)){
 			if(isset($this->server['SURIKAT_URI'])){
-				$this->suffixHref = ltrim($this->server['SURIKAT_URI'],'/');				
+				$this->suffixHref = $this->server['SURIKAT_URI'];
 			}
 			else{
 				$docRoot = $this->server['DOCUMENT_ROOT'].'/';

@@ -70,11 +70,11 @@ class Auth{
 	private $db;
 	private $right;
 	protected $cost = 10;
-	protected $superRoot = 'root';
 	protected $Session;
 	protected $Server;
 	
 	protected $root;
+	protected $superRoot = 'root';
 	protected $rootName;
 	protected $siteLoginUri;
 	protected $siteActivateUri;
@@ -658,12 +658,15 @@ class Auth{
 		return !!$this->Session->get('_AUTH_');
 	}
 	function allowed($d){
+		if(is_string($d)) $d = constant(__CLASS__.'::'.$d);
 		return !!($d&$this->getRight());
 	}
 	function allow($d){
+		if(is_string($d)) $d = constant(__CLASS__.'::'.$d);
 		return $this->setRight($d|$this->getRight());
 	}
 	function deny($d){
+		if(is_string($d)) $d = constant(__CLASS__.'::'.$d);
 		return $this->setRight($d^$this->getRight());
 	}
 	
@@ -691,11 +694,5 @@ class Auth{
 			http_response_code(403);
 		}
 		exit;
-	}
-	function Server(){
-		return $this->Server?:$this->Server = new AuthServer($this);
-	}
-	function lockServer($r,$redirect=true){
-		return $this->Server()->htmlLock($r,$redirect);
 	}
 }
