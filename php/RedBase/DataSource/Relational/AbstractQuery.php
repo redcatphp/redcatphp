@@ -12,8 +12,8 @@ abstract class AbstractQuery{
 	protected $quoteCharacter = '"';
 	protected $defaultValue = 'NULL';
 	protected $tablePrefix;
-	protected $sqlFilters = [];
-	protected $flagSQLFilterSafeMode = false;
+	protected $sqlFiltersWrite = [];
+	protected $sqlFiltersRead = [];
 	function __construct($pdo,$primaryKey='id',$frozen=null,DataSourceInterface $dataSource,$tablePrefix=''){
 		$this->pdo = $pdo;
 		$this->primaryKey = $primaryKey;
@@ -60,12 +60,19 @@ abstract class AbstractQuery{
 	protected function getInsertSuffix($primaryKey){
 		return '';
 	}
-	function setSQLFilters( $sqlFilters, $safeMode = false ){
-		$this->flagSQLFilterSafeMode = (boolean) $safeMode;
+	function setSQLFilters($sqlFilters){
 		$this->sqlFilters = $sqlFilters;
 	}
 	function getSQLFilters(){
 		return $this->sqlFilters;
+	}
+	protected function getSQLFilterSnippet($type){
+		$sqlFilters = [];
+		if(isset($this->sqlFiltersRead[$type])){
+			foreach($this->sqlFiltersRead[$type] as $property=>$sqlFilter)
+				$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
+		}
+		return !empty($sqlFilters)?','.implode(',',$sqlFilters):'';
 	}
 	function create($type,$properties,$primaryKey='id'){
 		$insertcolumns = array_keys($properties);
@@ -77,8 +84,8 @@ abstract class AbstractQuery{
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
 				$insertcolumns[$k] = $this->esc($v);
-				if (isset($this->sqlFilters['w'][$type][$v]))
-					$insertSlots[] = $this->sqlFilters['w'][$type][$v];
+				if (isset($this->sqlFiltersWrite[$type][$v]))
+					$insertSlots[] = $this->sqlFiltersWrite[$type][$v];
 				else
 					$insertSlots[] = '?';
 			}
@@ -91,6 +98,22 @@ abstract class AbstractQuery{
 		if($suffix)
 			return $result;
 		return $this->pdo->getInsertID();
+	}
+	function read($type,$id,$primaryKey='id'){
+		$table = $this->escTable($type);
+		$sqlFilterStr = $this->getSQLFilterSnippet($type);
+		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
+		$c = $this->dataSource->findEntityClass($type);
+		$obj = new $c();
+		foreach($this->pdo->getRow($sql,[$id]) as $k=>$v)
+			$obj->$k = $v;
+		return $obj;
+	}
+	function update($type,$properties,$id=null,$primaryKey='id'){
+		
+	}
+	function delete($type,$id,$primaryKey='id'){
+		
 	}
 	
 	function check($struct){
@@ -118,9 +141,6 @@ abstract class AbstractQuery{
 		return (bool) ( strval( $value ) === strval( intval( $value ) ) );
 	}
 	
-	abstract function read($type,$id,$primaryKey='id');
-	abstract function update($type,$properties,$id=null,$primaryKey='id');
-	abstract function delete($type,$id,$primaryKey='id');
 	abstract function scanType($value,$flagSpecial=false);
 	abstract function getTables();
 	abstract function getColumns($table);

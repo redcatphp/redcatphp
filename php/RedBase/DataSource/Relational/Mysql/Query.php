@@ -39,19 +39,6 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		}
 	}
 	
-	//function create($type,$properties,$primaryKey='id'){
-		//
-	//}
-	function read($type,$id,$primaryKey='id'){
-		
-	}
-	function update($type,$properties,$id=null,$primaryKey='id'){
-		
-	}
-	function delete($type,$id,$primaryKey='id'){
-		
-	}
-	
 	function scanType($value,$flagSpecial=false){
 		if(is_null( $value ))
 			return self::C_DATATYPE_BOOL;

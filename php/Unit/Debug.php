@@ -217,7 +217,7 @@ namespace Unit{
                 $string = preg_replace_callback($pattern, array('self', '_process' . ucfirst($function)), $string);
             $string = '<div style="border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
 			
-			if ($caller) $string = '<br /><span style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</span>'.$string;
+			if ($caller) $string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>'.$string;
 			
 			if($return)
 				return $string;

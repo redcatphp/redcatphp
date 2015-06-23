@@ -96,4 +96,7 @@ class Relational extends AbstractDataSource{
 		$name = isset($config['name'])&&$config['name']?';dbname='.$config['name']:null;
 		return $type.$host.$file.$port.$name;
 	}
+	function debug($enable=true){
+		return $this->getPDO()->log($enable);
+	}
 }
