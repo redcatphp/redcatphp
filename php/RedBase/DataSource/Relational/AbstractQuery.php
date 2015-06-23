@@ -60,11 +60,17 @@ abstract class AbstractQuery{
 	protected function getInsertSuffix($primaryKey){
 		return '';
 	}
-	function setSQLFilters($sqlFilters){
-		$this->sqlFilters = $sqlFilters;
+	function setSQLFiltersRead($sqlFilters){
+		$this->sqlFiltersRead = $sqlFilters;
 	}
-	function getSQLFilters(){
-		return $this->sqlFilters;
+	function getSQLFiltersRead(){
+		return $this->sqlFiltersRead;
+	}
+	function setSQLFiltersWrite($sqlFilters){
+		$this->sqlFiltersWrite = $sqlFilters;
+	}
+	function getSQLFiltersWrite(){
+		return $this->sqlFiltersWrite;
 	}
 	protected function getSQLFilterSnippet($type){
 		$sqlFilters = [];
@@ -110,9 +116,27 @@ abstract class AbstractQuery{
 		return $obj;
 	}
 	function update($type,$properties,$id=null,$primaryKey='id'){
-		
+		if(!$id)
+			return $this->create($type,$properties,$primaryKey);
+		$table = $this->escTable($type);
+		$fields = [];
+		$binds = [];
+		foreach($properties as $k=>$v){
+			if($k==$primaryKey)
+				continue;
+			if(isset($this->sqlFiltersWrite[$type][$k]))
+				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
+			else
+				$fields[] = ' '.$this->esc($k).' = ? ';
+			$binds[] = $v;
+		}
+		$sql = 'UPDATE '.$table.' SET '.implode(',',$fields).' WHERE id = ? ';
+		$binds[] = $id;
+		$this->pdo->execute($sql, $binds);
+		return $id;
 	}
 	function delete($type,$id,$primaryKey='id'){
+		$table = $this->escTable($type);
 		
 	}
 	
