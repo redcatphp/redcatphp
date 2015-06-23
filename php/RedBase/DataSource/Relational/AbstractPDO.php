@@ -30,7 +30,7 @@ abstract class AbstractPDO {
 			if(is_integer($key)){
 				if(is_null($value))
 					$statement->bindValue( $key + 1, NULL, \PDO::PARAM_NULL );
-				elseif(!$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max)
+				elseif(!$this->flagUseStringOnlyBinding && self::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max)
 					$statement->bindParam($key+1,$value,\PDO::PARAM_INT);
 				else
 					$statement->bindParam($key+1,$value,\PDO::PARAM_STR);
@@ -38,7 +38,7 @@ abstract class AbstractPDO {
 			else{
 				if(is_null($value))
 					$statement->bindValue( $key, NULL, \PDO::PARAM_NULL );
-				elseif( !$this->flagUseStringOnlyBinding && AQueryWriter::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max )
+				elseif( !$this->flagUseStringOnlyBinding && self::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max )
 					$statement->bindParam( $key, $value, \PDO::PARAM_INT );
 				else
 					$statement->bindParam( $key, $value, \PDO::PARAM_STR );
@@ -200,10 +200,10 @@ abstract class AbstractPDO {
 	function isConnected(){
 		return $this->isConnected && $this->pdo;
 	}
-	function log($enable){
+	function log($enable=true){
 		$this->loggingEnabled = (bool)$enable;
 		if($this->loggingEnabled && !$this->logger)
-			$this->logger = new Logger;
+			$this->logger = new Logger(true);
 	}
 	function getIntegerBindingMax(){
 		return $this->max;

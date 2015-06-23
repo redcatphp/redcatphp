@@ -39,9 +39,9 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		}
 	}
 	
-	function create($type,$properties,$primaryKey='id'){
-		
-	}
+	//function create($type,$properties,$primaryKey='id'){
+		//
+	//}
 	function read($type,$id,$primaryKey='id'){
 		
 	}

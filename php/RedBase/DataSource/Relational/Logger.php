@@ -4,11 +4,15 @@ class Logger {
 	protected $echo;
 	protected $keep;
 	protected $logs = [];
-	function setKeep($b=true){
-		$this->keep = (bool)$b;
+	function __construct($echo=null,$keep=null){
+		$this->setEcho($echo);
+		$this->setKeep($keep);
 	}
 	function setEcho($b=true){
 		$this->echo = (bool)$b;
+	}
+	function setKeep($b=true){
+		$this->keep = (bool)$b;
 	}
 	function getLogs(){
 		return $this->logs;

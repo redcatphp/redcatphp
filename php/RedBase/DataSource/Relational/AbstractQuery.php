@@ -10,7 +10,10 @@ abstract class AbstractQuery{
 	protected $typeno_sqltype = [];
 	protected $sqltype_typeno = [];
 	protected $quoteCharacter = '"';
+	protected $defaultValue = 'NULL';
 	protected $tablePrefix;
+	protected $sqlFilters = [];
+	protected $flagSQLFilterSafeMode = false;
 	function __construct($pdo,$primaryKey='id',$frozen=null,DataSourceInterface $dataSource,$tablePrefix=''){
 		$this->pdo = $pdo;
 		$this->primaryKey = $primaryKey;
@@ -53,6 +56,43 @@ abstract class AbstractQuery{
 			return false;
 		return $this->delete($type,$id,$primaryKey);
 	}
+	
+	protected function getInsertSuffix($primaryKey){
+		return '';
+	}
+	function setSQLFilters( $sqlFilters, $safeMode = false ){
+		$this->flagSQLFilterSafeMode = (boolean) $safeMode;
+		$this->sqlFilters = $sqlFilters;
+	}
+	function getSQLFilters(){
+		return $this->sqlFilters;
+	}
+	function create($type,$properties,$primaryKey='id'){
+		$insertcolumns = array_keys($properties);
+		$insertvalues = array_values($properties);
+		$default = $this->defaultValue;
+		$suffix  = $this->getInsertSuffix( $type );
+		$table   = $this->escTable( $type );
+		if(!empty($insertvalues)){
+			$insertSlots = [];
+			foreach($insertcolumns as $k=>$v){
+				$insertcolumns[$k] = $this->esc($v);
+				if (isset($this->sqlFilters['w'][$type][$v]))
+					$insertSlots[] = $this->sqlFilters['w'][$type][$v];
+				else
+					$insertSlots[] = '?';
+			}
+			$insertSQL = "INSERT INTO $table ( id, " . implode( ',', $insertcolumns ) . " ) VALUES ( $default, " . implode( ',', $insertSlots ) . " ) $suffix";
+			$result = $this->pdo->getCell($insertSQL,$insertvalues);
+		}
+		else{
+			$result = $this->pdo->getCell("INSERT INTO $table ($primaryKey) VALUES($default) $suffix");
+		}
+		if($suffix)
+			return $result;
+		return $this->pdo->getInsertID();
+	}
+	
 	function check($struct){
 		if(!preg_match('/^[a-zA-Z0-9_-]+$/',$struct))
 			throw new \InvalidArgumentException('Table or Column name does not conform to RedBase security policies' );
@@ -74,8 +114,10 @@ abstract class AbstractQuery{
 		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
 	}
 	
+	static function canBeTreatedAsInt( $value ){
+		return (bool) ( strval( $value ) === strval( intval( $value ) ) );
+	}
 	
-	abstract function create($type,$properties,$primaryKey='id');
 	abstract function read($type,$id,$primaryKey='id');
 	abstract function update($type,$properties,$id=null,$primaryKey='id');
 	abstract function delete($type,$id,$primaryKey='id');
