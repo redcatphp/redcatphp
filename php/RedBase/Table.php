@@ -17,7 +17,7 @@ class Table implements \ArrayAccess{
 		return (bool)$this->offsetGet($id);
 	}
 	function offsetGet($id){
-		if(!array_key_exists($id,$this->data[$id]))
+		if(!array_key_exists($id,$this->data))
 			$this->data[$id] = $this->readRow($id);
 		return $this->data[$id];
 	}
