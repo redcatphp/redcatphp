@@ -109,7 +109,7 @@ abstract class AbstractQuery{
 	function tableExists($table){
 		return in_array($table, $this->getTables());
 	}
-	function startsWithZeros($value){
+	static function startsWithZeros($value){
 		$value = strval($value);
 		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
 	}
