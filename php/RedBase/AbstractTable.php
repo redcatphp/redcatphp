@@ -1,10 +1,11 @@
 <?php
 namespace RedBase;
-class Table implements \ArrayAccess{
-	private $name;
-	private $primaryKey;
-	private $dataSource;
-	private $data = [];
+class AbstractTable implements \ArrayAccess,\Iterator{
+	protected $name;
+	protected $primaryKey;
+	protected $dataSource;
+	protected $data = [];
+	protected $useCache = true;
 	function __construct($name,$primaryKey='id',DataSourceInterface $dataSource){
 		$this->name = $name;
 		$this->primaryKey = $primaryKey;
@@ -17,21 +18,48 @@ class Table implements \ArrayAccess{
 		return (bool)$this->offsetGet($id);
 	}
 	function offsetGet($id){
-		if(!array_key_exists($id,$this->data))
-			$this->data[$id] = $this->readRow($id);
-		return $this->data[$id];
+		if(!$this->useCache||!array_key_exists($id,$this->data))
+			$row = $this->readRow($id);
+		if($this->useCache)
+			$this->data[$id] = $row;
+		return $row;
 	}
 	function offsetSet($id,$obj){
 		if(is_array($obj))
 			$obj = (object)$obj;
-		if(!$id)
+		if(!$id){
 			$id = $this->createRow($obj);
-		else
+			$obj->{$this->primaryKey} = $id;
+		}
+		else{
 			$this->updateRow($obj,$id);
-		$this->data[$id] = $obj;
+		}
+		if($this->useCache)
+			$this->data[$id] = $obj;
 	}
 	function offsetUnset($id){
 		$this->deleteRow($id);
+	}
+	function rewind(){
+		reset($this->data);
+	}
+	function current(){
+		return current($this->data);
+	}
+	function key(){
+		return key($this->data);
+	}
+	function next(){
+		return next($this->data);
+	}
+	function valid(){
+		return key($this->data)!==null;
+	}
+	function setCache($enable){
+		$this->useCache = (bool)$enable;
+	}
+	function resetCache(){
+		$this->data = [];
 	}
 	function createRow($obj){
 		return $this->dataSource->createRow($this->name,$obj,$this->primaryKey);
@@ -44,5 +72,8 @@ class Table implements \ArrayAccess{
 	}
 	function deleteRow($id){
 		return $this->dataSource->deleteRow($this->name,$id,$this->primaryKey);
+	}
+	function update($id){
+		$this[$id] = $this[$id];
 	}
 }

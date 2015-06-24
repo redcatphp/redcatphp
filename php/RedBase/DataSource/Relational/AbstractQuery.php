@@ -131,11 +131,11 @@ abstract class AbstractQuery{
 			$binds[] = $v;
 		}
 		$binds[] = $id;
-		$this->pdo->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE id = ? ', $binds);
+		$this->pdo->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE '.$primaryKey.' = ? ', $binds);
 		return $id;
 	}
 	function delete($type,$id,$primaryKey='id'){
-		$this->pdo->execute('DELETE FROM '.$this->escTable($type).' WHERE id = ?', [$id]);
+		$this->pdo->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
 	}
 	
 	function check($struct){

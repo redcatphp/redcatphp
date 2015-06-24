@@ -2,6 +2,7 @@
 namespace RedBase\DataSource;
 use RedBase\AbstractDataSource;
 use RedBase\Globality;
+use RedBase\DataSource\Relational\Table;
 class Relational extends AbstractDataSource{
 	private $dsn;
 	private $pdo;
@@ -47,8 +48,8 @@ class Relational extends AbstractDataSource{
 		$properies = [];
 		$postInsert = [];
 		foreach($obj as $k=>$v){
-			if(!is_scalar($v)){
-				$pk = $this[$k]->primaryKey;
+			if(is_object($v)||is_array($v)){
+				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
 					if(isset($v->{$pk}))
 						$this[$k][$v->{$pk}] = $v;
@@ -98,5 +99,8 @@ class Relational extends AbstractDataSource{
 	}
 	function debug($enable=true){
 		return $this->getPDO()->log($enable);
+	}
+	function loadTable($k,$primaryKey){
+		return new Table($k,$primaryKey,$this);
 	}
 }

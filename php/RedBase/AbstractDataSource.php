@@ -47,7 +47,5 @@ abstract class AbstractDataSource implements DataSourceInterface{
 		if(isset($this->tableMap[$k]))
 			unset($this->tableMap[$k]);
 	}
-	private function loadTable($k,$primaryKey){
-		return new Table($k,$primaryKey,$this);
-	}
+	abstract function loadTable($k,$primaryKey);
 }
