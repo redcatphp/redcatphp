@@ -1,6 +1,6 @@
 <?php
 namespace RedBase;
-class AbstractTable implements \ArrayAccess,\Iterator{
+abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	protected $name;
 	protected $primaryKey;
 	protected $dataSource;
