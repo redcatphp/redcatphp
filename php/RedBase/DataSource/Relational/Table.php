@@ -6,7 +6,6 @@ class Table extends AbstractTable{
 	private $row = [];
 	function rewind(){
 		$this->stmt = $this->dataSource->getPDO()->fetch('SELECT '.$this->name.'.* FROM '.$this->name);
-		reset($this->data);
 		$this->next();
 	}
 	function current(){
