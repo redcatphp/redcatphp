@@ -12,15 +12,20 @@ class Table extends AbstractTable{
 		return $this->row;
 	}
 	function key(){
-		return $this->row[$this->primaryKey];
+		return $this->row->{$this->primaryKey};
 	}
 	function valid(){
 		return false!==$this->row;
 	}
 	function next(){
-		$row = $this->stmt->fetch();
-		if($this->useCache&&$row)
-			$this->data[$row[$this->primaryKey]] = $row;
-		$this->row = $row;
+		$this->row = $row = $this->stmt->fetch();
+		if($row){
+			$c = $this->dataSource->findEntityClass($this->name);
+			$this->row = new $c();
+			foreach($row as $k=>$v)
+				$this->row->$k = $v;
+			if($this->useCache)
+				$this->data[$this->row->{$this->primaryKey}] = $this->row;
+		}
 	}
 }
