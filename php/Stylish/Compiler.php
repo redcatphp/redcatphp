@@ -50,7 +50,7 @@ namespace Stylish;
  */
 class Compiler
 {
-    const Stylish_VERSION = 'v1.1';
+    const Stylish_VERSION = 'v1.2';
     const Scss_VERSION = 'v0.1.1';
 
     static protected $operatorNames = array(
@@ -104,7 +104,7 @@ class Compiler
     //protected $formatter = 'Leafo\ScssPhp\Formatter\Nested';
     protected $formatter = 'Stylish\Formatter\Nested';
 	
-	public $dev;//addon by surikat
+	public $dev = true;//addon by surikat
 	
 	//followings methods addons by surikat
 	function setDev($mode=true){
@@ -227,7 +227,16 @@ class Compiler
 		return $code;
 	}
 	protected function autoloadScssSupport($code){
-		preg_match_all('/@include\\s+([^\\(\\);]+)/s',$code,$matches);
+		$tmpCode = $code;
+		preg_match_all('/\/\/([^\\r\\n]+)/s',$tmpCode,$matches); //strip
+		if(!empty($matches)&&!empty($matches[0]))
+			foreach(array_keys($matches[0]) as $i)
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+		preg_match_all('~/\*.*?\*/~s',$tmpCode,$matches); //strip
+		if(!empty($matches)&&!empty($matches[0]))
+			foreach(array_keys($matches[0]) as $i)
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+		preg_match_all('/@include\\s+([^\\(\\);]+)/s',$tmpCode,$matches);
 		if(!empty($matches)&&!empty($matches[0])){
 			foreach(array_keys($matches[0]) as $i){
 				if(strpos($matches[1][$i],'#{')!==false)
@@ -235,7 +244,7 @@ class Compiler
 				$code = "@import 'include/{$matches[1][$i]}';\r\n$code";
 			}
 		}
-		preg_match_all('/@extend\\s+([^;]+)/s',$code,$matches);
+		preg_match_all('/@extend\\s+([^;]+)/s',$tmpCode,$matches);
 		if(!empty($matches)&&!empty($matches[0])){
 			foreach(array_keys($matches[0]) as $i){
 				if(strpos($matches[1][$i],'#{')!==false)
