@@ -1,10 +1,14 @@
 <?php namespace Stylish;
 class Server{
 	protected $cacheDir = '.tmp/stylish/';
+	protected $enableCache = true;
 	function __construct($from=null){
 		$this->compiler = new Compiler();
 		if(isset($from))
 			$this->setImportPaths($from);
+	}
+	function setCache($enable){
+		$this->enableCache = (bool)$enable;
 	}
 	function serveFrom($file,$from=null,$salt = ''){
 		if(isset($from))
@@ -20,9 +24,10 @@ class Server{
 			if(is_file($input)&&is_readable($input)){
 				$output = $this->cacheName($salt . $input);
 				header('Content-Type:text/css; charset=utf-8');
-				if ($this->needsCompile($input, $output)) {
+				if (!$this->enableCache||$this->needsCompile($input, $output)) {
 					try {
-						$this->cachingHeader($output);
+						if($this->enableCache)
+							$this->cachingHeader($output);
 						echo $this->compile($input, $output, $in);
 					}
 					catch (\Exception $e) {
