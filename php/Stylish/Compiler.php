@@ -252,22 +252,25 @@ class Compiler
 		preg_match_all('/#\\{([^\\}]+)/s',$tmpCode,$matches); //strip
 		if(!empty($matches)&&!empty($matches[0]))
 			foreach(array_keys($matches[0]) as $i)
-				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i],$pos)).'#var#'.substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).'#var#'.substr($tmpCode,$pos+1+strlen($matches[0][$i]));
 		preg_match_all('/\/\/([^\\r\\n]+)/s',$tmpCode,$matches); //strip
 		if(!empty($matches)&&!empty($matches[0]))
 			foreach(array_keys($matches[0]) as $i)
-				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i],$pos)).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
-		preg_match_all('/\/\*(.*)\*\//s',$tmpCode,$matches); //strip
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+		preg_match_all('~/\*.*?\*/~s',$tmpCode,$matches); //strip
 		if(!empty($matches)&&!empty($matches[0]))
 			foreach(array_keys($matches[0]) as $i)
-				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i],$pos)).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
 		preg_match_all('/@font-face([^\\}]+)/s',$tmpCode,$matches); //strip
 		if(!empty($matches)&&!empty($matches[0]))
 			foreach(array_keys($matches[0]) as $i)
-				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i],$pos)).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
+				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i])).substr($tmpCode,$pos+1+strlen($matches[0][$i]));
 		preg_match_all('/font-family(\\s+|):([^\\(\\);]+)/s',$tmpCode,$matches);
 		if(!empty($matches)&&!empty($matches[0])){
+			$pos = 0;
 			foreach(array_keys($matches[0]) as $i){
+				if(strpos($matches[2][$i],'$')!==false)
+					continue;
 				$font = str_replace(' ','-',strtolower(trim(str_replace([':','"',"'"],'',$matches[2][$i]))));
 				$x = explode(',',$font);
 				foreach($x as $f)
@@ -278,14 +281,17 @@ class Compiler
 		preg_match_all('/font(\\s+|):([^\\(\\);]+)/s',$tmpCode,$matches);
 		if(!empty($matches)&&!empty($matches[0])&&trim($matches[2][0])){
 			foreach(array_keys($matches[0]) as $i){
+				if(strpos($matches[0][$i],'{')!==false)
+					continue;
 				if(strpos($matches[2][$i],'#var#')!==false)
 					continue;
 				$font = strtolower(trim(str_replace([':','"',"'"],'',$matches[2][$i])));
 				$y = [];
 				$x = explode(' ',$font);
-				foreach($x as $f)
-					if(strpos($f,'/')===false&&(!(int)substr($f,0,-2)||(($e=substr($f,-2))!='px'&&$e!='em'))&&(!(int)substr($f,0,-1)||(substr($f,-1)!='%')))
+				foreach($x as $f){
+					if(strpos($f,'/')===false&&(!(int)substr($f,0,-2)||(($e=substr($f,-2))!='px'&&$e!='em'))&&(!(int)substr($f,0,-1)||(substr($f,-1)!='%'))&&!in_array($f,['bold','small','normal','bolder','lighter','inherit','initial','unset'])&&(string)(int)$f!==$f)
 						$y[] = $f;
+				}
 				$font = implode('-',$y);
 				$x = explode(',',$font);
 				foreach($x as $f)
