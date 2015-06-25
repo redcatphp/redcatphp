@@ -243,8 +243,6 @@ namespace Unit{
 			echo $string;
 		}
 		static function var_debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
-			$search = ["\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v"];
-			$replace = ['\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v'];
 			$string = "\n";
 			switch(gettype($variable)) {
 			case 'boolean':
@@ -269,7 +267,6 @@ namespace Unit{
 				$len = strlen($variable);
 				if($strlen)
 					$variable = substr($variable,0,$strlen);
-				$variable = str_replace($search,$replace,$variable);
 				if (!$strlen||$len<$strlen)
 					$string.= '"'.$variable.'"';
 				else
