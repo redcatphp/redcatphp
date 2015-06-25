@@ -125,28 +125,45 @@ namespace Unit{
 		static function errorType($code){
 			return isset(self::$errorType[$code])?self::$errorType[$code]:null;
 		}
-		static function var_debug_html($variable,$strlen=100,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
-			$search = array('&',"\r", "\n", ' ','"',"'",'<','>');
-			$replace = array('&#039;',"<br />", "<br />", '&nbsp;','&amp;','&quot;','&lt;','&gt;');
+		static function var_debug_html($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
+			$search = ['&',"\r", "\n", ' ','"',"'",'<','>'];
+			$replace = ['&#039;',"<br />", "<br />", '&nbsp;','&amp;','&quot;','&lt;','&gt;'];
 			$string = '';
-			switch(gettype($variable)) {
-				case 'boolean':			$string.= $variable?'true':'false'; break;
-				case 'integer':			$string.= $variable;								break;
-				case 'double':			 $string.= $variable;								break;
-				case 'resource':		 $string.= '[resource]';						 break;
-				case 'NULL':				 $string.= "null";									 break;
-				case 'unknown type': $string.= '???';										break;
+			switch(gettype($variable)){
+				case 'boolean':
+					$string.= $variable?'true':'false';
+				break;
+				case 'integer':
+					$string.= $variable;
+				break;
+				case 'double':
+					$string.= $variable;
+				break;
+				case 'resource':
+					$string.= '[resource]';
+				break;
+				case 'NULL':
+					$string.= "null";
+				break;
+				case 'unknown type':
+					$string.= '???';
+				break;
 				case 'string':
 					$len = strlen($variable);
-					$variable = str_replace($search,$replace,substr($variable,0,$strlen),$count);
-					$variable = substr($variable,0,$strlen);
-					if ($len<$strlen) $string.= '"'.$variable.'"';
-					else $string.= 'string('.$len.'): "'.$variable.'"...';
+					if($strlen)
+						$variable = substr($variable,0,$strlen);
+					$variable = str_replace($search,$replace,$variable);
+					if (!$strlen||$len<$strlen)
+						$string.= '"'.$variable.'"';
+					else
+						$string.= 'string('.$len.'): "'.$variable.'"...';
 				break;
 				case 'array':
 					$len = count($variable);
-					if ($i==$depth) $string.= 'array('.$len.') {...}';
-					elseif(!$len) $string.= 'array(0) {}';
+					if($i==$depth)
+						$string.= 'array('.$len.') {...}';
+					elseif(!$len)
+						$string.= 'array(0) {}';
 					else {
 						$keys = array_keys($variable);
 						$spaces = str_repeat('&nbsp;',($i+1)*4);
@@ -175,8 +192,8 @@ namespace Unit{
 					$c = get_class($variable);
 					$id = array_search($variable,$objects,true);
 					if ($id!==false)
-					$string.='object('.$c.')'.'#'.($id+1).'{...}';
-						else if($i==$depth)
+						$string.='object('.$c.')'.'#'.($id+1).'{...}';
+					else if($i==$depth)
 						$string.='object('.$c.'){...}';
 					else {
 						$id = array_push($objects,$variable);
@@ -204,10 +221,11 @@ namespace Unit{
 					}
 				break;
 			}
-			if ($i>0) return $string;
+			if ($i>0)
+				return $string;
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-			do $caller = array_shift($backtrace); while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
-			
+			do $caller = array_shift($backtrace);
+				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
 			$maps = [
                 'countable' => '/(?P<type>array|int|string)\((?P<count>\d+)\)/',
                 'object'    => '/object\((?P<class>[a-z_\\\]+)\)\#(?P<id>\d+)/i',
@@ -216,77 +234,98 @@ namespace Unit{
             foreach($maps as $function => $pattern)
                 $string = preg_replace_callback($pattern, array('self', '_process' . ucfirst($function)), $string);
             $string = '<div style="border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
-			
-			if ($caller) $string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>'.$string;
-			
+			if($caller)
+				$string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>'.$string;
 			if($return)
 				return $string;
+			if(!headers_sent())
+				header('Content-Type: text/html; charset=utf-8');
 			echo $string;
 		}
-		static function var_debug($variable,$strlen=100,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
-			$search = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
-			$replace = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
+		static function var_debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
+			$search = ["\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v"];
+			$replace = ['\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v'];
 			$string = "\n";
 			switch(gettype($variable)) {
-			case 'boolean':			$string.= $variable?'true':'false'; break;
-			case 'integer':			$string.= $variable;								break;
-			case 'double':			 $string.= $variable;								break;
-			case 'resource':		 $string.= '[resource]';						 break;
-			case 'NULL':				 $string.= "null";									 break;
-			case 'unknown type': $string.= '???';										break;
+			case 'boolean':
+				$string.= $variable?'true':'false';
+			break;
+			case 'integer':
+				$string.= $variable;
+			break;
+			case 'double':
+				$string.= $variable;
+			break;
+			case 'resource':
+				$string.= '[resource]';
+			break;
+			case 'NULL':
+				$string.= "null";
+			break;
+			case 'unknown type':
+				$string.= '???';
+			break;
 			case 'string':
 				$len = strlen($variable);
-				$variable = str_replace($search,$replace,substr($variable,0,$strlen),$count);
-				$variable = substr($variable,0,$strlen);
-				if ($len<$strlen) $string.= '"'.$variable.'"';
-				else $string.= 'string('.$len.'): "'.$variable.'"...';
+				if($strlen)
+					$variable = substr($variable,0,$strlen);
+				$variable = str_replace($search,$replace,$variable);
+				if (!$strlen||$len<$strlen)
+					$string.= '"'.$variable.'"';
+				else
+					$string.= 'string('.$len.'): "'.$variable.'"...';
 				break;
 			case 'array':
 				$len = count($variable);
-				if ($i==$depth) $string.= 'array('.$len.') {...}';
-				elseif(!$len) $string.= 'array(0) {}';
+				if ($i==$depth)
+					$string.= 'array('.$len.') {...}';
+				elseif(!$len)
+					$string.= 'array(0) {}';
 				else {
-				$keys = array_keys($variable);
-				$spaces = str_repeat(' ',$i*2);
-				$string.= "array($len)\n".$spaces.'{';
-				$count=0;
-				foreach($keys as $key) {
-					if ($count==$width) {
-					$string.= "\n".$spaces."	...";
-					break;
+					$keys = array_keys($variable);
+					$spaces = str_repeat(' ',$i*2);
+					$string.= "array($len)\n".$spaces.'{';
+					$count=0;
+					foreach($keys as $key) {
+						if ($count==$width) {
+						$string.= "\n".$spaces."	...";
+						break;
+						}
+						$string.= "\n".$spaces."	[$key] => ";
+						$string.= self::var_debug($variable[$key],$strlen,$width,$depth,$i+1,$objects);
+						$count++;
 					}
-					$string.= "\n".$spaces."	[$key] => ";
-					$string.= self::var_debug($variable[$key],$strlen,$width,$depth,$i+1,$objects);
-					$count++;
-				}
-				$string.="\n".$spaces.'}';
+					$string.="\n".$spaces.'}';
 				}
 				break;
 			case 'object':
 				$id = array_search($variable,$objects,true);
 				if ($id!==false)
-				$string.=get_class($variable).'#'.($id+1).' {...}';
+					$string.=get_class($variable).'#'.($id+1).' {...}';
 				else if($i==$depth)
-				$string.=get_class($variable).' {...}';
+					$string.=get_class($variable).' {...}';
 				else {
-				$id = array_push($objects,$variable);
-				$array = (array)$variable;
-				$spaces = str_repeat(' ',$i*2);
-				$string.= get_class($variable)."#$id\n".$spaces.'{';
-				$properties = array_keys($array);
-				foreach($properties as $property) {
-					$name = str_replace("\0",':',trim($property));
-					$string.= "\n".$spaces."	[$name] => ";
-					$string.= self::var_debug($array[$property],$strlen,$width,$depth,$i+1,$objects);
-				}
-				$string.= "\n".$spaces.'}';
+					$id = array_push($objects,$variable);
+					$array = (array)$variable;
+					$spaces = str_repeat(' ',$i*2);
+					$string.= get_class($variable)."#$id\n".$spaces.'{';
+					$properties = array_keys($array);
+					foreach($properties as $property) {
+						$name = str_replace("\0",':',trim($property));
+						$string.= "\n".$spaces."	[$name] => ";
+						$string.= self::var_debug($array[$property],$strlen,$width,$depth,$i+1,$objects);
+					}
+					$string.= "\n".$spaces.'}';
 				}
 				break;
 			}
-			if ($i>0) return $string;
+			if ($i>0)
+				return $string;
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-			do $caller = array_shift($backtrace); while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
-			if ($caller) $string = "\n".$caller['file'].':'.$caller['line'].$string;
+			do $caller = array_shift($backtrace);
+				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
+			if ($caller)
+				$string = "\n".$caller['file'].':'.$caller['line'].$string;
 			if($return)
 				return $string;
 			echo $string;
