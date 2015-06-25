@@ -15,6 +15,7 @@ abstract class AbstractPDO {
 	protected $createDb;
 	protected $unknownDatabaseCode;
 	protected $encoding = 'utf8';
+	protected $flagUseStringOnlyBinding = false;
 	function __construct( $dsn, $user = null, $pass = null, $options = [], $createDb = null ){
 		$this->dsn = $dsn;
 		$this->connectUser = $user;
@@ -30,7 +31,7 @@ abstract class AbstractPDO {
 			if(is_integer($key)){
 				if(is_null($value))
 					$statement->bindValue( $key + 1, NULL, \PDO::PARAM_NULL );
-				elseif(!$this->flagUseStringOnlyBinding && self::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max)
+				elseif(!$this->flagUseStringOnlyBinding && AbstractQuery::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max)
 					$statement->bindParam($key+1,$value,\PDO::PARAM_INT);
 				else
 					$statement->bindParam($key+1,$value,\PDO::PARAM_STR);
@@ -38,7 +39,7 @@ abstract class AbstractPDO {
 			else{
 				if(is_null($value))
 					$statement->bindValue( $key, NULL, \PDO::PARAM_NULL );
-				elseif( !$this->flagUseStringOnlyBinding && self::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max )
+				elseif( !$this->flagUseStringOnlyBinding && AbstractQuery::canBeTreatedAsInt( $value ) && abs( $value ) <= $this->max )
 					$statement->bindParam( $key, $value, \PDO::PARAM_INT );
 				else
 					$statement->bindParam( $key, $value, \PDO::PARAM_STR );

@@ -149,7 +149,11 @@ abstract class AbstractQuery{
 	}
 	function escTable($table){
 		$this->check($table);
-		return $this->esc($this->tablePrefix.$table);
+		return $this->quoteCharacter.$this->tablePrefix.$table.$this->quoteCharacter;
+	}
+	function prefixTable($table){
+		$this->check($table);
+		return $this->tablePrefix.$table;
 	}
 	function tableExists($table){
 		return in_array($table, $this->getTables());
@@ -161,6 +165,10 @@ abstract class AbstractQuery{
 	
 	static function canBeTreatedAsInt( $value ){
 		return (bool) ( strval( $value ) === strval( intval( $value ) ) );
+	}
+	
+	protected static function makeFKLabel($from, $type, $to){
+		return "from_{$from}_to_table_{$type}_col_{$to}";
 	}
 	
 	abstract function scanType($value,$flagSpecial=false);

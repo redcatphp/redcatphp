@@ -1,5 +1,6 @@
 <?php
 namespace RedBase\DataSource\Relational\Mysql;
+use RedBase\DataSourceInterface;
 class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	
 	const C_DATATYPE_BOOL             = 0;
