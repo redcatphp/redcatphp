@@ -281,7 +281,7 @@ class Compiler
 		preg_match_all('/font(\\s+|):([^\\(\\);]+)/s',$tmpCode,$matches);
 		if(!empty($matches)&&!empty($matches[0])&&trim($matches[2][0])){
 			foreach(array_keys($matches[0]) as $i){
-				if(strpos($matches[0][$i],'{')!==false)
+				if(strpos($matches[0][$i],'{')!==false||strpos($matches[0][$i],'$')!==false)
 					continue;
 				if(strpos($matches[2][$i],'#var#')!==false)
 					continue;
