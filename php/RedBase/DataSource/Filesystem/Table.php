@@ -13,6 +13,15 @@ class Table extends AbstractTable{
 	}
 	function current(){
 		$iterator = $this->directoryIterator->current();
+		while(
+			$this->valid()&&
+			(
+				$iterator->isDot()
+				||($this->pattern&&!preg_match($this->pattern,$this->key()))
+				||($this->antiPattern&&preg_match($this->antiPattern,$this->key()))
+			)
+		)
+			$iterator->next();
 		if($iterator){
 			$c = $this->dataSource->findEntityClass($this->name);
 			$obj = new $c();
@@ -31,11 +40,6 @@ class Table extends AbstractTable{
 	}
 	function next(){
 		$this->directoryIterator->next();
-		while($this->directoryIterator->current()->isDot()
-			||($this->pattern&&!preg_match($this->pattern,$this->key()))
-			||($this->antiPattern&&preg_match($this->antiPattern,$this->key()))
-		)
-			$this->directoryIterator->next();
 	}
 	function setPattern($pattern){
 		$this->pattern = $pattern;

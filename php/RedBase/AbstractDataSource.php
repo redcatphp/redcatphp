@@ -37,7 +37,7 @@ abstract class AbstractDataSource implements DataSourceInterface{
 	}
 	function offsetSet($k,$v){
 		if(!is_object($v))
-			$v = $this->loadTable($v);
+			$v = $this->loadTable($v,$this->primaryKey);
 		$this->tableMap[$k] = $v;
 	}
 	function offsetExists($k){

@@ -9,9 +9,9 @@ class Relational extends AbstractDataSource{
 	private $query;
 	private $type;
 	function __construct(Globality $globality,$entityClassPrefix=null,
-		$entityClassDefault='stdClass',$primaryKey='id',array $config)
+		$entityClassDefault='stdClass',$primaryKey='id',array $config=[])
 	{
-		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey);
+		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$config);
 		
 		if(isset($config[0]))
 			$this->dsn = $config[0];
