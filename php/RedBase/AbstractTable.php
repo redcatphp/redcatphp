@@ -20,6 +20,8 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	function offsetGet($id){
 		if(!$this->useCache||!array_key_exists($id,$this->data))
 			$row = $this->readRow($id);
+		else
+			$row = $this->data[$id];
 		if($this->useCache)
 			$this->data[$id] = $row;
 		return $row;
@@ -75,5 +77,8 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	}
 	function update($id){
 		$this[$id] = $this[$id];
+	}
+	function getClone(){
+		return clone $this;
 	}
 }
