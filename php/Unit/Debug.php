@@ -4,13 +4,27 @@ namespace Unit{
 		private static $errorType;
 		private $handleErrors;
 		private $registeredErrorHandler;
-		private $debugLines = 5;
-		private $debugStyle = '<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>';
-		public $debugWrapInlineCSS = 'margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;';
+		private $debugLines;
+		private $debugStyle;
+		public $debugWrapInlineCSS;
+		public $html_errors;
+		function __construct(
+			$html_errors=false,
+			$debugLines=5,
+			$debugStyle='<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>',
+			$debugWrapInlineCSS='margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;'
+		){
+			$this->html_errors = $html_errors;
+			$this->debugLines = $debugLines;
+			$this->debugStyle = $debugStyle;
+			$this->debugWrapInlineCSS = $debugWrapInlineCSS;
+		}
 		function handleErrors(){
+			$this->handleErrors = true;
 			error_reporting(-1);
 			ini_set('display_startup_errors',true);
 			ini_set('display_errors','stdout');
+			ini_set('html_errors',$this->html_errors);
 			if(!$this->registeredErrorHandler){
 				$this->registeredErrorHandler = true;
 				set_error_handler([$this,'errorHandle']);
