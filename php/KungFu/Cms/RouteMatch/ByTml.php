@@ -8,7 +8,7 @@ class ByTml {
 		$this->physicalDir = isset($physicalDir)?$physicalDir:$uriDir;
 		$this->extension = $extension;
 	}
-	function __invoke($uri){
+	function __invoke($uri,$domain){
 		if($this->uriDir&&strpos($uri,$this->uriDir.'/')!==0)
 			return;
 		if($this->uriDir)

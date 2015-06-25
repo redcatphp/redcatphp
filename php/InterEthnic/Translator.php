@@ -11,6 +11,7 @@ class Translator {
 	private $localesRoot;
 	private $gettext;
 	private $altLocales;
+	private $realDomain;
 	
 	protected $countryAuto = true;
 	protected $defaultLocale = 'en_US';
