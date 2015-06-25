@@ -1,6 +1,6 @@
 <?php namespace KungFu\Cms\FrontController;
 use Unit\Router;
-use Stylish\Server as Stylish_Server;
+use Unit\Di;
 use KungFu\Tools\JSMin;
 class Synaptic {
 	
@@ -8,16 +8,18 @@ class Synaptic {
 	protected $expires = 2592000;
 	protected $allowedExtensions = ['css','js','jpg','jpeg','png','gif'];
 	protected $dirs = [''];
+	protected $di;
 	
 	public $devJs;
 	public $devCss;
 	
-	function __construct($pathFS='',$devJs=true,$devCss=true){
+	function __construct($pathFS='',$devJs=true,$devCss=true,Di $di){
 		$this->pathFS = rtrim($pathFS,'/');
 		if(!empty($this->pathFS))
 			$this->pathFS .= '/';
 		$this->devJs = $devJs;
 		$this->devCss = $devCss;
+		$this->di = $di;
 	}
 	function __invoke($params){
 		list($filename,$extension) = $params;
@@ -167,7 +169,7 @@ class Synaptic {
 			if(is_dir($dir=$d.dirname($path)))
 				$from[] = $dir;
 		}
-		$scss = new Stylish_Server();
+		$scss = $this->di->create('Stylish\Server');
 		$scss->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
 	}
 	function fileCache($output){
