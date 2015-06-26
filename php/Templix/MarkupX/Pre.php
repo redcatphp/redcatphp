@@ -1,4 +1,5 @@
-<?php namespace Templix\MarkupHtml5; 
+<?php
+namespace Templix\MarkupX; 
 class Pre extends \Templix\Markup{
 	protected $noParseContent = true;
 	function load(){
