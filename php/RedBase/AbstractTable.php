@@ -23,7 +23,7 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 		$this->uniqTextKey = $uniqTextKey;
 	}
 	function offsetExists($id){
-		return (bool)$this->offsetGet($id);
+		return (bool)$this->readId($id);
 	}
 	function offsetGet($id){
 		if(!$this->useCache||!array_key_exists($id,$this->data))
@@ -70,6 +70,9 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	}
 	function resetCache(){
 		$this->data = [];
+	}
+	function readId($id){
+		return $this->dataSource->readId($this->name,$id,$this->primaryKey,$this->uniqTextKey);
 	}
 	function createRow($obj){
 		return $this->dataSource->createRow($this->name,$obj,$this->primaryKey,$this->uniqTextKey);

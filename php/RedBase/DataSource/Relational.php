@@ -76,6 +76,9 @@ class Relational extends AbstractDataSource{
 		}
 		return $r;
 	}
+	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		return $this->query->readId($type,$id,$primaryKey,$uniqTextKey);
+	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		return $this->query->readRow($type,$id,$primaryKey,$uniqTextKey);
 	}
