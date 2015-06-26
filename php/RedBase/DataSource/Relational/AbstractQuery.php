@@ -45,7 +45,6 @@ abstract class AbstractQuery{
 		}
 	}
 	function createRow($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
-		$this->adaptStructure($type,$properties);
 		return $this->create($type,$properties,$primaryKey,$uniqTextKey);
 	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
@@ -54,9 +53,6 @@ abstract class AbstractQuery{
 		return $this->read($type,$id,$primaryKey,$uniqTextKey);
 	}
 	function updateRow($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		if(!$this->tableExists($type))
-			return false;
-		$this->adaptStructure($type,$properties);
 		return $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
@@ -89,6 +85,8 @@ abstract class AbstractQuery{
 		return !empty($sqlFilters)?','.implode(',',$sqlFilters):'';
 	}
 	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if(!$this->tableExists($type)||!in_array($uniqTextKey,array_keys($this->getColumns($type))))
+			return false;
 		$table = $this->escTable($type);
 		return $this->pdo->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
 	}
@@ -100,6 +98,7 @@ abstract class AbstractQuery{
 		$default = $this->defaultValue;
 		$suffix  = $this->getInsertSuffix($type);
 		$table   = $this->escTable($type);
+		$this->adaptStructure($type,$properties);
 		if(!empty($insertvalues)){
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
@@ -119,14 +118,19 @@ abstract class AbstractQuery{
 		return $this->pdo->getInsertID();
 	}
 	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&!is_integer($id))
+			$primaryKey = $uniqTextKey;
 		$table = $this->escTable($type);
 		$sqlFilterStr = $this->getSQLFilterSnippet($type);
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
-		$c = $this->dataSource->findEntityClass($type);
-		$obj = new $c();
-		foreach($this->pdo->getRow($sql,[$id]) as $k=>$v)
-			$obj->$k = $v;
-		return $obj;
+		$row = $this->pdo->getRow($sql,[$id]);
+		if($row){
+			$c = $this->dataSource->findEntityClass($type);
+			$obj = new $c();
+			foreach($row as $k=>$v)
+				$obj->$k = $v;
+			return $obj;
+		}
 	}
 	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		if($uniqTextKey&&!is_integer($id)){
@@ -135,6 +139,9 @@ abstract class AbstractQuery{
 		}
 		if(!$id)
 			return $this->create($type,$properties,$primaryKey);
+		if(!$this->tableExists($type))
+			return false;
+		$this->adaptStructure($type,$properties);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
