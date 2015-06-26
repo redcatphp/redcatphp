@@ -7,12 +7,14 @@ class Globality implements \ArrayAccess{
 	private $entityClassDefault;
 	private $dataSourceDefault;
 	private $primaryKeyDefault;
-	function __construct(array $map = [],$entityClassPrefix=null,$entityClassDefault='stdClass',$dataSourceDefault='relational',$primaryKeyDefault='id'){
+	private $uniqTextKeyDefault;
+	function __construct(array $map = [],$entityClassPrefix=null,$entityClassDefault='stdClass',$dataSourceDefault='relational',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
 		$this->map = $map;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
 		$this->dataSourceDefault = $dataSourceDefault;
 		$this->primaryKeyDefault = $primaryKeyDefault;
+		$this->uniqTextKeyDefault = $uniqTextKeyDefault;
 	}
 	function offsetGet($k){
 		if(!isset($this->map[$k]))
@@ -36,6 +38,7 @@ class Globality implements \ArrayAccess{
 		$entityClassPrefix = $this->entityClassPrefix;
 		$entityClassDefault = $this->entityClassDefault;
 		$primaryKey = $this->primaryKeyDefault;
+		$uniqTextKey = $this->uniqTextKeyDefault;
 		if(isset($config['dataSourceType'])){
 			$dataSourceType = $config['dataSourceType'];
 			unset($config['dataSourceType']);
@@ -52,7 +55,11 @@ class Globality implements \ArrayAccess{
 			$primaryKey = $config['primaryKey'];
 			unset($config['primaryKey']);
 		}
+		if(isset($config['uniqTextKey'])){
+			$uniqTextKey = $config['uniqTextKey'];
+			unset($config['uniqTextKey']);
+		}
 		$class = __NAMESPACE__.'\\DataSource\\'.ucfirst($dataSourceType);
-		return new $class($this,$entityClassPrefix,$entityClassDefault,$primaryKey,$config);
+		return new $class($this,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 	}
 }

@@ -5,16 +5,21 @@ abstract class AbstractDataSource implements DataSourceInterface{
 	protected $entityClassPrefix;
 	protected $entityClassDefault;
 	protected $primaryKey;
+	protected $uniqTextKey;
 	protected $tableMap = [];
 	abstract function createRow($type,$obj,$primaryKey='id');
 	abstract function readRow($type,$id,$primaryKey='id');
 	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
 	abstract function deleteRow($type,$id,$primaryKey='id');
-	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',array $config){
+	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->globality = $globality;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
 		$this->primaryKey = $primaryKey;
+		$this->uniqTextKey = $uniqTextKey;
+	}
+	function getUniqTextKey(){
+		return $this->uniqTextKey;
 	}
 	function getPrimaryKey(){
 		return $this->primaryKey;
@@ -32,12 +37,12 @@ abstract class AbstractDataSource implements DataSourceInterface{
 	}
 	function offsetGet($k){
 		if(!isset($this->tableMap[$k]))
-			$this->tableMap[$k] = $this->loadTable($k,$this->primaryKey);
+			$this->tableMap[$k] = $this->loadTable($k,$this->primaryKey,$this->uniqTextKey);
 		return $this->tableMap[$k];
 	}
 	function offsetSet($k,$v){
 		if(!is_object($v))
-			$v = $this->loadTable($v,$this->primaryKey);
+			$v = $this->loadTable($v,$this->primaryKey,$this->uniqTextKey);
 		$this->tableMap[$k] = $v;
 	}
 	function offsetExists($k){
@@ -47,5 +52,5 @@ abstract class AbstractDataSource implements DataSourceInterface{
 		if(isset($this->tableMap[$k]))
 			unset($this->tableMap[$k]);
 	}
-	abstract function loadTable($k,$primaryKey);
+	abstract function loadTable($k,$primaryKey,$uniqTextKey);
 }

@@ -5,6 +5,7 @@ abstract class AbstractQuery{
 	const C_DATATYPE_RANGE_SPECIAL   = 80;
 	protected $pdo;
 	protected $primaryKey;
+	protected $uniqTextKey;
 	protected $frozen;
 	protected $dataSource;
 	protected $typeno_sqltype = [];
@@ -14,15 +15,18 @@ abstract class AbstractQuery{
 	protected $tablePrefix;
 	protected $sqlFiltersWrite = [];
 	protected $sqlFiltersRead = [];
-	function __construct($pdo,$primaryKey='id',$frozen=null,DataSourceInterface $dataSource,$tablePrefix=''){
+	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,DataSourceInterface $dataSource,$tablePrefix=''){
 		$this->pdo = $pdo;
 		$this->primaryKey = $primaryKey;
+		$this->uniqTextKey = $uniqTextKey;
 		$this->frozen = $frozen;
 		$this->dataSource = $dataSource;
 		$this->tablePrefix = $tablePrefix;
 	}
-	function createRow($type,$properties,$primaryKey='id'){
-		if(!$this->frozen&&!$this->tableExists($type))
+	function adaptStructure($type,$properties){
+		if($this->frozen)
+			return;
+		if(!$this->tableExists($type))
 			$this->createTable($type);
 		$columns = $this->getColumns($type);
 		foreach($properties as $column=>$value){
@@ -39,22 +43,26 @@ abstract class AbstractQuery{
 					$this->changeColumn($type,$column,$typeno);
 			}
 		}
-		return $this->create($type,$properties,$primaryKey);
 	}
-	function readRow($type,$id,$primaryKey='id'){
+	function createRow($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
+		$this->adaptStructure($type,$properties);
+		return $this->create($type,$properties,$primaryKey,$uniqTextKey);
+	}
+	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		return $this->read($type,$id,$primaryKey);
+		return $this->read($type,$id,$primaryKey,$uniqTextKey);
 	}
-	function updateRow($type,$properties,$id=null,$primaryKey='id'){
+	function updateRow($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		return $this->update($type,$properties,$id,$primaryKey);
+		$this->adaptStructure($type,$properties);
+		return $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
 	}
-	function deleteRow($type,$id,$primaryKey='id'){
+	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		return $this->delete($type,$id,$primaryKey);
+		return $this->delete($type,$id,$primaryKey,$uniqTextKey);
 	}
 	
 	protected function getInsertSuffix($primaryKey){
@@ -80,12 +88,18 @@ abstract class AbstractQuery{
 		}
 		return !empty($sqlFilters)?','.implode(',',$sqlFilters):'';
 	}
-	function create($type,$properties,$primaryKey='id'){
+	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		$table = $this->escTable($type);
+		return $this->pdo->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
+	}
+	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&isset($properties[$uniqTextKey]))
+			return $this->update($type,$properties,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
 		$insertcolumns = array_keys($properties);
 		$insertvalues = array_values($properties);
 		$default = $this->defaultValue;
-		$suffix  = $this->getInsertSuffix( $type );
-		$table   = $this->escTable( $type );
+		$suffix  = $this->getInsertSuffix($type);
+		$table   = $this->escTable($type);
 		if(!empty($insertvalues)){
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
@@ -95,17 +109,16 @@ abstract class AbstractQuery{
 				else
 					$insertSlots[] = '?';
 			}
-			$insertSQL = "INSERT INTO $table ( id, " . implode( ',', $insertcolumns ) . " ) VALUES ( $default, " . implode( ',', $insertSlots ) . " ) $suffix";
-			$result = $this->pdo->getCell($insertSQL,$insertvalues);
+			$result = $this->pdo->getCell('INSERT INTO '.$table.' ( '.$primaryKey.', '.implode(',',$insertcolumns).' ) VALUES ( '.$default.', '. implode(',',$insertSlots).' ) '.$suffix,$insertvalues);
 		}
 		else{
-			$result = $this->pdo->getCell("INSERT INTO $table ($primaryKey) VALUES($default) $suffix");
+			$result = $this->pdo->getCell('INSERT INTO '.$table.' ('.$primaryKey.') VALUES('.$default.') '.$suffix);
 		}
 		if($suffix)
 			return $result;
 		return $this->pdo->getInsertID();
 	}
-	function read($type,$id,$primaryKey='id'){
+	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		$table = $this->escTable($type);
 		$sqlFilterStr = $this->getSQLFilterSnippet($type);
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
@@ -115,14 +128,17 @@ abstract class AbstractQuery{
 			$obj->$k = $v;
 		return $obj;
 	}
-	function update($type,$properties,$id=null,$primaryKey='id'){
+	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&!is_integer($id)){
+			$properties[$uniqTextKey] = $id;
+			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
+		}
 		if(!$id)
 			return $this->create($type,$properties,$primaryKey);
-		$table = $this->escTable($type);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
-			if($k==$primaryKey)
+			if($k==$primaryKey||$k==$uniqTextKey)
 				continue;
 			if(isset($this->sqlFiltersWrite[$type][$k]))
 				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
@@ -130,11 +146,16 @@ abstract class AbstractQuery{
 				$fields[] = ' '.$this->esc($k).' = ? ';
 			$binds[] = $v;
 		}
+		if(empty($fields))
+			return $id;
 		$binds[] = $id;
+		$table = $this->escTable($type);
 		$this->pdo->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE '.$primaryKey.' = ? ', $binds);
 		return $id;
 	}
-	function delete($type,$id,$primaryKey='id'){
+	function delete($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&!is_integer($id))
+			$primaryKey = $uniqTextKey;
 		$this->pdo->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
 	}
 	
@@ -168,7 +189,7 @@ abstract class AbstractQuery{
 	}
 	
 	protected static function makeFKLabel($from, $type, $to){
-		return "from_{$from}_to_table_{$type}_col_{$to}";
+		return 'from_'.$from.'_to_table_'.$type.'_col_'.$to;
 	}
 	
 	abstract function scanType($value,$flagSpecial=false);

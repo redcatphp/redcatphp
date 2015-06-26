@@ -5,8 +5,8 @@ use RedBase\Globality;
 use RedBase\DataSource\Filesystem\Table;
 class Filesystem extends AbstractDataSource{
 	private $directory;
-	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',array $config=[]){
-		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$config);
+	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
+		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 		
 		if(isset($config[0]))
 			$this->directory = rtrim($config[0],'/');
@@ -31,7 +31,7 @@ class Filesystem extends AbstractDataSource{
 	function debug($enable=true){
 		
 	}
-	function loadTable($k,$primaryKey){
-		return new Table($k,$primaryKey,$this);
+	function loadTable($k,$primaryKey,$uniqTextKey){
+		return new Table($k,$primaryKey,$uniqTextKey,$this);
 	}
 }

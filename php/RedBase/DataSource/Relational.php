@@ -8,10 +8,9 @@ class Relational extends AbstractDataSource{
 	private $pdo;
 	private $query;
 	private $type;
-	function __construct(Globality $globality,$entityClassPrefix=null,
-		$entityClassDefault='stdClass',$primaryKey='id',array $config=[])
+	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[])
 	{
-		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$config);
+		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 		
 		if(isset($config[0]))
 			$this->dsn = $config[0];
@@ -42,10 +41,10 @@ class Relational extends AbstractDataSource{
 		$this->pdo = new $c($this->dsn,$user,$password,$options,$createDb);
 		
 		$c = __CLASS__.'\\'.ucfirst($this->type).'\\Query';
-		$this->query = new $c($this->pdo,$primaryKey,$frozen,$this,$tablePrefix);
+		$this->query = new $c($this->pdo,$primaryKey,$uniqTextKey,$frozen,$this,$tablePrefix);
 	}
-	function createRow($type,$obj,$primaryKey='id'){
-		$properies = [];
+	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
+		$properties = [];
 		$postInsert = [];
 		foreach($obj as $k=>$v){
 			if(is_object($v)||is_array($v)){
@@ -68,23 +67,36 @@ class Relational extends AbstractDataSource{
 				}
 			}
 			else{
-				$properies[$k] = $v;
+				$properties[$k] = $v;
 			}
 		}
-		$r = $this->query->createRow($type,$properies,$primaryKey);
+		$r = $this->query->createRow($type,$properties,$primaryKey,$uniqTextKey);
 		foreach($postInsert as $k=>$v){
 			$this[$k][] = $v;
 		}
 		return $r;
 	}
-	function readRow($type,$id,$primaryKey='id'){
-		return $this->query->readRow($type,$id,$primaryKey);
+	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		return $this->query->readRow($type,$id,$primaryKey,$uniqTextKey);
 	}
-	function updateRow($type,$obj,$id=null,$primaryKey='id'){
-		return $this->query->updateRow($type,$obj,$id,$primaryKey);
+	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$properties = [];
+		$postUpdate = [];
+		foreach($obj as $k=>$v){
+			if(is_object($v)||is_array($v)){
+				
+			}
+			else{
+				$properties[$k] = $v;
+			}
+		}
+		foreach($postUpdate as $k=>$v){
+			$this[$k][$v->{$this[$k]->getPrimaryKey()}] = $v;
+		}
+		return $this->query->updateRow($type,$properties,$id,$primaryKey,$uniqTextKey);
 	}
-	function deleteRow($type,$id,$primaryKey='id'){
-		return $this->query->deleteRow($type,$id,$primaryKey);
+	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		return $this->query->deleteRow($type,$id,$primaryKey,$uniqTextKey);
 	}
 	function getPDO(){
 		return $this->pdo;
@@ -100,7 +112,7 @@ class Relational extends AbstractDataSource{
 	function debug($enable=true){
 		return $this->getPDO()->log($enable);
 	}
-	function loadTable($k,$primaryKey){
-		return new Table($k,$primaryKey,$this);
+	function loadTable($k,$primaryKey,$uniqTextKey){
+		return new Table($k,$primaryKey,$uniqTextKey,$this);
 	}
 }

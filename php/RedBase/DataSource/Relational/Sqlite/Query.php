@@ -9,8 +9,8 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	
 	protected $quoteCharacter = '`';
 	
-	function __construct($pdo,$primaryKey='id',$frozen=null,DataSourceInterface $dataSource,$tablePrefix){
-		parent::__construct($pdo,$primaryKey,$frozen,$dataSource,$tablePrefix);
+	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,DataSourceInterface $dataSource,$tablePrefix){
+		parent::__construct($pdo,$primaryKey,$uniqTextKey,$frozen,$dataSource,$tablePrefix);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER => 'INTEGER',
 			self::C_DATATYPE_NUMERIC => 'NUMERIC',

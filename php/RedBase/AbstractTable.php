@@ -3,16 +3,24 @@ namespace RedBase;
 abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	protected $name;
 	protected $primaryKey;
+	protected $uniqTextKey;
 	protected $dataSource;
 	protected $data = [];
 	protected $useCache = true;
-	function __construct($name,$primaryKey='id',DataSourceInterface $dataSource){
+	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
 		$this->name = $name;
 		$this->primaryKey = $primaryKey;
+		$this->uniqTextKey = $uniqTextKey;
 		$this->dataSource = $dataSource;
 	}
 	function getPrimaryKey(){
 		return $this->primaryKey;
+	}
+	function getUniqTextKey(){
+		return $this->uniqTextKey;
+	}
+	function setUniqTextKey($uniqTextKey='uniq'){
+		$this->uniqTextKey = $uniqTextKey;
 	}
 	function offsetExists($id){
 		return (bool)$this->offsetGet($id);
@@ -64,16 +72,16 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 		$this->data = [];
 	}
 	function createRow($obj){
-		return $this->dataSource->createRow($this->name,$obj,$this->primaryKey);
+		return $this->dataSource->createRow($this->name,$obj,$this->primaryKey,$this->uniqTextKey);
 	}
 	function readRow($id){
-		return $this->dataSource->readRow($this->name,$id,$this->primaryKey);
+		return $this->dataSource->readRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);
 	}
 	function updateRow($obj,$id=null){
-		return $this->dataSource->updateRow($this->name,$obj,$id,$this->primaryKey);
+		return $this->dataSource->updateRow($this->name,$obj,$id,$this->primaryKey,$this->uniqTextKey);
 	}
 	function deleteRow($id){
-		return $this->dataSource->deleteRow($this->name,$id,$this->primaryKey);
+		return $this->dataSource->deleteRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);
 	}
 	function update($id){
 		$this[$id] = $this[$id];
