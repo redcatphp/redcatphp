@@ -24,7 +24,7 @@ class Templix extends \Templix\Templix{
 		],$vars);
 		if(pathinfo($path,PATHINFO_EXTENSION)!='tml')
 			$path .= '.tml';
-		if($this->setPath($path)||$this->setPath('404'))
+		if($this->setPath($path)||$this->setPath('404.tml'))
 			$this->display(null,$vars);
 		else
 			http_response_code(404);
