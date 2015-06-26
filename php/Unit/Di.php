@@ -183,7 +183,7 @@ class Di implements \ArrayAccess{
 			$args = [];
 			$s = $a;
 		}
-		if(strpos($s,'new:')===0)
+		if(is_string($s)&&strpos($s,'new:')===0)
 			$a = $this->create(substr($s,4),$args);
 		return $a;
 	}
