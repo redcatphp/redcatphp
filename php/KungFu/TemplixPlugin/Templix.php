@@ -22,7 +22,7 @@ class Templix extends \Templix\Templix{
 		$vars = array_merge([
 			'URI'=>$path,
 		],$vars);
-		if(pathinfo($path,PATHINFO_EXTENSION)!='tml')
+		if(!pathinfo($path,PATHINFO_EXTENSION))
 			$path .= '.tml';
 		if($this->setPath($path)||$this->setPath('404.tml'))
 			$this->display(null,$vars);
