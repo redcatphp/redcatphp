@@ -5,7 +5,7 @@ use RedBase\Globality;
 use RedBase\DataSource\Filesystem\Table;
 class Filesystem extends AbstractDataSource{
 	private $directory;
-	function __construct(Globality $globality,$entityClassPrefix=null,$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
+	function __construct(Globality $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 		
 		if(isset($config[0]))

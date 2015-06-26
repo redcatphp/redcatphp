@@ -8,7 +8,7 @@ class Globality implements \ArrayAccess{
 	private $dataSourceDefault;
 	private $primaryKeyDefault;
 	private $uniqTextKeyDefault;
-	function __construct(array $map = [],$entityClassPrefix=null,$entityClassDefault='stdClass',$dataSourceDefault='relational',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
+	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$dataSourceDefault='relational',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
 		$this->map = $map;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
