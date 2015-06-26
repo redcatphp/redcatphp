@@ -54,7 +54,6 @@ class Templix implements \ArrayAccess {
 	}
 	static function getPluginNamespaceDefault(){
 		return [
-			'',
 			__NAMESPACE__.'\\MarkupX',
 			__NAMESPACE__.'\\MarkupHtml5',
 			__NAMESPACE__,
