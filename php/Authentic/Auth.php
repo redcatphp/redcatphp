@@ -73,8 +73,8 @@ class Auth{
 	protected $Session;
 	protected $Server;
 	
-	protected $root;
-	protected $superRoot = 'root';
+	protected $rootLogin;
+	protected $rootPassword;
 	protected $rootName;
 	protected $siteLoginUri;
 	protected $siteActivateUri;
@@ -90,7 +90,8 @@ class Auth{
 	protected $mailSecure;
 	
 	function __construct(Session $Session=null,
-		$root = 'root',
+		$rootLogin = 'root',
+		$rootPassword = 'root',
 		$rootName	= 'Developer',
 		$siteLoginUri = 'Login',
 		$siteActivateUri = 'Signin',
@@ -105,7 +106,8 @@ class Auth{
 		$mailPort=25,
 		$mailSecure='tls'
 	){
-		$this->root = $root;
+		$this->rootLogin = $rootLogin;
+		$this->rootPassword = $rootPassword;
 		$this->rootName = $rootName;
 		$this->siteLoginUri = $siteLoginUri;
 		$this->siteActivateUri = $siteActivateUri;
@@ -150,7 +152,7 @@ class Auth{
 		return PHPMailer::mail([$email=>$login],$subject,$message);
 	}
 	public function loginRoot($password,$lifetime=0){
-		$pass = $this->root;
+		$pass = $this->rootPassword;
 		if(!$pass)
 			return self::ERROR_SYSTEM_ERROR;
 		$id = 0;
@@ -168,8 +170,8 @@ class Auth{
 			else{
 				$options = ['cost' => $this->cost];
 				if(password_needs_rehash($pass, $this->algo, $options)){
-					$this->root = password_hash($password, $this->algo, $options);
-					//$this->Config('auth')->root = $this->root;
+					$this->rootPassword = password_hash($password, $this->algo, $options);
+					//$this->Config('auth')->root = $this->rootPassword;
 					//if(!$this->Config('auth')->store()){
 						//return self::ERROR_SYSTEM_ERROR;
 					//}
@@ -177,13 +179,13 @@ class Auth{
 			}
 		}
 		if($this->db){
-			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->superRoot]);
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->rootLogin]);
 			if(!$id){
 				$id = $this->db
 					->newOne($this->tableUsers,[
-						'login'=>$this->superRoot,
-						'name'=>isset($this->rootName)?$this->rootName:$this->superRoot,
-						'email'=>isset($this->rootEmail)?$this->rootEmail:null,
+						'login'=>$this->rootLogin,
+						'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
+						'email'=>isset($this->rootPasswordEmail)?$this->rootPasswordEmail:null,
 						'active'=>1,
 						'right'=>static::ROLE_ADMIN,
 						'type'=>'root'
@@ -197,8 +199,8 @@ class Auth{
 		}
 		$this->addSession([
 			'id'=>$id,
-			'login'=>$this->superRoot,
-			'name'=>isset($this->rootName)?$this->rootName:$this->superRoot,
+			'login'=>$this->rootLogin,
+			'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
 			'email'=>isset($this->email)?$this->email:null,
 			'right'=>static::ROLE_ADMIN,
 			'type'=>'root'
@@ -236,7 +238,7 @@ class Auth{
 		if($s=$this->Session->isBlocked()){
 			return [self::ERROR_USER_BLOCKED,$s];
 		}
-		if($login==$this->superRoot)
+		if($login==$this->rootLogin)
 			return $this->loginRoot($password,$lifetime);
 		if(!ctype_alnum($login)&&filter_var($login,FILTER_VALIDATE_EMAIL)){
 			$login = $this->db->getCell('SELECT login FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$login]);
