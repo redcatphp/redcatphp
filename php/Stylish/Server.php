@@ -1,8 +1,10 @@
 <?php namespace Stylish;
 class Server{
 	protected $cacheDir = '.tmp/stylish/';
-	protected $enableCache = true;
-	function __construct($from=null){
+	protected $enableCache;
+	protected $compiler;
+	function __construct($from=null,$cache=true){
+		$this->setCache($cache);
 		$this->compiler = new Compiler();
 		if(isset($from))
 			$this->setImportPaths($from);
