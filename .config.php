@@ -1,4 +1,5 @@
-<?php return [
+<?php
+return [
 	'$'=>[
 		'dev'=>[
 			'php'	=>true,
@@ -13,11 +14,36 @@
 			'sql+'	=>true,
 			'db'	=>true,
 		],
+		'superRoot'=>[
+			'login'=>'root',
+			'password'=>'root',
+		],
+		'databaseMap'=>[
+			0 => [
+				'dataSourceType'=>'relational',
+				'type'=>'sqlite',
+				'file'=>SURIKAT_CWD.'.data/db.sqlite',
+				'entityClassPrefix'=>['Model\\'],
+				'entityClassDefault'=>'stdClass',
+				'primaryKey'=>'id',
+				'uniqTextKey'=>'uniq',
+				'createTable'=>true,
+			],
+		],
 	],
 	'rules'=>[
+		'RedBase\Globality'	=> [
+			'shared'=>true,
+			'construct' => [
+				'$map' => 'databaseMap',
+				'entityClassPrefix'=>'Model\\',
+				'entityClassDefault'=>'stdClass',
+			],
+		],
 		'Authentic\Auth'=>[
 			'construct'=>[
-				'root' => 'root',
+				'$rootLogin' => 'superRoot.login',
+				'$rootPassword' => 'superRoot.password',
 				'rootName'	=> 'Developer',
 				'siteLoginUri' => 'Login',
 				'siteActivateUri' => 'Signin',
@@ -73,6 +99,11 @@
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
+			],
+		],
+		'Stylish\Server' => [
+			'construct'=>[
+				'$cache'=>'dev.css',
 			],
 		],
 		'InterEthnic\Translator'=>[
