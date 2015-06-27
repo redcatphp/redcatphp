@@ -118,7 +118,7 @@ abstract class AbstractQuery{
 		return $this->pdo->getInsertID();
 	}
 	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&!is_integer($id))
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$table = $this->escTable($type);
 		$sqlFilterStr = $this->getSQLFilterSnippet($type);
@@ -133,7 +133,9 @@ abstract class AbstractQuery{
 		}
 	}
 	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&!is_integer($id)){
+		$uniqTexting = false;
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
+			$uniqTexting = true;
 			$properties[$uniqTextKey] = $id;
 			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
 		}
@@ -145,7 +147,7 @@ abstract class AbstractQuery{
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
-			if($k==$primaryKey||$k==$uniqTextKey)
+			if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
 				continue;
 			if(isset($this->sqlFiltersWrite[$type][$k]))
 				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
@@ -161,7 +163,7 @@ abstract class AbstractQuery{
 		return $id;
 	}
 	function delete($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&!is_integer($id))
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$this->pdo->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
 	}
@@ -183,7 +185,9 @@ abstract class AbstractQuery{
 		$this->check($table);
 		return $this->tablePrefix.$table;
 	}
-	function tableExists($table){
+	function tableExists($table,$prefix=false){
+		if($prefix)
+			$table = $this->prefixTable($table);
 		return in_array($table, $this->getTables());
 	}
 	static function startsWithZeros($value){

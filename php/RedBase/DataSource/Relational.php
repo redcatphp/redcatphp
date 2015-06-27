@@ -118,4 +118,7 @@ class Relational extends AbstractDataSource{
 	function loadTable($k,$primaryKey,$uniqTextKey){
 		return new Table($k,$primaryKey,$uniqTextKey,$this);
 	}
+	function tableExists($table,$prefix=false){
+		return $this->query->tableExists($table,$prefix);
+	}
 }

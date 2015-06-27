@@ -3,8 +3,10 @@ namespace RedBase\DataSource\Relational;
 use RedBase\AbstractTable;
 class Table extends AbstractTable{
 	private $stmt;
-	private $row = [];
+	private $row;
 	function rewind(){
+		if(!$this->dataSource->tableExists($this->name,true))
+			return;
 		$this->stmt = $this->dataSource->getPDO()->fetch('SELECT '.$this->name.'.* FROM '.$this->name);
 		$this->next();
 	}
@@ -12,10 +14,11 @@ class Table extends AbstractTable{
 		return $this->row;
 	}
 	function key(){
-		return $this->row->{$this->primaryKey};
+		if($this->row)
+			return $this->row->{$this->primaryKey};
 	}
 	function valid(){
-		return false!==$this->row;
+		return (bool)$this->row;
 	}
 	function next(){
 		$this->row = $row = $this->stmt->fetch();

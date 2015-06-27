@@ -16,6 +16,9 @@ class Filesystem extends AbstractDataSource{
 	function getDirectory(){
 		return $this->directory;
 	}
+	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		return file_exists($this->directory.'/'.$type.'/'.$id)?$id:false;
+	}
 	function createRow($type,$obj,$primaryKey='id'){
 		
 	}

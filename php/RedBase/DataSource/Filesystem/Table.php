@@ -1,15 +1,17 @@
 <?php
 namespace RedBase\DataSource\Filesystem;
 use RedBase\AbstractTable;
+use RedBase\DataSourceInterface;
 class Table extends AbstractTable{
 	private $directoryIterator;
 	private $pattern;
 	private $antiPattern;
+	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
+		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);
+		$this->directoryIterator = new \DirectoryIterator($this->dataSource->getDirectory().'/'.$this->name);
+	}
 	function rewind(){
-		if(!isset($this->directoryIterator))
-			$this->directoryIterator = new \DirectoryIterator($this->dataSource->getDirectory().'/'.$this->name);
-		else
-			$this->directoryIterator->rewind();
+		$this->directoryIterator->rewind();
 	}
 	function current(){
 		$iterator = $this->directoryIterator->current();
