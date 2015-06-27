@@ -6,7 +6,11 @@ class Prefix{
 	}
 	function __invoke($uri){
 		$match = ltrim($this->match,'/');
-		if(strpos($uri,$match)===0){
+		if(empty($match)){
+			if(empty($uri))
+				return '';
+		}
+		elseif(strpos($uri,$match)===0){
 			return (string)substr($uri,strlen($match));
 		}
 	}
