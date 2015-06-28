@@ -4,26 +4,30 @@ use RedBase\AbstractTable;
 use RedBase\DataSourceInterface;
 class Table extends AbstractTable{
 	private $directoryIterator;
-	private $pattern;
-	private $antiPattern;
+	private $patterns = [];
+	private $antiPatterns = [];
+	private $rewind;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);
 		$this->directoryIterator = new \DirectoryIterator($this->dataSource->getDirectory().'/'.$this->name);
 	}
 	function rewind(){
 		$this->directoryIterator->rewind();
+		$this->rewind = true;
+		$this->next();
+		$this->rewind = false;
 	}
 	function current(){
 		$iterator = $this->directoryIterator->current();
-		while(
-			$this->valid()&&
-			(
-				$iterator->isDot()
-				||($this->pattern&&!preg_match($this->pattern,$this->key()))
-				||($this->antiPattern&&preg_match($this->antiPattern,$this->key()))
-			)
-		)
-			$iterator->next();
+		//while(
+			//$this->valid()&&
+			//(
+				//$iterator->isDot()
+				//||$this->patternMatch()
+				//||$this->antiPatternMatch()
+			//)
+		//)
+			//$iterator->next();
 		if($iterator){
 			$c = $this->dataSource->findEntityClass($this->name);
 			$obj = new $c();
@@ -41,12 +45,50 @@ class Table extends AbstractTable{
 		return $this->directoryIterator->valid();
 	}
 	function next(){
-		$this->directoryIterator->next();
+		$iterator = $this->directoryIterator->current();
+		if(!$this->rewind)
+			$iterator->next();
+		while(
+			$this->valid()&&
+			(
+				$iterator->isDot()
+				||$this->patternMatch()
+				||$this->antiPatternMatch()
+			)
+		)
+			$iterator->next();
+	}
+	function patternMatch(){
+		foreach($this->patterns as $p)
+			if($p&&!preg_match($p,$this->key()))
+				return true;
+	}
+	function AntiPatternMatch(){
+		foreach($this->antiPatterns as $p)
+			if($p&&preg_match($p,$this->key()))
+				return true;
+	}
+	function addPattern($pattern){
+		$this->patterns[] = $pattern;
+	}
+	function addAntiPattern($pattern){
+		$this->antiPatterns[] = $pattern;
 	}
 	function setPattern($pattern){
-		$this->pattern = $pattern;
+		$this->patterns = $pattern;
 	}
 	function setAntiPattern($pattern){
-		$this->antiPattern = $pattern;
+		$this->antiPatterns = $pattern;
+	}
+	function getPrefixedBy($prefix){
+		$a = [];
+		foreach($this as $file=>$obj){
+			if(strpos($file,$prefix)===0)
+				$a[$file] = $obj;
+		}
+		return $a;
+	}
+	function __clone(){
+		$this->directoryIterator = clone $this->directoryIterator;
 	}
 }

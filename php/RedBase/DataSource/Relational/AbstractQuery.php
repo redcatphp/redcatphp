@@ -93,6 +93,8 @@ abstract class AbstractQuery{
 	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
 		if($uniqTextKey&&isset($properties[$uniqTextKey]))
 			return $this->update($type,$properties,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
+		if(array_key_exists($primaryKey,$properties))
+			unset($properties[$primaryKey]);
 		$insertcolumns = array_keys($properties);
 		$insertvalues = array_values($properties);
 		$default = $this->defaultValue;
