@@ -69,10 +69,10 @@ class Templix implements \ArrayAccess {
 			array_push($this->__pluginNamespaces,$namespace);
 	}
 	function appendPluginNamespace($namespace){
-		$this->addPluginNamespace($namespace,true);
-	}
-	function prependPluginNamespace(){
 		$this->addPluginNamespace($namespace,false);
+	}
+	function prependPluginNamespace($namespace){
+		$this->addPluginNamespace($namespace,true);
 	}
 	function getAncestor($defaulThis=false){
 		$ancestor = $this;
