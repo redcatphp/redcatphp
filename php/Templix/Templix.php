@@ -7,7 +7,7 @@ class Templix implements \ArrayAccess {
 	protected $cleanRegister;
 	protected $devCompileFile;
 	protected $dirCompileSuffix = '';
-	protected $__pluginNamespaces = [];
+	protected $__pluginPrefix = [];
 	protected $vars = [];
 	
 	public $forceCompile;
@@ -43,36 +43,36 @@ class Templix implements \ArrayAccess {
 			'Surikat/template/',
 		]);
 		$this->setCleanRegister('.tmp/synaptic/min-registry.txt');
-		$this->setPluginNamespace(self::getPluginNamespaceDefault());
+		$this->setPluginPrefix(self::getPluginPrefixDefault());
 		if(isset($file))
 			$this->setPath($file);
 		if(isset($vars))
 			$this->set($vars);
 	}
-	function getPluginNamespace(){
-		return $this->__pluginNamespaces;
+	function getPluginPrefix(){
+		return $this->__pluginPrefix;
 	}
-	static function getPluginNamespaceDefault(){
+	static function getPluginPrefixDefault(){
 		return [
-			__NAMESPACE__.'\\MarkupX',
-			__NAMESPACE__.'\\MarkupHtml5',
-			__NAMESPACE__,
+			__NAMESPACE__.'\\MarkupX\\',
+			__NAMESPACE__.'\\MarkupHtml5\\',
+			__NAMESPACE__.'\\',
 		];
 	}
-	function setPluginNamespace($namespace){
-		$this->__pluginNamespaces = (array)$namespace;
+	function setPluginPrefix($prefixs){
+		$this->__pluginPrefix = (array)$prefixs;
 	}
-	function addPluginNamespace($namespace,$prepend=null){
+	function addPluginPrefix($prefix,$prepend=true){
 		if($prepend)
-			array_unshift($this->__pluginNamespaces,$namespace);
+			array_unshift($this->__pluginPrefix,$prefix);
 		else
-			array_push($this->__pluginNamespaces,$namespace);
+			array_push($this->__pluginPrefix,$prefix);
 	}
-	function appendPluginNamespace($namespace){
-		$this->addPluginNamespace($namespace,false);
+	function appendPluginPrefix($prefix){
+		$this->addPluginPrefix($prefix,false);
 	}
-	function prependPluginNamespace($namespace){
-		$this->addPluginNamespace($namespace,true);
+	function prependPluginPrefix($prefix){
+		$this->addPluginPrefix($prefix,true);
 	}
 	function getAncestor($defaulThis=false){
 		$ancestor = $this;

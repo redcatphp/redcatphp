@@ -898,16 +898,16 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	function getClass($n){
 		$n = str_replace(' ','_',ucwords(preg_replace("/[^A-Za-z0-9 ]/", ' ', $n)));
 		if($this->templix)
-			$namespaces = $this->templix->getPluginNamespace();
+			$prefixs = $this->templix->getPluginPrefix();
 		else
-			$namespaces = Templix::getPluginNamespaceDefault();
-		foreach($namespaces as $ns){
+			$prefixs = Templix::getPluginPrefixDefault();
+		foreach($prefixs as $ns){
 			if(false!==$p=strrpos($n,':')){
-				$c = $ns.'\\'.ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ',substr($n,0,$p))))).'\\'.self::prefixClassName(ucfirst(substr($n,$p+1)));
+				$c = $ns.ucfirst(str_replace(' ', '\\', ucwords(str_replace('.', ' ',substr($n,0,$p))))).'\\'.self::prefixClassName(ucfirst(substr($n,$p+1)));
 				if(class_exists($c))
 					return $c;
 			}
-			elseif(class_exists($c=$ns.'\\'.self::prefixClassName(ucfirst($n))))
+			elseif(class_exists($c=$ns.self::prefixClassName(ucfirst($n))))
 				return $c;
 		}
 		return __NAMESPACE__.'\\Markup';
