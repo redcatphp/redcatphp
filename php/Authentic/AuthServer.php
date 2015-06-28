@@ -466,6 +466,10 @@ class AuthServer{
 			return null;
 	}
 	function getLocation(){
-		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+		//return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+		$get = http_build_query($_GET);
+		if(!empty($get))
+			$get = '?'.$get;
+		return $this->getBaseHref().ltrim($this->server['PATH_INFO'],'/').$get;
 	}
 }
