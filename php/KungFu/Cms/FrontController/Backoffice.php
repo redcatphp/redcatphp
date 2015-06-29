@@ -29,8 +29,8 @@ class Backoffice extends \Unit\FrontController{
 		$AuthServer = $this->di->create('Authentic\AuthServer',[$Auth]);
 		$AuthServer->htmlLock('RIGHT_MANAGE',true);
 	}
-	function __invoke(){
+	function __invoke($uri,$domain=null){
 		Autoloader::getInstance()->addNamespace('',SURIKAT_CWD.$this->pathFS.'/php');
-		return $this->run(func_get_arg(0));
+		return $this->run($uri);
 	}
 }
