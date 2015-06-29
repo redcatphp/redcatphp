@@ -1,10 +1,5 @@
 /content
 /.tmp
-/config/deploy.ini
-/config/db.php
-/config/db.*.php
-/config/auth.php
-/config/mailer.php
 /Surikat
 *.min.css
 *.min.js
@@ -15,6 +10,4 @@
 Thumbs.db
 *.swp
 *.out
-/php/Zend
-/php/Symfony
 /SURIKAT.svar
