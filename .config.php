@@ -40,9 +40,9 @@ return [
 				'user' => 'user',
 				'pass' => 'password',
 				'host' => 'host',
-				'port' => 21
+				'port' => 21,
 				'path' => '/www',
-				'passive' => true
+				'passive' => true,
 				//'scheme' => 'ftps',
 				//'scheme' => 'sftp',
 				'clean_directories' => ['.tmp'],
