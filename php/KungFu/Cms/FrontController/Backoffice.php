@@ -33,4 +33,11 @@ class Backoffice extends \Unit\FrontController{
 		Autoloader::getInstance()->addNamespace('',SURIKAT_CWD.$this->pathFS.'/php');
 		return $this->run($uri);
 	}
+	function run($path,$domain=null){
+		if(!parent::run($path,$domain)){
+			$this->di->create('KungFu\TemplixPlugin\Templix')->query(404);
+			exit;
+		}
+		return true;
+	}
 }
