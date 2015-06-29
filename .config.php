@@ -29,6 +29,26 @@ return [
 				'uniqTextKey'=>'uniq',
 				'createTable'=>true,
 			],
+			'translation' => [
+				'type'			=>'sqlite',
+				'file'			=>SURIKAT_CWD.'.data/db.translation.sqlite',
+			],
+		],
+		'gitDeploy'=>[
+			//'ftp://user:password@host:21/www',
+			[
+				'user' => 'user',
+				'pass' => 'password',
+				'host' => 'host',
+				'port' => 21
+				'path' => '/www',
+				'passive' => true
+				//'scheme' => 'ftps',
+				//'scheme' => 'sftp',
+				'clean_directories' => ['.tmp'],
+				//'ignore_files' => ['file/toignore.txt'],
+				//'upload_untracked' => ['folder/to/upload','another/file/upload.php'],
+			],
 		],
 	],
 	'rules'=>[
