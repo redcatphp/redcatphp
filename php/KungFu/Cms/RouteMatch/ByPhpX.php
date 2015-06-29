@@ -13,14 +13,14 @@ class ByPhpX extends ByPhp {
 		}
 		$file = $this->dirFS.'/'.$path;
 		foreach($this->dirs as $d){
-			if($f=realpath(($adir=$d?$d.'/':'').$file))
+			if(($f=realpath(($adir=$d?$d.'/':'').$file))&&is_file($f))
 				return [$this->dirFS,$path,$adir.$this->dirFS,$f];
 		}
 		if(!$index){
 			$path .= '/index.php';
 			$file = $this->dirFS.'/'.$path;
 			foreach($this->dirs as $d){
-				if($f=realpath(($adir=$d.'/').$file)){
+				if(($f=realpath(($adir=$d.'/').$file))&&is_file($f)){
 					return [$this->dirFS,$path,$adir.$this->dirFS,$f];
 				}
 			}
