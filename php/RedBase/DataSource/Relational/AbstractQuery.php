@@ -190,6 +190,12 @@ abstract class AbstractQuery{
 	function unEsc($esc){
 		return trim($esc,$this->quoteCharacter);
 	}
+	function getQuoteCharacter(){
+		return $this->quoteCharacter;
+	}
+	function getTablePrefix(){
+		return $this->tablePrefix;
+	}
 	function tableExists($table,$prefix=false){
 		if($prefix)
 			$table = $this->prefixTable($table);

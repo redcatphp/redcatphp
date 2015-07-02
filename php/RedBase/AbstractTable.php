@@ -19,6 +19,9 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	function getUniqTextKey(){
 		return $this->uniqTextKey;
 	}
+	function getDataSource(){
+		return $this->dataSource;
+	}
 	function setUniqTextKey($uniqTextKey='uniq'){
 		$this->uniqTextKey = $uniqTextKey;
 	}

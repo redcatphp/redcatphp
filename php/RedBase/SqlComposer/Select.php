@@ -10,10 +10,8 @@ class Select extends Where {
 	protected $order_by = [];
 	protected $sort = [];
 	protected $limit = null;
-	function __construct($select = null,  array $params = null, $quoteCharacter = '"', $tablePrefix = ''){
-		parent::__construct($quoteCharacter,$tablePrefix);
-		if(isset($select))
-			$this->select($select, $params);
+	function __construct($mainTable = null,$quoteCharacter = '"', $tablePrefix = ''){
+		parent::__construct($mainTable,$quoteCharacter, $tablePrefix);
 	}
 	function select($select,  array $params = null){
 		foreach((array)$select as $s){

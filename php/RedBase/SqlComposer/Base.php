@@ -17,6 +17,8 @@ abstract class Base {
 		$this->mainTable = $mainTable;
 		$this->quoteCharacter = $quoteCharacter;
 		$this->tablePrefix = $tablePrefix;
+		if($this->mainTable)
+			$this->from($this->mainTable);
 	}
 	function getMainTable(){
 		return $this->mainTable;

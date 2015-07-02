@@ -121,4 +121,7 @@ class Relational extends AbstractDataSource{
 	function tableExists($table,$prefix=false){
 		return $this->query->tableExists($table,$prefix);
 	}
+	function getQuery(){
+		return $this->query;
+	}
 }
