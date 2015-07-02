@@ -51,6 +51,7 @@ abstract class AbstractPDO {
 		if($this->loggingEnabled)
 			$this->logger->log( $sql, $bindings );
 		try {
+			list($sql,$bindings) = self::nestBinding($sql,$bindings);
 			$statement = $this->pdo->prepare( $sql );
 			$this->bindParams( $statement, $bindings );
 			$statement->execute();
@@ -213,4 +214,70 @@ abstract class AbstractPDO {
 		return call_user_func_array([$this->getPDO(),$f],$args);
 	}
 	abstract function createDatabase($dbname);
+	
+	private static function pointBindingLoop($sql,$binds){
+		$nBinds = [];
+		foreach($binds as $k=>$v){
+			if(is_integer($k))
+				$nBinds[] = $v;
+		}
+		$i = 0;
+		foreach($binds as $k=>$v){
+			if(!is_integer($k)){
+				$find = ':'.ltrim($k,':');
+				while(false!==$p=strpos($sql,$find)){
+					$preSql = substr($sql,0,$p);
+					$sql = $preSql.'?'.substr($sql,$p+strlen($find));
+					$c = count(explode('?',$preSql))-1;
+					array_splice($nBinds,$c,0,[$v]);
+				}
+			}
+			$i++;
+		}
+		return [$sql,$nBinds];
+	}
+	private static function nestBindingLoop($sql,$binds){
+		$nBinds = [];
+		$ln = 0;
+		foreach($binds as $k=>$v){
+			if(is_array($v)){
+				$c = count($v);
+				$av = array_values($v);
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = self::posnth($sql,'?',$k);
+				if($p!==false){
+					$nSql = substr($sql,0,$p);
+					$nSql .= '('.implode(',',array_fill(0,$c,'?')).')';
+					$ln = strlen($nSql);
+					$nSql .= substr($sql,$p+1);
+					$sql = $nSql;
+					for($y=0;$y<$c;$y++)
+						$nBinds[] = $av[$y];
+				}
+			}
+			else{
+				if($ln)
+					$p = strpos($sql,'?',$ln);
+				else
+					$p = self::posnth($sql,'?',$k);
+				$ln = $p+1;
+				$nBinds[] = $v;
+			}
+		}
+		return [$sql,$nBinds];
+	}
+	static function nestBinding($sql,$binds){
+		do{
+			list($sql,$binds) = self::pointBindingLoop($sql,(array)$binds);
+			list($sql,$binds) = self::nestBindingLoop($sql,(array)$binds);
+			$containA = false;
+			foreach($binds as $v)
+				if($containA=is_array($v))
+					break;
+		}
+		while($containA);
+		return [$sql,$binds];
+	}
 }
