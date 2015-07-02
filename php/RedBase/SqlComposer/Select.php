@@ -155,12 +155,12 @@ class Select extends Where {
 	}
 	function unOpenHavingNotAnd() {
 		$this->remove_property('having',[ '(', 'NOT' ]);
-		$this->unOpen_having_and();
+		$this->unOpenHavingAnd();
 		return $this;
 	}
-	function unOpen_having_not_or() {
+	function unOpenHavingNotOr() {
 		$this->remove_property('having',[ '(', 'NOT' ]);
-		$this->unOpen_having_or();
+		$this->unOpenHavingOr();
 		return $this;
 	}
 	function unCloseHaving() {
