@@ -268,6 +268,17 @@ abstract class AbstractPDO {
 		}
 		return [$sql,$nBinds];
 	}
+	static function posnth($haystack,$needle,$n,$offset=0){
+		$l = strlen($needle);
+		for($i=0;$i<=$n;$i++){
+			$indx = strpos($haystack, $needle, $offset);
+			if($i==$n||$indx===false)
+				return $indx;
+			else
+				$offset = $indx+$l;
+		}
+		return false;
+	}
 	static function nestBinding($sql,$binds){
 		do{
 			list($sql,$binds) = self::pointBindingLoop($sql,(array)$binds);
@@ -280,4 +291,5 @@ abstract class AbstractPDO {
 		while($containA);
 		return [$sql,$binds];
 	}
+	
 }
