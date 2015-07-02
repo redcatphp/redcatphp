@@ -15,8 +15,11 @@ class Table extends AbstractTable{
 			$this->dataSource->getQuery()->getTablePrefix()
 		);
 	}
+	function exists(){
+		return $this->dataSource->tableExists($this->name,true);
+	}
 	function rewind(){
-		if(!$this->dataSource->tableExists($this->name,true))
+		if(!$this->exists())
 			return;
 		$this->stmt = $this->dataSource->getPDO()->fetch($this->select->getQuery(),$this->select->getParams());
 		$this->next();
@@ -41,6 +44,25 @@ class Table extends AbstractTable{
 			if($this->useCache)
 				$this->data[$this->row->{$this->primaryKey}] = $this->row;
 		}
+	}
+	function count(){
+		$queryCount = $this
+			->getClone()
+			->unOrderBy()
+			->unSelect()
+			->select('id')
+		;
+		if($this->exists()){
+			$select = new Select();
+			$select
+				->select('COUNT(*)')
+				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+			;
+			return (int) $this->dataSource->getCell($select->getQuery(),$select->getParams());
+		}
+	}
+	function getClone(){
+		return clone $this;
 	}
 	function __clone(){
 		if(isset($this->select))
