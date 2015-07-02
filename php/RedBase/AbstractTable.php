@@ -1,6 +1,6 @@
 <?php
 namespace RedBase;
-abstract class AbstractTable implements \ArrayAccess,\Iterator{
+abstract class AbstractTable implements \ArrayAccess,\Iterator,\Countable{
 	protected $name;
 	protected $primaryKey;
 	protected $uniqTextKey;
@@ -67,6 +67,23 @@ abstract class AbstractTable implements \ArrayAccess,\Iterator{
 	}
 	function valid(){
 		return key($this->data)!==null;
+	}
+	function count(){
+		return count($this->data);
+	}
+	function paginate($page,$limit=2,$href='',$prefix='?page=',$maxCols=6){
+		$pagination = new Pagination();
+		$pagination->setLimit($limit);
+		$pagination->setMaxCols($maxCols);
+		$pagination->setHref($href);
+		$pagination->setPrefix($prefix);
+		$pagination->setCount($this->count());
+		$pagination->setPage($page);
+		if($pagination->resolve($page)){
+			$this->limit($pagination->limit);
+			$this->offset($pagination->offset);
+			return $pagination;
+		}
 	}
 	function setCache($enable){
 		$this->useCache = (bool)$enable;
