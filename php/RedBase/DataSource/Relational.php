@@ -124,4 +124,47 @@ class Relational extends AbstractDataSource{
 	function getQuery(){
 		return $this->query;
 	}
+	
+	function connect(){
+		return $this->pdo->connect();
+	}
+	function getAll($sql, $bindings = []){
+		return $this->pdo->getAll($sql, $bindings);
+	}
+	function getAssocRow($sql, $bindings = []){
+		return $this->pdo->getAssocRow($sql, $bindings);
+	}
+	function getCol($sql, $bindings = []){
+		return $this->pdo->getCol($sql, $bindings);
+	}
+	function getCell($sql, $bindings = []){
+		return $this->pdo->getCell($sql, $bindings);
+	}
+	function getRow($sql, $bindings = []){
+		return $this->pdo->getRow($sql, $bindings);
+	}
+	function execute($sql, $bindings = []){
+		return $this->pdo->execute($sql, $bindings);
+	}
+	function getInsertID(){
+		return $this->pdo->getInsertID();
+	}
+	function fetch($sql, $bindings = []){
+		return $this->pdo->fetch($sql, $bindings);
+	}
+	function beginTransaction(){
+		return $this->pdo->beginTransaction();
+	}
+	function commit(){
+		return $this->pdo->commit();
+	}
+	function rollback(){
+		return $this->pdo->rollback();
+	}
+	function close(){
+		return $this->pdo->close();
+	}
+	function isConnected(){
+		return $this->pdo->isConnected();
+	}
 }
