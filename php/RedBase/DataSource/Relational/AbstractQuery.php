@@ -187,6 +187,9 @@ abstract class AbstractQuery{
 		$this->check($table);
 		return $this->tablePrefix.$table;
 	}
+	function unEsc($esc){
+		return trim($esc,$this->quoteCharacter);
+	}
 	function tableExists($table,$prefix=false){
 		if($prefix)
 			$table = $this->prefixTable($table);
