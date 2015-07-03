@@ -1,6 +1,5 @@
-/content
 /.tmp
-/Surikat
+/surikat
 *.min.css
 *.min.js
 *.log
@@ -10,4 +9,3 @@
 Thumbs.db
 *.swp
 *.out
-/SURIKAT.svar

@@ -6,7 +6,7 @@ use Unit\Autoloader;
 use Unit\Router;
 use Unit\Di;
 class Backoffice extends \Unit\FrontController{
-	public $pathFS = 'Surikat/plugin/backoffice';
+	public $pathFS = 'surikat/plugin/backoffice';
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this

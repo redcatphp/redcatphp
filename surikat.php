@@ -9,7 +9,7 @@ Unit\Autoloader::register([SURIKAT_CWD.'php',SURIKAT.'php']);
 $di = Unit\Di::load([
 	SURIKAT.'.config.php',
 	SURIKAT_CWD.'.config.php'
-],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/SURIKAT.svar');
+],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/surikat.svar');
 
 if($di['dev']['php']){
 	$di->create('Unit\Debug')->handleErrors();

@@ -23,7 +23,7 @@ class TemplixL10n extends Templix{
 		list($lang,$langMap,$file) = (array)$file;
 		if(is_array($file)){
 			list($hook,$file) = (array)$file;
-			$this->setDirCwd([$hook.'/','Surikat/'.$hook.'/']);
+			$this->setDirCwd([$hook.'/','surikat/'.$hook.'/']);
 		}
 		
 		$this->Translator->set($lang);

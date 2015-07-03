@@ -40,7 +40,7 @@ class Templix implements \ArrayAccess {
 		$this->setDirSync('.tmp/sync/');
 		$this->addDirCwd([
 			'template/',
-			'Surikat/template/',
+			'surikat/template/',
 		]);
 		$this->setCleanRegister('.tmp/synaptic/min-registry.txt');
 		$this->setPluginPrefix(self::getPluginPrefixDefault());

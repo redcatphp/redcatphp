@@ -33,7 +33,7 @@ class GitDeploy{
 		
 		if(!isset($config)){
 			$config = [];
-			foreach(['Surikat/',''] as $d){
+			foreach(['surikat/',''] as $d){
 				if(is_file($f=$d.'config/deploy.ini')){
 					$config = self::array_merge_recursive($config,parse_ini_file($f,true));
 				}

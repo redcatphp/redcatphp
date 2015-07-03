@@ -2,9 +2,9 @@
 	"name": "surikat/surikat",
 	"type": "library",
 	"description": "Surikat is a Full Stack Framework for Web Development",
-	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "MVC", "RAD"],
+	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "RAD", "MVC"],
 	"license": "LGPL-3.0+",
-	"homepage": "https://github.com/surikat/Surikat",
+	"homepage": "https://github.com/surikat/surikat",
 	"authors": [
 		{
 			"name": "Jo Surikat",
@@ -18,7 +18,7 @@
 	},
 	"autoload": {
 		"psr-4":{
-			"Surikat\\": "php"
+			"": "php/"
 		}
 	},
 	"minimum-stability": "alpha"

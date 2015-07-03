@@ -23,7 +23,7 @@ class Synaptic {
 	}
 	function __invoke($params){
 		list($filename,$extension) = $params;
-		$this->appendDir('Surikat');
+		$this->appendDir('surikat');
 		$this->load($this->pathFS.$filename.'.'.$extension);
 	}
 	
