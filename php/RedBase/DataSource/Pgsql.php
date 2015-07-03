@@ -21,56 +21,72 @@ class Pgsql extends SQL{
 	}
 	function createTable( $table ){
 		$table = $this->escTable($table);
-		$this->pdo->exec(" CREATE TABLE $table (id SERIAL PRIMARY KEY); ");
+		$this->execute(" CREATE TABLE $table (id SERIAL PRIMARY KEY); ");
 	}
 	function scanType( $value, $flagSpecial = FALSE ){
-
-		if ( $value === INF ) return self::C_DATATYPE_TEXT;
-
+		if ( $value === INF )
+			return self::C_DATATYPE_TEXT;
 		if ( $flagSpecial && $value ) {
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) ) {
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_DATE;
-			}
-
-			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d(\.\d{1,6})?$/', $value ) ) {
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d(\.\d{1,6})?$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_DATETIME;
-			}
-
-			if ( preg_match( '/^\([\d\.]+,[\d\.]+\)$/', $value ) ) {
+			if ( preg_match( '/^\([\d\.]+,[\d\.]+\)$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_POINT;
-			}
-
-			if ( preg_match( '/^\[\([\d\.]+,[\d\.]+\),\([\d\.]+,[\d\.]+\)\]$/', $value ) ) {
+			if ( preg_match( '/^\[\([\d\.]+,[\d\.]+\),\([\d\.]+,[\d\.]+\)\]$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_LSEG;
-			}
-
-			if ( preg_match( '/^\<\([\d\.]+,[\d\.]+\),[\d\.]+\>$/', $value ) ) {
+			if ( preg_match( '/^\<\([\d\.]+,[\d\.]+\),[\d\.]+\>$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_CIRCLE;
-			}
-
-			if ( preg_match( '/^\((\([\d\.]+,[\d\.]+\),?)+\)$/', $value ) ) {
+			if ( preg_match( '/^\((\([\d\.]+,[\d\.]+\),?)+\)$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_POLYGON;
-			}
-
-			if ( preg_match( '/^\-?(\$|€|¥|£)[\d,\.]+$/', $value ) ) {
+			if ( preg_match( '/^\-?(\$|€|¥|£)[\d,\.]+$/', $value ) )
 				return self::C_DATATYPE_SPECIAL_MONEY;
-			}
 		}
-
-		if ( is_float( $value ) ) return self::C_DATATYPE_DOUBLE;
-
-		if ( self::startsWithZeros( $value ) ) return self::C_DATATYPE_TEXT;
-		
+		if ( is_float( $value ) )
+			return self::C_DATATYPE_DOUBLE;
+		if ( self::startsWithZeros( $value ) )
+			return self::C_DATATYPE_TEXT;
 		if ( $value === FALSE || $value === TRUE || $value === NULL || ( is_numeric( $value )
 				&& self::canBeTreatedAsInt( $value )
 				&& $value < 2147483648
 				&& $value > -2147483648 )
-		) {
+		)
 			return self::C_DATATYPE_INTEGER;
-		} elseif ( is_numeric( $value ) ) {
+		elseif ( is_numeric( $value ) )
 			return self::C_DATATYPE_DOUBLE;
-		} else {
+		else
 			return self::C_DATATYPE_TEXT;
+	}
+	function getTables(){
+		return $this->getCol('SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )');
+	}
+	function getColumns($table){
+		$table = $this->prefixTable($table);
+		$columnsRaw = $this->getAll("SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'");
+		$columns = [];
+		foreach ( $columnsRaw as $r ) {
+			$columns[$r['column_name']] = $r['data_type'];
 		}
+		return $columns;
+	}
+	function createTable($table){
+		$table = $this->escTable($table);
+		$this->execute("CREATE TABLE $table (id SERIAL PRIMARY KEY);");
+	}
+	function addColumn( $type, $column, $field ){
+		$table  = $type;
+		$type   = $field;
+		$table  = $this->escTable( $table );
+		$column = $this->esc( $column );
+		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
+		$this->execute("ALTER TABLE $table ADD $column $type ");
+	}
+	function changeColumn( $type, $column, $datatype ){
+		$table   = $type;
+		$type    = $datatype;
+		$table   = $this->escTable( $table );
+		$column  = $this->esc( $column );
+		$newtype = $this->typeno_sqltype[$type];
+		$this->execute( "ALTER TABLE $table \n\t ALTER COLUMN $column TYPE $newtype " );
 	}
 }
