@@ -54,13 +54,13 @@ class Sqlite extends SQL{
 	}
 	function createTable($table){
 		$table = $this->escTable($table);
-		$this->pdo->exec('CREATE TABLE '.$table.' ( id INTEGER PRIMARY KEY AUTOINCREMENT ) ');
+		$this->execute('CREATE TABLE '.$table.' ( id INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
 	function addColumn($table, $column, $type){
 		$column = $this->check($column);
 		$table  = $this->check($table);
 		$type   = $this->typeno_sqltype[$type];
-		$this->pdo->exec('ALTER TABLE `'.$table.'` ADD `'.$column.'` '.$type);
+		$this->execute('ALTER TABLE `'.$table.'` ADD `'.$column.'` '.$type);
 	}
 	function changeColumn($type, $column, $datatype){
 		$t = $this->getTable( $type );
@@ -112,7 +112,7 @@ class Sqlite extends SQL{
 		$q[] = "INSERT INTO `$table` SELECT * FROM tmp_backup;";
 		$q[] = "DROP TABLE tmp_backup;";
 		$q[] = "PRAGMA foreign_keys = 1 ";
-		foreach ( $q as $sq ) $this->pdo->exec( $sq );
+		foreach ( $q as $sq ) $this->execute( $sq );
 	}
 	function getTable( $type ){
 		$tableName = $this->prefixTable($type);

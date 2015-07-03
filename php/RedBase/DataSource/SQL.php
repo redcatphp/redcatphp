@@ -245,7 +245,7 @@ abstract class SQL extends DataSource{
 				}
 				$this->setPDO($dsn);
 				$this->createDatabase($dbname);
-				$this->pdo->exec('use '.$dbname);
+				$this->execute('use '.$dbname);
 				$this->isConnected = true;
 			}
 			else{

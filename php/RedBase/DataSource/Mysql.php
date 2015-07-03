@@ -10,10 +10,10 @@ class Mysql extends SQL{
 		if($version >= 5.5)
 			$this->encoding =  'utf8mb4';
 		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
-		$this->pdo->exec(' SET NAMES '. $this->encoding); //also for current connection
+		$this->execute(' SET NAMES '. $this->encoding); //also for current connection
 	}
 	function createDatabase($dbname){
-		$this->pdo->exec('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
+		$this->execute('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
 	}
 	
 	const C_DATATYPE_BOOL             = 0;
