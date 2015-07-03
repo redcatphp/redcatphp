@@ -114,6 +114,11 @@ return [
 				'$devImg'=>'dev.img',
 			],
 		],
+		'KungFu\TemplixPlugin\Templix'=>[
+			'call'=>[
+				'addPluginPrefix'=>'KungFu\TemplixPlugin\Markup\\',
+			],
+		],
 		'KungFu\Cms\FrontController\Synaptic'=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
