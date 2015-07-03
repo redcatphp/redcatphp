@@ -27,7 +27,6 @@ abstract class SQL extends DataSource{
 	protected $primaryKey;
 	protected $uniqTextKey;
 	protected $frozen;
-	protected $dataSource;
 	protected $typeno_sqltype = [];
 	protected $sqltype_typeno = [];
 	protected $quoteCharacter = '"';
@@ -504,7 +503,7 @@ abstract class SQL extends DataSource{
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
 		$row = $this->getRow($sql,[$id]);
 		if($row){
-			$c = $this->dataSource->findEntityClass($type);
+			$c = $this->findEntityClass($type);
 			$obj = new $c();
 			foreach($row as $k=>$v)
 				$obj->$k = $v;
