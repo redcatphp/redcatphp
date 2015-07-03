@@ -2,7 +2,7 @@
 namespace RedBase\DataSource;
 use RedBase\DataSource;
 use RedBase\RedBase;
-use RedBase\DataTable\Relational as DataTableRelational;
+use RedBase\DataTable\SQL as DataTableSQL;
 use RedBase\Logger\SqlLogger;
 abstract class SQL extends DataSource{
 	protected $dsn;
@@ -149,7 +149,7 @@ abstract class SQL extends DataSource{
 		return $type.$host.$file.$port.$name;
 	}
 	function loadTable($k,$primaryKey,$uniqTextKey){
-		return new DataTableRelational($k,$primaryKey,$uniqTextKey,$this);
+		return new DataTableSQL($k,$primaryKey,$uniqTextKey,$this);
 	}	
 	
 	

@@ -2,7 +2,7 @@
 namespace RedBase\DataTable;
 use RedBase\DataTable;
 use RedBase\SqlComposer\Select;
-class Relational extends DataTable{
+class SQL extends DataTable{
 	private $stmt;
 	private $row;
 	private $select;
