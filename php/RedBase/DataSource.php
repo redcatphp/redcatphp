@@ -1,6 +1,6 @@
 <?php
 namespace RedBase;
-abstract class AbstractDataSource implements DataSourceInterface{
+abstract class DataSource implements \ArrayAccess{
 	protected $globality;
 	protected $entityClassPrefix;
 	protected $entityClassDefault;
@@ -11,7 +11,7 @@ abstract class AbstractDataSource implements DataSourceInterface{
 	abstract function readRow($type,$id,$primaryKey='id');
 	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
 	abstract function deleteRow($type,$id,$primaryKey='id');
-	function __construct(Globality $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
+	function __construct(RedBase $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->globality = $globality;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;

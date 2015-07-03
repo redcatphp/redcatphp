@@ -1,7 +1,10 @@
 <?php
-namespace RedBase\DataSource\Relational\Sqlite;
-use RedBase\DataSourceInterface;
-class Query extends \RedBase\DataSource\Relational\AbstractQuery{
+namespace RedBase\DataSource;
+class Sqlite extends SQL{
+	function createDatabase($dbname){
+		
+	}
+	
 	const C_DATATYPE_INTEGER   = 0;
 	const C_DATATYPE_NUMERIC   = 1;
 	const C_DATATYPE_TEXT      = 2;
@@ -9,7 +12,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	
 	protected $quoteCharacter = '`';
 	
-	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,DataSourceInterface $dataSource,$tablePrefix){
+	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,$dataSource,$tablePrefix){
 		parent::__construct($pdo,$primaryKey,$uniqTextKey,$frozen,$dataSource,$tablePrefix);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER => 'INTEGER',
@@ -39,11 +42,11 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		return self::C_DATATYPE_TEXT;
 	}
 	function getTables(){
-		return $this->pdo->getCol( "SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';" );
+		return $this->getCol( "SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';" );
 	}
 	function getColumns($table){
 		$table      = $this->prefixTable($table);
-		$columnsRaw = $this->pdo->getAll("PRAGMA table_info('$table')");
+		$columnsRaw = $this->getAll("PRAGMA table_info('$table')");
 		$columns    = [];
 		foreach($columnsRaw as $r)
 			$columns[$r['name']] = $r['type'];
@@ -126,17 +129,17 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	}
 	function getIndexes( $type ){
 		$table   = $this->prefixTable( $type );
-		$indexes = $this->pdo->getAll( "PRAGMA index_list('$table')" );
+		$indexes = $this->getAll( "PRAGMA index_list('$table')" );
 		$indexInfoList = [];
 		foreach ( $indexes as $i ) {
-			$indexInfoList[$i['name']] = $this->pdo->getRow( "PRAGMA index_info('{$i['name']}') " );
+			$indexInfoList[$i['name']] = $this->getRow( "PRAGMA index_info('{$i['name']}') " );
 			$indexInfoList[$i['name']]['unique'] = $i['unique'];
 		}
 		return $indexInfoList;
 	}
 	function getKeyMapForType( $type ){
 		$table = $this->prefixTable( $type );
-		$keys  = $this->pdo->getAll( "PRAGMA foreign_key_list('$table')" );
+		$keys  = $this->getAll( "PRAGMA foreign_key_list('$table')" );
 		$keyInfoList = [];
 		foreach ( $keys as $k ) {
 			$label = self::makeFKLabel( $k['from'], $k['table'], $k['to'] );
@@ -150,5 +153,10 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 			];
 		}
 		return $keyInfoList;
+	}
+	function fulltextQueryParts($search){
+		
+		
+		return [$select,$from,$where,$orderBy];
 	}
 }

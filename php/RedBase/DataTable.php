@@ -1,13 +1,14 @@
 <?php
 namespace RedBase;
-abstract class AbstractTable implements \ArrayAccess,\Iterator,\Countable{
+use RedBase\Helper\Pagination;
+abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	protected $name;
 	protected $primaryKey;
 	protected $uniqTextKey;
 	protected $dataSource;
 	protected $data = [];
 	protected $useCache = true;
-	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
+	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		$this->name = $name;
 		$this->primaryKey = $primaryKey;
 		$this->uniqTextKey = $uniqTextKey;

@@ -1,13 +1,12 @@
 <?php
-namespace RedBase\DataSource\Filesystem;
-use RedBase\AbstractTable;
-use RedBase\DataSourceInterface;
-class Table extends AbstractTable{
+namespace RedBase\DataTable;
+use RedBase\DataTable;
+class Filesystem extends DataTable{
 	private $directoryIterator;
 	private $patterns = [];
 	private $antiPatterns = [];
 	private $rewind;
-	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
+	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);
 		$this->directoryIterator = new \DirectoryIterator($this->dataSource->getDirectory().'/'.$this->name);
 	}
@@ -19,15 +18,6 @@ class Table extends AbstractTable{
 	}
 	function current(){
 		$iterator = $this->directoryIterator->current();
-		//while(
-			//$this->valid()&&
-			//(
-				//$iterator->isDot()
-				//||$this->patternMatch()
-				//||$this->antiPatternMatch()
-			//)
-		//)
-			//$iterator->next();
 		if($iterator){
 			$c = $this->dataSource->findEntityClass($this->name);
 			$obj = new $c();

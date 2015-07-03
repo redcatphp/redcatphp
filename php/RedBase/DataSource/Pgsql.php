@@ -1,6 +1,6 @@
 <?php
-namespace RedBase\DataSource\Relational\Pgsql;
-class Query extends \RedBase\DataSource\Relational\AbstractQuery{
+namespace RedBase\DataSource;
+class Pgsql extends SQL{
 	const C_DATATYPE_INTEGER          = 0;
 	const C_DATATYPE_DOUBLE           = 1;
 	const C_DATATYPE_TEXT             = 3;
@@ -17,7 +17,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		return 'RETURNING '.$primaryKey.' ';
 	}
 	function getTables(){
-		return $this->pdo->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
+		return $this->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
 	}
 	function createTable( $table ){
 		$table = $this->escTable($table);

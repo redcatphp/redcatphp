@@ -1,18 +1,17 @@
 <?php
-namespace RedBase\DataSource\Relational;
-use RedBase\AbstractTable;
-use RedBase\DataSourceInterface;
+namespace RedBase\DataTable;
+use RedBase\DataTable;
 use RedBase\SqlComposer\Select;
-class Table extends AbstractTable{
+class Relational extends DataTable{
 	private $stmt;
 	private $row;
 	private $select;
-	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',DataSourceInterface $dataSource){
+	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);		
 		$this->select = new Select(
 			$this->name,
-			$this->dataSource->getQuery()->getQuoteCharacter(),
-			$this->dataSource->getQuery()->getTablePrefix()
+			$this->dataSource->getQuoteCharacter(),
+			$this->dataSource->getTablePrefix()
 		);
 	}
 	function exists(){
@@ -21,7 +20,7 @@ class Table extends AbstractTable{
 	function rewind(){
 		if(!$this->exists())
 			return;
-		$this->stmt = $this->dataSource->getPDO()->fetch($this->select->getQuery(),$this->select->getParams());
+		$this->stmt = $this->dataSource->fetch($this->select->getQuery(),$this->select->getParams());
 		$this->next();
 	}
 	function current(){
@@ -256,5 +255,13 @@ class Table extends AbstractTable{
 	}
 	function unCloseHaving(){
 		return $this->select->unCloseHaving();
+	}
+	
+	function fulltext($search){
+		list($select,$from,$where,$orderBy) = $this->dataSource->getQuery()->fulltextQueryParts($search);
+		$this->select($select);
+		$this->from($from);
+		$this->where($where);
+		$this->orderBy($orderBy);
 	}
 }

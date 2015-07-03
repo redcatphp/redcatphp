@@ -1,5 +1,5 @@
 <?php
-namespace RedBase;
+namespace RedBase\Helper;
 class Pagination{
 	var $start;
 	var $end;

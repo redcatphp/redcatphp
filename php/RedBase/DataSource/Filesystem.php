@@ -1,11 +1,11 @@
 <?php
 namespace RedBase\DataSource;
-use RedBase\AbstractDataSource;
-use RedBase\Globality;
-use RedBase\DataSource\Filesystem\Table;
-class Filesystem extends AbstractDataSource{
+use RedBase\DataSource;
+use RedBase\RedBase;
+use RedBase\DataTable\Filesystem as DataTableFilesystem;
+class Filesystem extends DataSource{
 	private $directory;
-	function __construct(Globality $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
+	function __construct(RedBase $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 		
 		if(isset($config[0]))
@@ -35,6 +35,6 @@ class Filesystem extends AbstractDataSource{
 		
 	}
 	function loadTable($k,$primaryKey,$uniqTextKey){
-		return new Table($k,$primaryKey,$uniqTextKey,$this);
+		return new DataTableFilesystem($k,$primaryKey,$uniqTextKey,$this);
 	}
 }

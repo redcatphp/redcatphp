@@ -20,7 +20,6 @@ return [
 		],
 		'databaseMap'=>[
 			0 => [
-				'dataSourceType'=>'relational',
 				'type'=>'sqlite',
 				'file'=>SURIKAT_CWD.'.data/db.sqlite',
 				'entityClassPrefix'=>['Model\\'],
@@ -52,7 +51,7 @@ return [
 		],
 	],
 	'rules'=>[
-		'RedBase\Globality'	=> [
+		'RedBase\RedBase'	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',

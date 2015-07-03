@@ -1,6 +1,6 @@
 <?php
-namespace RedBase\DataSource\Relational;
-class Logger {
+namespace RedBase\Logger;
+class SqlLogger {
 	protected $echo;
 	protected $keep;
 	protected $logs = [];

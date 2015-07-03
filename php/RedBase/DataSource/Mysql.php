@@ -1,7 +1,20 @@
 <?php
-namespace RedBase\DataSource\Relational\Mysql;
-use RedBase\DataSourceInterface;
-class Query extends \RedBase\DataSource\Relational\AbstractQuery{
+namespace RedBase\DataSource;
+class Mysql extends SQL{
+	protected $unknownDatabaseCode = 1049;
+	function connect(){
+		if($this->isConnected)
+			return;
+		parent::connect();
+		$version = floatval( $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION ) );
+		if($version >= 5.5)
+			$this->encoding =  'utf8mb4';
+		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
+		$this->pdo->exec(' SET NAMES '. $this->encoding); //also for current connection
+	}
+	function createDatabase($dbname){
+		$this->pdo->exec('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
+	}
 	
 	const C_DATATYPE_BOOL             = 0;
 	const C_DATATYPE_UINT32           = 2;
@@ -19,7 +32,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 	
 	protected $quoteCharacter = '`';
 	
-	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,DataSourceInterface $dataSource,$tablePrefix){
+	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,$dataSource,$tablePrefix){
 		parent::__construct($pdo,$primaryKey,$uniqTextKey,$frozen,$dataSource,$tablePrefix);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_BOOL             => ' TINYINT(1) UNSIGNED ',
@@ -77,18 +90,18 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		return self::C_DATATYPE_TEXT32;
 	}
 	function getTables(){
-		return $this->pdo->getCol('show tables');
+		return $this->getCol('show tables');
 	}
 	function getColumns($table){
 		$columns = [];
-		foreach($this->pdo->getAll('DESCRIBE '.$this->escTable($table)) as $r)
+		foreach($this->getAll('DESCRIBE '.$this->escTable($table)) as $r)
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
 	function createTable($table){
 		$table = $this->escTable($table);
-		$encoding = $this->pdo->getEncoding();
-		$this->pdo->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+		$encoding = $this->getEncoding();
+		$this->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
 	function addColumn($type,$column,$field){
 		$table  = $type;
@@ -96,7 +109,7 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		$table  = $this->escTable($table);
 		$column = $this->esc($column);
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
-		$this->pdo->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
+		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
 	function changeColumn($type,$property,$dataType ){
 		if(!isset($this->typeno_sqltype[$dataType]))
@@ -104,12 +117,12 @@ class Query extends \RedBase\DataSource\Relational\AbstractQuery{
 		$table   = $this->escTable( $type );
 		$column  = $this->esc( $property );
 		$newType = $this->typeno_sqltype[$dataType];
-		$this->pdo->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$newType);
+		$this->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$newType);
 		return true;
 	}
 	protected function getKeyMapForType($table){
 		$this->check($table);
-		$keys = $this->pdo->getAll('
+		$keys = $this->getAll('
 			SELECT
 				information_schema.key_column_usage.constraint_name AS `name`,
 				information_schema.key_column_usage.referenced_table_name AS `table`,

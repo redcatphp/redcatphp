@@ -1,18 +1,16 @@
 <?php
 namespace RedBase;
-class Globality implements \ArrayAccess{
+class RedBase implements \ArrayAccess{
 	private $map;
 	private $mapObjects= [];
 	private $entityClassPrefix;
 	private $entityClassDefault;
-	private $dataSourceDefault;
 	private $primaryKeyDefault;
 	private $uniqTextKeyDefault;
-	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$dataSourceDefault='relational',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
+	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
 		$this->map = $map;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
-		$this->dataSourceDefault = $dataSourceDefault;
 		$this->primaryKeyDefault = $primaryKeyDefault;
 		$this->uniqTextKeyDefault = $uniqTextKeyDefault;
 	}
@@ -34,15 +32,20 @@ class Globality implements \ArrayAccess{
 			unset($this->map[$k]);
 	}
 	private function loadDataSource(array $config){
-		$dataSourceType = $this->dataSourceDefault;
 		$entityClassPrefix = $this->entityClassPrefix;
 		$entityClassDefault = $this->entityClassDefault;
 		$primaryKey = $this->primaryKeyDefault;
 		$uniqTextKey = $this->uniqTextKeyDefault;
-		if(isset($config['dataSourceType'])){
-			$dataSourceType = $config['dataSourceType'];
-			unset($config['dataSourceType']);
-		}
+		
+		
+		
+		if(isset($config['type']))
+			$type = $config['type'];
+		elseif((isset($config[0])&&($dsn=$config[0]))||(isset($config['dsn'])&&($dsn=$config['dsn'])))
+			$type = strtolower(substr($dsn,0,strpos($dsn,':')));
+		else
+			throw new \InvalidArgumentException('Undefined type of DataSource, please use atleast key type, dsn or offset 0');
+		
 		if(isset($config['entityClassPrefix'])){
 			$entityClassPrefix = $config['entityClassPrefix'];
 			unset($config['entityClassPrefix']);
@@ -59,7 +62,7 @@ class Globality implements \ArrayAccess{
 			$uniqTextKey = $config['uniqTextKey'];
 			unset($config['uniqTextKey']);
 		}
-		$class = __NAMESPACE__.'\\DataSource\\'.ucfirst($dataSourceType);
+		$class = __NAMESPACE__.'\\DataSource\\'.ucfirst($type);
 		return new $class($this,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 	}
 }
