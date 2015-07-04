@@ -226,4 +226,16 @@ class Mysql extends SQL{
 		}
 		return true;
 	}
+	function addIndex( $type, $name, $property ){
+		try {
+			$table  = $this->escTable( $type );
+			$name   = preg_replace( '/\W/', '', $name );
+			$column = $this->esc( $property );
+			$this->execute("CREATE INDEX $name ON $table ($column) ");
+			return true;
+		}
+		catch( \PDOException $e ){
+			return false;
+		}
+	}
 }

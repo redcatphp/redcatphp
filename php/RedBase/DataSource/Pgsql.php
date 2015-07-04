@@ -180,9 +180,22 @@ class Pgsql extends SQL{
                 ADD CONSTRAINT $name UNIQUE (" . implode( ',', $columns ) . ")";
 		try {
 			$this->execute( $sql );
-		} catch( \PDOException $e ) {
+		}
+		catch( \PDOException $e ) {
 			return false;
 		}
 		return true;
+	}
+	function addIndex( $type, $name, $property ){
+		$table  = $this->escTable( $type );
+		$name   = preg_replace( '/\W/', '', $name );
+		$column = $this->esc( $property );
+		try{
+			$this->execute( "CREATE INDEX {$name} ON $table ({$column}) " );
+			return true;
+		}
+		catch(\PDOException $e){
+			return false;
+		}
 	}
 }

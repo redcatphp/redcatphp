@@ -211,6 +211,22 @@ class Sqlite extends SQL{
 		}
 		return true;
 	}
+	function addIndex( $type, $name, $column ){
+		$columns = $this->getColumns( $type );
+		if ( !isset( $columns[$column] ) )
+			return false;
+		$table  = $this->escTable( $type );
+		$name   = preg_replace( '/\W/', '', $name );
+		$column = $this->check( $column );
+		try {
+			$t = $this->getTable( $type );
+			$t['indexes'][$name] = [ 'name' => $column ];
+			$this->putTable($t);
+			return true;
+		} catch( \PDOException $exception ) {
+			return false;
+		}
+	}
 	
 	function fulltextQueryParts($search){
 		

@@ -627,4 +627,5 @@ abstract class SQL extends DataSource{
 	abstract function columnCode($typedescription, $includeSpecials);
 	abstract function getTypeForID();
 	abstract function addUniqueConstraint($type,$properties);
+	abstract function addIndex( $type, $name, $property );
 }

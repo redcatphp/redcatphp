@@ -95,4 +95,15 @@ class Cubrid extends SQL{
 		}
 		return true;
 	}
+	function addIndex( $type, $name, $column ){
+		try {
+			$table  = $this->escTable( $type );
+			$name   = preg_replace( '/\W/', '', $name );
+			$column = $this->esc( $column );
+			$this->execute( "CREATE INDEX $name ON $table ($column) " );
+			return true;
+		} catch ( \PDOException $e ) {
+			return false;
+		}
+	}
 }
