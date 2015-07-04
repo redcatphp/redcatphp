@@ -3,7 +3,7 @@ namespace RedBase\DataSource;
 use RedBase\DataSource;
 use RedBase\RedBase;
 use RedBase\DataTable\SQL as DataTableSQL;
-use RedBase\Logger\SqlLogger;
+use RedBase\Helper\SqlLogger;
 abstract class SQL extends DataSource{
 	protected $dsn;
 	protected $pdo;

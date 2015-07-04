@@ -1,5 +1,5 @@
 <?php
-namespace RedBase\Logger;
+namespace RedBase\Helper;
 class SqlLogger {
 	protected $echo;
 	protected $keep;
