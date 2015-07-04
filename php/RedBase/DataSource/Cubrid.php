@@ -1,6 +1,12 @@
 <?php
 namespace RedBase\DataSoure;
 class Cubrid extends SQL{
+	const C_DATATYPE_INTEGER          = 0;
+	const C_DATATYPE_DOUBLE           = 1;
+	const C_DATATYPE_STRING           = 2;
+	const C_DATATYPE_SPECIAL_DATE     = 80;
+	const C_DATATYPE_SPECIAL_DATETIME = 81;
+	const C_DATATYPE_SPECIFIED        = 99;
 	protected $max = 2147483647;
 	function getTables(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
@@ -69,6 +75,9 @@ class Cubrid extends SQL{
 		if ( $r >= QueryWriter::C_DATATYPE_RANGE_SPECIAL )
 			return self::C_DATATYPE_SPECIFIED;
 		return $r;
+	}
+	function getTypeForID(){
+		return self::C_DATATYPE_INTEGER;
 	}
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );

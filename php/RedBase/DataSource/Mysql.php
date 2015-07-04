@@ -205,6 +205,9 @@ class Mysql extends SQL{
 			return self::C_DATATYPE_SPECIFIED;
 		return $r;
 	}
+	function getTypeForID(){
+		return self::C_DATATYPE_UINT32;
+	}
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );
 		$columns = [];

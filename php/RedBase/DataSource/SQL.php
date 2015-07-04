@@ -625,5 +625,6 @@ abstract class SQL extends DataSource{
 	abstract function addFK($type,$targetType,$property,$targetProperty,$isDep);
 	abstract protected function getKeyMapForType( $type );
 	abstract function columnCode($typedescription, $includeSpecials);
+	abstract function getTypeForID();
 	abstract function addUniqueConstraint($type,$properties);
 }

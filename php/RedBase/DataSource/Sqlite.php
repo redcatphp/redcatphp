@@ -196,6 +196,9 @@ class Sqlite extends SQL{
 	function columnCode( $typedescription, $includeSpecials = FALSE ){
 		return  ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription]:99;
 	}
+	function getTypeForID(){
+		return self::C_DATATYPE_INTEGER;
+	}
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );
 		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', $properties );

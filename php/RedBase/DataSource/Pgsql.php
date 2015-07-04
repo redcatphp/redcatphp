@@ -165,6 +165,9 @@ class Pgsql extends SQL{
 			return self::C_DATATYPE_SPECIFIED;
 		return $r;
 	}
+	function getTypeForID(){
+		return self::C_DATATYPE_INTEGER;
+	}
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );
 		$columns = [];
