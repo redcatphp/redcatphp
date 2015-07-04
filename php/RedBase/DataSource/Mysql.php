@@ -120,8 +120,45 @@ class Mysql extends SQL{
 		$this->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$newType);
 		return true;
 	}
-	protected function getKeyMapForType($table){
-		$this->check($table);
+	protected function makeFKLabel($from, $type, $to){
+		return "from_{$from}_to_table_{$type}_col_{$to}";
+	}
+	
+	function addFK( $type, $targetType, $property, $targetProperty, $isDependent = FALSE )
+	{
+		$table = $this->escTable( $type );
+		$targetTable = $this->escTable( $targetType );
+		$targetTableNoQ = $this->prefixTable( $targetType );
+		$field = $this->esc( $property );
+		$fieldNoQ = $this->check( $property);
+		$targetField = $this->esc( $targetProperty );
+		$targetFieldNoQ = $this->check( $targetProperty );
+		$tableNoQ = $this->prefixTable( $type );
+		$fieldNoQ = $this->check( $property);
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+
+		//Widen the column if it's incapable of representing a foreign key (at least INT).
+		$columns = $this->getColumns( $tableNoQ );
+		$idType = $this->getTypeForID();
+		if ( $this->code( $columns[$fieldNoQ] ) !==  $idType ) {
+			$this->changeColumn( $type, $property, $idType );
+		}
+
+		$fkName = 'fk_'.($tableNoQ.'_'.$fieldNoQ);
+		$cName = 'c_'.$fkName;
+		try {
+			$this->execute( "
+				ALTER TABLE {$table}
+				ADD CONSTRAINT $cName
+				FOREIGN KEY $fkName ( {$fieldNoQ} ) REFERENCES {$targetTableNoQ}
+				({$targetFieldNoQ}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
+		} catch ( \PDOException $e ) {
+			// Failure of fk-constraints is not a problem
+		}
+	}
+	protected function getKeyMapForType( $type )
+	{
+		$table = $this->prefixTable( $type );
 		$keys = $this->getAll('
 			SELECT
 				information_schema.key_column_usage.constraint_name AS `name`,
@@ -145,19 +182,45 @@ class Mysql extends SQL{
 		', [$table]);
 		$keyInfoList = [];
 		foreach ( $keys as $k ) {
-			$label = $this->makeFKLabel( $k['from'], $k['table'], $k['to'] );
-			$keyInfoList[$label] = [
+			$label = self::makeFKLabel( $k['from'], $k['table'], $k['to'] );
+			$keyInfoList[$label] = array(
 				'name'          => $k['name'],
 				'from'          => $k['from'],
 				'table'         => $k['table'],
 				'to'            => $k['to'],
 				'on_update'     => $k['on_update'],
 				'on_delete'     => $k['on_delete']
-			];
+			);
 		}
 		return $keyInfoList;
 	}
-	protected function makeFKLabel($from, $type, $to){
-		return "from_{$from}_to_table_{$type}_col_{$to}";
+	function columnCode($typedescription, $includeSpecials = FALSE ){
+		if ( isset( $this->sqltype_typeno[$typedescription] ) )
+			$r = $this->sqltype_typeno[$typedescription];
+		else
+			$r = self::C_DATATYPE_SPECIFIED;
+		if ( $includeSpecials )
+			return $r;
+		if ( $r >= self::C_DATATYPE_RANGE_SPECIAL )
+			return self::C_DATATYPE_SPECIFIED;
+		return $r;
+	}
+	function addUniqueConstraint( $type, $properties ){
+		$tableNoQ = $this->prefixTable( $type );
+		$columns = [];
+		foreach( $properties as $key => $column )
+			$columns[$key] = $this->esc( $column );
+		$table = $this->escTable( $type );
+		sort( $columns ); // Else we get multiple indexes due to order-effects
+		$name = 'UQ_' . sha1( implode( ',', $columns ) );
+		try {
+			$sql = "ALTER TABLE $table
+						 ADD UNIQUE INDEX $name (" . implode( ',', $columns ) . ")";
+			$this->execute( $sql );
+		} catch ( \PDOException $e ) {
+			//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
+			return false;
+		}
+		return true;
 	}
 }

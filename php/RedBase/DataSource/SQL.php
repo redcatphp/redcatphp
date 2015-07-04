@@ -211,7 +211,8 @@ abstract class SQL extends DataSource{
 		$this->flagUseStringOnlyBinding = (boolean) $yesNo;
 	}
 	function setMaxIntBind( $max ){
-		if ( !is_integer( $max ) ) throw new \Exception( 'Parameter has to be integer.' );
+		if ( !is_integer( $max ) )
+			throw new \InvalidArgumentException( 'Parameter has to be integer.' );
 		$oldMax = $this->max;
 		$this->max = $max;
 		return $oldMax;
@@ -590,10 +591,39 @@ abstract class SQL extends DataSource{
 		return 'from_'.$from.'_to_table_'.$type.'_col_'.$to;
 	}
 	
+	/**
+	 * Given a type and a property name this method
+	 * returns the foreign key map section associated with this pair.
+	 *
+	 * @param string $type     name of the type
+	 * @param string $property name of the property
+	 *
+	 * @return array|NULL
+	 */
+	protected function getForeignKeyForTypeProperty( $type, $property ){
+		$property = $this->check( $property );
+		try {
+			$map = $this->getKeyMapForType( $type );
+		}
+		catch ( \PDOException $e ) {
+			return NULL;
+		}
+
+		foreach( $map as $key ) {
+			if ( $key['from'] === $property ) return $key;
+		}
+		return NULL;
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	abstract function getTables();
 	abstract function getColumns($table);
 	abstract function createTable($table);
 	abstract function addColumn($type,$column,$field);
 	abstract function changeColumn($type,$property,$dataType);
+	
+	abstract function addFK($type,$targetType,$property,$targetProperty,$isDep);
+	abstract protected function getKeyMapForType( $type );
+	abstract function columnCode($typedescription, $includeSpecials);
+	abstract function addUniqueConstraint($type,$properties);
 }

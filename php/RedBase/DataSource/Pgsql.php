@@ -89,4 +89,97 @@ class Pgsql extends SQL{
 		$newtype = $this->typeno_sqltype[$type];
 		$this->execute( "ALTER TABLE $table \n\t ALTER COLUMN $column TYPE $newtype " );
 	}
+	
+	protected function getKeyMapForType( $type )
+	{
+		$table = $this->prefixTable( $type );
+		$keys = $this->getAll( '
+			SELECT
+			information_schema.key_column_usage.constraint_name AS "name",
+			information_schema.key_column_usage.column_name AS "from",
+			information_schema.constraint_table_usage.table_name AS "table",
+			information_schema.constraint_column_usage.column_name AS "to",
+			information_schema.referential_constraints.update_rule AS "on_update",
+			information_schema.referential_constraints.delete_rule AS "on_delete"
+				FROM information_schema.key_column_usage
+			INNER JOIN information_schema.constraint_table_usage
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.constraint_table_usage.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_table_usage.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_table_usage.constraint_catalog
+				)
+			INNER JOIN information_schema.constraint_column_usage
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.constraint_column_usage.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.constraint_column_usage.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.constraint_column_usage.constraint_catalog
+				)
+			INNER JOIN information_schema.referential_constraints
+				ON (
+					information_schema.key_column_usage.constraint_name = information_schema.referential_constraints.constraint_name
+					AND information_schema.key_column_usage.constraint_schema = information_schema.referential_constraints.constraint_schema
+					AND information_schema.key_column_usage.constraint_catalog = information_schema.referential_constraints.constraint_catalog
+				)
+			WHERE
+				information_schema.key_column_usage.table_catalog = current_database()
+				AND information_schema.key_column_usage.table_schema = ANY( current_schemas( FALSE ) )
+				AND information_schema.key_column_usage.table_name = ?
+		', [$type] );
+		$keyInfoList = [];
+		foreach ( $keys as $k ) {
+			$label = self::makeFKLabel( $k['from'], $k['table'], $k['to'] );
+			$keyInfoList[$label] = array(
+				'name'          => $k['name'],
+				'from'          => $k['from'],
+				'table'         => $k['table'],
+				'to'            => $k['to'],
+				'on_update'     => $k['on_update'],
+				'on_delete'     => $k['on_delete']
+			);
+		}
+		return $keyInfoList;
+	}
+	function addFK( $type, $targetType, $property, $targetProperty, $isDep = FALSE ){
+		$table = $this->escTable( $type );
+		$targetTable = $this->escTable( $targetType );
+		$field = $this->esc( $property );
+		$targetField = $this->esc( $targetProperty );
+		$tableNoQ = $this->prefixTable( $type );
+		$fieldNoQ = $this->check( $property );
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		try{
+			$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
+			$this->execute( "ALTER TABLE {$table}
+				ADD FOREIGN KEY ( {$field} ) REFERENCES  {$targetTable}
+				({$targetField}) ON DELETE {$delRule} ON UPDATE {$delRule} DEFERRABLE ;" );
+			return true;
+		} catch ( \PDOException $e ) {
+			return false;
+		}
+	}
+	function columnCode( $typedescription, $includeSpecials = FALSE ){
+		$r = isset($this->sqltype_typeno[$typedescription])?$this->sqltype_typeno[$typedescription]:99;
+		if ( $includeSpecials )
+			return $r;
+		if ( $r >= self::C_DATATYPE_RANGE_SPECIAL )
+			return self::C_DATATYPE_SPECIFIED;
+		return $r;
+	}
+	function addUniqueConstraint( $type, $properties ){
+		$tableNoQ = $this->prefixTable( $type );
+		$columns = [];
+		foreach( $properties as $key => $column )
+			$columns[$key] = $this->esc( $column );
+		$table = $this->escTable( $type );
+		sort( $columns ); //else we get multiple indexes due to order-effects
+		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
+		$sql = "ALTER TABLE {$table}
+                ADD CONSTRAINT $name UNIQUE (" . implode( ',', $columns ) . ")";
+		try {
+			$this->execute( $sql );
+		} catch( \PDOException $e ) {
+			return false;
+		}
+		return true;
+	}
 }

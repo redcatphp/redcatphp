@@ -136,24 +136,79 @@ class Sqlite extends SQL{
 			$indexInfoList[$i['name']]['unique'] = $i['unique'];
 		}
 		return $indexInfoList;
-	}
-	function getKeyMapForType( $type ){
+	}	
+	protected function getKeyMapForType( $type ){
 		$table = $this->prefixTable( $type );
 		$keys  = $this->getAll( "PRAGMA foreign_key_list('$table')" );
 		$keyInfoList = [];
 		foreach ( $keys as $k ) {
 			$label = self::makeFKLabel( $k['from'], $k['table'], $k['to'] );
-			$keyInfoList[$label] = [
+			$keyInfoList[$label] = array(
 				'name'          => $label,
 				'from'          => $k['from'],
 				'table'         => $k['table'],
 				'to'            => $k['to'],
 				'on_update'     => $k['on_update'],
 				'on_delete'     => $k['on_delete']
-			];
+			);
 		}
 		return $keyInfoList;
 	}
+	/**
+	 * Adds a foreign key to a type
+	 *
+	 * @param  string  $type        type you want to modify table of
+	 * @param  string  $targetType  target type
+	 * @param  string  $field       field of the type that needs to get the fk
+	 * @param  string  $targetField field where the fk needs to point to
+	 * @param  integer $buildopt    0 = NO ACTION, 1 = ON DELETE CASCADE
+	 *
+	 * @return boolean $didIt
+	 *
+	 * @note: cant put this in try-catch because that can hide the fact
+	 *      that database has been damaged.
+	 */
+	function addFK( $type, $targetType, $property, $targetProperty, $constraint = false ){
+		$table           = $this->prefixTable( $type );
+		$targetTable     = $this->prefixTable( $targetType );
+		$column          = $this->check( $property );
+		$targetColumn    = $this->check( $targetProperty );
+
+		$tables = $this->getTables();
+		if ( !in_array( $targetTable, $tables ) )
+			return false;
+
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $table, $column ) ) )
+			return false;
+		$t = $this->getTable( $table );
+		$consSQL = ( $constraint ? 'CASCADE' : 'SET NULL' );
+		$label   = 'from_' . $column . '_to_table_' . $targetTable . '_col_' . $targetColumn;
+		$t['keys'][$label] = array(
+			'table'     => $targetTable,
+			'from'      => $column,
+			'to'        => $targetColumn,
+			'on_update' => $consSQL,
+			'on_delete' => $consSQL
+		);
+		$this->putTable( $t );
+		return true;
+	}
+	function columnCode( $typedescription, $includeSpecials = FALSE ){
+		return  ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription]:99;
+	}
+	function addUniqueConstraint( $type, $properties ){
+		$tableNoQ = $this->prefixTable( $type );
+		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', $properties );
+		$t     = $this->getTable( $type );
+		$t['indexes'][$name] = [ 'name' => $name ];
+		try {
+			$this->putTable( $t );
+		} catch( \PDOException $e ) {
+			return false;
+		}
+		return true;
+	}
+	
 	function fulltextQueryParts($search){
 		
 		
