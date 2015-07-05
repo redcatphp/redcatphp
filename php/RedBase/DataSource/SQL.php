@@ -12,6 +12,7 @@ abstract class SQL extends DataSource{
 	protected $connectPass;
 	protected $isConnected;
 	protected $loggingEnabled;
+	protected $loggingResult = true;
 	protected $logger;
 	protected $options;
 	protected $max = PHP_INT_MAX;
@@ -203,8 +204,10 @@ abstract class SQL extends DataSource{
 				}
 				$this->resultArray = $statement->fetchAll( $fetchStyle );
 				if($this->loggingEnabled){
-					$this->logger->log('resultset: '.count($this->resultArray).' rows');
-					$this->logger->logResult($this->resultArray);
+					if($this->loggingResult)
+						$this->logger->logResult($this->resultArray);
+					else
+						$this->logger->log('resultset: '.count($this->resultArray).' rows');
 				}
 			}
 			else{
@@ -346,8 +349,9 @@ abstract class SQL extends DataSource{
 	function isConnected(){
 		return $this->isConnected && $this->pdo;
 	}
-	function debug($enable=true){
+	function debug($enable=true,$loggingResult=true){
 		$this->loggingEnabled = (bool)$enable;
+		$this->loggingResult = (bool)$loggingResult;
 		if($this->loggingEnabled && !$this->logger)
 			$this->logger = new SqlLogger(true);
 	}
