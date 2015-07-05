@@ -168,7 +168,7 @@ abstract class SQL extends DataSource{
 	protected function runQuery( $sql, $bindings, $options = [] ){
 		$this->connect();
 		if($this->loggingEnabled)
-			$this->logger->log( $sql, $bindings );
+			$this->logger->logSql( $sql, $bindings );
 		try {
 			list($sql,$bindings) = self::nestBinding($sql,$bindings);
 			$statement = $this->pdo->prepare( $sql );
@@ -182,16 +182,20 @@ abstract class SQL extends DataSource{
 					return $statement;
 				}
 				$this->resultArray = $statement->fetchAll( $fetchStyle );
-				if($this->loggingEnabled)
-					$this->logger->log( 'resultset: ' . count( $this->resultArray ) . ' rows' );
+				if($this->loggingEnabled){
+					$this->logger->log('resultset: '.count($this->resultArray).' rows');
+					$this->logger->logResult($this->resultArray);
+				}
 			}
 			else{
 				$this->resultArray = [];
 			}
 		}
 		catch(\PDOException $e){
-			if ( $this->loggingEnabled )
+			if ( $this->loggingEnabled ){
 				$this->logger->log('An error occurred: '.$e->getMessage());
+				$this->logger->logSql( $sql, $bindings );
+			}
 			throw $e;
 		}
 	}

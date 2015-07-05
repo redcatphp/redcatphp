@@ -256,12 +256,4 @@ class SQL extends DataTable{
 	function unCloseHaving(){
 		return $this->select->unCloseHaving();
 	}
-	
-	function fulltext($search){
-		list($select,$from,$where,$orderBy) = $this->fulltextQueryParts($search);
-		$this->select($select);
-		$this->from($from);
-		$this->where($where);
-		$this->orderBy($orderBy);
-	}
 }

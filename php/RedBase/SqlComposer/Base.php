@@ -210,4 +210,8 @@ abstract class Base {
 		return $str;
 	}
 	abstract function render();
+	function __toString(){
+		$str = $this->getQuery();
+		return $str;
+	}
 }
