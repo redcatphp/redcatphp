@@ -109,16 +109,33 @@ abstract class SQL extends DataSource{
 		$postUpdate = [];
 		foreach($obj as $k=>$v){
 			if(is_object($v)||is_array($v)){
-				
+				$pk = $this[$k]->getPrimaryKey();
+				if(is_object($v)){
+					if(isset($v->{$pk}))
+						$this[$k][$v->{$pk}] = $v;
+					else
+						$this[$k][] = $v;
+					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
+				}
+				elseif(is_array($v)){
+					foreach($v as $val){
+						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
+						$postUpdate[$k][] = $val;
+					}
+				}
+				else{
+					throw new \InvalidArgumentException('updateRow doesn\'t accepts ressources, type: "'.get_resource_type($v).'"');
+				}
 			}
 			else{
 				$properties[$k] = $v;
 			}
 		}
+		$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
 		foreach($postUpdate as $k=>$v){
 			$this[$k][$v->{$this[$k]->getPrimaryKey()}] = $v;
 		}
-		return $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+		return $r;
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
