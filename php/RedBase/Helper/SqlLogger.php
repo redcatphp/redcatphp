@@ -1,18 +1,29 @@
 <?php
 namespace RedBase\Helper;
+use RedBase\Helper\SqlFormatter;
 class SqlLogger {
 	protected $echo;
 	protected $keep;
+	protected $html;
+	protected $useUnitDebug;
 	protected $logs = [];
-	function __construct($echo=null,$keep=null){
+	function __construct($echo=null,$keep=null,$html=true,$useUnitDebug=true){
 		$this->setEcho($echo);
 		$this->setKeep($keep);
+		$this->setHtml($html);
+		$this->setUseUnitDebug($useUnitDebug);
 	}
 	function setEcho($b=true){
 		$this->echo = (bool)$b;
 	}
 	function setKeep($b=true){
 		$this->keep = (bool)$b;
+	}
+	function setHtml($b=true){
+		$this->html = (bool)$b;
+	}
+	function setUseUnitDebug($b=true){
+		$this->useUnitDebug = (bool)$b;
 	}
 	function getLogs(){
 		return $this->logs;
@@ -44,7 +55,7 @@ class SqlLogger {
 		if($this->keep)
 			$this->logs[] = $str;
 		if($this->echo)
-			echo '<pre class="debug-model">',htmlentities($str),'</pre><br />';
+			echo '<pre class="debug-model">',$str,'</pre><br />';
 	}
 	protected function normalizeSlots( $sql ){
 		$i = 0;
@@ -73,19 +84,41 @@ class SqlLogger {
 		}
 		return $newBindings;
 	}
-	function log(){
-		if ( func_num_args() < 1 || !($this->keep||$this->echo))
+	function logResult($r){
+		if(!$this->keep&&!$this->echo)
 			return;
-		$sql = func_get_arg( 0 );
-		if ( func_num_args() < 2)
-			$bindings = array();
-		else
-			$bindings = func_get_arg( 1 );
-		if ( !is_array( $bindings ) ) 
-			return $this->output( $sql );
-		$newSql = $this->normalizeSlots( $sql );
-		$newBindings = $this->normalizeBindings( $bindings );
-		$newStr = $this->writeQuery( $newSql, $newBindings );
-		$this->output( $newStr );
+		if($this->useUnitDebug&&class_exists('Unit\Debug')){
+			if($this->html)
+				$newStr = \Unit\Debug::var_debug_html_return($r);
+			else
+				$newStr = \Unit\Debug::var_debug_return($r);
+		}
+		else{
+			if($this->html){
+				$html_errors = ini_get('html_errors');
+				ini_set('html_errors',1);
+				ob_start();
+				var_dump($r);
+				$newStr = ob_get_clean().'<br>';
+				ini_set('html_errors',$html_errors);
+			}
+			else{
+				$newStr = print_r($r,true);
+			}
+		}
+		return $this->output($newStr);
+	}
+	function logSql($sql,$bindings=[]){
+		if(!$this->keep&&!$this->echo)
+			return;
+		if($this->html)
+			$sql = SqlFormatter::format($sql);
+		$newStr = $this->writeQuery($this->normalizeSlots($sql), $this->normalizeBindings($bindings));
+		$this->output($newStr);
+	}
+	function log($txt){
+		if(!$this->keep&&!$this->echo)
+			return;
+		$this->output($txt);
 	}
 }
