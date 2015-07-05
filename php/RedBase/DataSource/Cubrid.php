@@ -7,7 +7,25 @@ class Cubrid extends SQL{
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIFIED        = 99;
+	
 	protected $max = 2147483647;
+	
+	function construct(array $config=[]){
+		parent::construct($config);
+		$this->typeno_sqltype = [
+			self::C_DATATYPE_INTEGER          => ' INTEGER ',
+			self::C_DATATYPE_DOUBLE           => ' DOUBLE ',
+			self::C_DATATYPE_STRING           => ' STRING ',
+			self::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
+			self::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
+		];
+		$this->sqltype_typeno = [];
+		foreach ( $this->typeno_sqltype as $k => $v ) {
+			$this->sqltype_typeno[trim( ( $v ) )] = $k;
+		}
+		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
+	}
+	
 	function getTables(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 	}

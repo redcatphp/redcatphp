@@ -2,12 +2,10 @@
 namespace RedBase\DataSource;
 use RedBase\DataSource;
 use RedBase\RedBase;
-use RedBase\DataTable\SQL as DataTableSQL;
 use RedBase\Helper\SqlLogger;
 abstract class SQL extends DataSource{
 	protected $dsn;
 	protected $pdo;
-	protected $type;
 	protected $affectedRows;
 	protected $resultArray;
 	protected $connectUser;
@@ -35,16 +33,11 @@ abstract class SQL extends DataSource{
 	protected $sqlFiltersWrite = [];
 	protected $sqlFiltersRead = [];
 	
-	function __construct(RedBase $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[])
-	{
-		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
-		
+	function construct(array $config=[]){		
 		if(isset($config[0]))
 			$this->dsn = $config[0];
 		else
 			$this->dsn = isset($config['dsn'])?$config['dsn']:$this->buildDsnFromArray($config);
-		
-		$this->type = strtolower(substr($this->dsn,0,strpos($this->dsn,':')));
 		
 		if(isset($config[1]))
 			$user = $config[1];
@@ -69,8 +62,6 @@ abstract class SQL extends DataSource{
 		$this->options = $options;
 		$this->createDb = $createDb;
 		
-		$this->primaryKey = $primaryKey;
-		$this->uniqTextKey = $uniqTextKey;
 		$this->frozen = $frozen;
 		$this->tablePrefix = $tablePrefix;
 	}
@@ -148,9 +139,6 @@ abstract class SQL extends DataSource{
 		$name = isset($config['name'])&&$config['name']?';dbname='.$config['name']:null;
 		return $type.$host.$file.$port.$name;
 	}
-	function loadTable($k,$primaryKey,$uniqTextKey){
-		return new DataTableSQL($k,$primaryKey,$uniqTextKey,$this);
-	}	
 	
 	
 	//PDO
@@ -421,7 +409,7 @@ abstract class SQL extends DataSource{
 		return [$sql,$binds];
 	}
 	
-	//QueryWriter	
+	//QueryWriter
 	function adaptStructure($type,$properties){
 		if($this->frozen)
 			return;

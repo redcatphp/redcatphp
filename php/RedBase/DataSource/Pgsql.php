@@ -12,7 +12,29 @@ class Pgsql extends SQL{
 	const C_DATATYPE_SPECIAL_MONEY    = 93;
 	const C_DATATYPE_SPECIAL_POLYGON  = 94;
 	const C_DATATYPE_SPECIFIED        = 99;
+	
 	protected $defaultValue = 'DEFAULT';
+	
+	function construct(array $config=[]){
+		parent::construct($config);
+		$this->typeno_sqltype = [
+			self::C_DATATYPE_INTEGER          => ' integer ',
+			self::C_DATATYPE_DOUBLE           => ' double precision ',
+			self::C_DATATYPE_TEXT             => ' text ',
+			self::C_DATATYPE_SPECIAL_DATE     => ' date ',
+			self::C_DATATYPE_SPECIAL_DATETIME => ' timestamp without time zone ',
+			self::C_DATATYPE_SPECIAL_POINT    => ' point ',
+			self::C_DATATYPE_SPECIAL_LSEG     => ' lseg ',
+			self::C_DATATYPE_SPECIAL_CIRCLE   => ' circle ',
+			self::C_DATATYPE_SPECIAL_MONEY    => ' money ',
+			self::C_DATATYPE_SPECIAL_POLYGON  => ' polygon ',
+		];
+		$this->sqltype_typeno = [];
+		foreach( $this->typeno_sqltype as $k => $v ){
+			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
+		}
+	}
+	
 	protected function getInsertSuffix( $primaryKey ){
 		return 'RETURNING '.$primaryKey.' ';
 	}

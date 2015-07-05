@@ -258,7 +258,7 @@ class SQL extends DataTable{
 	}
 	
 	function fulltext($search){
-		list($select,$from,$where,$orderBy) = $this->dataSource->getQuery()->fulltextQueryParts($search);
+		list($select,$from,$where,$orderBy) = $this->fulltextQueryParts($search);
 		$this->select($select);
 		$this->from($from);
 		$this->where($where);

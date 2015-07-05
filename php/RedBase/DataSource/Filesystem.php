@@ -2,12 +2,9 @@
 namespace RedBase\DataSource;
 use RedBase\DataSource;
 use RedBase\RedBase;
-use RedBase\DataTable\Filesystem as DataTableFilesystem;
 class Filesystem extends DataSource{
 	private $directory;
-	function __construct(RedBase $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
-		parent::__construct($globality,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
-		
+	function construct(array $config=[]){
 		if(isset($config[0]))
 			$this->directory = rtrim($config[0],'/');
 		else
@@ -33,8 +30,5 @@ class Filesystem extends DataSource{
 	}
 	function debug($enable=true){
 		
-	}
-	function loadTable($k,$primaryKey,$uniqTextKey){
-		return new DataTableFilesystem($k,$primaryKey,$uniqTextKey,$this);
 	}
 }

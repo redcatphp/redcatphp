@@ -1,7 +1,8 @@
 <?php
 namespace RedBase;
 abstract class DataSource implements \ArrayAccess{
-	protected $globality;
+	protected $redbase;
+	protected $type;
 	protected $entityClassPrefix;
 	protected $entityClassDefault;
 	protected $primaryKey;
@@ -11,12 +12,14 @@ abstract class DataSource implements \ArrayAccess{
 	abstract function readRow($type,$id,$primaryKey='id');
 	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
 	abstract function deleteRow($type,$id,$primaryKey='id');
-	function __construct(RedBase $globality,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
-		$this->globality = $globality;
+	function __construct(RedBase $redbase,$type,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
+		$this->redbase = $redbase;
+		$this->type = $type;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
 		$this->primaryKey = $primaryKey;
 		$this->uniqTextKey = $uniqTextKey;
+		$this->construct($config);
 	}
 	function getUniqTextKey(){
 		return $this->uniqTextKey;
@@ -52,5 +55,11 @@ abstract class DataSource implements \ArrayAccess{
 		if(isset($this->tableMap[$k]))
 			unset($this->tableMap[$k]);
 	}
-	abstract function loadTable($k,$primaryKey,$uniqTextKey);
+	function loadTable($k,$primaryKey,$uniqTextKey){
+		$c = 'RedBase\DataTable\\'.ucfirst($this->type);
+		return new $c($k,$primaryKey,$uniqTextKey,$this);
+	}
+	function construct(array $config=[]){
+		
+	}
 }

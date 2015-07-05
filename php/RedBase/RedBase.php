@@ -39,12 +39,16 @@ class RedBase implements \ArrayAccess{
 		
 		
 		
-		if(isset($config['type']))
+		if(isset($config['type'])){
 			$type = $config['type'];
-		elseif((isset($config[0])&&($dsn=$config[0]))||(isset($config['dsn'])&&($dsn=$config['dsn'])))
+		}
+		elseif((isset($config[0])&&($dsn=$config[0]))||(isset($config['dsn'])&&($dsn=$config['dsn']))){
 			$type = strtolower(substr($dsn,0,strpos($dsn,':')));
-		else
+			$config['type'] = $type;
+		}
+		else{
 			throw new \InvalidArgumentException('Undefined type of DataSource, please use atleast key type, dsn or offset 0');
+		}
 		
 		if(isset($config['entityClassPrefix'])){
 			$entityClassPrefix = $config['entityClassPrefix'];
@@ -63,6 +67,6 @@ class RedBase implements \ArrayAccess{
 			unset($config['uniqTextKey']);
 		}
 		$class = __NAMESPACE__.'\\DataSource\\'.ucfirst($type);
-		return new $class($this,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
+		return new $class($this,$type,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 	}
 }

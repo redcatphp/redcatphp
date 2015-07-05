@@ -12,8 +12,8 @@ class Sqlite extends SQL{
 	
 	protected $quoteCharacter = '`';
 	
-	function __construct($pdo,$primaryKey='id',$uniqTextKey='uniq',$frozen=null,$dataSource,$tablePrefix){
-		parent::__construct($pdo,$primaryKey,$uniqTextKey,$frozen,$dataSource,$tablePrefix);
+	function construct(array $config=[]){
+		parent::construct($config);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER => 'INTEGER',
 			self::C_DATATYPE_NUMERIC => 'NUMERIC',
