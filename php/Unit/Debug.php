@@ -139,7 +139,13 @@ namespace Unit{
 		static function errorType($code){
 			return isset(self::$errorType[$code])?self::$errorType[$code]:null;
 		}
-		static function var_debug_html($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
+		static function var_debug_html($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
+			if(!headers_sent())
+				header('Content-Type: text/html; charset=utf-8');
+			echo self::debug_backtrace_html();
+			echo self::var_debug_html_return($variable,$strlen,$width,$depth,$i,$objects);
+		}
+		static function var_debug_html_return($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			$search = ['&',"\r", "\n", ' ','"',"'",'<','>'];
 			$replace = ['&#039;',"<br />", "<br />", '&nbsp;','&amp;','&quot;','&lt;','&gt;'];
 			$string = '';
@@ -193,7 +199,7 @@ namespace Unit{
 								if($y)
 									$string.= '<br />'.$spaces;
 								$string.= "[$key] => ";
-								$string.= self::var_debug_html($variable[$key],$strlen,$width,$depth,$i+1,$objects);
+								$string.= self::var_debug_html_return($variable[$key],$strlen,$width,$depth,$i+1,$objects);
 								$count++;
 							}
 							$spaces = str_repeat('&nbsp;',$i*4);
@@ -226,7 +232,7 @@ namespace Unit{
 								elseif(strpos($name,'*:')===0)
 									$name = '$'.substr($name,2);
 								$string.= "[$name] => ";
-								$string.= self::var_debug_html($array[$property],$strlen,$width,$depth,$i+1,$objects);
+								$string.= self::var_debug_html_return($array[$property],$strlen,$width,$depth,$i+1,$objects);
 							}
 							$spaces = str_repeat('&nbsp;',$i*4);
 							$string.= "<br />".$spaces;
@@ -237,9 +243,6 @@ namespace Unit{
 			}
 			if ($i>0)
 				return $string;
-			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-			do $caller = array_shift($backtrace);
-				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
 			$maps = [
                 'countable' => '/(?P<type>array|int|string)\((?P<count>\d+)\)/',
                 'object'    => '/object\((?P<class>[a-z_\\\]+)\)\#(?P<id>\d+)/i',
@@ -248,15 +251,15 @@ namespace Unit{
             foreach($maps as $function => $pattern)
                 $string = preg_replace_callback($pattern, array('self', '_process' . ucfirst($function)), $string);
             $string = '<div style="border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
-			if($caller)
-				$string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>'.$string;
-			if($return)
-				return $string;
+			return $string;
+		}
+		static function var_debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			if(!headers_sent())
 				header('Content-Type: text/html; charset=utf-8');
-			echo $string;
+			echo self::debug_backtrace();
+			echo self::var_debug_return($variable,$strlen,$width,$depth,$i,$objects);
 		}
-		static function var_debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = array(),$return = false){
+		static function var_debug_return($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			$string = '';
 			switch(gettype($variable)){
 				case 'boolean':
@@ -303,7 +306,7 @@ namespace Unit{
 							break;
 							}
 							$string.= "\n".$spaces."	[$key] => ";
-							$string.= self::var_debug($variable[$key],$strlen,$width,$depth,$i+1,$objects);
+							$string.= self::var_debug_return($variable[$key],$strlen,$width,$depth,$i+1,$objects);
 							$count++;
 						}
 						$string.="\n".$spaces.'}';
@@ -324,22 +327,29 @@ namespace Unit{
 						foreach($properties as $property) {
 							$name = str_replace("\0",':',trim($property));
 							$string.= "\n".$spaces."	[$name] => ";
-							$string.= self::var_debug($array[$property],$strlen,$width,$depth,$i+1,$objects);
+							$string.= self::var_debug_return($array[$property],$strlen,$width,$depth,$i+1,$objects);
 						}
 						$string.= "\n".$spaces.'}';
 					}
 				break;
 			}
-			if ($i>0)
-				return $string;
+			return $string;
+		}
+		static function debug_backtrace_html(){
+			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			do $caller = array_shift($backtrace);
+				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
+			if($caller)
+				$string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
+			return $string;
+		}
+		static function debug_backtrace(){
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 			do $caller = array_shift($backtrace);
 				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
 			if ($caller)
 				$string = "\n".$caller['file'].':'.$caller['line']."\n".$string."\n";
-			if($return)
-				return $string;
-			echo $string;
+			return $string;
 		}
 		
 		private static function _processCountable(array $matches){
