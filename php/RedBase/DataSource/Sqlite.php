@@ -41,10 +41,10 @@ class Sqlite extends SQL{
 		}
 		return self::C_DATATYPE_TEXT;
 	}
-	function getTables(){
-		return $this->getCol( "SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';" );
+	function getTablesQuery(){
+		return $this->getCol("SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';");
 	}
-	function getColumns($table){
+	function getColumnsQuery($table){
 		$table      = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("PRAGMA table_info('$table')");
 		$columns    = [];
@@ -52,17 +52,17 @@ class Sqlite extends SQL{
 			$columns[$r['name']] = $r['type'];
 		return $columns;
 	}
-	function createTable($table){
+	function createTableQuery($table){
 		$table = $this->escTable($table);
 		$this->execute('CREATE TABLE '.$table.' ( id INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
-	function addColumn($table, $column, $type){
+	function addColumnQuery($table, $column, $type){
 		$column = $this->check($column);
 		$table  = $this->check($table);
 		$type   = $this->typeno_sqltype[$type];
 		$this->execute('ALTER TABLE `'.$table.'` ADD `'.$column.'` '.$type);
 	}
-	function changeColumn($type, $column, $datatype){
+	function changeColumnQuery($type, $column, $datatype){
 		$t = $this->getTable( $type );
 		$t['columns'][$column] = $this->typeno_sqltype[$datatype];
 		$this->putTable($t);

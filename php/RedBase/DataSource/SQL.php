@@ -33,6 +33,9 @@ abstract class SQL extends DataSource{
 	protected $sqlFiltersWrite = [];
 	protected $sqlFiltersRead = [];
 	
+	private $cacheTables;
+	private $cacheColumns = [];
+	
 	function construct(array $config=[]){		
 		if(isset($config[0]))
 			$this->dsn = $config[0];
@@ -623,13 +626,40 @@ abstract class SQL extends DataSource{
 		}
 		return NULL;
 	}
+
+	function getTables(){
+		if(!isset($this->cacheTables))
+			$this->cacheTables = $this->getTablesQuery();
+		return $this->cacheTables;
+	}
+	function getColumns($table){
+		if(!isset($this->cacheColumns[$table]))
+			$this->cacheColumns[$table] = $this->getColumnsQuery();
+		return $this->cacheColumns[$table];
+	}
+	function createTable($table){
+		if(!in_array($table,$this->cacheTables))
+			$this->cacheTables[] = $table;
+		return $this->createTableQuery($table);
+	}
+	function addColumn($type,$column,$field){
+		if(isset($this->cacheColumns[$type])&&!isset($this->cacheColumns[$type][$column]))
+			$this->cacheColumns[$type][$column] = isset($this->typeno_sqltype[$field])?$this->typeno_sqltype[$field]:'';
+		return $this->addColumnQuery($type,$column,$field);
+	}
+	function changeColumn($type,$property,$dataType){
+		if(isset($this->cacheColumns[$type]))
+			$this->cacheColumns[$type][$property] = isset($this->typeno_sqltype[$dataType])?$this->typeno_sqltype[$dataType]:'';
+		return $this->changeColumnQuery($type,$property,$dataType);
+	}
 	
 	abstract function scanType($value,$flagSpecial=false);
-	abstract function getTables();
-	abstract function getColumns($table);
-	abstract function createTable($table);
-	abstract function addColumn($type,$column,$field);
-	abstract function changeColumn($type,$property,$dataType);
+	
+	abstract function getTablesQuery();
+	abstract function getColumnsQuery($table);
+	abstract function createTableQuery($table);
+	abstract function addColumnQuery($type,$column,$field);
+	abstract function changeColumnQuery($type,$property,$dataType);
 	
 	abstract function addFK($type,$targetType,$property,$targetProperty,$isDep);
 	abstract protected function getKeyMapForType( $type );

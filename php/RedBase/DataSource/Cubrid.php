@@ -26,9 +26,43 @@ class Cubrid extends SQL{
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
 	}
 	
-	function getTables(){
+	function getTablesQuery(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 	}
+	function getColumnsQuery( $table ){
+		$table = $this->escTable( $table );
+		$columnsRaw = $this->getAll( "SHOW COLUMNS FROM $table" );
+		$columns = [];
+		foreach($columnsRaw as $r)
+			$columns[$r['Field']] = $r['Type'];
+		return $columns;
+	}
+	function createTableQuery( $table ){
+		$sql  = 'CREATE TABLE '
+			. $this->escTable( $table )
+			. ' ("id" integer AUTO_INCREMENT, CONSTRAINT "pk_'
+			. $this->prefixTable( $table )
+			. '_id" PRIMARY KEY("id"))';
+		$this->execute( $sql );
+	}
+	function addColumnQuery( $type, $column, $field ){
+		$table  = $type;
+		$type   = $field;
+		$table  = $this->escTable( $table );
+		$column = $this->esc( $column );
+		$type   = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
+		$this->execute( "ALTER TABLE $table ADD COLUMN $column $type " );
+	}
+	function changeColumnQuery( $type, $property, $dataType ){
+		if ( !isset($this->typeno_sqltype[$dataType]) )
+			return false;
+		$table   = $this->escTable( $type );
+		$column  = $this->esc( $property );
+		$newType = $this->typeno_sqltype[$dataType];
+		$this->execute( "ALTER TABLE $table CHANGE $column $column $newType " );
+		return true;
+	}
+	
 	/**
 	 * This method adds a foreign key from type and field to
 	 * target type and target field.

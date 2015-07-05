@@ -89,21 +89,21 @@ class Mysql extends SQL{
 			return self::C_DATATYPE_TEXT16;
 		return self::C_DATATYPE_TEXT32;
 	}
-	function getTables(){
+	function getTablesQuery(){
 		return $this->getCol('show tables');
 	}
-	function getColumns($table){
+	function getColumnsQuery($table){
 		$columns = [];
 		foreach($this->getAll('DESCRIBE '.$this->escTable($table)) as $r)
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
-	function createTable($table){
+	function createTableQuery($table){
 		$table = $this->escTable($table);
 		$encoding = $this->getEncoding();
 		$this->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
-	function addColumn($type,$column,$field){
+	function addColumnQuery($type,$column,$field){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable($table);
@@ -111,7 +111,7 @@ class Mysql extends SQL{
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumn($type,$property,$dataType ){
+	function changeColumnQuery($type,$property,$dataType ){
 		if(!isset($this->typeno_sqltype[$dataType]))
 			return false;
 		$table   = $this->escTable( $type );

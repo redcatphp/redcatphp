@@ -38,10 +38,10 @@ class Pgsql extends SQL{
 	protected function getInsertSuffix( $primaryKey ){
 		return 'RETURNING '.$primaryKey.' ';
 	}
-	function getTables(){
+	function getTablesQuery(){
 		return $this->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
 	}
-	function createTable( $table ){
+	function createTableQuery( $table ){
 		$table = $this->escTable($table);
 		$this->execute(" CREATE TABLE $table (id SERIAL PRIMARY KEY); ");
 	}
@@ -79,10 +79,10 @@ class Pgsql extends SQL{
 		else
 			return self::C_DATATYPE_TEXT;
 	}
-	function getTables(){
+	function getTablesQuery(){
 		return $this->getCol('SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )');
 	}
-	function getColumns($table){
+	function getColumnsQuery($table){
 		$table = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'");
 		$columns = [];
@@ -91,11 +91,11 @@ class Pgsql extends SQL{
 		}
 		return $columns;
 	}
-	function createTable($table){
+	function createTableQuery($table){
 		$table = $this->escTable($table);
 		$this->execute("CREATE TABLE $table (id SERIAL PRIMARY KEY);");
 	}
-	function addColumn( $type, $column, $field ){
+	function addColumnQuery( $type, $column, $field ){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable( $table );
@@ -103,7 +103,7 @@ class Pgsql extends SQL{
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute("ALTER TABLE $table ADD $column $type ");
 	}
-	function changeColumn( $type, $column, $datatype ){
+	function changeColumnQuery( $type, $column, $datatype ){
 		$table   = $type;
 		$type    = $datatype;
 		$table   = $this->escTable( $table );
