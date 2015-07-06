@@ -153,8 +153,11 @@ abstract class SQL extends DataSource{
 		return $this->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
 	}
 	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&isset($properties[$uniqTextKey]))
-			return $this->update($type,$properties,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
+		if($uniqTextKey&&(
+			(isset($properties[$uniqTextKey])&&$idKey=$uniqTextKey)
+			||(isset($properties[$primaryKey])&&$idKey=$primaryKey)
+		))
+			return $this->update($type,$properties,$properties[$idKey],$primaryKey,$uniqTextKey);
 		if(array_key_exists($primaryKey,$properties))
 			unset($properties[$primaryKey]);
 		$insertcolumns = array_keys($properties);
