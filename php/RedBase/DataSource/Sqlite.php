@@ -181,7 +181,7 @@ class Sqlite extends SQL{
 		if ( !is_null( $this->getForeignKeyForTypeProperty( $table, $column ) ) )
 			return false;
 		$t = $this->getTable( $table );
-		$consSQL = ( $constraint ? 'CASCADE' : 'SET NULL' );
+		$consSQL = $constraint ? 'CASCADE' : 'SET NULL';
 		$label   = 'from_' . $column . '_to_table_' . $targetTable . '_col_' . $targetColumn;
 		$t['keys'][$label] = array(
 			'table'     => $targetTable,

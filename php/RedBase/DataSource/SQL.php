@@ -152,6 +152,87 @@ abstract class SQL extends DataSource{
 		$table = $this->escTable($type);
 		return $this->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
 	}
+	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&isset($properties[$uniqTextKey]))
+			return $this->update($type,$properties,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
+		if(array_key_exists($primaryKey,$properties))
+			unset($properties[$primaryKey]);
+		$insertcolumns = array_keys($properties);
+		$insertvalues = array_values($properties);
+		$default = $this->defaultValue;
+		$suffix  = $this->getInsertSuffix($type);
+		$table   = $this->escTable($type);
+		$this->adaptStructure($type,$properties);
+		if(!empty($insertvalues)){
+			$insertSlots = [];
+			foreach($insertcolumns as $k=>$v){
+				$insertcolumns[$k] = $this->esc($v);
+				if (isset($this->sqlFiltersWrite[$type][$v]))
+					$insertSlots[] = $this->sqlFiltersWrite[$type][$v];
+				else
+					$insertSlots[] = '?';
+			}
+			$result = $this->getCell('INSERT INTO '.$table.' ( '.$primaryKey.', '.implode(',',$insertcolumns).' ) VALUES ( '.$default.', '. implode(',',$insertSlots).' ) '.$suffix,$insertvalues);
+		}
+		else{
+			$result = $this->getCell('INSERT INTO '.$table.' ('.$primaryKey.') VALUES('.$default.') '.$suffix);
+		}
+		if($suffix)
+			return $result;
+		return $this->getInsertID();
+	}
+	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
+			$primaryKey = $uniqTextKey;
+		$table = $this->escTable($type);
+		$sqlFilterStr = $this->getSQLFilterSnippet($type);
+		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
+		$row = $this->getRow($sql,[$id]);
+		if($row){
+			$c = $this->findEntityClass($type);
+			$obj = new $c();
+			foreach($row as $k=>$v)
+				$obj->$k = $v;
+			return $obj;
+		}
+	}
+	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$uniqTexting = false;
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
+			$uniqTexting = true;
+			$properties[$uniqTextKey] = $id;
+			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
+		}
+		if(!$id)
+			return $this->create($type,$properties,$primaryKey);
+		if(!$this->tableExists($type))
+			return false;
+		$this->adaptStructure($type,$properties);
+		$fields = [];
+		$binds = [];
+		foreach($properties as $k=>$v){
+			if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
+				continue;
+			if(isset($this->sqlFiltersWrite[$type][$k]))
+				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
+			else
+				$fields[] = ' '.$this->esc($k).' = ? ';
+			$binds[] = $v;
+		}
+		if(empty($fields))
+			return $id;
+		$binds[] = $id;
+		$table = $this->escTable($type);
+		$this->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE '.$primaryKey.' = ? ', $binds);
+		return $id;
+	}
+	function delete($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
+			$primaryKey = $uniqTextKey;
+		$this->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
+	}
+	
+	
 	private function buildDsnFromArray($config){
 		$type = $config['type'].':';
 		$host = isset($config['host'])&&$config['host']?'host='.$config['host']:'';
@@ -482,85 +563,6 @@ abstract class SQL extends DataSource{
 				$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
 		}
 		return !empty($sqlFilters)?','.implode(',',$sqlFilters):'';
-	}
-	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&isset($properties[$uniqTextKey]))
-			return $this->update($type,$properties,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
-		if(array_key_exists($primaryKey,$properties))
-			unset($properties[$primaryKey]);
-		$insertcolumns = array_keys($properties);
-		$insertvalues = array_values($properties);
-		$default = $this->defaultValue;
-		$suffix  = $this->getInsertSuffix($type);
-		$table   = $this->escTable($type);
-		$this->adaptStructure($type,$properties);
-		if(!empty($insertvalues)){
-			$insertSlots = [];
-			foreach($insertcolumns as $k=>$v){
-				$insertcolumns[$k] = $this->esc($v);
-				if (isset($this->sqlFiltersWrite[$type][$v]))
-					$insertSlots[] = $this->sqlFiltersWrite[$type][$v];
-				else
-					$insertSlots[] = '?';
-			}
-			$result = $this->getCell('INSERT INTO '.$table.' ( '.$primaryKey.', '.implode(',',$insertcolumns).' ) VALUES ( '.$default.', '. implode(',',$insertSlots).' ) '.$suffix,$insertvalues);
-		}
-		else{
-			$result = $this->getCell('INSERT INTO '.$table.' ('.$primaryKey.') VALUES('.$default.') '.$suffix);
-		}
-		if($suffix)
-			return $result;
-		return $this->getInsertID();
-	}
-	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
-			$primaryKey = $uniqTextKey;
-		$table = $this->escTable($type);
-		$sqlFilterStr = $this->getSQLFilterSnippet($type);
-		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
-		$row = $this->getRow($sql,[$id]);
-		if($row){
-			$c = $this->findEntityClass($type);
-			$obj = new $c();
-			foreach($row as $k=>$v)
-				$obj->$k = $v;
-			return $obj;
-		}
-	}
-	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		$uniqTexting = false;
-		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
-			$uniqTexting = true;
-			$properties[$uniqTextKey] = $id;
-			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
-		}
-		if(!$id)
-			return $this->create($type,$properties,$primaryKey);
-		if(!$this->tableExists($type))
-			return false;
-		$this->adaptStructure($type,$properties);
-		$fields = [];
-		$binds = [];
-		foreach($properties as $k=>$v){
-			if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
-				continue;
-			if(isset($this->sqlFiltersWrite[$type][$k]))
-				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
-			else
-				$fields[] = ' '.$this->esc($k).' = ? ';
-			$binds[] = $v;
-		}
-		if(empty($fields))
-			return $id;
-		$binds[] = $id;
-		$table = $this->escTable($type);
-		$this->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE '.$primaryKey.' = ? ', $binds);
-		return $id;
-	}
-	function delete($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
-			$primaryKey = $uniqTextKey;
-		$this->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
 	}
 	
 	function check($struct){

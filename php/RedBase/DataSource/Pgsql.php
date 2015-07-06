@@ -168,7 +168,8 @@ class Pgsql extends SQL{
 		$targetField = $this->esc( $targetProperty );
 		$tableNoQ = $this->prefixTable( $type );
 		$fieldNoQ = $this->check( $property );
-		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) )
+			return false;
 		try{
 			$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
 			$this->execute( "ALTER TABLE {$table}
