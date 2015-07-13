@@ -27,14 +27,16 @@ abstract class DataSource implements \ArrayAccess{
 	function getPrimaryKey(){
 		return $this->primaryKey;
 	}
-	function findEntityClass($name){
-		foreach($this->entityClassPrefix as $prefix){
-			$c = $prefix;
-			if(substr($prefix,-1)==='\\'&&in_array(strtolower($name),['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__',]))
-				$c .= '_';
-			$c .= $name;
-			if(class_exists($c))
-				return $c;
+	function findEntityClass($name=null){
+		if($name){
+			foreach($this->entityClassPrefix as $prefix){
+				$c = $prefix;
+				if(substr($prefix,-1)==='\\'&&in_array(strtolower($name),['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__',]))
+					$c .= '_';
+				$c .= $name;
+				if(class_exists($c))
+					return $c;
+			}
 		}
 		return $this->entityClassDefault;
 	}
