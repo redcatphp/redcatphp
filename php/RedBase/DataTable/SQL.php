@@ -43,24 +43,20 @@ class SQL extends DataTable{
 	function count(){
 		if(!$this->exists())
 			return;
-		if($this->hasWhere()||$this->hasHaving()||$this->hasJoin()){
-			return $this->nestedCount();
-		}
-		else{
-			return $this->simpleCount();
-		}
+		return $this->countSimple();
 	}
-	function simpleCount(){
+	function countSimple(){
 		if(!$this->exists())
 			return;
-		$select = $this->createSelect();
-		$select
+		$select = $this->select
+			->getClone()
+			->unOrderBy()
+			->unSelect()
 			->select('COUNT(*)')
-			->from($this->name)
 		;
 		return (int)$this->dataSource->getCell($select->getQuery(),$select->getParams());
 	}
-	function nestedCount(){
+	function countNested(){
 		if(!$this->exists())
 			return;
 		$select = $this->createSelect();
@@ -73,6 +69,16 @@ class SQL extends DataTable{
 		$select
 			->select('COUNT(*)')
 			->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+		;
+		return (int)$this->dataSource->getCell($select->getQuery(),$select->getParams());
+	}
+	function countAll(){
+		if(!$this->exists())
+			return;
+		$select = $this->createSelect();
+		$select
+			->select('COUNT(*)')
+			->from($this->name)
 		;
 		return (int)$this->dataSource->getCell($select->getQuery(),$select->getParams());
 	}
