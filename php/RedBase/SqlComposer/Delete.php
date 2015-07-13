@@ -1,7 +1,7 @@
 <?php
 namespace RedBase\SqlComposer;
-class SqlComposerDelete extends SqlComposerWhere {
-	protected $delete_from = [ ];
+class Delete extends Where {
+	protected $delete_from = [];
 	protected $ignore = false;
 	protected $order_by = [ ];
 	protected $limit = null;

@@ -1,6 +1,16 @@
 <?php
 namespace RedBase\SqlComposer;
 abstract class Base {
+	protected static $operators = [
+		'greater than' => '>',
+		'greater than or equal' => '>=',
+		'less than' => '<',
+		'less than or equal' => '<=',
+		'equal' => '=',
+		'not equal' => '!=',
+		'between' => 'between',
+		'in' => 'in'
+	];
 	private static $__apiProp = [
 		'select'=>'columns',
 		'join'=>'tables',
@@ -213,5 +223,46 @@ abstract class Base {
 	function __toString(){
 		$str = $this->getQuery();
 		return $str;
+	}
+
+	static function in($sql, array $params){
+		$given_params = $params;
+		$placeholders = [ ];
+		$params = [];
+		foreach($given_params as $p){
+			$placeholders[] = "?";
+			$params[] = $p;
+		}
+		$placeholders = implode(", ", $placeholders);
+		$sql = str_replace("?", $placeholders, $sql);
+		return [$sql, $params];
+	}
+	static function is_assoc($array){
+		return (array_keys($array) !== range(0, count($array) - 1));
+	}
+	static function isValidOperator($op){
+		return in_array($op, self::$operators);
+	}
+	static function applyOperator($column, $op, array $params=null){
+		switch ($op) {
+			case '>': case '>=':
+			case '<': case '<=':
+			case '=': case '!=':
+				return ["{$column} {$op} ?", $params];
+			case 'in':
+				return self::in("{$column} in (?)", $params);
+			case 'between':
+				$sql = "{$column} between ";
+				$p = array_shift($params);
+				$sql .= "?";
+				array_push($params, $p);
+				$sql .= " and ";
+				$p = array_shift($params);
+				$sql .= "?";
+				array_push($params, $p);
+				return [$sql, $params];
+			default:
+				throw new SQLComposerException("Invalid operator: {$op}");
+		}
 	}
 }

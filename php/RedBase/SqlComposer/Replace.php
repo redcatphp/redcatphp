@@ -1,6 +1,5 @@
 <?php
 namespace RedBase\SqlComposer;
-use RedBase\SqlComposer;
 class Replace extends Base {
 	protected $select;
 	function __construct($table = null) {
@@ -26,22 +25,11 @@ class Replace extends Base {
 		if (isset($this->params['values'])) throw new Exception("Cannot use 'REPLACE INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
-			$this->select = SqlComposer::select();
+			$this->select = new Select();
 		}
 
 		return $this->select->select($select, $params);
 	}
-
-
-	/*****************
-	 **  RENDERING  **
-	 *****************/
-
-	/**
-	 * Render the REPLACE query
-	 *
-	 * @return string
-	 */
 	function render() {
 		$table = $this->tables[0];
 
@@ -72,7 +60,7 @@ class Replace extends Base {
 			$columns = $this->_get_columns();
 			$num_cols = $this->_num_columns();
 			foreach ($this->params["values"] as $values) {
-				if (SqlComposer::is_assoc($values)) {
+				if (self::is_assoc($values)) {
 					foreach ($columns as $col) $params[] = $values[$col];
 				} else {
 					$params = array_merge($params, array_slice($values, 0, $num_cols));
@@ -85,7 +73,7 @@ class Replace extends Base {
 		if (!empty($this->columns)) {
 			return $this->columns;
 		}
-		elseif (SqlComposer::is_assoc($this->params['values'][0])) {
+		elseif (self::is_assoc($this->params['values'][0])) {
 			return array_keys($this->params['values'][0]);
 		}
 		else {

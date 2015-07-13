@@ -1,6 +1,5 @@
 <?php
 namespace RedBase\SqlComposer;
-use RedBase\SqlComposer;
 class Insert extends Base {
 	protected $ignore = false;
 	protected $select;
@@ -31,7 +30,7 @@ class Insert extends Base {
 		if (isset($this->params['values'])) throw new Exception("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
 
 		if (!isset($this->select)) {
-			$this->select = SqlComposer::select();
+			$this->select = new Select();
 		}
 
 		if (isset($select)) {
@@ -70,7 +69,7 @@ class Insert extends Base {
 			$columns = $this->_get_columns();
 			$num_cols = $this->_num_columns();
 			foreach ($this->params["values"] as $values) {
-				if (SqlComposer::is_assoc($values)) {
+				if (self::is_assoc($values)) {
 					foreach ($columns as $col)
 						$params[] = $values[$col];
 				}
@@ -86,7 +85,7 @@ class Insert extends Base {
 		if (!empty($this->columns)) {
 			return $this->columns;
 		}
-		elseif (SqlComposer::is_assoc($this->params['values'][0])) {
+		elseif (self::is_assoc($this->params['values'][0])) {
 			return array_keys($this->params['values'][0]);
 		}
 		else{

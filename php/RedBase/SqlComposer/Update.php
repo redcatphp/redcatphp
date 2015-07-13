@@ -1,6 +1,5 @@
 <?php
 namespace RedBase\SqlComposer;
-use RedBase\SqlComposer;
 class Update extends Where {
 	protected $set = [];
 	protected $order_by = [];
@@ -16,7 +15,7 @@ class Update extends Where {
 	}
 	function set($set,  array $params = null = null) {
 		$set = (array)$set;
-		if(SqlComposer::is_assoc($set)) {
+		if(self::is_assoc($set)) {
 			foreach($set as $col => $val)
 				$this->set[] = "{$col}=?";
 			$params = array_values($set);

@@ -1,5 +1,5 @@
-<?php namespace RedBase\SqlComposer;
-use RedBase\SqlComposer;
+<?php
+namespace RedBase\SqlComposer;
 abstract class Where extends Base {
 	protected $where = [];
 	protected $with = [];
@@ -12,12 +12,12 @@ abstract class Where extends Base {
 		return $this;
 	}
 	function unWhereIn($where,$params=null){
-		list($where, $params) = SqlComposer::in($where, $params);
+		list($where, $params) = self::in($where, $params);
 		$this->remove_property('where',$where,$params);
 		return $this;
 	}
 	function unWhereOp($column, $op,  array $params=null){
-		list($where, $params) = SqlComposer::applyOperator($column, $op, $params);
+		list($where, $params) = self::applyOperator($column, $op, $params);
 		$this->remove_property('where',$where,$params);
 		return $this;
 	}
@@ -47,11 +47,11 @@ abstract class Where extends Base {
 		return $this;
 	}
 	function whereIn($where,  array $params) {
-		list($where, $params) = SqlComposer::in($where, $params);
+		list($where, $params) = self::in($where, $params);
 		return $this->where($where, $params);
 	}
 	function whereOp($column, $op,  array $params=null) {
-		list($where, $params) = SqlComposer::applyOperator($column, $op, $params);
+		list($where, $params) = self::applyOperator($column, $op, $params);
 		return $this->where($where, $params);
 	}
 	function openWhereAnd() {

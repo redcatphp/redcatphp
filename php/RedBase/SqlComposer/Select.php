@@ -1,6 +1,5 @@
 <?php
 namespace RedBase\SqlComposer;
-use RedBase\SqlComposer;
 class Select extends Where {
 	protected $distinct = false;
 	protected $offset = null;
@@ -64,11 +63,11 @@ class Select extends Where {
 	}
 	function havingIn($having,  array $params) {
 		if (!is_string($having)) throw new Exception("Method having_in must be called with a string as first argument.");
-		list($having, $params) = SqlComposer::in($having, $params);
+		list($having, $params) = self::in($having, $params);
 		return $this->having($having, $params);
 	}
 	function havingOp($column, $op,  array $params=null) {
-		list($where, $params) = SqlComposer::applyOperator($column, $op, $params);
+		list($where, $params) = self::applyOperator($column, $op, $params);
 		return $this->having($where, $params);
 	}
 	function openHavingAnd() {
@@ -136,11 +135,11 @@ class Select extends Where {
 	}
 	function unHavingIn($having,  array $params){
 		if (!is_string($having)) throw new Exception("Method having_in must be called with a string as first argument.");
-		list($having, $params) = SqlComposer::in($having, $params);
+		list($having, $params) = self::in($having, $params);
 		return $this->unHaving($having, $params);
 	}
 	function unHavingOp($column, $op,  array $params=null){
-		list($where, $params) = SqlComposer::applyOperator($column, $op, $params);
+		list($where, $params) = self::applyOperator($column, $op, $params);
 		return $this->unHaving($where, $params);
 	}
 	function unOpenHavingAnd() {
