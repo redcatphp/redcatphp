@@ -8,11 +8,7 @@ class SQL extends DataTable{
 	private $select;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);		
-		$this->select = new Select(
-			$this->name,
-			$this->dataSource->getQuoteCharacter(),
-			$this->dataSource->getTablePrefix()
-		);
+		$this->select = $this->createSelect();
 	}
 	function exists(){
 		return $this->dataSource->tableExists($this->name,true);
@@ -45,20 +41,47 @@ class SQL extends DataTable{
 		}
 	}
 	function count(){
+		if(!$this->exists())
+			return;
+		if($this->hasWhere()||$this->hasHaving()||$this->hasJoin()){
+			return $this->nestedCount();
+		}
+		else{
+			return $this->simpleCount();
+		}
+	}
+	function simpleCount(){
+		if(!$this->exists())
+			return;
+		$select = $this->createSelect();
+		$select
+			->select('COUNT(*)')
+			->from($this->name)
+		;
+		return (int)$this->dataSource->getCell($select->getQuery(),$select->getParams());
+	}
+	function nestedCount(){
+		if(!$this->exists())
+			return;
+		$select = $this->createSelect();
 		$queryCount = $this->select
 			->getClone()
 			->unOrderBy()
 			->unSelect()
 			->select('id')
 		;
-		if($this->exists()){
-			$select = new Select();
-			$select
-				->select('COUNT(*)')
-				->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
-			;
-			return (int) $this->dataSource->getCell($select->getQuery(),$select->getParams());
-		}
+		$select
+			->select('COUNT(*)')
+			->from('('.$queryCount->getQuery().') as TMP_count',$queryCount->getParams())
+		;
+		return (int)$this->dataSource->getCell($select->getQuery(),$select->getParams());
+	}
+	function createSelect(){
+		return new Select(
+			$this->name,
+			$this->dataSource->getQuoteCharacter(),
+			$this->dataSource->getTablePrefix()
+		);
 	}
 	function getClone(){
 		return clone $this;
