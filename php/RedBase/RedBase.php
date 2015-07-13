@@ -34,7 +34,7 @@ class RedBase implements \ArrayAccess{
 	}
 	function offsetGet($k){
 		if(!isset($this->map[$k]))
-			throw new \Exception('Try to access undefined DataSource layer "'.$k.'"');
+			throw new Exception('Try to access undefined DataSource layer "'.$k.'"');
 		if(!isset($this->mapObjects[$k]))
 			$this->mapObjects[$k] = $this->loadDataSource($this->map[$k]);
 		return $this->mapObjects[$k];
