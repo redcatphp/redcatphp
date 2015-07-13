@@ -2,16 +2,66 @@
 namespace RedBase\SqlComposer;
 class Select extends Where {
 	protected $distinct = false;
-	protected $offset = null;
 	protected $group_by = [];
 	protected $with_rollup = false;
 	protected $having = [];
 	protected $order_by = [];
 	protected $sort = [];
 	protected $limit = null;
+	protected $offset = null;
 	function __construct($mainTable = null,$quoteCharacter = '"', $tablePrefix = ''){
 		parent::__construct($mainTable,$quoteCharacter, $tablePrefix);
 	}
+	
+	function hasSelect(){
+		return $this->hasColumn();
+	}
+	function getSelect(){
+		return $this->getColumn();
+	}
+	function hasDistinct(){
+		return $this->distinct;
+	}
+	function hasGroupBy(){
+		return !empty($this->group_by);
+	}
+	function getGroupBy(){
+		return $this->group_by;
+	}
+	function hasWithRollup(){
+		return $this->with_rollup;
+	}
+	function hasHaving(){
+		return !empty($this->having);
+	}
+	function getHaving(){
+		return $this->having;
+	}
+	function hasOrderBy(){
+		return !empty($this->order_by);
+	}
+	function getOrderBy(){
+		return $this->order_by;
+	}
+	function hasSort(){
+		return !empty($this->sort);
+	}
+	function getSort(){
+		return $this->sort;
+	}
+	function hasLimit(){
+		return !empty($this->limit);
+	}
+	function getLimit(){
+		return $this->limit;
+	}
+	function hasOffset(){
+		return isset($this->offset);
+	}
+	function getOffset(){
+		return $this->offset;
+	}
+	
 	function select($select,  array $params = null){
 		foreach((array)$select as $s){
 			if(!empty($params)||!in_array($s,$this->columns))
@@ -24,7 +74,6 @@ class Select extends Where {
 		$this->distinct = (bool)$distinct;
 		return $this;
 	}
-	
 	function groupBy($group_by,  array $params = null) {
 		if(!empty($params)||!in_array($group_by,$this->group_by))
 			$this->group_by[] = $group_by;

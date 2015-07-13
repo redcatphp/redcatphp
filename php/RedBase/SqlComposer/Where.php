@@ -3,6 +3,18 @@ namespace RedBase\SqlComposer;
 abstract class Where extends Base {
 	protected $where = [];
 	protected $with = [];
+	function hasWhere(){
+		return !empty($this->where);
+	}
+	function hasWith(){
+		return !empty($this->with);
+	}
+	function getWhere(){
+		return $this->where;
+	}
+	function getWith(){
+		return $this->with;
+	}
 	function unWhere($where=null,$params=null){
 		$this->remove_property('where',$where,$params);
 		return $this;
@@ -16,25 +28,25 @@ abstract class Where extends Base {
 		$this->remove_property('where',$where,$params);
 		return $this;
 	}
-	function unWhereOp($column, $op,  array $params=null){
+	function unWhereOp($column, $op, array $params=null){
 		list($where, $params) = self::applyOperator($column, $op, $params);
 		$this->remove_property('where',$where,$params);
 		return $this;
 	}
 	function unOpenWhereAnd() {
-		$this->remove_property('where',[ '(', 'AND' ]);
+		$this->remove_property('where',['(', 'AND']);
 		return $this;
 	}
 	function unOpenWhereOr() {
-		$this->remove_property('where',[ '(', 'OR' ]);
+		$this->remove_property('where',['(', 'OR']);
 		return $this;
 	}
 	function unOpenWhereNotAnd() {
-		$this->remove_property('where',[ '(', 'NOT' ]);
+		$this->remove_property('where',['(', 'NOT']);
 		return $this->unOpenWhereAnd();
 	}
 	function unOpenWhereNotOr() {
-		$this->remove_property('where',[ '(', 'NOT' ]);
+		$this->remove_property('where',['(', 'NOT']);
 		return $this->unOpenWhereOr();
 	}
 	function unCloseWhere() {
@@ -55,11 +67,11 @@ abstract class Where extends Base {
 		return $this->where($where, $params);
 	}
 	function openWhereAnd() {
-		$this->where[] = [ '(', 'AND' ];
+		$this->where[] = ['(', 'AND'];
 		return $this;
 	}
 	function openWhereOr() {
-		$this->where[] = [ '(', 'OR' ];
+		$this->where[] = ['(', 'OR'];
 		return $this;
 	}
 	function openWhereNotAnd() {
@@ -68,7 +80,7 @@ abstract class Where extends Base {
 		return $this;
 	}
 	function openWhereNotOr() {
-		$this->where[] = [ '(', 'NOT' ];
+		$this->where[] = ['(', 'NOT'];
 		$this->openWhereOr();
 		return $this;
 	}
@@ -76,7 +88,7 @@ abstract class Where extends Base {
 		if(is_array($e=end($this->where))&&count($e)>1)
 			array_pop($this->where);
 		else
-			$this->where[] = [ ')' ];
+			$this->where[] = [')'];
 		return $this;
 	}
 	function with($with,  array $params = null) {

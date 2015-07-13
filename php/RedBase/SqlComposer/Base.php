@@ -1,16 +1,7 @@
 <?php
 namespace RedBase\SqlComposer;
 abstract class Base {
-	protected static $operators = [
-		'greater than' => '>',
-		'greater than or equal' => '>=',
-		'less than' => '<',
-		'less than or equal' => '<=',
-		'equal' => '=',
-		'not equal' => '!=',
-		'between' => 'between',
-		'in' => 'in'
-	];
+	protected static $operators = ['>','>=','<','<=','=','!=','between','in'];
 	private static $__apiProp = [
 		'select'=>'columns',
 		'join'=>'tables',
@@ -54,6 +45,48 @@ abstract class Base {
 			$k = self::$__apiProp[$k];
 		if(property_exists($this,$k))
 			return $this->$k;
+	}
+	function hasColumn(){
+		return !empty($this->columns);
+	}
+	function getColumn(){
+		return $this->columns;
+	}
+	function hasTable(){
+		return !empty($this->tables);
+	}
+	function getTable(){
+		return $this->tables;
+	}
+	function hasJoin(){
+		foreach($this->tables as $table){
+			if(is_array($table))
+				return true;
+		}
+		return false;
+	}
+	function getJoin(){
+		$joins = [];
+		foreach($this->tables as $table){
+			if(is_array($table))
+				$joins[] = $table;
+		}
+		return $joins;
+	}
+	function hasFrom(){
+		foreach($this->tables as $table){
+			if(!is_array($table))
+				return true;
+		}
+		return false;
+	}
+	function getFrom(){
+		$froms = [];
+		foreach($this->tables as $table){
+			if(!is_array($table))
+				$froms[] = $table;
+		}
+		return $froms;
 	}
 	function add_table($table,  array $params = null) {
 		if(!empty($params)||!in_array($table,$this->tables))

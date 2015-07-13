@@ -5,7 +5,8 @@ class Insert extends Base {
 	protected $select;
 	protected $on_duplicate = [];
 	function __construct($table = null) {
-		if (isset($table)) $this->into($table);
+		if(isset($table))
+			$this->into($table);
 	}
 	function insert_into($table) {
 		return $this->into($table);
@@ -23,20 +24,17 @@ class Insert extends Base {
 		return $this;
 	}
 	function values( array $values) {
-		if (isset($this->select)) throw new Exception("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
+		if(isset($this->select))
+			throw new Exception("Cannot use 'INSERT INTO ... VALUES' when a SELECT is already set!");
 		return $this->_add_params('values', $values);
 	}
 	function select($select = null,  array $params = null) {
-		if (isset($this->params['values'])) throw new Exception("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
-
-		if (!isset($this->select)) {
+		if(isset($this->params['values']))
+			throw new Exception("Cannot use 'INSERT INTO ... SELECT' when values are already set!");
+		if (!isset($this->select)) 
 			$this->select = new Select();
-		}
-
-		if (isset($select)) {
+		if (isset($select))
 			$this->select->select($select, $params);
-		}
-
 		return $this->select;
 	}
 	function onDuplicate($update,  array $params = null) {
