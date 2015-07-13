@@ -8,6 +8,7 @@ abstract class DataSource implements \ArrayAccess{
 	protected $primaryKey;
 	protected $uniqTextKey;
 	protected $tableMap = [];
+	protected static $phpReservedKeywords = ['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__'];
 	abstract function createRow($type,$obj,$primaryKey='id');
 	abstract function readRow($type,$id,$primaryKey='id');
 	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
@@ -31,7 +32,7 @@ abstract class DataSource implements \ArrayAccess{
 		if($name){
 			foreach($this->entityClassPrefix as $prefix){
 				$c = $prefix;
-				if(substr($prefix,-1)==='\\'&&in_array(strtolower($name),['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__',]))
+				if(substr($prefix,-1)==='\\'&&in_array(strtolower($name),self::$phpReservedKeywords))
 					$c .= '_';
 				$c .= $name;
 				if(class_exists($c))
@@ -39,6 +40,25 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		return $this->entityClassDefault;
+	}
+	function findEntityTable($obj,$default=null){
+		$table = $default;
+		if(isset($obj->__table)){
+			$table = $obj->__table;
+		}
+		else{
+			$c = get_class($obj);
+			foreach($this->entityClassPrefix as $prefix){
+				if($prefix&&strpos($c,$prefix)===0){
+					$c = substr($c,strlen($prefix));
+					if(substr($c,0,1)==='_'&&in_array(strtolower(substr($c,1)),self::$phpReservedKeywords))
+						$c = substr($c,1);
+					$table = $c;
+					break;
+				}
+			}
+		}
+		return $table;
 	}
 	function offsetGet($k){
 		if(!isset($this->tableMap[$k]))

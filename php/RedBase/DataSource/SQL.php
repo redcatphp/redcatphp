@@ -79,10 +79,11 @@ abstract class SQL extends DataSource{
 			if(is_object($v)||is_array($v)){
 				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
+					$t = $this->findEntityTable($v,$k);
 					if(isset($v->{$pk}))
-						$this[$k][$v->{$pk}] = $v;
+						$this[$t][$v->{$pk}] = $v;
 					else
-						$this[$k][] = $v;
+						$this[$t][] = $v;
 					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
 				}
 				elseif(is_array($v)){
@@ -119,10 +120,11 @@ abstract class SQL extends DataSource{
 			if(is_object($v)||is_array($v)){
 				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
+					$t = $this->findEntityTable($v,$k);
 					if(isset($v->{$pk}))
-						$this[$k][$v->{$pk}] = $v;
+						$this[$t][$v->{$pk}] = $v;
 					else
-						$this[$k][] = $v;
+						$this[$t][] = $v;
 					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
 				}
 				elseif(is_array($v)){
