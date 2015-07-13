@@ -74,6 +74,8 @@ abstract class SQL extends DataSource{
 		$properties = [];
 		$postInsert = [];
 		foreach($obj as $k=>$v){
+			if(strpos($k,'_')===0)
+				continue;
 			if(is_object($v)||is_array($v)){
 				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
@@ -112,6 +114,8 @@ abstract class SQL extends DataSource{
 		$properties = [];
 		$postUpdate = [];
 		foreach($obj as $k=>$v){
+			if(strpos($k,'_')===0)
+				continue;
 			if(is_object($v)||is_array($v)){
 				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
