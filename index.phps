@@ -4,7 +4,6 @@
 //ini_set('display_errors','stdout');
 
 //define('SURIKAT_FREEZE_DI',true);
-if(!@include(__DIR__.'/surikat/surikat.php'))
-	symlink('../surikat','surikat')&&include('surikat/surikat.php');
+require_once __DIR__.'/surikat/surikat.php';
 
-$di->create('KungFu\Cms\FrontController\Index')->runFromGlobals();
+Unit\Di::make('KungFu\Cms\FrontController\Index')->runFromGlobals();
