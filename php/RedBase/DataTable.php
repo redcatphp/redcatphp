@@ -39,8 +39,14 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		return $row;
 	}
 	function offsetSet($id,$obj){
-		if(is_array($obj))
-			$obj = (object)$obj;
+		if(is_array($obj)){
+			$c = $this->dataSource->findEntityClass($this->name);
+			$tmp = $obj;
+			$obj = new $c();
+			foreach($tmp as $k=>$v)
+				$obj->$k = $v;
+			unset($tmp);
+		}
 		if(!$id){
 			$id = $this->createRow($obj);
 			$obj->{$this->primaryKey} = $id;
