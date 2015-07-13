@@ -257,6 +257,9 @@ abstract class Base {
 		$str = $this->getQuery();
 		return $str;
 	}
+	function getClone(){
+		return clone $this;
+	}
 
 	static function in($sql, array $params){
 		$given_params = $params;

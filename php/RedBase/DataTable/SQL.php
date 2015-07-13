@@ -45,7 +45,7 @@ class SQL extends DataTable{
 		}
 	}
 	function count(){
-		$queryCount = $this
+		$queryCount = $this->select
 			->getClone()
 			->unOrderBy()
 			->unSelect()

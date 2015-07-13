@@ -98,4 +98,8 @@ class Insert extends Base {
 			return count($this->params['values'][0]);
 		}
 	}
+	function __clone(){
+		if(isset($this->select))
+			$this->select = clone $this->select;
+	}
 }
