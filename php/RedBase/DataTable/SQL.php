@@ -68,6 +68,7 @@ class SQL extends DataTable{
 			$this->select = clone $this->select;
 	}
 	
+	
 	function tableJoin($table, $join, array $params = null){
 		return $this->select->tableJoin($table, $join, $params);
 	}
@@ -255,5 +256,90 @@ class SQL extends DataTable{
 	}
 	function unCloseHaving(){
 		return $this->select->unCloseHaving();
+	}
+	
+	function hasColumn(){
+		return $this->select->hasColumn();
+	}
+	function getColumn(){
+		return $this->select->getColumn();
+	}
+	function hasTable(){
+		return $this->select->hasTable();
+	}
+	function getTable(){
+		return $this->select->getTable();
+	}
+	function hasJoin(){
+		return $this->select->hasJoin();
+	}
+	function getJoin(){
+		return $this->select->getJoin();
+	}
+	function hasFrom(){
+		return $this->select->hasFrom();
+	}
+	function getFrom(){
+		return $this->select->getFrom();
+	}
+	function hasWhere(){
+		return $this->select->hasWhere();
+	}
+	function hasWith(){
+		return $this->select->hasWith();
+	}
+	function getWhere(){
+		return $this->select->getWhere();
+	}
+	function getWith(){
+		return $this->select->getWith();
+	}
+	function hasSelect(){
+		return $this->select->hasSelect();
+	}
+	function getSelect(){
+		return $this->select->getSelect();
+	}
+	function hasDistinct(){
+		return $this->select->hasDistinct();
+	}
+	function hasGroupBy(){
+		return $this->select->hasGroupBy();
+	}
+	function getGroupBy(){
+		return $this->select->getGroupBy();
+	}
+	function hasWithRollup(){
+		return $this->select->hasWithRollup();
+	}
+	function hasHaving(){
+		return $this->select->hasHaving();
+	}
+	function getHaving(){
+		return $this->select->getHaving();
+	}
+	function hasOrderBy(){
+		return $this->select->hasOrderBy();
+	}
+	function getOrderBy(){
+		return $this->select->getOrderBy();
+	}
+	function hasSort(){
+		return $this->select->hasSort();
+	}
+	function getSort(){
+		return $this->select->getSort();
+	}
+	function hasLimit(){
+		return $this->select->hasLimit();
+	}
+	function getLimit(){
+		return $this->select->getLimit();
+	}
+	function hasOffset(){
+		return $this->select->hasOffset();
+	}
+	function getOffset(){
+		return $this->select->getOffset();
 	}
 }
