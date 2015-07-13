@@ -262,7 +262,7 @@ abstract class Base {
 				array_push($params, $p);
 				return [$sql, $params];
 			default:
-				throw new SQLComposerException("Invalid operator: {$op}");
+				throw new Exception('Invalid operator: '.$op);
 		}
 	}
 }
