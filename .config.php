@@ -26,7 +26,7 @@ return [
 				'entityClassDefault'=>'stdClass',
 				'primaryKey'=>'id',
 				'uniqTextKey'=>'uniq',
-				'createTable'=>true,
+				'createDb'=>true,
 			],
 			'translation' => [
 				'type'			=>'sqlite',
