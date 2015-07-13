@@ -41,8 +41,6 @@ class SQL extends DataTable{
 		}
 	}
 	function count(){
-		if(!$this->exists())
-			return;
 		return $this->countSimple();
 	}
 	function countSimple(){
@@ -134,7 +132,6 @@ class SQL extends DataTable{
 	function getParam($k){
 		return $this->select->get($k);
 	}
-	
 	function unWhere($where=null,$params=null){
 		return $this->select->unWhere($where,$params);
 	}
@@ -189,7 +186,6 @@ class SQL extends DataTable{
 	function with($with, array $params = null){
 		return $this->select->with($with, $params);
 	}
-	
 	function select($select, array $params = null){
 		return $this->select->select($select, $params);
 	}
@@ -286,7 +282,6 @@ class SQL extends DataTable{
 	function unCloseHaving(){
 		return $this->select->unCloseHaving();
 	}
-	
 	function hasColumn(){
 		return $this->select->hasColumn();
 	}
