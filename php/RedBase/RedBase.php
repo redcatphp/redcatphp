@@ -14,6 +14,24 @@ class RedBase implements \ArrayAccess{
 		$this->primaryKeyDefault = $primaryKeyDefault;
 		$this->uniqTextKeyDefault = $uniqTextKeyDefault;
 	}
+	function setEntityClassPrefix($entityClassPrefix='Model\\'){
+		$this->entityClassPrefix = (array)$entityClassPrefix;
+	}
+	function appendEntityClassPrefix($entityClassPrefix){
+		$this->entityClassPrefix[] = $entityClassPrefix;
+	}
+	function prependEntityClassPrefix($entityClassPrefix){
+		array_unshift($this->entityClassPrefix,$entityClassPrefix);
+	}
+	function setEntityClassDefault($entityClassDefault='stdClass'){
+		$this->entityClassDefault = $entityClassDefault;
+	}
+	function setPrimaryKeyDefault($primaryKeyDefault='id'){
+		$this->primaryKeyDefault = $primaryKeyDefault;
+	}
+	function setUniqTextKeyDefault($uniqTextKeyDefault='uniq'){
+		$this->uniqTextKeyDefault = $uniqTextKeyDefault;
+	}
 	function offsetGet($k){
 		if(!isset($this->map[$k]))
 			throw new \Exception('Try to access undefined DataSource layer "'.$k.'"');
