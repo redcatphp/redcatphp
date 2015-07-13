@@ -88,8 +88,9 @@ abstract class SQL extends DataSource{
 				}
 				elseif(is_array($v)){
 					foreach($v as $val){
+						$t = $this->findEntityTable($val,$k);
 						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
-						$postInsert[$k][] = $val;
+						$postInsert[$t][] = $val;
 					}
 				}
 				else{
@@ -129,8 +130,9 @@ abstract class SQL extends DataSource{
 				}
 				elseif(is_array($v)){
 					foreach($v as $val){
+						$t = $this->findEntityTable($val,$k);
 						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
-						$postUpdate[$k][] = $val;
+						$postUpdate[$t][] = $val;
 					}
 				}
 				else{
