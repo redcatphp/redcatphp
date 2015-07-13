@@ -651,7 +651,7 @@ abstract class SQL extends DataSource{
 	}
 	function getColumns($table){
 		if(!isset($this->cacheColumns[$table]))
-			$this->cacheColumns[$table] = $this->getColumnsQuery();
+			$this->cacheColumns[$table] = $this->getColumnsQuery($table);
 		return $this->cacheColumns[$table];
 	}
 	function createTable($table){
