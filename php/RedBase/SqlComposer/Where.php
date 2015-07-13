@@ -88,6 +88,6 @@ abstract class Where extends Base {
 		$where = $this->where;
 		if($removeUnbinded)
 			$where = $this->removeUnbinded($where);
-		return Base::_render_bool_expr($where);
+		return self::render_bool_expr($where);
 	}
 }

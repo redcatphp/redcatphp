@@ -168,7 +168,7 @@ class Select extends Where {
 		$having = $this->having;
 		if($removeUnbinded)
 			$having = $this->removeUnbinded($having);
-		return Base::_render_bool_expr($having);
+		return self::render_bool_expr($having);
 	}
 	function render($removeUnbinded=true) {
 		$with = empty($this->with) ? '' : 'WITH '.implode(', ', $this->with); //Postgresql specific

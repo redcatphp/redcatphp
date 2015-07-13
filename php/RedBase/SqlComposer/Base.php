@@ -184,7 +184,7 @@ abstract class Base {
 			}
 		}
 	}
-	protected static function _render_bool_expr( array $expression) {
+	static function render_bool_expr(array $expression){
 		$str = "";
 		$stack = [ ];
 		$op = "AND";
