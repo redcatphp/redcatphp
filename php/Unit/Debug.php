@@ -139,6 +139,24 @@ namespace Unit{
 		static function errorType($code){
 			return isset(self::$errorType[$code])?self::$errorType[$code]:null;
 		}
+		static function debugs(){
+			if(!headers_sent())
+				header('Content-Type: text/html; charset=utf-8');
+			echo self::debug_backtrace_html();
+			foreach(func_get_args() as $v){
+				echo self::var_debug_html_return($v);
+				echo '<br />';
+			}
+		}
+		static function dbugs(){
+			if(!headers_sent())
+				header('Content-Type: text/plain; charset=utf-8');
+			echo self::debug_backtrace();
+			foreach(func_get_args() as $v){
+				echo self::var_debug_return($v);
+				echo "\n";
+			}
+		}
 		static function var_debug_html($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			if(!headers_sent())
 				header('Content-Type: text/html; charset=utf-8');
@@ -217,10 +235,9 @@ namespace Unit{
 						$string.='object('.$c.'){...}';
 					else {
 						$id = array_push($objects,$variable);
-						$array = (array)$variable;
 						$spaces = str_repeat('&nbsp;',($i+1)*4);
 						$string.= 'object('.$c.')'."#$id{";
-						$properties = array_keys($array);
+						$properties = array_keys((array)$variable);
 						if(!empty($properties)){
 							$string .= "<br />".$spaces;
 							foreach($properties as $y=>$property) {
@@ -232,7 +249,7 @@ namespace Unit{
 								elseif(strpos($name,'*:')===0)
 									$name = '$'.substr($name,2);
 								$string.= "[$name] => ";
-								$string.= self::var_debug_html_return($array[$property],$strlen,$width,$depth,$i+1,$objects);
+								$string.= self::var_debug_html_return($variable->$property,$strlen,$width,$depth,$i+1,$objects);
 							}
 							$spaces = str_repeat('&nbsp;',$i*4);
 							$string.= "<br />".$spaces;
@@ -255,7 +272,7 @@ namespace Unit{
 		}
 		static function var_debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			if(!headers_sent())
-				header('Content-Type: text/html; charset=utf-8');
+				header('Content-Type: text/plain; charset=utf-8');
 			echo self::debug_backtrace();
 			echo self::var_debug_return($variable,$strlen,$width,$depth,$i,$objects);
 		}
@@ -320,14 +337,13 @@ namespace Unit{
 						$string.=get_class($variable).' {...}';
 					else {
 						$id = array_push($objects,$variable);
-						$array = (array)$variable;
 						$spaces = str_repeat(' ',$i*2);
 						$string.= get_class($variable)."#$id\n".$spaces.'{';
-						$properties = array_keys($array);
+						$properties = array_keys((array)$variable);
 						foreach($properties as $property) {
 							$name = str_replace("\0",':',trim($property));
 							$string.= "\n".$spaces."	[$name] => ";
-							$string.= self::var_debug_return($array[$property],$strlen,$width,$depth,$i+1,$objects);
+							$string.= self::var_debug_return($variable->$property,$strlen,$width,$depth,$i+1,$objects);
 						}
 						$string.= "\n".$spaces.'}';
 					}
@@ -375,15 +391,9 @@ namespace{
 		return call_user_func_array(['Unit\Debug','var_debug_html'],func_get_args());
 	}
 	function dbugs(){
-		foreach(func_get_args() as $v){
-			echo "\n";
-			Unit\Debug::var_debug($v);
-		}
+		return call_user_func_array(['Unit\Debug','dbugs'],func_get_args());
 	}
 	function debugs(){
-		foreach(func_get_args() as $v){
-			echo '<br />';
-			Unit\Debug::var_debug_html($v);
-		}
+		return call_user_func_array(['Unit\Debug','debugs'],func_get_args());
 	}
 }
