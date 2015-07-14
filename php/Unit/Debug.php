@@ -145,7 +145,6 @@ namespace Unit{
 			echo self::debug_backtrace_html();
 			foreach(func_get_args() as $v){
 				echo self::var_debug_html_return($v);
-				echo '<br />';
 			}
 		}
 		static function dbugs(){
