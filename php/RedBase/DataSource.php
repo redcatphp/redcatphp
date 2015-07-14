@@ -1,5 +1,6 @@
 <?php
 namespace RedBase;
+use RedBase\Helper\CaseConvert;
 abstract class DataSource implements \ArrayAccess{
 	protected $redbase;
 	protected $type;
@@ -30,6 +31,7 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function findEntityClass($name=null){
 		if($name){
+			$name = CaseConvert::ucw($name);
 			foreach($this->entityClassPrefix as $prefix){
 				$c = $prefix;
 				if(substr($prefix,-1)==='\\'&&in_array(strtolower($name),self::$phpReservedKeywords))
@@ -48,6 +50,7 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		else{
 			$c = get_class($obj);
+			$c = CaseConvert::lcw($c);
 			foreach($this->entityClassPrefix as $prefix){
 				if($prefix&&strpos($c,$prefix)===0){
 					$c = substr($c,strlen($prefix));
