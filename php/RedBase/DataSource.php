@@ -50,14 +50,16 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		else{
 			$c = get_class($obj);
-			$c = CaseConvert::lcw($c);
-			foreach($this->entityClassPrefix as $prefix){
-				if($prefix&&strpos($c,$prefix)===0){
-					$c = substr($c,strlen($prefix));
-					if(substr($c,0,1)==='_'&&in_array(strtolower(substr($c,1)),self::$phpReservedKeywords))
-						$c = substr($c,1);
-					$table = $c;
-					break;
+			if($c!=$this->entityClassDefault){
+				$c = CaseConvert::lcw($c);
+				foreach($this->entityClassPrefix as $prefix){
+					if($prefix&&strpos($c,$prefix)===0){
+						$c = substr($c,strlen($prefix));
+						if(substr($c,0,1)==='_'&&in_array(strtolower(substr($c,1)),self::$phpReservedKeywords))
+							$c = substr($c,1);
+						$table = $c;
+						break;
+					}
 				}
 			}
 		}
