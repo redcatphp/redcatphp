@@ -77,19 +77,20 @@ abstract class SQL extends DataSource{
 			if(strpos($k,'_')===0)
 				continue;
 			if(is_object($v)||is_array($v)){
-				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
 					$t = $this->findEntityTable($v,$k);
-					if(isset($v->{$pk}))
-						$this[$t][$v->{$pk}] = $v;
+					$pk = $this[$t]->getPrimaryKey();
+					if(isset($v->$pk))
+						$this[$t][$v->$pk] = $v;
 					else
 						$this[$t][] = $v;
-					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
+					$properties[$k.'_'.$primaryKey] = $obj->{$k.'_'.$primaryKey} = $v->$pk;
 				}
 				elseif(is_array($v)){
 					foreach($v as $val){
 						$t = $this->findEntityTable($val,$k);
-						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
+						$pk = $this[$t]->getPrimaryKey();
+						$val->{$type.'_'.$pk} = &$obj->$primaryKey;
 						$postInsert[$t][] = $val;
 					}
 				}
@@ -122,18 +123,19 @@ abstract class SQL extends DataSource{
 			if(strpos($k,'_')===0)
 				continue;
 			if(is_object($v)||is_array($v)){
-				$pk = $this[$k]->getPrimaryKey();
 				if(is_object($v)){
 					$t = $this->findEntityTable($v,$k);
+					$pk = $this[$t]->getPrimaryKey();
 					if(isset($v->{$pk}))
 						$this[$t][$v->{$pk}] = $v;
 					else
 						$this[$t][] = $v;
-					$obj[$k.'_'.$primaryKey] = &$v->{$pk};
+					$obj->{$k.'_'.$primaryKey} = &$v->{$pk};
 				}
 				elseif(is_array($v)){
 					foreach($v as $val){
 						$t = $this->findEntityTable($val,$k);
+						$pk = $this[$t]->getPrimaryKey();
 						$val->{$type.'_'.$pk} = &$obj->{$primaryKey};
 						$postUpdate[$t][] = $val;
 					}
