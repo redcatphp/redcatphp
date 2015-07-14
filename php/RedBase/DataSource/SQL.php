@@ -103,7 +103,9 @@ abstract class SQL extends DataSource{
 		}
 		$r = $this->create($type,$properties,$primaryKey,$uniqTextKey);
 		foreach($postInsert as $k=>$v){
-			$this[$k][] = $v;
+			foreach($v as $val){
+				$this[$k][] = $val;
+			}
 		}
 		return $r;
 	}
@@ -143,9 +145,11 @@ abstract class SQL extends DataSource{
 				$properties[$k] = $v;
 			}
 		}
-		$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+		$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);		
 		foreach($postUpdate as $k=>$v){
-			$this[$k][$v->{$this[$k]->getPrimaryKey()}] = $v;
+			foreach($v as $val){
+				$this[$k][$val->{$this[$k]->getPrimaryKey()}] = $val;
+			}
 		}
 		return $r;
 	}
