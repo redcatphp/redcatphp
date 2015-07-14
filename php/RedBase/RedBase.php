@@ -87,4 +87,10 @@ class RedBase implements \ArrayAccess{
 		$class = __NAMESPACE__.'\\DataSource\\'.ucfirst($type);
 		return new $class($this,$type,$entityClassPrefix,$entityClassDefault,$primaryKey,$uniqTextKey,$config);
 	}
+	static function snakeCase($str){
+        return str_replace(' ', '_', strtolower(preg_replace('/([a-z])([A-Z])/', '$1 $2', $str)));
+	}
+	static function camelCase($str){
+		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
+	}
 }
