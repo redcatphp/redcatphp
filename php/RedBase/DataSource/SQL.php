@@ -102,6 +102,7 @@ abstract class SQL extends DataSource{
 			}
 		}
 		$r = $this->create($type,$properties,$primaryKey,$uniqTextKey);
+		$obj->{$primaryKey} = $r;
 		foreach($postInsert as $k=>$v){
 			foreach($v as $val){
 				$this[$k][] = $val;
