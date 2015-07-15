@@ -594,6 +594,18 @@ abstract class SQL extends DataSource{
 		return $this->changeColumnQuery($type,$property,$dataType);
 	}
 	
+	function drops(){
+		foreach(func_get_args() as $drop){
+			if(is_array($drop)){
+				foreach($drop as $d){
+					$this->drop($d);
+				}
+			}
+			else{
+				$this->drop($drop);
+			}
+		}
+	}
 	function drop($t){
 		if(isset($this->cacheTables)&&($i=array_search($t,$this->cacheTables))!==false)
 			unset($this->cacheTables[$i]);
