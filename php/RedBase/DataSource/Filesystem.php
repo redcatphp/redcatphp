@@ -16,16 +16,16 @@ class Filesystem extends DataSource{
 	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		return file_exists($this->directory.'/'.$type.'/'.$id)?$id:false;
 	}
-	function createRow($type,$obj,$primaryKey='id'){
+	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
 		
 	}
-	function readRow($type,$id,$primaryKey='id'){
+	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		
 	}
-	function updateRow($type,$obj,$id=null,$primaryKey='id'){
+	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		
 	}
-	function deleteRow($type,$id,$primaryKey='id'){
+	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		
 	}
 	function debug($enable=true){
