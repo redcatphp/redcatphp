@@ -45,8 +45,8 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function findEntityTable($obj,$default=null){
 		$table = $default;
-		if(isset($obj->__table)){
-			$table = $obj->__table;
+		if(isset($obj->_table)){
+			$table = $obj->_table;
 		}
 		else{
 			$c = get_class($obj);
