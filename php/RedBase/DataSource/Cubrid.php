@@ -8,6 +8,7 @@ class Cubrid extends SQL{
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIFIED        = 99;
 	
+	protected $quoteCharacter = '`';
 	protected $max = 2147483647;
 	
 	function construct(array $config=[]){
@@ -105,7 +106,8 @@ class Cubrid extends SQL{
 		return TRUE;
 	}
 	protected function getKeyMapForType( $type  ){
-		$sqlCode = $this->getAll("SHOW CREATE TABLE `{$type}`");
+		$table = $this->prefixTable($type);
+		$sqlCode = $this->getAll("SHOW CREATE TABLE `{$table}`");
 		if (!isset($sqlCode[0])) return array();
 		$matches = array();
 		preg_match_all( '/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\](\s+ON\s+DELETE\s+(CASCADE|SET\sNULL|RESTRICT|NO\sACTION)\s+ON\s+UPDATE\s+(SET\sNULL|RESTRICT|NO\sACTION))?/', $sqlCode[0]['CREATE TABLE'], $matches );
@@ -157,10 +159,27 @@ class Cubrid extends SQL{
 			$table  = $this->escTable( $type );
 			$name   = preg_replace( '/\W/', '', $name );
 			$column = $this->esc( $column );
-			$this->execute( "CREATE INDEX $name ON $table ($column) " );
+			$this->execute("CREATE INDEX $name ON $table ($column) ");
 			return true;
 		} catch ( \PDOException $e ) {
 			return false;
+		}
+	}
+	
+	function clear($type){
+		$table = $this->escTable($type);
+		$this->execute('TRUNCATE '.$table);
+	}
+	protected function _drop($type){
+		$t = $this->escTable($type);
+		foreach($this->getKeyMapForType($type) as $k){
+			$this->execute('ALTER TABLE '.$t.' DROP FOREIGN KEY "'.$k['name'].'"');
+		}
+		$this->execute('DROP TABLE '.$t);
+	}
+	protected function _dropAll(){
+		foreach($this->getTables() as $t){
+			$this->_drop($this->unprefixTable($t));
 		}
 	}
 }

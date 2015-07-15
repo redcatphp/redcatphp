@@ -234,7 +234,31 @@ class Sqlite extends SQL{
 		}
 	}
 	
+	function clear($type){
+		$table = $this->escTable($type);
+		$this->execute('DELETE FROM '.$table);
+	}
+	protected function _drop($type){
+		$t = $this->escTable($type);
+		$this->execute('PRAGMA foreign_keys = 0 ');
+		try {
+			$this->execute('DROP TABLE IF EXISTS '.$t);
+		}
+		catch (\PDOException $e ) {}
+		$this->execute('PRAGMA foreign_keys = 1');
+	}
+	protected function _dropAll(){
+		$this->execute('PRAGMA foreign_keys = 0');
+		foreach($this->getTables() as $t){
+			try{
+				$this->execute("DROP TABLE IF EXISTS `$t`");
+			}
+			catch(\PDOException $e){}
+		}
+		$this->execute('PRAGMA foreign_keys = 1 ');
+	}
 	
+	/*
 	function fulltext($search){
 		list($select,$from,$where,$orderBy) = $this->fulltextQueryParts($search);
 		$this->select($select);
@@ -247,5 +271,5 @@ class Sqlite extends SQL{
 		
 		return [$select,$from,$where,$orderBy];
 	}
-	
+	*/
 }

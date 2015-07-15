@@ -245,4 +245,36 @@ class Mysql extends SQL{
 			return false;
 		}
 	}
+	
+	function clear($type){
+		$table = $this->escTable($type);
+		$this->execute('TRUNCATE '.$table);
+	}
+	protected function _drop($type){
+		$t = $this->escTable($type);
+		$this->execute('SET FOREIGN_KEY_CHECKS = 0;');
+		try{
+			$this->execute('DROP TABLE IF EXISTS '.$t);
+		}
+		catch(\PDOException $e){}
+		try{
+			$this->execute('DROP VIEW IF EXISTS '.$t);
+		}
+		catch(\PDOException $e){}
+		$this->execute('SET FOREIGN_KEY_CHECKS = 1;');
+	}
+	protected function _dropAll(){
+		$this->execute('SET FOREIGN_KEY_CHECKS = 0;');
+		foreach($this->getTables() as $t){
+			try{
+				$this->execute("DROP TABLE IF EXISTS `$t`");
+			}
+			catch(\PDOException $e){}
+			try{
+				$this->execute("DROP VIEW IF EXISTS `$t`");
+			}
+			catch(\PDOException $e){}
+		}
+		$this->execute('SET FOREIGN_KEY_CHECKS = 1;');
+	}
 }

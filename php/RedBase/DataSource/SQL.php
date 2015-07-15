@@ -511,6 +511,12 @@ abstract class SQL extends DataSource{
 		$this->check($table);
 		return $this->tablePrefix.$table;
 	}
+	function unprefixTable($table){
+		if($this->tablePrefix&&substr($table,0,$l=stlren($this->tablePrefix))==$this->tablePrefix){
+			$table = substr($table,$l);
+		}
+		return $table;
+	}
 	function unEsc($esc){
 		return trim($esc,$this->quoteCharacter);
 	}
@@ -588,6 +594,19 @@ abstract class SQL extends DataSource{
 		return $this->changeColumnQuery($type,$property,$dataType);
 	}
 	
+	function drop($t){
+		if(isset($this->cacheTables)&&($i=array_search($t,$this->cacheTables))!==false)
+			unset($this->cacheTables[$i]);
+		if(isset($this->cacheColumns[$t]))
+			unset($this->cacheColumns[$t]);
+		$this->_drop($t);
+	}
+	function dropAll(){
+		$this->_dropAll();
+		$this->cacheTables = [];
+		$this->cacheColumns = [];
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
@@ -602,4 +621,8 @@ abstract class SQL extends DataSource{
 	abstract function getTypeForID();
 	abstract function addUniqueConstraint($type,$properties);
 	abstract function addIndex( $type, $name, $property );
+	
+	abstract function clear($type);
+	abstract protected function _drop($type);
+	abstract protected function _dropAll();
 }

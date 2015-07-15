@@ -14,6 +14,7 @@ class Pgsql extends SQL{
 	const C_DATATYPE_SPECIFIED        = 99;
 	
 	protected $defaultValue = 'DEFAULT';
+	protected $quoteCharacter = '"';
 	
 	function construct(array $config=[]){
 		parent::construct($config);
@@ -225,5 +226,23 @@ class Pgsql extends SQL{
 		catch(\PDOException $e){
 			return false;
 		}
+	}
+	
+	function clear($type){
+		$table = $this->escTable($type);
+		$this->execute('TRUNCATE '.$table);
+	}
+	protected function _drop($type){
+		$t = $this->escTable($type);
+		$this->execute('SET CONSTRAINTS ALL DEFERRED');
+		$this->execute("DROP TABLE IF EXISTS $t CASCADE ");
+		$this->execute('SET CONSTRAINTS ALL IMMEDIATE');
+	}
+	protected function _dropAll(){
+		$this->execute('SET CONSTRAINTS ALL DEFERRED');
+		foreach($this->getTables() as $t){
+			$this->execute('DROP TABLE IF EXISTS "'.$t.'" CASCADE ');
+		}
+		$this->execute('SET CONSTRAINTS ALL IMMEDIATE');
 	}
 }
