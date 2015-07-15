@@ -55,8 +55,6 @@ class RedBase implements \ArrayAccess{
 		$primaryKey = $this->primaryKeyDefault;
 		$uniqTextKey = $this->uniqTextKeyDefault;
 		
-		
-		
 		if(isset($config['type'])){
 			$type = $config['type'];
 		}

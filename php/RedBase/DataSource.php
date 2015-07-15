@@ -82,10 +82,7 @@ abstract class DataSource implements \ArrayAccess{
 		$c = 'RedBase\DataTable\\'.ucfirst($this->type);
 		return new $c($k,$primaryKey,$uniqTextKey,$this);
 	}
-	function construct(array $config=[]){
-		
-	}
-	
+	function construct(array $config=[]){}
 	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
 		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
 	}
