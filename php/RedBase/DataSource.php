@@ -10,10 +10,6 @@ abstract class DataSource implements \ArrayAccess{
 	protected $uniqTextKey;
 	protected $tableMap = [];
 	protected static $phpReservedKeywords = ['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__'];
-	abstract function createRow($type,$obj,$primaryKey='id');
-	abstract function readRow($type,$id,$primaryKey='id');
-	abstract function updateRow($type,$obj,$id=null,$primaryKey='id');
-	abstract function deleteRow($type,$id,$primaryKey='id');
 	function __construct(RedBase $redbase,$type,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->redbase = $redbase;
 		$this->type = $type;
@@ -88,5 +84,102 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function construct(array $config=[]){
 		
+	}
+	
+	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
+		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
+	}
+	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if(!$this->tableExists($type))
+			return false;
+		return $this->read($type,$id,$primaryKey,$uniqTextKey);
+	}
+	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		return $this->putRow($type,$obj,$id,$primaryKey,$uniqTextKey);
+	}
+	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if(!$this->tableExists($type))
+			return false;
+		return $this->delete($type,$id,$primaryKey,$uniqTextKey);
+	}
+	
+	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$properties = [];
+		$postPut = [];
+		$fk = [];
+		foreach($obj as $k=>$v){
+			$xclusive = substr($k,-3)=='_x_';
+			if($xclusive)
+				$k = substr($k,0,-3);
+			if(substr($k,0,1)=='_'){
+				if(substr($k,1,4)=='m2m_'){ //ManyToMany
+					$k = substr($k,5);
+					$inter = [$type,$k];
+					sort($inter);
+					$inter = implode('_',$inter);
+					$interc = $this->findEntityClass($inter);
+					foreach($v as $val){
+						$t = $this->findEntityTable($val,$k);
+						$pk = $this[$t]->getPrimaryKey();
+						$interm = new $interc();
+						$interm->{$type.'_'.$primaryKey} = &$obj->$primaryKey;
+						$interm->{$k.'_'.$pk} = &$val->$pk;
+						$postPut[$t][] = $val;
+						$postPut[$inter][] = $interm;
+						$addFK = [$inter,$t,$k.'_'.$pk,$pk,$xclusive];
+						if(!in_array($addFK,$fk))
+							$fk[] = $addFK;
+					}
+					$addFK = [$inter,$type,$type.'_'.$primaryKey,$primaryKey,$xclusive];
+					if(!in_array($addFK,$fk))
+						$fk[] = $addFK;
+				}
+				continue;
+			}
+			if(is_object($v)){ //ManyToOne
+				$t = $this->findEntityTable($v,$k);
+				$pk = $this[$t]->getPrimaryKey();
+				if(isset($v->$pk))
+					$this[$t][$v->$pk] = $v;
+				else
+					$this[$t][] = $v;
+				$properties[$k.'_'.$primaryKey] = $obj->{$k.'_'.$primaryKey} = $v->$pk;
+				$addFK = [$type,$t,$k.'_'.$primaryKey,$pk,$xclusive];
+				if(!in_array($addFK,$fk))
+					$fk[] = $addFK;
+			}
+			elseif(is_array($v)){ //OneToMany
+				foreach($v as $val){
+					$t = $this->findEntityTable($val,$k);
+					$pk = $this[$t]->getPrimaryKey();
+					$val->{$type.'_'.$pk} = &$obj->$primaryKey;
+					$postPut[$t][] = $val;
+					$addFK = [$t,$type,$type.'_'.$pk,$primaryKey,$xclusive];
+					if(!in_array($addFK,$fk))
+						$fk[] = $addFK;
+				}
+			}
+			else{
+				$properties[$k] = $v;
+			}
+		}
+		if(isset($id)){
+			$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+		}
+		else{
+			$r = $this->create($type,$properties,$primaryKey,$uniqTextKey);
+		}
+		$obj->{$primaryKey} = $r;
+		foreach($postPut as $k=>$v){
+			foreach($v as $val){
+				$this[$k][] = $val;
+			}
+		}
+		if(method_exists($this,'addFK')){
+			foreach($fk as list($type,$targetType,$property,$targetProperty,$isDep)){
+				$this->addFK($type,$targetType,$property,$targetProperty,$isDep);
+			}
+		}
+		return $r;
 	}
 }
