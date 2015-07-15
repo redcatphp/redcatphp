@@ -88,7 +88,7 @@ abstract class SQL extends DataSource{
 		$default = $this->defaultValue;
 		$suffix  = $this->getInsertSuffix($type);
 		$table   = $this->escTable($type);
-		$this->adaptStructure($type,$properties);
+		$this->adaptStructure($type,$properties,$uniqTextKey);
 		if(!empty($insertvalues)){
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
@@ -133,7 +133,7 @@ abstract class SQL extends DataSource{
 			return $this->create($type,$properties,$primaryKey);
 		if(!$this->tableExists($type))
 			return false;
-		$this->adaptStructure($type,$properties);
+		$this->adaptStructure($type,$properties,$uniqTextKey);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
@@ -445,7 +445,7 @@ abstract class SQL extends DataSource{
 	}
 	
 	//QueryWriter
-	function adaptStructure($type,$properties){
+	function adaptStructure($type,$properties,$uniqTextKey=null){
 		if($this->frozen)
 			return;
 		if(!$this->tableExists($type))
@@ -463,6 +463,9 @@ abstract class SQL extends DataSource{
 					&&$this->sqltype_typeno[$typedesc]<$typeno
 				)
 					$this->changeColumn($type,$column,$typeno);
+			}
+			if(isset($uniqTextKey)&&$uniqTextKey==$column){
+				$this->addUniqueConstraint($type,$column);
 			}
 		}
 	}
