@@ -205,7 +205,7 @@ class Sqlite extends SQL{
 	}
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );
-		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', $properties );
+		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', (array)$properties );
 		$t     = $this->getTable( $type );
 		$t['indexes'][$name] = [ 'name' => $name ];
 		try {

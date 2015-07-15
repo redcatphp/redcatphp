@@ -199,7 +199,7 @@ class Pgsql extends SQL{
 	function addUniqueConstraint( $type, $properties ){
 		$tableNoQ = $this->prefixTable( $type );
 		$columns = [];
-		foreach( $properties as $key => $column )
+		foreach( (array)$properties as $key => $column )
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
 		sort( $columns ); //else we get multiple indexes due to order-effects
