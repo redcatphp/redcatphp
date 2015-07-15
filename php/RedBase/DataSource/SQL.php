@@ -74,8 +74,25 @@ abstract class SQL extends DataSource{
 		$properties = [];
 		$postInsert = [];
 		foreach($obj as $k=>$v){
-			if(strpos($k,'_')===0)
+			if(strpos($k,'_')===0){
+				if(strpos($k,'_m2m_')===0){
+					$k = substr($k,5);
+					$inter = [$type,$k];
+					sort($inter);
+					$inter = implode('_',$inter);
+					$interc = $this->findEntityClass($inter);
+					foreach($v as $val){
+						$t = $this->findEntityTable($val,$k);
+						$pk = $this[$t]->getPrimaryKey();
+						$interm = new $interc();
+						$interm->{$type.'_'.$primaryKey} = &$obj->$primaryKey;
+						$interm->{$k.'_'.$pk} = &$val->$pk;
+						$postInsert[$t][] = $val;
+						$postInsert[$inter][] = $interm;
+					}
+				}
 				continue;
+			}
 			if(is_object($v)||is_array($v)){
 				if(is_object($v)){
 					$t = $this->findEntityTable($v,$k);
