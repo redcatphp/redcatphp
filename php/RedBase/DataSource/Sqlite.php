@@ -177,11 +177,15 @@ class Sqlite extends SQL{
 		$tables = $this->getTables();
 		if ( !in_array( $targetTable, $tables ) )
 			return false;
-
-		if ( !is_null( $this->getForeignKeyForTypeProperty( $table, $column ) ) )
+		
+		$consSQL = $constraint ? 'CASCADE' : 'SET NULL';
+		$fk = $this->getForeignKeyForTypeProperty( $table, $column );
+		if ( !is_null( $fk )
+			&&($fk['on_update']==$consSQL||$fk['on_update']=='CASCADE')
+			&&($fk['on_delete']==$consSQL||$fk['on_update']=='CASCADE')
+		)
 			return false;
 		$t = $this->getTable( $table );
-		$consSQL = $constraint ? 'CASCADE' : 'SET NULL';
 		$label   = 'from_' . $column . '_to_table_' . $targetTable . '_col_' . $targetColumn;
 		$t['keys'][$label] = array(
 			'table'     => $targetTable,

@@ -88,9 +88,14 @@ class Cubrid extends SQL{
 		$column          = $this->esc( $property );
 		$columnNoQ       = $this->check( $property );
 		$targetColumn    = $this->esc( $targetProperty );
-		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $columnNoQ ) ) ) return FALSE;
-		$needsToDropFK   = FALSE;
 		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
+		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $columnNoQ );
+		if ( !is_null( $fk )
+			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
+			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
+		)
+			return false;
+		$needsToDropFK   = FALSE;
 		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ";
 		try {
 			$this->exec($sql);

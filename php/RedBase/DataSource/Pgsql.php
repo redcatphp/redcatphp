@@ -168,13 +168,18 @@ class Pgsql extends SQL{
 		$targetField = $this->esc( $targetProperty );
 		$tableNoQ = $this->prefixTable( $type );
 		$fieldNoQ = $this->check( $property );
-		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) )
+		
+		$casc = ( $isDependent ? 'CASCADE' : 'SET NULL' );
+		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ );
+		if ( !is_null( $fk )
+			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
+			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
+		)
 			return false;
 		try{
-			$delRule = ( $isDep ? 'CASCADE' : 'SET NULL' );
 			$this->execute( "ALTER TABLE {$table}
 				ADD FOREIGN KEY ( {$field} ) REFERENCES  {$targetTable}
-				({$targetField}) ON DELETE {$delRule} ON UPDATE {$delRule} DEFERRABLE ;" );
+				({$targetField}) ON DELETE {$casc} ON UPDATE {$casc} DEFERRABLE ;" );
 			return true;
 		} catch ( \PDOException $e ) {
 			return false;

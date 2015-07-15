@@ -135,7 +135,14 @@ class Mysql extends SQL{
 		$targetFieldNoQ = $this->check( $targetProperty );
 		$tableNoQ = $this->prefixTable( $type );
 		$fieldNoQ = $this->check( $property);
-		if ( !is_null( $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ ) ) ) return FALSE;
+		
+		$casc = ( $isDependent ? 'CASCADE' : 'SET NULL' );
+		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ );
+		if ( !is_null( $fk )
+			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
+			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
+		)
+			return false;
 
 		//Widen the column if it's incapable of representing a foreign key (at least INT).
 		$columns = $this->getColumns( $tableNoQ );
@@ -151,7 +158,7 @@ class Mysql extends SQL{
 				ALTER TABLE {$table}
 				ADD CONSTRAINT $cName
 				FOREIGN KEY $fkName ( {$fieldNoQ} ) REFERENCES {$targetTableNoQ}
-				({$targetFieldNoQ}) ON DELETE " . ( $isDependent ? 'CASCADE' : 'SET NULL' ) . ' ON UPDATE '.( $isDependent ? 'CASCADE' : 'SET NULL' ).';');
+				({$targetFieldNoQ}) ON DELETE " . $casc . ' ON UPDATE '.$casc.';');
 		} catch ( \PDOException $e ) {
 			// Failure of fk-constraints is not a problem
 		}
