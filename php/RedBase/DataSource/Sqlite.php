@@ -207,6 +207,8 @@ class Sqlite extends SQL{
 		$tableNoQ = $this->prefixTable( $type );
 		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', (array)$properties );
 		$t     = $this->getTable( $type );
+		if(isset($t['indexes'][$name]))
+			return true;
 		$t['indexes'][$name] = [ 'name' => $name ];
 		try {
 			$this->putTable( $t );
