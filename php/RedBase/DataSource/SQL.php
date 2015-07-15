@@ -76,11 +76,13 @@ abstract class SQL extends DataSource{
 		return $this->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
 	}
 	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
-		if($uniqTextKey&&(
-			(isset($properties[$uniqTextKey])&&$idKey=$uniqTextKey)
-			||(isset($properties[$primaryKey])&&$idKey=$primaryKey)
-		))
-			return $this->update($type,$properties,$properties[$idKey],$primaryKey,$uniqTextKey);
+		if(isset($properties[$primaryKey]))
+			return $this->update($type,$properties,$properties[$primaryKey],$primaryKey,$uniqTextKey);
+		if($uniqTextKey&&isset($properties[$uniqTextKey])){
+			$id = $this->readId($type,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
+			if($id)
+				return $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+		}
 		if(array_key_exists($primaryKey,$properties))
 			unset($properties[$primaryKey]);
 		$insertcolumns = array_keys($properties);
@@ -130,7 +132,7 @@ abstract class SQL extends DataSource{
 			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
 		}
 		if(!$id)
-			return $this->create($type,$properties,$primaryKey);
+			return $this->create($type,$properties,$primaryKey,$uniqTextKey);
 		if(!$this->tableExists($type))
 			return false;
 		$this->adaptStructure($type,$properties,$uniqTextKey);
