@@ -68,6 +68,16 @@ class Facade{
 		self::create($type,$obj);
 	}
 	
+	static function many2one($obj,$type){
+		return self::$redbaseCurrent[$type]->many2one($obj);
+	}
+	static function one2many($obj,$type){
+		return self::$redbaseCurrent[$type]->one2many($obj);
+	}
+	static function many2many($obj,$type){
+		return self::$redbaseCurrent[$type]->many2many($obj);
+	}
+	
 	static function setEntityClassPrefix($entityClassPrefix='Model\\'){
 		return self::$redbase->setEntityClassPrefix($entityClassPrefix);
 	}
@@ -85,6 +95,10 @@ class Facade{
 	}
 	static function setUniqTextKeyDefault($uniqTextKeyDefault='uniq'){
 		return self::$redbase->setUniqTextKeyDefault($uniqTextKeyDefault);
+	}
+	
+	static function debug(){
+		self::$redbaseCurrent->debug();
 	}
 }
 Facade::_initialiaze();
