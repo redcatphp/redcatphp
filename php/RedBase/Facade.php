@@ -42,6 +42,12 @@ class Facade{
 		return call_user_func_array([self::$redbaseCurrent,$f],$args);
 	}
 	
+	static function dispense($type){
+		$c = self::$redbaseCurrent->findEntityClass($type);
+		$row = new $c;
+		$row->_table = $type;
+		return $row;
+	}
 	static function create($type,$obj){
 		self::$redbaseCurrent[$type][] = $obj;
 	}
