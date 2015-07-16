@@ -183,4 +183,8 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		return $r;
 	}
+	
+	//abstract function many2one($obj,$type){}
+	//abstract function one2many($obj,$type){}
+	//abstract function many2many($obj,$type){}
 }

@@ -621,6 +621,28 @@ abstract class SQL extends DataSource{
 		$this->cacheColumns = [];
 	}
 	
+	function many2one($obj,$type){
+		$table = clone $this[$type];
+		$pk = $table->getPrimaryKey();
+		$tb = $this->findEntityTable($obj);
+		$pko = $this[$tb]->getPrimaryKey();
+		$table->where($pk.' = ?',[$obj->$pko]);
+		return $table;
+	}
+	function one2many($obj,$type){
+		$table = clone $this[$type];
+		$pk = $table->getPrimaryKey();
+		$tb = $this->findEntityTable($obj);
+		$pko = $this[$tb]->getPrimaryKey();
+		$table->where($tb.'_'.$pko.' = ?',[$obj->$pko]);
+		return $table;
+	}
+	function many2many($obj,$type){
+		$table = clone $this[$type];
+		
+	}
+	
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();

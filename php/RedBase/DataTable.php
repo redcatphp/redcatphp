@@ -119,4 +119,14 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	function getClone(){
 		return clone $this;
 	}
+	
+	function many2one($obj){
+		return $this->dataSource->many2one($obj,$this->name);
+	}
+	function one2many($obj){
+		return $this->dataSource->one2many($obj,$this->name);
+	}
+	function many2many($obj){
+		return $this->dataSource->many2many($obj,$this->name);
+	}
 }
