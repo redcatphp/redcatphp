@@ -42,12 +42,6 @@ class Facade{
 		return call_user_func_array([self::$redbaseCurrent,$f],$args);
 	}
 	
-	static function dispense($type){
-		$c = self::$redbaseCurrent->findEntityClass($type);
-		$row = new $c;
-		$row->_table = $type;
-		return $row;
-	}
 	static function create($type,$obj){
 		self::$redbaseCurrent[$type][] = $obj;
 	}
@@ -59,6 +53,19 @@ class Facade{
 	}
 	static function delete($type,$id){
 		unset(self::$redbaseCurrent[$type][$id]);
+	}
+	
+	static function dispense($type){
+		$c = self::$redbaseCurrent->findEntityClass($type);
+		$row = new $c;
+		$row->_table = $type;
+		return $row;
+	}
+	static function store($obj,$type=null){
+		$table = self::$redbaseCurrent->findEntityTable($obj,$type);
+		if(!$table)
+			throw new Exception('Can\'t resolve type of object');
+		self::create($type,$obj);
 	}
 	
 	static function setEntityClassPrefix($entityClassPrefix='Model\\'){
