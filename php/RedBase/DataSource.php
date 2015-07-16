@@ -84,14 +84,18 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function construct(array $config=[]){}
 	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
+		$obj->_table = $type;
 		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
 	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		return $this->read($type,$id,$primaryKey,$uniqTextKey);
+		$row = $this->read($type,$id,$primaryKey,$uniqTextKey);
+		$row->_table = $type;
+		return $row;
 	}
 	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$obj->_table = $type;
 		return $this->putRow($type,$obj,$id,$primaryKey,$uniqTextKey);
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
