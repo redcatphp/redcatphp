@@ -112,58 +112,88 @@ abstract class DataSource implements \ArrayAccess{
 			$xclusive = substr($k,-3)=='_x_';
 			if($xclusive)
 				$k = substr($k,0,-3);
+			$relation = false;
 			if(substr($k,0,1)=='_'){
-				if(substr($k,1,4)=='m2m_'){ //ManyToMany
+				if(substr($k,1,4)=='one_'){
 					$k = substr($k,5);
-					$inter = [$type,$k];
-					sort($inter);
-					$inter = implode('_',$inter);
-					$interc = $this->findEntityClass($inter);
-					foreach($v as $val){
-						$t = $this->findEntityTable($val,$k);
+					$relation = 'one';
+				}
+				elseif(substr($k,1,5)=='many_'){
+					$k = substr($k,6);
+					$relation = 'many';
+				}
+				elseif(substr($k,1,10)=='many2many_'){
+					$k = substr($k,11);
+					$relation = 'many2many';
+				}
+				elseif(substr($k,1,4)=='m2m_'){
+					$k = substr($k,5);
+					$relation = 'many2many';
+				}
+				else{
+					continue;
+				}
+			}
+			elseif(is_object($v)){
+				$relation = 'one';
+			}
+			elseif(is_array($v)){
+				$relation = 'many';
+			}
+			if($relation){
+				switch($relation){
+					case 'one':						
+						$t = $this->findEntityTable($v,$k);
 						$pk = $this[$t]->getPrimaryKey();
-						$interm = new $interc();
-						$interm->{$type.'_'.$primaryKey} = &$obj->$primaryKey;
-						$interm->{$k.'_'.$pk} = &$val->$pk;
-						$postPut[$t][] = $val;
-						$postPut[$inter][] = $interm;
-						$addFK = [$inter,$t,$k.'_'.$pk,$pk,$xclusive];
+						if(isset($v->$pk))
+							$this[$t][$v->$pk] = $v;
+						else
+							$this[$t][] = $v;
+						$properties[$k.'_'.$primaryKey] = $obj->{$k.'_'.$primaryKey} = $v->$pk;
+						$addFK = [$type,$t,$k.'_'.$primaryKey,$pk,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
-					}
-					$addFK = [$inter,$type,$type.'_'.$primaryKey,$primaryKey,$xclusive];
-					if(!in_array($addFK,$fk))
-						$fk[] = $addFK;
-				}
-				continue;
-			}
-			if(is_object($v)){ //ManyToOne
-				$t = $this->findEntityTable($v,$k);
-				$pk = $this[$t]->getPrimaryKey();
-				if(isset($v->$pk))
-					$this[$t][$v->$pk] = $v;
-				else
-					$this[$t][] = $v;
-				$properties[$k.'_'.$primaryKey] = $obj->{$k.'_'.$primaryKey} = $v->$pk;
-				$addFK = [$type,$t,$k.'_'.$primaryKey,$pk,$xclusive];
-				if(!in_array($addFK,$fk))
-					$fk[] = $addFK;
-			}
-			elseif(is_array($v)){ //OneToMany
-				foreach($v as $val){
-					$t = $this->findEntityTable($val,$k);
-					$pk = $this[$t]->getPrimaryKey();
-					$val->{$type.'_'.$pk} = &$obj->$primaryKey;
-					$postPut[$t][] = $val;
-					$addFK = [$t,$type,$type.'_'.$pk,$primaryKey,$xclusive];
-					if(!in_array($addFK,$fk))
-						$fk[] = $addFK;
+					break;
+					case 'many':
+						foreach($v as $val){
+							$t = $this->findEntityTable($val,$k);
+							$pk = $this[$t]->getPrimaryKey();
+							$val->{$type.'_'.$pk} = &$obj->$primaryKey;
+							$postPut[$t][] = $val;
+							$addFK = [$t,$type,$type.'_'.$pk,$primaryKey,$xclusive];
+							if(!in_array($addFK,$fk))
+								$fk[] = $addFK;
+						}						
+					break;
+					case 'many2many':
+						$inter = [$type,$k];
+						sort($inter);
+						$inter = implode('_',$inter);
+						$interc = $this->findEntityClass($inter);
+						foreach($v as $val){
+							$t = $this->findEntityTable($val,$k);
+							$pk = $this[$t]->getPrimaryKey();
+							$interm = new $interc();
+							$interm->{$type.'_'.$primaryKey} = &$obj->$primaryKey;
+							$interm->{$k.'_'.$pk} = &$val->$pk;
+							$postPut[$t][] = $val;
+							$postPut[$inter][] = $interm;
+							$addFK = [$inter,$t,$k.'_'.$pk,$pk,$xclusive];
+							if(!in_array($addFK,$fk))
+								$fk[] = $addFK;
+						}
+						$addFK = [$inter,$type,$type.'_'.$primaryKey,$primaryKey,$xclusive];
+						if(!in_array($addFK,$fk))
+							$fk[] = $addFK;
+					break;
 				}
 			}
 			else{
 				$properties[$k] = $v;
 			}
 		}
+		
+		
 		if(isset($id)){
 			$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
 		}
