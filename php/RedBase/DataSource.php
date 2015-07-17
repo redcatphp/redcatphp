@@ -126,10 +126,6 @@ abstract class DataSource implements \ArrayAccess{
 					$k = substr($k,11);
 					$relation = 'many2many';
 				}
-				elseif(substr($k,1,4)=='m2m_'){
-					$k = substr($k,5);
-					$relation = 'many2many';
-				}
 				else{
 					continue;
 				}
