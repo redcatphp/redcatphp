@@ -69,13 +69,13 @@ class Facade{
 	}
 	
 	static function many2one($obj,$type){
-		return self::$redbaseCurrent[$type]->many2one($obj);
+		return self::$redbaseCurrent->many2one($obj,$type);
 	}
 	static function one2many($obj,$type){
-		return self::$redbaseCurrent[$type]->one2many($obj);
+		return self::$redbaseCurrent->one2many($obj,$type);
 	}
 	static function many2many($obj,$type){
-		return self::$redbaseCurrent[$type]->many2many($obj);
+		return self::$redbaseCurrent->many2many($obj,$type);
 	}
 	
 	static function setEntityClassPrefix($entityClassPrefix='Model\\'){

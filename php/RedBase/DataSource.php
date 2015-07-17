@@ -192,8 +192,6 @@ abstract class DataSource implements \ArrayAccess{
 				$properties[$k] = $v;
 			}
 		}
-		
-		
 		if(isset($id)){
 			$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
 		}
