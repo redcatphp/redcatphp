@@ -623,23 +623,46 @@ abstract class SQL extends DataSource{
 	
 	function many2one($obj,$type){
 		$table = clone $this[$type];
+		$typeE = $this->escTable($type);
 		$pk = $table->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
-		$table->where($pk.' = ?',[$obj->$pko]);
+		$column = $this->esc($pk);
+		$table->where($column.' = ?',[$obj->$pko]);
+		$table->select($typeE.'.*');
 		return $table;
 	}
 	function one2many($obj,$type){
 		$table = clone $this[$type];
+		$typeE = $this->escTable($type);
 		$pk = $table->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
-		$table->where($tb.'_'.$pko.' = ?',[$obj->$pko]);
+		$column = $this->esc($tb.'_'.$pko);
+		$table->where($typeE.'.'.$column.' = ?',[$obj->$pko]);
+		$table->select($typeE.'.*');
 		return $table;
 	}
 	function many2many($obj,$type){
 		$table = clone $this[$type];
-		
+		$typeE = $this->escTable($type);
+		$pk = $table->getPrimaryKey();
+		$tb = $this->findEntityTable($obj);
+		$pko = $this[$tb]->getPrimaryKey();
+		$colmun1 = $this->esc($type.'_'.$pk);
+		$colmun2 = $this->esc($tb.'_'.$pko);
+		$tbj = [$type,$tb];
+		sort($tbj);
+		$tbj = implode('_',$tbj);
+		$tb = $this->escTable($tb);
+		$tbj = $this->escTable($tbj);
+		$pke = $this->esc($pk);
+		$pkoe = $this->esc($pko);
+		$table->join($tbj.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke);
+		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2
+					.' AND '.$tb.'.'.$pkoe.' =  ?',[$obj->$pko]);
+		$table->select($typeE.'.*');
+		return $table;
 	}
 	
 	
