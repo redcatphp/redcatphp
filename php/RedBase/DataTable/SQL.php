@@ -13,10 +13,26 @@ class SQL extends DataTable{
 	function exists(){
 		return $this->dataSource->tableExists($this->name,true);
 	}
+	function fetch(){
+		return $this->dataSource->fetch($this->select->getQuery(),$this->select->getParams());
+	}
+	function getRow(){
+		return $this->dataSource->getRow($this->select->getQuery(),$this->select->getParams());
+	}
+	function getAll(){
+		$table = [];
+		foreach($this->dataSource->getAll($this->select->getQuery(),$this->select->getParams()) as $row){
+			if(isset($row[$this->primaryKey]))
+				$table[$row[$this->primaryKey]] = $row;
+			else
+				$table[] = $row;
+		}
+		return $table;
+	}
 	function rewind(){
 		if(!$this->exists())
 			return;
-		$this->stmt = $this->dataSource->fetch($this->select->getQuery(),$this->select->getParams());
+		$this->stmt = $this->fetch();
 		$this->next();
 	}
 	function current(){
