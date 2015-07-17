@@ -126,8 +126,8 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	function loadMany($obj){
 		return $obj->{'_many_'.$this->name} = $this->many($obj)->getAll();
 	}
-	function loadMany2many($obj){
-		return $obj->{'_many2many_'.$this->name} = $this->many2many($obj)->getAll();
+	function loadMany2many($obj,$via=null){
+		return $obj->{'_many2many_'.$this->name} = $this->many2many($obj,$via)->getAll();
 	}
 	function one($obj){
 		return $this->dataSource->many2one($obj,$this->name);
@@ -135,8 +135,8 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	function many($obj){
 		return $this->dataSource->one2many($obj,$this->name);
 	}
-	function many2many($obj){
-		return $this->dataSource->many2many($obj,$this->name);
+	function many2many($obj,$via=null){
+		return $this->dataSource->many2many($obj,$this->name,$via);
 	}
 	
 	//abstract function getAll();

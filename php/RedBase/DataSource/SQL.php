@@ -643,7 +643,7 @@ abstract class SQL extends DataSource{
 		$table->select($typeE.'.*');
 		return $table;
 	}
-	function many2many($obj,$type){
+	function many2many($obj,$type,$via=null){
 		$table = clone $this[$type];
 		$typeE = $this->escTable($type);
 		$pk = $table->getPrimaryKey();
@@ -651,9 +651,14 @@ abstract class SQL extends DataSource{
 		$pko = $this[$tb]->getPrimaryKey();
 		$colmun1 = $this->esc($type.'_'.$pk);
 		$colmun2 = $this->esc($tb.'_'.$pko);
-		$tbj = [$type,$tb];
-		sort($tbj);
-		$tbj = implode('_',$tbj);
+		if($via){
+			$tbj = $via;
+		}
+		else{
+			$tbj = [$type,$tb];
+			sort($tbj);
+			$tbj = implode('_',$tbj);
+		}
 		$tb = $this->escTable($tb);
 		$tbj = $this->escTable($tbj);
 		$pke = $this->esc($pk);
