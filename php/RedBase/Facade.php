@@ -107,7 +107,7 @@ class Facade{
 	}
 	
 	static function debug(){
-		self::$redbaseCurrent->debug();
+		return call_user_func_array([self::$redbaseCurrent,'debug'],func_get_args());
 	}
 }
 Facade::_initialiaze();
