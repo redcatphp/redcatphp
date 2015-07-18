@@ -37,7 +37,7 @@ class Pgsql extends SQL{
 		$this->pdo->exec('CREATE DATABASE "'.$dbname.'"');
 	}
 	protected function getInsertSuffix( $primaryKey ){
-		return 'RETURNING '.$primaryKey.' ';
+		return 'RETURNING "'.$primaryKey.'" ';
 	}
 	function getTablesQuery(){
 		return $this->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );

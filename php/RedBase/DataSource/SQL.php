@@ -89,7 +89,7 @@ abstract class SQL extends DataSource{
 		$insertcolumns = array_keys($properties);
 		$insertvalues = array_values($properties);
 		$default = $this->defaultValue;
-		$suffix  = $this->getInsertSuffix($type);
+		$suffix  = $this->getInsertSuffix($primaryKey);
 		$table   = $this->escTable($type);
 		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
 		if(!empty($insertvalues)){
