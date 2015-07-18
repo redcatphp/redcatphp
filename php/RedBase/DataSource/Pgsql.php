@@ -12,10 +12,8 @@ class Pgsql extends SQL{
 	const C_DATATYPE_SPECIAL_MONEY    = 93;
 	const C_DATATYPE_SPECIAL_POLYGON  = 94;
 	const C_DATATYPE_SPECIFIED        = 99;
-	
 	protected $defaultValue = 'DEFAULT';
 	protected $quoteCharacter = '"';
-	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -41,10 +39,6 @@ class Pgsql extends SQL{
 	}
 	function getTablesQuery(){
 		return $this->getCol( 'SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )' );
-	}
-	function createTableQuery( $table ){
-		$table = $this->escTable($table);
-		$this->execute(" CREATE TABLE $table (id SERIAL PRIMARY KEY); ");
 	}
 	function scanType( $value, $flagSpecial = FALSE ){
 		if ( $value === INF )
@@ -92,9 +86,9 @@ class Pgsql extends SQL{
 		}
 		return $columns;
 	}
-	function createTableQuery($table){
+	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
-		$this->execute("CREATE TABLE $table (id SERIAL PRIMARY KEY);");
+		$this->execute('CREATE TABLE '.$table.' ('.$pk.' SERIAL PRIMARY KEY);');
 	}
 	function addColumnQuery( $type, $column, $field ){
 		$table  = $type;
@@ -256,5 +250,13 @@ class Pgsql extends SQL{
 				return implode("\n",$entry);
 			}, $explain));
 		}
+	}
+	
+	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+		if($id<2147483647)
+			return;
+		$table = $this->escTable($type);
+		$pk = $this->esc($primaryKey);
+		
 	}
 }

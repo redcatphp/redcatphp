@@ -91,7 +91,7 @@ abstract class SQL extends DataSource{
 		$default = $this->defaultValue;
 		$suffix  = $this->getInsertSuffix($type);
 		$table   = $this->escTable($type);
-		$this->adaptStructure($type,$properties,$uniqTextKey);
+		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
 		if(!empty($insertvalues)){
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
@@ -104,8 +104,12 @@ abstract class SQL extends DataSource{
 			$result = $this->getCell('INSERT INTO '.$table.' ('.$primaryKey.') VALUES('.$default.') '.$suffix);
 		}
 		if($suffix)
-			return $result;
-		return $this->getInsertID();
+			$id = $result;
+		else
+			$id = (int)$this->pdo->lastInsertId();
+		if(!$this->frozen&&method_exists($this,'adaptPrimaryKey'))
+			$this->adaptPrimaryKey($type,$id,$primaryKey);
+		return $id;
 	}
 	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
@@ -134,7 +138,7 @@ abstract class SQL extends DataSource{
 			return $this->create($type,$properties,$primaryKey,$uniqTextKey);
 		if(!$this->tableExists($type))
 			return false;
-		$this->adaptStructure($type,$properties,$uniqTextKey);
+		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
@@ -463,11 +467,11 @@ abstract class SQL extends DataSource{
 	}
 	
 	//QueryWriter
-	function adaptStructure($type,$properties,$uniqTextKey=null){
+	function adaptStructure($type,$properties,$primaryKey='id',$uniqTextKey=null){
 		if($this->frozen)
 			return;
 		if(!$this->tableExists($type))
-			$this->createTable($type);
+			$this->createTable($type,$primaryKey);
 		$columns = $this->getColumns($type);
 		foreach($properties as $column=>$value){
 			if(!isset($columns[$column])){
@@ -655,10 +659,10 @@ abstract class SQL extends DataSource{
 			$this->cacheColumns[$table] = $this->getColumnsQuery($table);
 		return $this->cacheColumns[$table];
 	}
-	function createTable($table){
+	function createTable($table,$pk='id'){
 		if(!in_array($table,$this->cacheTables))
 			$this->cacheTables[] = $table;
-		return $this->createTableQuery($table);
+		return $this->createTableQuery($table,$pk);
 	}
 	function addColumn($type,$column,$field){
 		if(isset($this->cacheColumns[$type])&&!isset($this->cacheColumns[$type][$column]))
@@ -756,7 +760,7 @@ abstract class SQL extends DataSource{
 	
 	abstract function getTablesQuery();
 	abstract function getColumnsQuery($table);
-	abstract function createTableQuery($table);
+	abstract function createTableQuery($table,$pk='id');
 	abstract function addColumnQuery($type,$column,$field);
 	abstract function changeColumnQuery($type,$property,$dataType);
 	

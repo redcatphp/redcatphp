@@ -7,10 +7,9 @@ class Cubrid extends SQL{
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIFIED        = 99;
-	
 	protected $quoteCharacter = '`';
 	protected $max = 2147483647;
-	
+	protected $integerMax = 9223372036854775807;
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -38,12 +37,11 @@ class Cubrid extends SQL{
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
-	function createTableQuery( $table ){
-		$sql  = 'CREATE TABLE '
-			. $this->escTable( $table )
-			. ' ("id" integer AUTO_INCREMENT, CONSTRAINT "pk_'
-			. $this->prefixTable( $table )
-			. '_id" PRIMARY KEY("id"))';
+	function createTableQuery($table,$pk='id'){
+		$sql  = 'CREATE TABLE '.$this->escTable($table)
+			.' ("'.$pk.'" integer AUTO_INCREMENT, CONSTRAINT "pk_'
+			.$this->prefixTable($table)
+			.'_'.$pk.'" PRIMARY KEY("'.$pk.'"))';
 		$this->execute( $sql );
 	}
 	function addColumnQuery( $type, $column, $field ){
@@ -193,5 +191,9 @@ class Cubrid extends SQL{
 				return implode("\n",$entry);
 			}, $explain));
 		}
+	}
+	
+	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+		
 	}
 }

@@ -1,21 +1,6 @@
 <?php
 namespace RedBase\DataSource;
 class Mysql extends SQL{
-	protected $unknownDatabaseCode = 1049;
-	function connect(){
-		if($this->isConnected)
-			return;
-		parent::connect();
-		$version = floatval( $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION ) );
-		if($version >= 5.5)
-			$this->encoding =  'utf8mb4';
-		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
-		$this->execute(' SET NAMES '. $this->encoding); //also for current connection
-	}
-	function createDatabase($dbname){
-		$this->execute('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
-	}
-	
 	const C_DATATYPE_BOOL             = 0;
 	const C_DATATYPE_UINT32           = 2;
 	const C_DATATYPE_DOUBLE           = 3;
@@ -29,9 +14,9 @@ class Mysql extends SQL{
 	const C_DATATYPE_SPECIAL_LINESTRING = 91;
 	const C_DATATYPE_SPECIAL_POLYGON    = 92;
 	const C_DATATYPE_SPECIFIED          = 99;
-	
+	protected $unknownDatabaseCode = 1049;
 	protected $quoteCharacter = '`';
-	
+	protected $integerMax = 9223372036854775807;
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -52,7 +37,19 @@ class Mysql extends SQL{
 			$this->sqltype_typeno[trim(strtolower($v))] = $k;
 		}
 	}
-	
+	function connect(){
+		if($this->isConnected)
+			return;
+		parent::connect();
+		$version = floatval( $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION ) );
+		if($version >= 5.5)
+			$this->encoding =  'utf8mb4';
+		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
+		$this->execute(' SET NAMES '. $this->encoding); //also for current connection
+	}
+	function createDatabase($dbname){
+		$this->execute('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
+	}
 	function scanType($value,$flagSpecial=false){
 		if(is_null( $value ))
 			return self::C_DATATYPE_BOOL;
@@ -98,10 +95,10 @@ class Mysql extends SQL{
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
-	function createTableQuery($table){
+	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
 		$encoding = $this->getEncoding();
-		$this->execute('CREATE TABLE '.$table.' (id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+		$this->execute('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
 	function addColumnQuery($type,$column,$field){
 		$table  = $type;
@@ -288,5 +285,13 @@ class Mysql extends SQL{
 				return implode("\n",$entry);
 			}, $explain));
 		}
+	}
+	
+	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+		if($id<4294967295)
+			return;
+		$table = $this->escTable($type);
+		$pk = $this->esc($primaryKey);
+		
 	}
 }

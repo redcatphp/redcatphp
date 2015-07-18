@@ -1,17 +1,11 @@
 <?php
 namespace RedBase\DataSource;
 class Sqlite extends SQL{
-	function createDatabase($dbname){
-		
-	}
-	
 	const C_DATATYPE_INTEGER   = 0;
 	const C_DATATYPE_NUMERIC   = 1;
 	const C_DATATYPE_TEXT      = 2;
 	const C_DATATYPE_SPECIFIED = 99;
-	
 	protected $quoteCharacter = '`';
-	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -22,7 +16,7 @@ class Sqlite extends SQL{
 		foreach ( $this->typeno_sqltype as $k => $v )
 			$this->sqltype_typeno[$v] = $k;
 	}
-	
+	function createDatabase($dbname){}
 	function scanType( $value, $flagSpecial = FALSE ){
 		if ( $value === NULL ) return self::C_DATATYPE_INTEGER;
 		if ( $value === INF ) return self::C_DATATYPE_TEXT;
@@ -52,9 +46,9 @@ class Sqlite extends SQL{
 			$columns[$r['name']] = $r['type'];
 		return $columns;
 	}
-	function createTableQuery($table){
+	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
-		$this->execute('CREATE TABLE '.$table.' ( id INTEGER PRIMARY KEY AUTOINCREMENT ) ');
+		$this->execute('CREATE TABLE '.$table.' ( '.$pk.' INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
 	function addColumnQuery($table, $column, $type){
 		$column = $this->check($column);
