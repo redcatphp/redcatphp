@@ -117,9 +117,6 @@ class Mysql extends SQL{
 		$this->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$newType);
 		return true;
 	}
-	protected function makeFKLabel($from, $type, $to){
-		return "from_{$from}_to_table_{$type}_col_{$to}";
-	}
 	
 	function addFK( $type, $targetType, $property, $targetProperty, $isDependent = FALSE )
 	{
