@@ -96,10 +96,7 @@ abstract class SQL extends DataSource{
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
 				$insertcolumns[$k] = $this->esc($v);
-				if (isset($this->sqlFiltersWrite[$type][$v]))
-					$insertSlots[] = $this->sqlFiltersWrite[$type][$v];
-				else
-					$insertSlots[] = '?';
+				$insertSlots[] = $this->getWriteSnippet($type,$v);
 			}
 			$result = $this->getCell('INSERT INTO '.$table.' ( '.$primaryKey.', '.implode(',',$insertcolumns).' ) VALUES ( '.$default.', '. implode(',',$insertSlots).' ) '.$suffix,$insertvalues);
 		}
@@ -114,7 +111,8 @@ abstract class SQL extends DataSource{
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$table = $this->escTable($type);
-		$sqlFilterStr = $this->getSQLFilterSnippet($type);
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$sqlFilterStr .= ',';
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
 		$row = $this->getRow($sql,[$id]);
 		if($row){
@@ -493,25 +491,84 @@ abstract class SQL extends DataSource{
 	protected function getInsertSuffix($primaryKey){
 		return '';
 	}
-	function setSQLFiltersRead($sqlFilters){
+	function unbindRead($type,$property=null,$func=null){
+		if(!isset($property)){
+			if(isset($this->sqlFiltersRead[$type])){
+				unset($this->sqlFiltersRead[$type]);
+				return true;
+			}
+		}
+		elseif(!isset($func)){
+			if(isset($this->sqlFiltersRead[$type][$property])){
+				unset($this->sqlFiltersRead[$type][$property]);
+				return true;
+			}
+		}
+		elseif(false!==$i=array_search($func,$this->sqlFiltersRead[$type][$property])){
+			unset($this->sqlFiltersRead[$type][$property][$i]);
+			return true;
+		}
+	}
+	function bindRead($type,$property,$func){
+		$this->sqlFiltersRead[$type][$property][] = $func;
+	}
+	function unbindWrite($type,$property=null){
+		if(!isset($property)){
+			if(isset($this->sqlFiltersWrite[$type])){
+				unset($this->sqlFiltersWrite[$type]);
+				return true;
+			}
+		}
+		elseif(isset($this->sqlFiltersWrite[$type][$property])){
+			unset($this->sqlFiltersWrite[$type][$property]);
+			return true;
+		}
+	}
+	function bindWrite($type,$property,$func){
+		$this->sqlFiltersWrite[$type][$property] = $func;
+	}
+	function setSQLFiltersRead(array $sqlFilters){
 		$this->sqlFiltersRead = $sqlFilters;
 	}
 	function getSQLFiltersRead(){
 		return $this->sqlFiltersRead;
 	}
-	function setSQLFiltersWrite($sqlFilters){
+	function setSQLFiltersWrite(array $sqlFilters){
 		$this->sqlFiltersWrite = $sqlFilters;
 	}
 	function getSQLFiltersWrite(){
 		return $this->sqlFiltersWrite;
 	}
-	protected function getSQLFilterSnippet($type){
+	protected function getReadSnippet($type){
 		$sqlFilters = [];
+		$table = $this->escTable($type);
 		if(isset($this->sqlFiltersRead[$type])){
-			foreach($this->sqlFiltersRead[$type] as $property=>$sqlFilter)
-				$sqlFilters[] = $sqlFilter.' AS '.$property.' ';
+			foreach($this->sqlFiltersRead[$type] as $property=>$funcs){
+				$property = $this->esc($property);
+				foreach($funcs as $func){
+					$select = $table.'.'.$property;
+					if(strpos($func,'(')===false)
+						$func = $func.'('.$select.')';
+					else
+						$func = str_replace('?',$select,$func);
+					if(strpos(strtolower($func),' as ')===false)
+						$func .= ' AS '.$property;
+					$sqlFilters[] = $func;
+				}
+			}
 		}
-		return !empty($sqlFilters)?','.implode(',',$sqlFilters):'';
+		return !empty($sqlFilters)?implode(',',$sqlFilters):'';
+	}
+	protected function getWriteSnippet($type,$property){
+		if (isset($this->sqlFiltersWrite[$type][$property])){
+			$slot = $this->sqlFiltersWrite[$type][$property];
+			if(strpos($slot,'(')===false)
+				$slot = $slot.'(?)';
+		}
+		else{
+			$slot = '?';
+		}
+		return $slot;
 	}
 	
 	function check($struct){
@@ -648,6 +705,8 @@ abstract class SQL extends DataSource{
 		$column = $this->esc($pk);
 		$table->where($typeE.'.'.$column.' = ?',[$obj->$pko]);
 		$table->select($typeE.'.*');
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$table->select($sqlFilterStr);
 		return $table;
 	}
 	function one2many($obj,$type){
@@ -659,6 +718,8 @@ abstract class SQL extends DataSource{
 		$column = $this->esc($tb.'_'.$pko);
 		$table->where($typeE.'.'.$column.' = ?',[$obj->$pko]);
 		$table->select($typeE.'.*');
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$table->select($sqlFilterStr);
 		return $table;
 	}
 	function many2many($obj,$type,$via=null){
@@ -685,6 +746,8 @@ abstract class SQL extends DataSource{
 		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2
 					.' AND '.$tb.'.'.$pkoe.' =  ?',[$obj->$pko]);
 		$table->select($typeE.'.*');
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$table->select($sqlFilterStr);
 		return $table;
 	}
 	
