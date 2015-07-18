@@ -141,7 +141,7 @@ class Mysql extends SQL{
 		//Widen the column if it's incapable of representing a foreign key (at least INT).
 		$columns = $this->getColumns( $tableNoQ );
 		$idType = $this->getTypeForID();
-		if ( $this->code( $columns[$fieldNoQ] ) !==  $idType ) {
+		if ( $this->columnCode( $columns[$fieldNoQ] ) !==  $idType ) {
 			$this->changeColumn( $type, $property, $idType );
 		}
 
