@@ -236,10 +236,11 @@ namespace Unit{
 						$id = array_push($objects,$variable);
 						$spaces = str_repeat('&nbsp;',($i+1)*4);
 						$string.= 'object('.$c.')'."#$id{";
-						$properties = array_keys((array)$variable);
-						if(!empty($properties)){
+						$array = (array)$variable;
+						if(!empty($array)){
 							$string .= "<br />".$spaces;
-							foreach($properties as $y=>$property) {
+							$y = 0;
+							foreach($array as $property=>$value) {
 								$name = str_replace("\0",':',trim($property));
 								if($y)
 									$string.= '<br />'.$spaces;
@@ -248,7 +249,8 @@ namespace Unit{
 								elseif(strpos($name,'*:')===0)
 									$name = '$'.substr($name,2);
 								$string.= "[$name] => ";
-								$string.= self::var_debug_html_return($variable->$property,$strlen,$width,$depth,$i+1,$objects);
+								$string.= self::var_debug_html_return($value,$strlen,$width,$depth,$i+1,$objects);
+								$y++;
 							}
 							$spaces = str_repeat('&nbsp;',$i*4);
 							$string.= "<br />".$spaces;
@@ -338,11 +340,11 @@ namespace Unit{
 						$id = array_push($objects,$variable);
 						$spaces = str_repeat(' ',$i*2);
 						$string.= get_class($variable)."#$id\n".$spaces.'{';
-						$properties = array_keys((array)$variable);
-						foreach($properties as $property) {
+						$array = (array)$variable;
+						foreach($array as $property=>$value) {
 							$name = str_replace("\0",':',trim($property));
 							$string.= "\n".$spaces."	[$name] => ";
-							$string.= self::var_debug_return($variable->$property,$strlen,$width,$depth,$i+1,$objects);
+							$string.= self::var_debug_return($value,$strlen,$width,$depth,$i+1,$objects);
 						}
 						$string.= "\n".$spaces.'}';
 					}
@@ -355,16 +357,14 @@ namespace Unit{
 			do $caller = array_shift($backtrace);
 				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
 			if($caller)
-				$string = '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
-			return $string;
+				return '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
 		}
 		static function debug_backtrace(){
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 			do $caller = array_shift($backtrace);
 				while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
 			if ($caller)
-				$string = "\n".$caller['file'].':'.$caller['line']."\n".$string."\n";
-			return $string;
+				return "\n".$caller['file'].':'.$caller['line']."\n";
 		}
 		
 		private static function _processCountable(array $matches){
