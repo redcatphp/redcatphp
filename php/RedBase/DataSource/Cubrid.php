@@ -1,5 +1,5 @@
 <?php
-namespace RedBase\DataSoure;
+namespace RedBase\DataSource;
 use RedBase\Exception;
 class Cubrid extends SQL{
 	const C_DATATYPE_INTEGER          = 0;
@@ -28,6 +28,24 @@ class Cubrid extends SQL{
 	}
 	function createDatabase($dbname){
 		throw new Exception('Unable to create database '.$dbname.'. CUBRID does not allow to create or drop a database from within the SQL query');
+	}
+	function scanType($value, $flagSpecial = false){
+		if ( is_null( $value ) )
+			return self::C_DATATYPE_INTEGER;
+		if ( $flagSpecial ) {
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d$/', $value ) )
+				return self::C_DATATYPE_SPECIAL_DATE;
+			if ( preg_match( '/^\d{4}\-\d\d-\d\d\s\d\d:\d\d:\d\d$/', $value ) )
+				return self::C_DATATYPE_SPECIAL_DATETIME;
+		}
+		$value = strval( $value );
+		if ( !$this->startsWithZeros( $value ) ) {
+			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= -2147483647 && $value <= 2147483647 )
+				return self::C_DATATYPE_INTEGER;
+			if ( is_numeric( $value ) )
+				return self::C_DATATYPE_DOUBLE;
+		}
+		return self::C_DATATYPE_STRING;
 	}
 	function getTablesQuery(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
@@ -196,7 +214,7 @@ class Cubrid extends SQL{
 		}
 	}
 	
-	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<2147483647)
 			return;
 		$table = $this->escTable($type);
