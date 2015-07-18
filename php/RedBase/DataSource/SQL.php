@@ -13,6 +13,7 @@ abstract class SQL extends DataSource{
 	protected $isConnected;
 	protected $loggingEnabled;
 	protected $loggingResult;
+	protected $loggingExplain;
 	protected $logger;
 	protected $options;
 	protected $max = PHP_INT_MAX;
@@ -217,7 +218,8 @@ abstract class SQL extends DataSource{
 					$u = 'ms';
 				}
 				$this->logger->logChrono(sprintf("%.2f", $chrono).' '.$u);
-				$this->logger->logExplain($this->explain($sql,$bindings));
+				if($this->loggingExplain)
+					$this->logger->logExplain($this->explain($sql,$bindings));
 			}
 			$this->affectedRows = $statement->rowCount();
 			if($statement->columnCount()){
@@ -373,9 +375,10 @@ abstract class SQL extends DataSource{
 	function isConnected(){
 		return $this->isConnected && $this->pdo;
 	}
-	function debug($enable=true,$loggingResult=true){
+	function debug($enable=true,$loggingResult=true,$loggingExplain=true){
 		$this->loggingEnabled = (bool)$enable;
 		$this->loggingResult = (bool)$loggingResult;
+		$this->loggingExplain = (bool)$loggingExplain;
 		if($this->loggingEnabled && !$this->logger)
 			$this->logger = new SqlLogger(true);
 	}
