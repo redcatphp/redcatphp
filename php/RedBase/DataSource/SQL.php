@@ -204,7 +204,21 @@ abstract class SQL extends DataSource{
 			list($sql,$bindings) = self::nestBinding($sql,$bindings);
 			$statement = $this->pdo->prepare( $sql );
 			$this->bindParams( $statement, $bindings );
+			if($this->loggingEnabled)
+				$start = microtime(true);
 			$statement->execute();
+			if($this->loggingEnabled){
+				$chrono = microtime(true)-$start;
+				if($chrono>=1){
+					$u = 's';
+				}
+				else{
+					$chrono = $chrono*(float)1000;
+					$u = 'ms';
+				}
+				$this->logger->logChrono(sprintf("%.2f", $chrono).' '.$u);
+				$this->logger->logExplain($this->explain($sql,$bindings));
+			}
 			$this->affectedRows = $statement->rowCount();
 			if($statement->columnCount()){
 				$fetchStyle = ( isset( $options['fetchStyle'] ) ) ? $options['fetchStyle'] : NULL;
@@ -629,7 +643,7 @@ abstract class SQL extends DataSource{
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
 		$column = $this->esc($pk);
-		$table->where($column.' = ?',[$obj->$pko]);
+		$table->where($typeE.'.'.$column.' = ?',[$obj->$pko]);
 		$table->select($typeE.'.*');
 		return $table;
 	}
@@ -690,4 +704,6 @@ abstract class SQL extends DataSource{
 	abstract function clear($type);
 	abstract protected function _drop($type);
 	abstract protected function _dropAll();
+	
+	abstract protected function explain($sql,$bindings=[]);
 }

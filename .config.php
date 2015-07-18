@@ -9,7 +9,7 @@ return [
 			'img'	=>false,
 			'chrono'=>true,
 			'l10n'	=>true,
-			'db'	=>true,
+			'db'	=>false,
 		],
 		'superRoot'=>[
 			'login'=>'root',

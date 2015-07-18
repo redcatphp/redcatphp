@@ -277,4 +277,16 @@ class Mysql extends SQL{
 		}
 		$this->execute('SET FOREIGN_KEY_CHECKS = 1;');
 	}
+	
+	protected function explain($sql,$bindings=[]){
+		if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+			$explain = $this->pdo->prepare('EXPLAIN '.$sql);
+			$this->bindParams($explain,$bindings);
+			$explain->execute();
+			$explain = $explain->fetchAll();
+			return implode("\n",array_map(function($entry){
+				return implode("\n",$entry);
+			}, $explain));
+		}
+	}
 }

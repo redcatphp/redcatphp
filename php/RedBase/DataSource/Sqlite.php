@@ -258,6 +258,18 @@ class Sqlite extends SQL{
 		$this->execute('PRAGMA foreign_keys = 1 ');
 	}
 	
+	protected function explain($sql,$bindings=[]){
+		if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+			$explain = $this->pdo->prepare('EXPLAIN QUERY PLAN '.$sql);
+			$this->bindParams($explain,$bindings);
+			$explain->execute();
+			$explain = $explain->fetchAll();
+			return implode("\n",array_map(function($entry){
+				return $entry['detail'];
+			}, $explain));
+		}
+	}
+	
 	/*
 	function fulltext($search){
 		list($select,$from,$where,$orderBy) = $this->fulltextQueryParts($search);

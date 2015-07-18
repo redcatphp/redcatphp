@@ -51,11 +51,15 @@ class SqlLogger {
 			$value = "'".str_replace("'","\'",$value)."'";
 		return $value;
 	}
-	protected function output( $str ){
+	protected function output( $str, $wrap=true ){
 		if($this->keep)
 			$this->logs[] = $str;
-		if($this->echo)
-			echo '<pre class="debug-model">',$str,'</pre><br />';
+		if($this->echo){
+			if($wrap&&$this->html)
+				echo '<pre class="debug-model">',$str,'</pre><br />';
+			else
+				echo $str;
+		}
 	}
 	protected function normalizeSlots( $sql ){
 		$i = 0;
@@ -106,7 +110,7 @@ class SqlLogger {
 				$newStr = print_r($r,true);
 			}
 		}
-		return $this->output($newStr);
+		return $this->output($newStr,false);
 	}
 	function logSql($sql,$bindings=[]){
 		if(!$this->keep&&!$this->echo)
@@ -114,7 +118,17 @@ class SqlLogger {
 		if($this->html)
 			$sql = SqlFormatter::format($sql);
 		$newStr = $this->writeQuery($this->normalizeSlots($sql), $this->normalizeBindings($bindings));
-		$this->output($newStr);
+		$this->output($newStr,!$this->html);
+	}
+	function logChrono($chrono){
+		if($this->html)
+			$chrono = '<span style="color:#d00;font-size:12px;">'.$chrono.'</span>';
+		$this->output($chrono,false);
+	}
+	function logExplain($explain){
+		if($this->html)
+			$explain = '<span style="color:#333;font-size:12px;">'.$explain.'</span>';
+		$this->output($explain);
 	}
 	function log($txt){
 		if(!$this->keep&&!$this->echo)
