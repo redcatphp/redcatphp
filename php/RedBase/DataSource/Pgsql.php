@@ -251,11 +251,17 @@ class Pgsql extends SQL{
 		}
 	}
 	
+	function getFkMap($type,$primaryKey='id'){
+		$table = $this->prefixTable($type);
+		return $this->getAll("select (select r.relname from pg_class r where r.oid = c.conrelid) as table, (select trim(array_agg(attname)::text,'{}') from pg_attribute where attrelid = c.conrelid and ARRAY[attnum] <@ c.conkey) as column, conname as constraint from pg_constraint c where c.confrelid = (select oid from pg_class where relname = '$table')");
+	}
+	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<2147483647)
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
-		
+		$fks = $this->getFkMap($type,$primaryKey);
+		debug($fks);
 	}
 }
