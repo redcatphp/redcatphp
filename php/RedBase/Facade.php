@@ -33,6 +33,8 @@ class Facade{
 			self::selectDatabase($key);
 	}
 	static function selectDatabase($key){
+		if(func_num_args()>1)
+			call_user_func_array(['self','addDatabase'],func_get_args());
 		return self::$redbaseCurrent = self::$redbase[$key];
 	}
 	static function __callStatic($f,$args){
