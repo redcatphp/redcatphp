@@ -76,9 +76,6 @@ class Pgsql extends SQL{
 		else
 			return self::C_DATATYPE_TEXT;
 	}
-	function getTablesQuery(){
-		return $this->getCol('SELECT table_name FROM information_schema.tables WHERE table_schema = ANY( current_schemas( FALSE ) )');
-	}
 	function getColumnsQuery($table){
 		$table = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'");
@@ -254,7 +251,7 @@ class Pgsql extends SQL{
 		}
 	}
 	
-	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<2147483647)
 			return;
 		$table = $this->escTable($type);
