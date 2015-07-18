@@ -44,8 +44,8 @@ class Mysql extends SQL{
 		$version = floatval( $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION ) );
 		if($version >= 5.5)
 			$this->encoding =  'utf8mb4';
-		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding ); //on every re-connect
-		$this->execute(' SET NAMES '. $this->encoding); //also for current connection
+		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding); //on every re-connect
+		$this->pdo->exec('SET NAMES '. $this->encoding); //also for current connection
 	}
 	function createDatabase($dbname){
 		$this->pdo->exec('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
@@ -296,6 +296,8 @@ class Mysql extends SQL{
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<4294967295)
 			return;
+		$table = $this->escTable($type);
+		$pk = $this->esc($primaryKey);
 		$fks = $this->getFkMap($type,$primaryKey);
 		debug($fks);
 	}
