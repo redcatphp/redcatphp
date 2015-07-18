@@ -1,5 +1,6 @@
 <?php
 namespace RedBase\DataSoure;
+use RedBase\Exception;
 class Cubrid extends SQL{
 	const C_DATATYPE_INTEGER          = 0;
 	const C_DATATYPE_DOUBLE           = 1;
@@ -25,7 +26,9 @@ class Cubrid extends SQL{
 		}
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
 	}
-	
+	function createDatabase($dbname){
+		throw new Exception('Unable to create database '.$dbname.'. CUBRID does not allow to create or drop a database from within the SQL query');
+	}
 	function getTablesQuery(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 	}
@@ -194,6 +197,10 @@ class Cubrid extends SQL{
 	}
 	
 	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
-		
+		if($id<2147483647)
+			return;
+		$table = $this->escTable($type);
+		$pk = $this->esc($primaryKey);
+		//TODO ...
 	}
 }

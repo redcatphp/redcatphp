@@ -33,7 +33,9 @@ class Pgsql extends SQL{
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
 	}
-	
+	function createDatabase($dbname){
+		$this->execute('CREATE DATABASE "'.$dbname.'"');
+	}
 	protected function getInsertSuffix( $primaryKey ){
 		return 'RETURNING '.$primaryKey.' ';
 	}
