@@ -7,12 +7,19 @@ class RedBase implements \ArrayAccess{
 	private $entityClassDefault;
 	private $primaryKeyDefault;
 	private $uniqTextKeyDefault;
-	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq'){
+	private $debug;
+	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq',$debug=false){
 		$this->map = $map;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
 		$this->primaryKeyDefault = $primaryKeyDefault;
 		$this->uniqTextKeyDefault = $uniqTextKeyDefault;
+		$this->debug = $debug;
+	}
+	function debug($d=true){
+		$this->debug = (bool)$d;
+		foreach($this->mapObjects as $o)
+			$o->debug($d);
 	}
 	function setEntityClassPrefix($entityClassPrefix='Model\\'){
 		$this->entityClassPrefix = (array)$entityClassPrefix;
@@ -35,8 +42,11 @@ class RedBase implements \ArrayAccess{
 	function offsetGet($k){
 		if(!isset($this->map[$k]))
 			throw new Exception('Try to access undefined DataSource layer "'.$k.'"');
-		if(!isset($this->mapObjects[$k]))
+		if(!isset($this->mapObjects[$k])){
 			$this->mapObjects[$k] = $this->loadDataSource($this->map[$k]);
+			if($this->debug)
+				$this->mapObjects[$k]->debug($this->debug);
+		}
 		return $this->mapObjects[$k];
 	}
 	function offsetSet($k,$v){

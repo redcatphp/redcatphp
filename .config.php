@@ -9,9 +9,6 @@ return [
 			'img'	=>false,
 			'chrono'=>true,
 			'l10n'	=>true,
-			'model'	=>true,
-			'sql'	=>true,
-			'sql+'	=>true,
 			'db'	=>true,
 		],
 		'superRoot'=>[
@@ -55,6 +52,7 @@ return [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',
+				'$debug'=>'dev.db',
 				'entityClassPrefix'=>'Model\\',
 				'entityClassDefault'=>'stdClass',
 			],
@@ -133,14 +131,6 @@ return [
 		'InterEthnic\Translator'=>[
 			'construct'=>[
 				'$dev'=>'dev.l10n',
-			],
-		],
-		'RedBase\RedBeanPHP\Database'=>[
-			'construct'=>[
-				'$devStructure'=>'dev.model',
-				'$devQuery'=>'dev.sql',
-				'$devSpeed'=>'dev.sql+',
-				'$devError'=>'dev.db',
 			],
 		],
 	],

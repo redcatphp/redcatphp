@@ -12,7 +12,7 @@ abstract class SQL extends DataSource{
 	protected $connectPass;
 	protected $isConnected;
 	protected $loggingEnabled;
-	protected $loggingResult = true;
+	protected $loggingResult;
 	protected $logger;
 	protected $options;
 	protected $max = PHP_INT_MAX;
