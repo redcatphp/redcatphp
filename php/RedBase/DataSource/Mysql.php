@@ -48,7 +48,7 @@ class Mysql extends SQL{
 		$this->execute(' SET NAMES '. $this->encoding); //also for current connection
 	}
 	function createDatabase($dbname){
-		$this->execute('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
+		$this->pdo->exec('CREATE DATABASE `'.$dbname.'` COLLATE \'utf8_bin\'');
 	}
 	function scanType($value,$flagSpecial=false){
 		if(is_null( $value ))
@@ -289,6 +289,8 @@ class Mysql extends SQL{
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
-		
+		$fks = $this->getAll('SELECT TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+			WHERE REFERENCED_TABLE_NAME = '.$table.' AND REFERENCED_COLUMN_NAME = '.$primaryKey.';');
+		debug($fks);
 	}
 }

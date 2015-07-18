@@ -34,7 +34,7 @@ class Pgsql extends SQL{
 		}
 	}
 	function createDatabase($dbname){
-		$this->execute('CREATE DATABASE "'.$dbname.'"');
+		$this->pdo->exec('CREATE DATABASE "'.$dbname.'"');
 	}
 	protected function getInsertSuffix( $primaryKey ){
 		return 'RETURNING '.$primaryKey.' ';
