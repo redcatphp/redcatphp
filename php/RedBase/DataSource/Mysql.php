@@ -284,13 +284,19 @@ class Mysql extends SQL{
 		}
 	}
 	
-	protected function adaptPrimaryKey($type,$id,$primaryKey='id'){
+	function getFkMap($type,$primaryKey='id'){
+		$table = $this->prefixTable($type);
+		$dbname = $this->pdo->query('SELECT DATABASE()')->fetchColumn();
+		$this->pdo->exec('use INFORMATION_SCHEMA');
+		$fks = $this->getAll('select TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME from KEY_COLUMN_USAGE where TABLE_SCHEMA = "test" and REFERENCED_TABLE_NAME = "'.$table.'" and REFERENCED_COLUMN_NAME = "'.$primaryKey.'";');
+		$this->pdo->exec('use '.$dbname);
+		return $fks;
+	}
+	
+	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<4294967295)
 			return;
-		$table = $this->escTable($type);
-		$pk = $this->esc($primaryKey);
-		$fks = $this->getAll('SELECT TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-			WHERE REFERENCED_TABLE_NAME = '.$table.' AND REFERENCED_COLUMN_NAME = '.$primaryKey.';');
+		$fks = $this->getFkMap($type,$primaryKey);
 		debug($fks);
 	}
 }
