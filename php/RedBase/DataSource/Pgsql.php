@@ -163,7 +163,7 @@ class Pgsql extends SQL{
 		$tableNoQ = $this->prefixTable( $type );
 		$fieldNoQ = $this->check( $property );
 		
-		$casc = ( $isDependent ? 'CASCADE' : 'SET NULL' );
+		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
 		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
