@@ -118,7 +118,7 @@ class Cubrid extends SQL{
 		$needsToDropFK   = FALSE;
 		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ";
 		try {
-			$this->exec($sql);
+			$this->execute($sql);
 		} catch( \PDOException $e ) {
 			return FALSE;
 		}
