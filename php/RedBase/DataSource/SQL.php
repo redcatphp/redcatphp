@@ -197,6 +197,7 @@ abstract class SQL extends DataSource{
 	}
 	protected function runQuery( $sql, $bindings, $options = [] ){
 		$this->connect();
+		$sql = str_replace('{#prefix}',$this->tablePrefix,$sql);
 		if($this->loggingEnabled)
 			$this->logger->logSql( $sql, $bindings );
 		try {
