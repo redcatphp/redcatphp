@@ -222,7 +222,9 @@ abstract class SQL extends DataSource{
 				$this->logger->logChrono(sprintf("%.2f", $chrono).' '.$u);
 				if($this->loggingExplain){
 					try{
-						$this->logger->logExplain($this->explain($sql,$bindings));
+						$explain = $this->explain($sql,$bindings);
+						if($explain)
+							$this->logger->logExplain($explain);
 					}
 					catch(\PDOException $e){
 						$this->logger->log($e->getMessage());
