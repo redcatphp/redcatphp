@@ -279,12 +279,17 @@ class Mysql extends SQL{
 		$i = 0;
 		return implode("\n",array_map(function($entry)use(&$i){
 			$indent = str_repeat('  ',$i);
-			$s = $entry['id'].'|';
-			foreach(['select_type','table','type','key'] as $k){
-				if(!is_null($entry[$k]))
-					$s .= $indent.$k.':'.$entry[$k].'|';
+			$s = '';
+			if(isset($entry['id']))
+				$s .= $indent.$entry['id'].'|';
+			foreach($entry as $k=>$v){
+				if($k!='id'&&$k!='Extra'&&!is_null($v))
+					$s .= $indent.$k.':'.$v.'|';
 			}
-			$s .= $entry['Extra'];
+			if(isset($entry['Extra']))
+				$s .= $indent.$entry['Extra'];
+			else
+				$s = rtrim($s,'|');
 			$i++;
 			return $s;
 		}, $explain));
