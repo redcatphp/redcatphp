@@ -250,7 +250,7 @@ class Pgsql extends SQL{
 	
 	function getFkMap($type,$primaryKey='id'){
 		$table = $this->prefixTable($type);
-		return $this->getAll("select (select r.relname from pg_class r where r.oid = c.conrelid) as table, (select trim(array_agg(attname)::text,'{}') from pg_attribute where attrelid = c.conrelid and ARRAY[attnum] <@ c.conkey) as column, conname as constraint from pg_constraint c where c.confrelid = (select oid from pg_class where relname = '$table')");
+		return $this->getAll("SELECT (SELECT r.relname FROM pg_class r WHERE r.oid = c.conrelid) AS table, (SELECT trim(array_agg(attname)::text,'{}') FROM pg_attribute WHERE attrelid = c.conrelid AND ARRAY[attnum] <@ c.conkey) AS column, conname AS constraint FROM pg_constraint c WHERE c.confrelid = (SELECT oid FROM pg_class WHERE relname = '$table')");
 	}
 	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
