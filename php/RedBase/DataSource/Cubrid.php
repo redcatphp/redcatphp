@@ -214,11 +214,26 @@ class Cubrid extends SQL{
 		}
 	}
 	
+	function getFkMap($type,$primaryKey='id'){
+		$fks = [];
+		foreach($this->getTables() as $table){
+			foreach($this->getKeyMapForType($this->unprefixTable($table)) as $keymap){
+				$fks = [
+					'table'=>$keymap['table'],
+					'column'=>$keymap['from'],
+					'constraint'=>$keymap['name'],
+				];
+			}
+		}
+		return $fks;
+	}
+	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id<2147483647)
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
-		//TODO ...
+		$fks = $this->getFkMap($type,$primaryKey);
+		debug($fks);
 	}
 }
