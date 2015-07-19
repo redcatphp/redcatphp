@@ -272,12 +272,21 @@ class Mysql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		$explain = $this->pdo->prepare('EXPLAIN '.$sql);
+		$explain = $this->pdo->prepare('EXPLAIN EXTENDED '.$sql);
 		$this->bindParams($explain,$bindings);
 		$explain->execute();
 		$explain = $explain->fetchAll();
-		return implode("\n",array_map(function($entry){
-			return implode("\n",$entry);
+		$i = 0;
+		return implode("\n",array_map(function($entry)use(&$i){
+			$indent = str_repeat('  ',$i);
+			$s = $entry['id'].'|';
+			foreach(['select_type','table','type','key'] as $k){
+				if(!is_null($entry[$k]))
+					$s .= $indent.$k.':'.$entry[$k].'|';
+			}
+			$s .= $entry['Extra'];
+			$i++;
+			return $s;
 		}, $explain));
 	}
 	

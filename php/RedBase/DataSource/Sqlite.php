@@ -257,8 +257,10 @@ class Sqlite extends SQL{
 		$this->bindParams($explain,$bindings);
 		$explain->execute();
 		$explain = $explain->fetchAll();
-		return implode("\n",array_map(function($entry){
-			return $entry['detail'];
+		$i = 0;
+		return implode("\n",array_map(function($entry)use(&$i){
+			$i++;
+			return str_repeat('  ',$i-1).implode('|',$entry);;
 		}, $explain));
 	}
 	
