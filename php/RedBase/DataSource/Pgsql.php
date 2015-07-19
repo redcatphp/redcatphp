@@ -240,7 +240,7 @@ class Pgsql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+		if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
 			$explain = $this->pdo->prepare('EXPLAIN '.$sql,[\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT=>true]);
 			$this->bindParams($explain,$bindings);
 			$explain->execute();

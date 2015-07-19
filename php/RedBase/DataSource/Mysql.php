@@ -273,7 +273,7 @@ class Mysql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+		if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
 			$explain = $this->pdo->prepare('EXPLAIN '.$sql);
 			$this->bindParams($explain,$bindings);
 			$explain->execute();

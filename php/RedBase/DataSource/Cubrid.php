@@ -124,7 +124,7 @@ class Cubrid extends SQL{
 		}
 		return TRUE;
 	}
-	protected function getKeyMapForType( $type  ){
+	function getKeyMapForType( $type  ){
 		$table = $this->prefixTable($type);
 		$sqlCode = $this->getAll("SHOW CREATE TABLE `{$table}`");
 		if (!isset($sqlCode[0])) return array();
@@ -203,7 +203,7 @@ class Cubrid extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		if(strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+		if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
 			$explain = $this->pdo->prepare('EXPLAIN '.$sql);
 			$this->bindParams($explain,$bindings);
 			$explain->execute();
