@@ -139,11 +139,12 @@ class Cubrid extends SQL{
 	function getKeyMapForType( $type  ){
 		$table = $this->prefixTable($type);
 		$sqlCode = $this->getAll("SHOW CREATE TABLE `{$table}`");
-		if (!isset($sqlCode[0])) return array();
-		$matches = array();
-		preg_match_all( '/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\](\s+ON\s+DELETE\s+(CASCADE|SET\sNULL|RESTRICT|NO\sACTION)\s+ON\s+UPDATE\s+(SET\sNULL|RESTRICT|NO\sACTION))?/', $sqlCode[0]['CREATE TABLE'], $matches );
-		$list = array();
-		if (!isset($matches[0])) return $list;
+		if(!isset($sqlCode[0]))
+			return [];
+		preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\](\s+ON\s+DELETE\s+(CASCADE|SET\sNULL|RESTRICT|NO\sACTION)\s+ON\s+UPDATE\s+(SET\sNULL|RESTRICT|NO\sACTION))?/', $sqlCode[0]['CREATE TABLE'], $matches);
+		$list = [];
+		if(!isset($matches[0]))
+			return $list;
 		$max = count($matches[0]);
 		for($i = 0; $i < $max; $i++) {
 			$label = self::makeFKLabel( $matches[2][$i], $matches[3][$i], 'id' );
@@ -223,13 +224,23 @@ class Cubrid extends SQL{
 	
 	function getFkMap($type,$primaryKey='id'){
 		$fks = [];
-		foreach($this->getTables() as $table){
-			foreach($this->getKeyMapForType($this->unprefixTable($table)) as $keymap){
-				$fks = [
-					'table'=>$keymap['table'],
-					'column'=>$keymap['from'],
-					'constraint'=>$keymap['name'],
-				];
+		$table = $this->prefixTable($type);
+		foreach($this->getTables() as $tb){
+			$sqlCode = $this->getAll("SHOW CREATE TABLE `{$tb}`");
+			if(!isset($sqlCode[0]))
+				continue;
+			preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\]?/', $sqlCode[0]['CREATE TABLE'], $matches);
+			if(!isset($matches[0]))
+				continue;
+			$list = [];
+			$max = count($matches[0]);
+			for($i = 0; $i < $max; $i++){
+				if($matches[3][$i]==$table)
+					$fks[] = [
+						'table'=>$tb,
+						'column'=>$matches[2][$i],
+						'constraint'=>$matches[1][$i],
+					];
 			}
 		}
 		return $fks;
