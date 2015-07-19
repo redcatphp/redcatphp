@@ -272,6 +272,9 @@ class Mysql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
+		if(!in_array(strtoupper(substr($sql,0,6)),['SELECT','DELETE','INSERT','UPDATE'])
+			&&strtoupper(substr($sql,0,7))!='REPLACE')
+			return false;
 		$explain = $this->pdo->prepare('EXPLAIN EXTENDED '.$sql);
 		$this->bindParams($explain,$bindings);
 		$explain->execute();
