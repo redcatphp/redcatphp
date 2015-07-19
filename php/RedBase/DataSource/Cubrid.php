@@ -26,6 +26,18 @@ class Cubrid extends SQL{
 		}
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
 	}
+	function connect(){
+		if($this->isConnected)
+			return;
+		parent::connect();
+		if($this->loggingExplain)
+			$this->pdo->exec('SET TRACE ON');
+	}
+	function debug($enable=true,$loggingResult=true,$loggingExplain=true){
+		parent::debug($enable=true,$loggingResult=true,$loggingExplain=true);
+		if($this->loggingExplain&&$this->isConnected)
+			$this->pdo->exec('SET TRACE ON');
+	}
 	function createDatabase($dbname){
 		throw new Exception('Unable to create database '.$dbname.'. CUBRID does not allow to create or drop a database from within the SQL query');
 	}
@@ -203,15 +215,10 @@ class Cubrid extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
-			$explain = $this->pdo->prepare('EXPLAIN '.$sql);
-			$this->bindParams($explain,$bindings);
-			$explain->execute();
-			$explain = $explain->fetchAll();
-			return implode("\n",array_map(function($entry){
-				return implode("\n",$entry);
-			}, $explain));
-		}
+		$explain = $this->pdo->query('SHOW TRACE')->fetchAll();
+		return implode("\n",array_map(function($entry){
+			return implode("\n",$entry);
+		}, $explain));
 	}
 	
 	function getFkMap($type,$primaryKey='id'){
