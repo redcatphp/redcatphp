@@ -294,7 +294,7 @@ class Mysql extends SQL{
 		$table = $this->prefixTable($type);
 		$dbname = $this->pdo->query('SELECT DATABASE()')->fetchColumn();
 		$this->pdo->exec('use INFORMATION_SCHEMA');
-		$fks = $this->getAll('select TABLE_NAME as "table",COLUMN_NAME as "column",CONSTRAINT_NAME as "constraint" from KEY_COLUMN_USAGE where TABLE_SCHEMA = "test" and REFERENCED_TABLE_NAME = "'.$table.'" and REFERENCED_COLUMN_NAME = "'.$primaryKey.'";');
+		$fks = $this->getAll('SELECT table_name AS "table",column_name AS "column",constraint_name AS "constraint" FROM key_column_usage WHERE table_schema = "test" AND referenced_table_name = "'.$table.'" AND referenced_column_name = "'.$primaryKey.'";');
 		$this->pdo->exec('use '.$dbname);
 		return $fks;
 	}
