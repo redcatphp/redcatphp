@@ -106,8 +106,7 @@ class Pgsql extends SQL{
 		$this->execute( "ALTER TABLE $table \n\t ALTER COLUMN $column TYPE $newtype " );
 	}
 	
-	protected function getKeyMapForType( $type )
-	{
+	function getKeyMapForType($type){
 		$table = $this->prefixTable( $type );
 		$keys = $this->getAll( '
 			SELECT

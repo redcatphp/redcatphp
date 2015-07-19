@@ -131,7 +131,7 @@ class Sqlite extends SQL{
 		}
 		return $indexInfoList;
 	}	
-	protected function getKeyMapForType( $type ){
+	function getKeyMapForType($type){
 		$table = $this->prefixTable( $type );
 		$keys  = $this->getAll( "PRAGMA foreign_key_list('$table')" );
 		$keyInfoList = [];

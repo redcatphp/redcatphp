@@ -157,8 +157,7 @@ class Mysql extends SQL{
 			// Failure of fk-constraints is not a problem
 		}
 	}
-	protected function getKeyMapForType( $type )
-	{
+	function getKeyMapForType($type){
 		$table = $this->prefixTable( $type );
 		$keys = $this->getAll('
 			SELECT
