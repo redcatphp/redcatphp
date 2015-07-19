@@ -248,7 +248,7 @@ class Cubrid extends SQL{
 	}
 	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
-		if($id<2147483647)
+		if($id!=2147483647)
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);

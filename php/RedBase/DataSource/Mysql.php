@@ -309,7 +309,8 @@ class Mysql extends SQL{
 	}
 	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
-		if($id<4294967295)
+		//if($id<4294967295)
+		if($id!=4294967295)
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
