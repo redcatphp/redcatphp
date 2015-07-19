@@ -223,6 +223,7 @@ class Cubrid extends SQL{
 	}
 	
 	function getFkMap($type,$primaryKey='id'){
+		//foreign keys can only reference primary keys in CUBRID
 		$fks = [];
 		$table = $this->prefixTable($type);
 		foreach($this->getTables() as $tb){
