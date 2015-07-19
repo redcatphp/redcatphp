@@ -220,8 +220,16 @@ abstract class SQL extends DataSource{
 					$u = 'ms';
 				}
 				$this->logger->logChrono(sprintf("%.2f", $chrono).' '.$u);
-				if($this->loggingExplain)
-					$this->logger->logExplain($this->explain($sql,$bindings));
+				if($this->loggingExplain){
+					if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
+						try{
+							$this->logger->logExplain($this->explain($sql,$bindings));
+						}
+						catch(\PDOException $e){
+							$this->logger->log($e->getMessage());
+						}
+					}
+				}
 			}
 			$this->affectedRows = $statement->rowCount();
 			if($statement->columnCount()){

@@ -239,15 +239,13 @@ class Pgsql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
-		if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
-			$explain = $this->pdo->prepare('EXPLAIN '.$sql,[\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT=>true]);
-			$this->bindParams($explain,$bindings);
-			$explain->execute();
-			$explain = $explain->fetchAll();
-			return implode("\n",array_map(function($entry){
-				return implode("\n",$entry);
-			}, $explain));
-		}
+		$explain = $this->pdo->prepare('EXPLAIN '.$sql,[\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT=>true]);
+		$this->bindParams($explain,$bindings);
+		$explain->execute();
+		$explain = $explain->fetchAll();
+		return implode("\n",array_map(function($entry){
+			return implode("\n",$entry);
+		}, $explain));
 	}
 	
 	function getFkMap($type,$primaryKey='id'){
