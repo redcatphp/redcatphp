@@ -221,13 +221,11 @@ abstract class SQL extends DataSource{
 				}
 				$this->logger->logChrono(sprintf("%.2f", $chrono).' '.$u);
 				if($this->loggingExplain){
-					if(strpos($sql,'SHOW')!==0&&strpos($sql,'CREATE')!==0&&strpos($sql,'ALTER')!==0){
-						try{
-							$this->logger->logExplain($this->explain($sql,$bindings));
-						}
-						catch(\PDOException $e){
-							$this->logger->log($e->getMessage());
-						}
+					try{
+						$this->logger->logExplain($this->explain($sql,$bindings));
+					}
+					catch(\PDOException $e){
+						$this->logger->log($e->getMessage());
 					}
 				}
 			}
