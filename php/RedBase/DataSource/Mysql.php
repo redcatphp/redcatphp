@@ -272,6 +272,7 @@ class Mysql extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
+		$sql = ltrim($sql);
 		if(!in_array(strtoupper(substr($sql,0,6)),['SELECT','DELETE','INSERT','UPDATE'])
 			&&strtoupper(substr($sql,0,7))!='REPLACE')
 			return false;

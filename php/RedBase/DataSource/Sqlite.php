@@ -253,6 +253,7 @@ class Sqlite extends SQL{
 	}
 	
 	protected function explain($sql,$bindings=[]){
+		$sql = ltrim($sql);
 		if(!in_array(strtoupper(substr($sql,0,6)),['SELECT','DELETE','INSERT','UPDATE']))
 			return false;
 		$explain = $this->pdo->prepare('EXPLAIN QUERY PLAN '.$sql);
