@@ -128,7 +128,7 @@ class SqlLogger {
 	function logExplain($explain){
 		if($this->html){
 			$id = 'explain'.uniqid();
-			$explain = '<span onclick="document.getElementById(\''.$id.'\').style.display=document.getElementById(\''.$id.'\').style.display==\'none\'?\'block\':\'none\';" style="color:#d00;font-size:11px;margin-left:16px;text-decoration:underline;cursor:pointer;">EXPLAIN</span><div id="'.$id.'" style="display:none;color:#333;font-size:12px;">'.$explain.'</div><br>';
+			$explain = '<span onclick="document.getElementById(\''.$id.'\').style.display=document.getElementById(\''.$id.'\').style.display==\'none\'?\'block\':\'none\';" style="color:#d00;font-size:11px;margin-left:16px;text-decoration:underline;cursor:pointer;">EXPLAIN</span><div id="'.$id.'" style="display:none;color:#333;font-size:12px;"><pre>'.$explain.'</pre></div><br>';
 		}
 		$this->output($explain,false);
 	}
