@@ -260,11 +260,18 @@ class Pgsql extends SQL{
 	}
 	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
-		if($id<2147483647)
+		//if($id<2147483647)
+		if($id!=2147483647)
+			return;
+		$cols = $this->getColumns($type);
+		if($cols[$primaryKey]=='bigint')
 			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
 		$fks = $this->getFkMap($type,$primaryKey);
-		debug($fks);
+		foreach($fks as $fk){
+			$this->pdo->exec('ALTER TABLE "'.$fk['table'].'" ALTER "'.$fk['column'].'" TYPE bigint');
+		}
+		$this->pdo->exec('ALTER TABLE '.$table.' ALTER '.$pk.' TYPE bigint');
 	}
 }
