@@ -270,8 +270,8 @@ class Pgsql extends SQL{
 		$pk = $this->esc($primaryKey);
 		$fks = $this->getFkMap($type,$primaryKey);
 		foreach($fks as $fk){
-			$this->pdo->exec('ALTER TABLE "'.$fk['table'].'" ALTER "'.$fk['column'].'" TYPE bigint');
+			$this->execute('ALTER TABLE "'.$fk['table'].'" ALTER "'.$fk['column'].'" TYPE bigint');
 		}
-		$this->pdo->exec('ALTER TABLE '.$table.' ALTER '.$pk.' TYPE bigint');
+		$this->execute('ALTER TABLE '.$table.' ALTER '.$pk.' TYPE bigint');
 	}
 }
