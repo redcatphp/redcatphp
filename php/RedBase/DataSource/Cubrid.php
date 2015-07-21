@@ -10,7 +10,6 @@ class Cubrid extends SQL{
 	const C_DATATYPE_SPECIFIED        = 99;
 	protected $quoteCharacter = '`';
 	protected $max = 2147483647;
-	protected $integerMax = 9223372036854775807;
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
