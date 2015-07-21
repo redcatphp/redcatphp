@@ -69,14 +69,14 @@ class Pgsql extends SQL{
 			return self::C_DATATYPE_TEXT;
 		if ( $value === FALSE || $value === TRUE || $value === NULL || ( is_numeric( $value )
 				&& self::canBeTreatedAsInt( $value )
-				&& $value < 2147483648
-				&& $value > -2147483648 )
+				&& $value <= 2147483647
+				&& $value >= -2147483647 )
 		)
 			return self::C_DATATYPE_INTEGER;
 		elseif ( is_numeric( $value )
 				&& self::canBeTreatedAsInt( $value )
-				&& $value < 9223372036854775807
-				&& $value > -9223372036854775807 )
+				&& $value <= 9223372036854775807
+				&& $value >= -9223372036854775807 )
 			return self::C_DATATYPE_BIGINT;
 		elseif ( is_numeric( $value ) )
 			return self::C_DATATYPE_DOUBLE;
