@@ -256,7 +256,25 @@ class Pgsql extends SQL{
 	
 	function getFkMap($type,$primaryKey='id'){
 		$table = $this->prefixTable($type);
-		return $this->getAll("SELECT (SELECT r.relname FROM pg_class r WHERE r.oid = c.conrelid) AS table, (SELECT trim(array_agg(attname)::text,'{}') FROM pg_attribute WHERE attrelid = c.conrelid AND ARRAY[attnum] <@ c.conkey) AS column, conname AS constraint FROM pg_constraint c WHERE c.confrelid = (SELECT oid FROM pg_class WHERE relname = '$table')");
+		return $this->getAll('SELECT
+			tc.table_name AS table,
+			kcu.column_name as column,
+			tc.constraint_name as constraint,
+			update_rule as on_update,
+			delete_rule as on_delete
+		FROM
+			information_schema.referential_constraints AS rc
+		JOIN
+			information_schema.table_constraints AS tc USING(constraint_catalog,constraint_schema,constraint_name)
+		JOIN
+			information_schema.key_column_usage AS kcu USING(constraint_catalog,constraint_schema,constraint_name)
+		JOIN
+			information_schema.key_column_usage AS ccu ON(ccu.constraint_catalog=rc.unique_constraint_catalog AND ccu.constraint_schema=rc.unique_constraint_schema AND ccu.constraint_name=rc.unique_constraint_name)
+		WHERE
+			ccu.table_catalog=current_database()
+			AND ccu.table_schema=ANY( current_schemas( FALSE ) )
+			AND ccu.table_name=?
+			AND ccu.column_name=?',[$table,$primaryKey]);
 	}
 	
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
