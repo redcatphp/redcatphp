@@ -2,7 +2,8 @@
 namespace RedBase\DataSource;
 class Pgsql extends SQL{
 	const C_DATATYPE_INTEGER          = 0;
-	const C_DATATYPE_DOUBLE           = 1;
+	const C_DATATYPE_BIGINT           = 1;
+	const C_DATATYPE_DOUBLE           = 2;
 	const C_DATATYPE_TEXT             = 3;
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
@@ -18,6 +19,7 @@ class Pgsql extends SQL{
 		parent::construct($config);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER          => ' integer ',
+			self::C_DATATYPE_BIGINT           => ' bigint ',
 			self::C_DATATYPE_DOUBLE           => ' double precision ',
 			self::C_DATATYPE_TEXT             => ' text ',
 			self::C_DATATYPE_SPECIAL_DATE     => ' date ',
@@ -71,6 +73,11 @@ class Pgsql extends SQL{
 				&& $value > -2147483648 )
 		)
 			return self::C_DATATYPE_INTEGER;
+		elseif ( is_numeric( $value )
+				&& self::canBeTreatedAsInt( $value )
+				&& $value < 9223372036854775807
+				&& $value > -9223372036854775807 )
+			return self::C_DATATYPE_BIGINT;
 		elseif ( is_numeric( $value ) )
 			return self::C_DATATYPE_DOUBLE;
 		else
