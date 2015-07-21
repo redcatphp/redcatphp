@@ -312,6 +312,9 @@ class Mysql extends SQL{
 		//if($id<4294967295)
 		if($id!=4294967295)
 			return;
+		$cols = $this->getColumns($type);
+		if($cols[$primaryKey]=='bigint(20) unsigned')
+			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
 		$fks = $this->getFkMap($type,$primaryKey);
@@ -340,9 +343,9 @@ class Mysql extends SQL{
 					AND information_schema.key_column_usage.referenced_table_name IS NOT NULL
 					AND information_schema.key_column_usage.constraint_name = ?
 			',[$this->prefixTable($fk['table']),$fk['constraint']]);
-			$this->execute('ALTER TABLE `'.$fk['table'].'` DROP FOREIGN KEY `'.$fk['constraint'].'`, MODIFY `'.$fk['column'].'` bigint unsigned NULL');
+			$this->execute('ALTER TABLE `'.$fk['table'].'` DROP FOREIGN KEY `'.$fk['constraint'].'`, MODIFY `'.$fk['column'].'` bigint(20) unsigned NULL');
 		}
-		$this->execute('ALTER TABLE '.$table.' CHANGE '.$pk.' '.$pk.' bigint unsigned NOT NULL AUTO_INCREMENT');
+		$this->execute('ALTER TABLE '.$table.' CHANGE '.$pk.' '.$pk.' bigint(20) unsigned NOT NULL AUTO_INCREMENT');
 		foreach($fks as $fk){
 			$this->execute('ALTER TABLE `'.$fk['table'].'` ADD FOREIGN KEY (`'.$fk['column'].'`) REFERENCES '.$table.' ('.$pk.') ON DELETE '.$cascades[$fk['constraint']]['on_delete'].' ON UPDATE '.$cascades[$fk['constraint']]['on_update']);
 		}
