@@ -148,7 +148,7 @@ class Mysql extends SQL{
 			$this->changeColumn( $type, $property, $idType );
 		}
 
-		$fkName = 'fk_'.($tableNoQ.'_'.$fieldNoQ);
+		$fkName = 'fk_'.$tableNoQ.'_'.$fieldNoQ;
 		$cName = 'c_'.$fkName;
 		try {
 			$this->execute( "
