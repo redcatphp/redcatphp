@@ -21,8 +21,8 @@ class Cubrid extends SQL{
 			self::C_DATATYPE_SPECIAL_DATETIME => ' DATETIME ',
 		];
 		$this->sqltype_typeno = [];
-		foreach ( $this->typeno_sqltype as $k => $v ) {
-			$this->sqltype_typeno[trim( ( $v ) )] = $k;
+		foreach( $this->typeno_sqltype as $k => $v ){
+			$this->sqltype_typeno[trim($v)] = $k;
 		}
 		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
 	}
@@ -128,7 +128,7 @@ class Cubrid extends SQL{
 		)
 			return false;
 		$needsToDropFK   = FALSE;
-		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ";
+		$sql  = "ALTER TABLE $table ADD CONSTRAINT FOREIGN KEY($column) REFERENCES $targetTable($targetColumn) ON DELETE $casc ON UPDATE $casc";
 		try {
 			$this->execute($sql);
 		} catch( \PDOException $e ) {
@@ -230,7 +230,7 @@ class Cubrid extends SQL{
 			$sqlCode = $this->getAll("SHOW CREATE TABLE `{$tb}`");
 			if(!isset($sqlCode[0]))
 				continue;
-			preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\]?/', $sqlCode[0]['CREATE TABLE'], $matches);
+			preg_match_all('/CONSTRAINT\s+\[([\w_]+)\]\s+FOREIGN\s+KEY\s+\(\[([\w_]+)\]\)\s+REFERENCES\s+\[([\w_]+)\](\s+ON\s+DELETE\s+(CASCADE|SET\sNULL|RESTRICT|NO\sACTION)\s+ON\s+UPDATE\s+(SET\sNULL|RESTRICT|NO\sACTION))?/', $sqlCode[0]['CREATE TABLE'], $matches);
 			if(!isset($matches[0]))
 				continue;
 			$list = [];
@@ -241,6 +241,8 @@ class Cubrid extends SQL{
 						'table'=>$tb,
 						'column'=>$matches[2][$i],
 						'constraint'=>$matches[1][$i],
+						'on_update'=>$matches[6][$i],
+						'on_delete'=>$matches[5][$i],
 					];
 			}
 		}
@@ -250,9 +252,18 @@ class Cubrid extends SQL{
 	function adaptPrimaryKey($type,$id,$primaryKey='id'){
 		if($id!=2147483647)
 			return;
+		$cols = $this->getColumns($type);
+		if($cols[$primaryKey]=='BIGINT')
+			return;
 		$table = $this->escTable($type);
 		$pk = $this->esc($primaryKey);
 		$fks = $this->getFkMap($type,$primaryKey);
-		debug($fks);
+		foreach($fks as $fk){
+			$this->execute('ALTER TABLE `'.$fk['table'].'` DROP FOREIGN KEY `'.$fk['constraint'].'`, MODIFY `'.$fk['column'].'` BIGINT NULL');
+		}
+		$this->execute('ALTER TABLE '.$table.' CHANGE '.$pk.' '.$pk.' BIGINT NOT NULL AUTO_INCREMENT');
+		foreach($fks as $fk){
+			$this->execute('ALTER TABLE `'.$fk['table'].'` ADD FOREIGN KEY (`'.$fk['column'].'`) REFERENCES '.$table.' ('.$pk.') ON DELETE '.$fk['on_delete'].' ON UPDATE '.$fk['on_update']);
+		}
 	}
 }
