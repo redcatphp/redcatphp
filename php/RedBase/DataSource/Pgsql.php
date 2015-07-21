@@ -94,7 +94,7 @@ class Pgsql extends SQL{
 	}
 	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
-		$this->execute('CREATE TABLE '.$table.' ('.$pk.' SERIAL PRIMARY KEY);');
+		$this->execute('CREATE TABLE '.$table.' ('.$pk.' SERIAL PRIMARY KEY)');
 	}
 	function addColumnQuery( $type, $column, $field ){
 		$table  = $type;
@@ -102,7 +102,7 @@ class Pgsql extends SQL{
 		$table  = $this->escTable( $table );
 		$column = $this->esc( $column );
 		$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
-		$this->execute("ALTER TABLE $table ADD $column $type ");
+		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
 	function changeColumnQuery( $type, $column, $datatype ){
 		$table   = $type;
@@ -110,7 +110,7 @@ class Pgsql extends SQL{
 		$table   = $this->escTable( $table );
 		$column  = $this->esc( $column );
 		$newtype = $this->typeno_sqltype[$type];
-		$this->execute( "ALTER TABLE $table \n\t ALTER COLUMN $column TYPE $newtype " );
+		$this->execute('ALTER TABLE '.$table.' ALTER COLUMN '.$column.' TYPE '.$newtype);
 	}
 	
 	function getKeyMapForType($type){
