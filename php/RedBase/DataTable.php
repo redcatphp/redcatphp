@@ -2,6 +2,7 @@
 namespace RedBase;
 use RedBase\Helper\Pagination;
 abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
+	private $events = [];	
 	protected $name;
 	protected $primaryKey;
 	protected $uniqTextKey;
@@ -141,4 +142,50 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	
 	//abstract function getAll();
 	//abstract function getRow();
+	
+    function on($event,$call=null,$index=0,$prepend=false){
+		if($index===true){
+			$prepend = true;
+			$index = 0;
+		}
+		if(is_null($call))
+			$call = $event;
+		if(!isset($this->events[$event][$index]))
+			$this->events[$event][$index] = [];
+		if($prepend)
+			array_unshift($this->events[$event][$index],$call);
+		else
+			$this->events[$event][$index][] = $call;
+		return $this;
+    }
+    function off($event,$call=null,$index=0){
+		if(func_num_args()===1){
+			if(isset($this->events[$event]))
+				unset($this->events[$event]);
+		}
+		elseif(func_num_args()===2){
+			foreach($this->events[$event] as $index){
+				if(false!==$i=array_search($call,$this->events[$event][$index],true)){
+					unset($this->events[$event][$index][$i]);
+				}
+			}
+		}
+        elseif(isset($this->events[$event][$index])&&false!==$i=array_search($call,$this->events[$event][$index],true)){
+			unset($this->events[$event][$index][$i]);
+		}
+		return $this;
+    }
+	function trigger($event, $row){
+		if(isset($this->events[$event])){
+			foreach($this->events[$event] as $calls){
+				foreach($calls as $call){
+					if(is_string($call))
+						call_user_func([$row,$call], $this);
+					else
+						call_user_func($call, $row, $this);
+				}
+			}
+		}
+		return $this;
+	}
 }
