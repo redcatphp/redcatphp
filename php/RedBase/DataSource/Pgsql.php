@@ -242,7 +242,6 @@ class Pgsql extends SQL{
 		$sql = ltrim($sql);
 		if(!in_array(strtoupper(substr($sql,0,6)),['SELECT','DELETE','INSERT','UPDATE','VALUES'])
 			&&!in_array(strtoupper(substr($sql,0,7)),['REPLACE','EXECUTE','DECLARE'])
-			&&strtoupper(substr($sql,0,12))!='CREATE TABLE'
 		)
 			return false;
 		$explain = $this->pdo->prepare('EXPLAIN '.$sql,[\PDO::PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT=>true]);
