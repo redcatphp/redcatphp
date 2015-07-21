@@ -170,7 +170,7 @@ class Pgsql extends SQL{
 		$fieldNoQ = $this->check( $property );
 		
 		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
-		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ );
+		$fk = $this->getForeignKeyForTypeProperty( $type, $fieldNoQ );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
 			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')

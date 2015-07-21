@@ -11,7 +11,7 @@ class SQL extends DataTable{
 		$this->select = $this->createSelect();
 	}
 	function exists(){
-		return $this->dataSource->tableExists($this->name,true);
+		return $this->dataSource->tableExists($this->name);
 	}
 	function fetch(){
 		return $this->dataSource->fetch($this->select->getQuery(),$this->select->getParams());

@@ -51,10 +51,10 @@ class Sqlite extends SQL{
 		$this->execute('CREATE TABLE '.$table.' ( '.$pk.' INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
 	function addColumnQuery($table, $column, $type){
-		$column = $this->check($column);
-		$table  = $this->check($table);
+		$column = $this->esc($column);
+		$table  = $this->escTable($table);
 		$type   = $this->typeno_sqltype[$type];
-		$this->execute('ALTER TABLE `'.$table.'` ADD `'.$column.'` '.$type);
+		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
 	function changeColumnQuery($type, $column, $datatype){
 		$t = $this->getTable( $type );
@@ -71,14 +71,15 @@ class Sqlite extends SQL{
 	 * @param array $tableMap information array
 	 */
 	protected function putTable( $tableMap ){
-		$table = $tableMap['name'];
+		$type = $tableMap['name'];
+		$table = $this->prefixTable($type);
 		$q     = [];
-		$q[]   = "DROP TABLE IF EXISTS tmp_backup;";
-		$oldColumnNames = array_keys( $this->getColumns( $table ) );
+		$q[]   = "DROP TABLE IF EXISTS _tmp_backup;";
+		$oldColumnNames = array_keys( $this->getColumns( $type ) );
 		foreach($oldColumnNames as $k => $v)
-			$oldColumnNames[$k] = "`$v`";
-		$q[] = "CREATE TEMPORARY TABLE tmp_backup(" . implode( ",", $oldColumnNames ) . ");";
-		$q[] = "INSERT INTO tmp_backup SELECT * FROM `$table`;";
+			$oldColumnNames[$k] = $this->esc($v);
+		$q[] = "CREATE TEMPORARY TABLE _tmp_backup(" . implode( ",", $oldColumnNames ) . ");";
+		$q[] = "INSERT INTO _tmp_backup SELECT * FROM `$table`;";
 		$q[] = "PRAGMA foreign_keys = 0 ";
 		$q[] = "DROP TABLE `$table`;";
 		$newTableDefStr = '';
@@ -93,7 +94,7 @@ class Sqlite extends SQL{
 						 REFERENCES `{$key['table']}`(`{$key['to']}`)
 						 ON DELETE {$key['on_delete']} ON UPDATE {$key['on_update']}";
 		}
-		$q[] = "CREATE TABLE `$table` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT  $newTableDefStr  $fkDef );";
+		$q[] = "CREATE TABLE `$table` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT  $newTableDefStr  $fkDef )";
 		foreach ( $tableMap['indexes'] as $name => $index ) {
 			if ( strpos( $name, 'UQ_' ) === 0 ) {
 				$cols = explode( '__', substr( $name, strlen( 'UQ_' . $table ) ) );
@@ -103,13 +104,14 @@ class Sqlite extends SQL{
 			}
 				else $q[] = "CREATE INDEX $name ON `$table` ({$index['name']}) ";
 		}
-		$q[] = "INSERT INTO `$table` SELECT * FROM tmp_backup;";
-		$q[] = "DROP TABLE tmp_backup;";
+		$q[] = "INSERT INTO `$table` SELECT * FROM _tmp_backup";
+		$q[] = "DROP TABLE _tmp_backup";
 		$q[] = "PRAGMA foreign_keys = 1 ";
-		foreach ( $q as $sq ) $this->execute( $sq );
+		foreach ( $q as $sq ){
+			$this->execute( $sq );
+		}
 	}
 	function getTable( $type ){
-		$tableName = $this->prefixTable($type);
 		$columns   = $this->getColumns($type);
 		$indexes   = $this->getIndexes($type);
 		$keys      = $this->getKeyMapForType($type);
@@ -117,7 +119,7 @@ class Sqlite extends SQL{
 			'columns' => $columns,
 			'indexes' => $indexes,
 			'keys' => $keys,
-			'name' => $tableName
+			'name' => $type
 		];
 		return $table;
 	}
@@ -173,13 +175,13 @@ class Sqlite extends SQL{
 			return false;
 		
 		$consSQL = $constraint ? 'CASCADE' : 'SET NULL';
-		$fk = $this->getForeignKeyForTypeProperty( $table, $column );
+		$fk = $this->getForeignKeyForTypeProperty( $type, $column );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$consSQL||$fk['on_update']=='CASCADE')
 			&&($fk['on_delete']==$consSQL||$fk['on_update']=='CASCADE')
 		)
 			return false;
-		$t = $this->getTable( $table );
+		$t = $this->getTable( $type );
 		$label   = 'from_' . $column . '_to_table_' . $targetTable . '_col_' . $targetColumn;
 		$t['keys'][$label] = array(
 			'table'     => $targetTable,
@@ -198,7 +200,6 @@ class Sqlite extends SQL{
 		return self::C_DATATYPE_INTEGER;
 	}
 	function addUniqueConstraint( $type, $properties ){
-		$tableNoQ = $this->prefixTable( $type );
 		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', (array)$properties );
 		$t     = $this->getTable( $type );
 		if(isset($t['indexes'][$name]))
@@ -215,7 +216,6 @@ class Sqlite extends SQL{
 		$columns = $this->getColumns( $type );
 		if ( !isset( $columns[$column] ) )
 			return false;
-		$table  = $this->escTable( $type );
 		$name   = preg_replace( '/\W/', '', $name );
 		$column = $this->check( $column );
 		try {

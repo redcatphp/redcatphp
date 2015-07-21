@@ -601,7 +601,7 @@ abstract class SQL extends DataSource{
 		return $this->tablePrefix.$table;
 	}
 	function unprefixTable($table){
-		if($this->tablePrefix&&substr($table,0,$l=stlren($this->tablePrefix))==$this->tablePrefix){
+		if($this->tablePrefix&&substr($table,0,$l=strlen($this->tablePrefix))==$this->tablePrefix){
 			$table = substr($table,$l);
 		}
 		return $table;
@@ -615,7 +615,7 @@ abstract class SQL extends DataSource{
 	function getTablePrefix(){
 		return $this->tablePrefix;
 	}
-	function tableExists($table,$prefix=false){
+	function tableExists($table,$prefix=true){
 		if($prefix)
 			$table = $this->prefixTable($table);
 		return in_array($table, $this->getTables());
@@ -662,15 +662,16 @@ abstract class SQL extends DataSource{
 			$this->cacheTables = $this->getTablesQuery();
 		return $this->cacheTables;
 	}
-	function getColumns($table){
-		if(!isset($this->cacheColumns[$table]))
-			$this->cacheColumns[$table] = $this->getColumnsQuery($table);
-		return $this->cacheColumns[$table];
+	function getColumns($type){
+		if(!isset($this->cacheColumns[$type]))
+			$this->cacheColumns[$type] = $this->getColumnsQuery($type);
+		return $this->cacheColumns[$type];
 	}
-	function createTable($table,$pk='id'){
+	function createTable($type,$pk='id'){
+		$table = $this->prefixTable($type);
 		if(!in_array($table,$this->cacheTables))
 			$this->cacheTables[] = $table;
-		return $this->createTableQuery($table,$pk);
+		return $this->createTableQuery($type,$pk);
 	}
 	function addColumn($type,$column,$field){
 		if(isset($this->cacheColumns[$type])&&!isset($this->cacheColumns[$type][$column]))

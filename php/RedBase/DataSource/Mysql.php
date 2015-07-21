@@ -92,9 +92,9 @@ class Mysql extends SQL{
 	function getTablesQuery(){
 		return $this->getCol('show tables');
 	}
-	function getColumnsQuery($table){
+	function getColumnsQuery($type){
 		$columns = [];
-		foreach($this->getAll('DESCRIBE '.$this->escTable($table)) as $r)
+		foreach($this->getAll('DESCRIBE '.$this->escTable($type)) as $r)
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
@@ -121,8 +121,7 @@ class Mysql extends SQL{
 		return true;
 	}
 	
-	function addFK( $type, $targetType, $property, $targetProperty, $isDependent = FALSE )
-	{
+	function addFK( $type, $targetType, $property, $targetProperty, $isDependent = false ){
 		$table = $this->escTable( $type );
 		$targetTable = $this->escTable( $targetType );
 		$targetTableNoQ = $this->prefixTable( $targetType );
@@ -132,9 +131,8 @@ class Mysql extends SQL{
 		$targetFieldNoQ = $this->check( $targetProperty );
 		$tableNoQ = $this->prefixTable( $type );
 		$fieldNoQ = $this->check( $property);
-		
 		$casc = ( $isDependent ? 'CASCADE' : 'SET NULL' );
-		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $fieldNoQ );
+		$fk = $this->getForeignKeyForTypeProperty( $type, $fieldNoQ );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
 			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
@@ -142,7 +140,7 @@ class Mysql extends SQL{
 			return false;
 
 		//Widen the column if it's incapable of representing a foreign key (at least INT).
-		$columns = $this->getColumns( $tableNoQ );
+		$columns = $this->getColumns( $type );
 		$idType = $this->getTypeForID();
 		if ( $this->columnCode( $columns[$fieldNoQ] ) !==  $idType ) {
 			$this->changeColumn( $type, $property, $idType );

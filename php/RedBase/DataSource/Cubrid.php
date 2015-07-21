@@ -124,7 +124,7 @@ class Cubrid extends SQL{
 		$columnNoQ       = $this->check( $property );
 		$targetColumn    = $this->esc( $targetProperty );
 		$casc = ( $isDep ? 'CASCADE' : 'SET NULL' );
-		$fk = $this->getForeignKeyForTypeProperty( $tableNoQ, $columnNoQ );
+		$fk = $this->getForeignKeyForTypeProperty( $type, $columnNoQ );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
 			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
