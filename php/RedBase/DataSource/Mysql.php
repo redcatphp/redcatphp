@@ -2,7 +2,8 @@
 namespace RedBase\DataSource;
 class Mysql extends SQL{
 	const C_DATATYPE_BOOL             = 0;
-	const C_DATATYPE_UINT32           = 2;
+	const C_DATATYPE_UINT32           = 1;
+	const C_DATATYPE_UBIGINT          = 2;
 	const C_DATATYPE_DOUBLE           = 3;
 	const C_DATATYPE_TEXT7            = 4; //InnoDB cant index varchar(255) utf8mb4 - so keep 191 as long as possible
 	const C_DATATYPE_TEXT8            = 5;
@@ -22,6 +23,7 @@ class Mysql extends SQL{
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_BOOL             => ' TINYINT(1) UNSIGNED ',
 			self::C_DATATYPE_UINT32           => ' INT(11) UNSIGNED ',
+			self::C_DATATYPE_UBIGINT          => ' BIGINT(20) UNSIGNED ',
 			self::C_DATATYPE_DOUBLE           => ' DOUBLE ',
 			self::C_DATATYPE_TEXT7            => ' VARCHAR(191) ',
 			self::C_DATATYPE_TEXT8	           => ' VARCHAR(255) ',
@@ -70,14 +72,16 @@ class Mysql extends SQL{
 		//setter turns TRUE FALSE into 0 and 1 because database has no real bools (TRUE and FALSE only for test?).
 		if( $value === FALSE || $value === TRUE || $value === '0' || $value === '1' )
 			return self::C_DATATYPE_BOOL;
-		if( is_float( $value ) )
-			return self::C_DATATYPE_DOUBLE;
 		if( !$this->startsWithZeros( $value ) ) {
-			if( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= 0 && $value <= 4294967295 )
+			if( is_numeric( $value ) && floor($value)==$value && $value>=0 && $value <= 4294967295 )
 				return self::C_DATATYPE_UINT32;
+			elseif ( is_numeric( $value ) && floor($value)==$value && $value>0 && $value <= 18446744073709551615 )
+				return self::C_DATATYPE_UBIGINT;
 			if( is_numeric( $value ) )
 				return self::C_DATATYPE_DOUBLE;
 		}
+		if( is_float( $value ) )
+			return self::C_DATATYPE_DOUBLE;
 		if( mb_strlen( $value, 'UTF-8' ) <= 191 )
 			return self::C_DATATYPE_TEXT7;
 		if( mb_strlen( $value, 'UTF-8' ) <= 255 )
