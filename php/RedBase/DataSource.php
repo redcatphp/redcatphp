@@ -145,18 +145,19 @@ abstract class DataSource implements \ArrayAccess{
 							$this[$t][$v->$pk] = $v;
 						else
 							$this[$t][] = $v;
-						$properties[$k.'_'.$primaryKey] = $obj->{$k.'_'.$primaryKey} = $v->$pk;
-						$addFK = [$type,$t,$k.'_'.$primaryKey,$pk,$xclusive];
+						$rc = $k.'_'.$pk;
+						$properties[$rc] = $obj->$rc = $v->$pk;
+						$addFK = [$type,$t,$rc,$pk,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
 					break;
 					case 'many':
 						foreach($v as $val){
 							$t = $this->findEntityTable($val,$k);
-							$pk = $this[$t]->getPrimaryKey();
-							$val->{$type.'_'.$pk} = &$obj->$primaryKey;
+							$rc = $type.'_'.$primaryKey;
+							$val->$rc = &$obj->$primaryKey;
 							$postPut[$t][] = $val;
-							$addFK = [$t,$type,$type.'_'.$pk,$primaryKey,$xclusive];
+							$addFK = [$t,$type,$rc,$primaryKey,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
 						}						
@@ -166,19 +167,21 @@ abstract class DataSource implements \ArrayAccess{
 						sort($inter);
 						$inter = implode('_',$inter);
 						$interc = $this->findEntityClass($inter);
+						$rc = $type.'_'.$primaryKey;
 						foreach($v as $val){
 							$t = $this->findEntityTable($val,$k);
 							$pk = $this[$t]->getPrimaryKey();
+							$rc2 = $k.'_'.$pk;
 							$interm = new $interc();
-							$interm->{$type.'_'.$primaryKey} = &$obj->$primaryKey;
-							$interm->{$k.'_'.$pk} = &$val->$pk;
+							$interm->$rc = &$obj->$primaryKey;
+							$interm->$rc2 = &$val->$pk;
 							$postPut[$t][] = $val;
 							$postPut[$inter][] = $interm;
-							$addFK = [$inter,$t,$k.'_'.$pk,$pk,$xclusive];
+							$addFK = [$inter,$t,$rc2,$pk,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
 						}
-						$addFK = [$inter,$type,$type.'_'.$primaryKey,$primaryKey,$xclusive];
+						$addFK = [$inter,$type,$rc,$primaryKey,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
 					break;
