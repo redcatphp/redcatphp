@@ -3,8 +3,9 @@ namespace RedBase\DataSource;
 use RedBase\Exception;
 class Cubrid extends SQL{
 	const C_DATATYPE_INTEGER          = 0;
-	const C_DATATYPE_DOUBLE           = 1;
-	const C_DATATYPE_STRING           = 2;
+	const C_DATATYPE_BIGINT           = 1;
+	const C_DATATYPE_DOUBLE           = 2;
+	const C_DATATYPE_STRING           = 3;
 	const C_DATATYPE_SPECIAL_DATE     = 80;
 	const C_DATATYPE_SPECIAL_DATETIME = 81;
 	const C_DATATYPE_SPECIFIED        = 99;
@@ -14,6 +15,7 @@ class Cubrid extends SQL{
 		parent::construct($config);
 		$this->typeno_sqltype = [
 			self::C_DATATYPE_INTEGER          => ' INTEGER ',
+			self::C_DATATYPE_BIGINT           => ' BIGINT ',
 			self::C_DATATYPE_DOUBLE           => ' DOUBLE ',
 			self::C_DATATYPE_STRING           => ' STRING ',
 			self::C_DATATYPE_SPECIAL_DATE     => ' DATE ',
@@ -53,6 +55,8 @@ class Cubrid extends SQL{
 		if ( !$this->startsWithZeros( $value ) ) {
 			if ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= -2147483647 && $value <= 2147483647 )
 				return self::C_DATATYPE_INTEGER;
+			elseif ( is_numeric( $value ) && ( floor( $value ) == $value ) && $value >= -9223372036854775807 && $value <= 9223372036854775807 )
+				return self::C_DATATYPE_BIGINT;
 			if ( is_numeric( $value ) )
 				return self::C_DATATYPE_DOUBLE;
 		}
