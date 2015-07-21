@@ -305,6 +305,28 @@ class Mysql extends SQL{
 		$this->pdo->exec('use INFORMATION_SCHEMA');
 		$fks = $this->getAll('SELECT table_name AS "table",column_name AS "column",constraint_name AS "constraint" FROM key_column_usage WHERE table_schema = "'.$dbname.'" AND referenced_table_name = "'.$table.'" AND referenced_column_name = "'.$primaryKey.'";');
 		$this->pdo->exec('use '.$dbname);
+		foreach($fks as &$fk){
+			$constraint = $this->getRow('
+				SELECT
+					information_schema.referential_constraints.update_rule AS `on_update`,
+					information_schema.referential_constraints.delete_rule AS `on_delete`
+					FROM information_schema.key_column_usage
+					INNER JOIN information_schema.referential_constraints
+						ON (
+							information_schema.referential_constraints.constraint_name = information_schema.key_column_usage.constraint_name
+							AND information_schema.referential_constraints.constraint_schema = information_schema.key_column_usage.constraint_schema
+							AND information_schema.referential_constraints.constraint_catalog = information_schema.key_column_usage.constraint_catalog
+						)
+				WHERE
+					information_schema.key_column_usage.table_schema IN ( SELECT DATABASE() )
+					AND information_schema.key_column_usage.table_name = ?
+					AND information_schema.key_column_usage.constraint_name != \'PRIMARY\'
+					AND information_schema.key_column_usage.referenced_table_name IS NOT NULL
+					AND information_schema.key_column_usage.constraint_name = ?
+			',[$this->prefixTable($fk['table']),$fk['constraint']]);
+			$fk['on_update'] = $constraint['on_update'];
+			$fk['on_delete'] = $constraint['on_delete'];
+		}
 		return $fks;
 	}
 	
@@ -323,31 +345,12 @@ class Mysql extends SQL{
 			$lockTables .= ',`'.$fk['table'].'` WRITE';
 		}
 		$this->execute($lockTables);
-		$cascades = [];
 		foreach($fks as $fk){
-			$cascades[$fk['constraint']] = $this->getRow('
-				SELECT
-					information_schema.referential_constraints.update_rule AS `on_update`,
-					information_schema.referential_constraints.delete_rule AS `on_delete`
-					FROM information_schema.key_column_usage
-					INNER JOIN information_schema.referential_constraints
-						ON (
-							information_schema.referential_constraints.constraint_name = information_schema.key_column_usage.constraint_name
-							AND information_schema.referential_constraints.constraint_schema = information_schema.key_column_usage.constraint_schema
-							AND information_schema.referential_constraints.constraint_catalog = information_schema.key_column_usage.constraint_catalog
-						)
-				WHERE
-					information_schema.key_column_usage.table_schema IN ( SELECT DATABASE() )
-					AND information_schema.key_column_usage.table_name = ?
-					AND information_schema.key_column_usage.constraint_name != \'PRIMARY\'
-					AND information_schema.key_column_usage.referenced_table_name IS NOT NULL
-					AND information_schema.key_column_usage.constraint_name = ?
-			',[$this->prefixTable($fk['table']),$fk['constraint']]);
 			$this->execute('ALTER TABLE `'.$fk['table'].'` DROP FOREIGN KEY `'.$fk['constraint'].'`, MODIFY `'.$fk['column'].'` bigint(20) unsigned NULL');
 		}
 		$this->execute('ALTER TABLE '.$table.' CHANGE '.$pk.' '.$pk.' bigint(20) unsigned NOT NULL AUTO_INCREMENT');
 		foreach($fks as $fk){
-			$this->execute('ALTER TABLE `'.$fk['table'].'` ADD FOREIGN KEY (`'.$fk['column'].'`) REFERENCES '.$table.' ('.$pk.') ON DELETE '.$cascades[$fk['constraint']]['on_delete'].' ON UPDATE '.$cascades[$fk['constraint']]['on_update']);
+			$this->execute('ALTER TABLE `'.$fk['table'].'` ADD FOREIGN KEY (`'.$fk['column'].'`) REFERENCES '.$table.' ('.$pk.') ON DELETE '.$fk['on_delete'].' ON UPDATE '.$fk['on_update']);
 		}
 		$this->execute('UNLOCK TABLES');
 	}
