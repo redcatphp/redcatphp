@@ -266,19 +266,4 @@ class Sqlite extends SQL{
 			return str_repeat('  ',$i-1).implode('|',$entry);;
 		}, $explain));
 	}
-	
-	/*
-	function fulltext($search){
-		list($select,$from,$where,$orderBy) = $this->fulltextQueryParts($search);
-		$this->select($select);
-		$this->from($from);
-		$this->where($where);
-		$this->orderBy($orderBy);
-	}
-	function fulltextQueryParts($search){
-		
-		
-		return [$select,$from,$where,$orderBy];
-	}
-	*/
 }
