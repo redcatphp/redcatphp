@@ -42,8 +42,8 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function findEntityTable($obj,$default=null){
 		$table = $default;
-		if(isset($obj->_table)){
-			$table = $obj->_table;
+		if(isset($obj->_type)){
+			$table = $obj->_type;
 		}
 		else{
 			$c = get_class($obj);
@@ -63,8 +63,8 @@ abstract class DataSource implements \ArrayAccess{
 		return $table;
 	}
 	function arrayToEntity(array $array,$default=null){
-		if(isset($array['_table']))
-			$type = $array['_table'];
+		if(isset($array['_type']))
+			$type = $array['_type'];
 		elseif($default)
 			$type = $default;
 		else
@@ -98,18 +98,18 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function construct(array $config=[]){}
 	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
-		$obj->_table = $type;
+		$obj->_type = $type;
 		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
 	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
 		$row = $this->read($type,$id,$primaryKey,$uniqTextKey);
-		$row->_table = $type;
+		$row->_type = $type;
 		return $row;
 	}
 	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		$obj->_table = $type;
+		$obj->_type = $type;
 		return $this->putRow($type,$obj,$id,$primaryKey,$uniqTextKey);
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
@@ -238,7 +238,7 @@ abstract class DataSource implements \ArrayAccess{
 			$c = $this->findEntityClass($name);
 			$row = new $c;
 		}
-		$row->_table = $name;
+		$row->_type = $name;
 		return $row;
 	}
 	
