@@ -160,6 +160,7 @@ abstract class SQL extends DataSource{
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$this->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);
+		return $this->affectedRows;
 	}
 	
 	
