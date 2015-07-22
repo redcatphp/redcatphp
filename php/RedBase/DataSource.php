@@ -246,6 +246,10 @@ abstract class DataSource implements \ArrayAccess{
 		$this->entityFactory = $factory;
 	}
 	
+	function trigger($type, $event, $row){
+		return $this[$type]->trigger($event, $row);
+	}
+	
 	//abstract function many2one($obj,$type){}
 	//abstract function one2many($obj,$type){}
 	//abstract function many2many($obj,$type){}
