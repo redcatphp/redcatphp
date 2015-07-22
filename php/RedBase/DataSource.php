@@ -232,7 +232,7 @@ abstract class DataSource implements \ArrayAccess{
 	
 	function entityFactory($name){
 		if($this->entityFactory){
-			$row = $this->entityFactory($name);
+			$row = call_user_func($this->entityFactory,$name);
 		}
 		else{
 			$c = $this->findEntityClass($name);
