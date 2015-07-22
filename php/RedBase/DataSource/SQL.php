@@ -625,7 +625,7 @@ abstract class SQL extends DataSource{
 			if($key['from']===$property)
 				return $key;
 		}
-		return n ull;
+		return null;
 	}
 
 	function getTables(){
