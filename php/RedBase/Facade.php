@@ -70,6 +70,13 @@ class Facade{
 		self::create($type,$obj);
 	}
 	
+	static function on($type,$event,$call=null){
+		return self::$redbaseCurrent[$type]->on($event,$call);
+	}
+	static function off($type,$event,$call=null){
+		return self::$redbaseCurrent[$type]->off($event,$call);
+	}
+	
 	static function many2one($obj,$type){
 		return self::$redbaseCurrent->many2one($obj,$type);
 	}
