@@ -45,16 +45,16 @@ class Facade{
 	}
 	
 	static function create($type,$obj){
-		self::$redbaseCurrent[$type][] = $obj;
+		return self::$redbaseCurrent[$type]->offsetSet(null,$obj);
 	}
 	static function read($type,$id){
-		return self::$redbaseCurrent[$type][$id];
+		return self::$redbaseCurrent[$type]->offsetGet($id);
 	}
 	static function update($type,$id,$obj){
-		self::$redbaseCurrent[$type][$id] = $obj;
+		return self::$redbaseCurrent[$type]->offsetSet($id,$obj);
 	}
 	static function delete($type,$id){
-		unset(self::$redbaseCurrent[$type][$id]);
+		return self::$redbaseCurrent[$type]->offsetUnset($id);
 	}
 	
 	static function dispense($type){
@@ -65,6 +65,9 @@ class Facade{
 		if(!$table)
 			throw new Exception('Can\'t resolve type of object');
 		self::create($type,$obj);
+	}
+	static function trash($type,$obj){
+		self::$redbaseCurrent[$type]->deleteRow($obj);
 	}
 	
 	static function on($type,$event,$call=null){
