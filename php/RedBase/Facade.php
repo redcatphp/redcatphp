@@ -2,7 +2,7 @@
 namespace RedBase;
 class Facade{
 	protected static $redbase;
-	protected static $redbaseCurrent;
+	protected static $currentDataSource;
 	static $useUnitDi = true;
 	static function _initialiaze(){
 		if(!isset(self::$redbase)){
@@ -29,62 +29,62 @@ class Facade{
 			'user'=>$user,
 			'password'=>$password,
 		]+$config;
-		if(!isset(self::$redbaseCurrent))
+		if(!isset(self::$currentDataSource))
 			self::selectDatabase($key);
 	}
 	static function selectDatabase($key){
 		if(func_num_args()>1)
 			call_user_func_array(['self','addDatabase'],func_get_args());
-		return self::$redbaseCurrent = self::$redbase[$key];
+		return self::$currentDataSource = self::$redbase[$key];
 	}
 	static function __callStatic($f,$args){
 		self::_initialiaze();
-		if(!isset(self::$redbaseCurrent))
+		if(!isset(self::$currentDataSource))
 			throw new Exception('Use '.__CLASS__.'::setup() first');
-		return call_user_func_array([self::$redbaseCurrent,$f],$args);
+		return call_user_func_array([self::$currentDataSource,$f],$args);
 	}
 	
 	static function create($mixed){
-		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
+		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
 	}
 	static function read($mixed){
-		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
+		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
 	}
 	static function update($mixed){
-		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
+		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
 	}
 	static function delete($mixed){
-		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
+		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
 	}
 	
 	static function dispense($type){
-		return self::$redbaseCurrent->entityFactory($type);
+		return self::$currentDataSource->entityFactory($type);
 	}
 	
 	static function on($type,$event,$call=null){
-		return self::$redbaseCurrent[$type]->on($event,$call);
+		return self::$currentDataSource[$type]->on($event,$call);
 	}
 	static function off($type,$event,$call=null){
-		return self::$redbaseCurrent[$type]->off($event,$call);
+		return self::$currentDataSource[$type]->off($event,$call);
 	}
 	
 	static function many2one($obj,$type){
-		return self::$redbaseCurrent->many2one($obj,$type);
+		return self::$currentDataSource->many2one($obj,$type);
 	}
 	static function one2many($obj,$type){
-		return self::$redbaseCurrent->one2many($obj,$type);
+		return self::$currentDataSource->one2many($obj,$type);
 	}
 	static function many2many($obj,$type,$via=null){
-		return self::$redbaseCurrent->many2many($obj,$type,$via);
+		return self::$currentDataSource->many2many($obj,$type,$via);
 	}
 	static function loadMany2one($obj,$type){
-		return self::$redbaseCurrent[$type]->loadOne($obj);
+		return self::$currentDataSource[$type]->loadOne($obj);
 	}
 	static function loadOne2many($obj,$type){
-		return self::$redbaseCurrent[$type]->loadMany($obj);
+		return self::$currentDataSource[$type]->loadMany($obj);
 	}
 	static function loadMany2many($obj,$type,$via=null){
-		return self::$redbaseCurrent[$type]->loadMany2many($obj,$via);
+		return self::$currentDataSource[$type]->loadMany2many($obj,$via);
 	}
 	
 	static function setEntityClassPrefix($entityClassPrefix='Model\\'){
@@ -107,7 +107,7 @@ class Facade{
 	}
 	
 	static function debug(){
-		return call_user_func_array([self::$redbaseCurrent,'debug'],func_get_args());
+		return call_user_func_array([self::$currentDataSource,'debug'],func_get_args());
 	}
 }
 Facade::_initialiaze();
