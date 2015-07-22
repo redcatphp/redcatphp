@@ -105,7 +105,8 @@ abstract class DataSource implements \ArrayAccess{
 		if(!$this->tableExists($type))
 			return false;
 		$row = $this->read($type,$id,$primaryKey,$uniqTextKey);
-		$row->_type = $type;
+		if($row)
+			$row->_type = $type;
 		return $row;
 	}
 	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
