@@ -60,18 +60,6 @@ class Facade{
 	static function dispense($type){
 		return self::$redbaseCurrent->entityFactory($type);
 	}
-	static function store($obj,$type=null){
-		$type = self::$redbaseCurrent->findEntityTable($obj,$type);
-		if(!$type)
-			throw new Exception('Can\'t resolve type of object');
-		return self::create($type,$obj);
-	}
-	static function trash($obj){
-		$type = self::$redbaseCurrent->findEntityTable($obj);
-		if(!$type)
-			throw new Exception('Can\'t resolve type of object');
-		return self::delete($type,$obj);
-	}
 	
 	static function on($type,$event,$call=null){
 		return self::$redbaseCurrent[$type]->on($event,$call);
