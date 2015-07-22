@@ -44,17 +44,17 @@ class Facade{
 		return call_user_func_array([self::$redbaseCurrent,$f],$args);
 	}
 	
-	static function create($type,$obj){
-		return self::$redbaseCurrent[$type]->offsetSet(null,$obj);
+	static function create($mixed){
+		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
 	}
-	static function read($type,$id){
-		return self::$redbaseCurrent[$type]->offsetGet($id);
+	static function read($mixed){
+		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
 	}
-	static function update($type,$id,$obj){
-		return self::$redbaseCurrent[$type]->offsetSet($id,$obj);
+	static function update($mixed){
+		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
 	}
-	static function delete($type,$id){
-		return self::$redbaseCurrent[$type]->offsetUnset($id);
+	static function delete($mixed){
+		return call_user_func_array([self::$redbaseCurrent,__FUNCTION__],func_get_args());
 	}
 	
 	static function dispense($type){

@@ -76,13 +76,13 @@ abstract class SQL extends DataSource{
 		$table = $this->escTable($type);
 		return $this->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
 	}
-	function create($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
+	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
 		if(isset($properties[$primaryKey]))
-			return $this->update($type,$properties,$properties[$primaryKey],$primaryKey,$uniqTextKey);
+			return $this->updateQuery($type,$properties,$properties[$primaryKey],$primaryKey,$uniqTextKey);
 		if($uniqTextKey&&isset($properties[$uniqTextKey])){
 			$id = $this->readId($type,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
 			if($id)
-				return $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+				return $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
 		}
 		if(array_key_exists($primaryKey,$properties))
 			unset($properties[$primaryKey]);
@@ -111,7 +111,7 @@ abstract class SQL extends DataSource{
 			$this->adaptPrimaryKey($type,$id,$primaryKey);
 		return $id;
 	}
-	function read($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+	function readQuery($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$table = $this->escTable($type);
@@ -126,7 +126,7 @@ abstract class SQL extends DataSource{
 			return $obj;
 		}
 	}
-	function update($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+	function updateQuery($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		$uniqTexting = false;
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
 			$uniqTexting = true;
@@ -134,7 +134,7 @@ abstract class SQL extends DataSource{
 			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
 		}
 		if(!$id)
-			return $this->create($type,$properties,$primaryKey,$uniqTextKey);
+			return $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
 		if(!$this->tableExists($type))
 			return false;
 		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
@@ -156,7 +156,7 @@ abstract class SQL extends DataSource{
 		$this->execute('UPDATE '.$table.' SET '.implode(',',$fields).' WHERE '.$primaryKey.' = ? ', $binds);
 		return $id;
 	}
-	function delete($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+	function deleteQuery($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$this->execute('DELETE FROM '.$this->escTable($type).' WHERE '.$primaryKey.' = ?', [$id]);

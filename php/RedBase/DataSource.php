@@ -104,7 +104,7 @@ abstract class DataSource implements \ArrayAccess{
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		$row = $this->read($type,$id,$primaryKey,$uniqTextKey);
+		$row = $this->readQuery($type,$id,$primaryKey,$uniqTextKey);
 		if($row)
 			$row->_type = $type;
 		return $row;
@@ -116,7 +116,7 @@ abstract class DataSource implements \ArrayAccess{
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type))
 			return false;
-		return $this->delete($type,$id,$primaryKey,$uniqTextKey);
+		return $this->deleteQuery($type,$id,$primaryKey,$uniqTextKey);
 	}
 	
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
@@ -212,10 +212,10 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		if(isset($id)){
-			$r = $this->update($type,$properties,$id,$primaryKey,$uniqTextKey);
+			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
 		}
 		else{
-			$r = $this->create($type,$properties,$primaryKey,$uniqTextKey);
+			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
 		}
 		$obj->{$primaryKey} = $r;
 		foreach($postPut as $k=>$v){
@@ -249,6 +249,58 @@ abstract class DataSource implements \ArrayAccess{
 	
 	function trigger($type, $event, $row){
 		return $this[$type]->trigger($event, $row);
+	}
+	
+	function create($mixed){
+		if(func_num_args()<2){
+			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
+			$type = $this->findEntityTable($obj);
+		}
+		else{
+			list($type,$obj) = func_get_args();
+		}
+		return $this[$type]->offsetSet(null,$obj);
+	}
+	function read($mixed){
+		if(func_num_args()<2){
+			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
+			$type = $this->findEntityTable($obj);
+			$pk = $this[$type]->getPrimaryKey();
+			$id = $obj->$pk;
+		}
+		else{
+			list($type,$id) = func_get_args();
+		}
+		return $this[$type]->offsetGet($id);
+	}
+	function update($mixed){
+		if(func_num_args()<2){
+			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
+			$type = $this->findEntityTable($obj);
+			$pk = $this[$type]->getPrimaryKey();
+			$id = $obj->$pk;
+		}
+		elseif(func_num_args()<3){
+			list($type,$obj) = func_get_args();
+			$pk = $this[$type]->getPrimaryKey();
+			$id = $obj->$pk;
+		}
+		else{
+			list($type,$id,$obj) = func_get_args();
+		}
+		return $this[$type]->offsetSet($id,$obj);
+	}
+	function delete($mixed){
+		if(func_num_args()<2){
+			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
+			$type = $this->findEntityTable($obj);
+			$pk = $this[$type]->getPrimaryKey();
+			$id = $obj->$pk;
+		}
+		else{
+			list($type,$id) = func_get_args();
+		}
+		return $this[$type]->offsetUnset($id);
 	}
 	
 	//abstract function many2one($obj,$type){}
