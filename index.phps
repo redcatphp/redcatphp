@@ -6,4 +6,4 @@
 //define('SURIKAT_FREEZE_DI',true);
 require_once __DIR__.'/surikat/surikat.php';
 
-Unit\Di::make('KungFu\Cms\FrontController\Index')->runFromGlobals();
+$surikat->create('KungFu\Cms\FrontController\Index')->runFromGlobals();
