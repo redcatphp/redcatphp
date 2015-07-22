@@ -606,35 +606,26 @@ abstract class SQL extends DataSource{
 	}
 	static function startsWithZeros($value){
 		$value = strval($value);
-		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
+		return strlen($value)>1&&strpos($value,'0')===0&&strpos($value,'0.')!==0;
 	}
 	
 	protected static function makeFKLabel($from, $type, $to){
 		return 'from_'.$from.'_to_table_'.$type.'_col_'.$to;
 	}
 	
-	/**
-	 * Given a type and a property name this method
-	 * returns the foreign key map section associated with this pair.
-	 *
-	 * @param string $type     name of the type
-	 * @param string $property name of the property
-	 *
-	 * @return array|NULL
-	 */
 	protected function getForeignKeyForTypeProperty( $type, $property ){
-		$property = $this->check( $property );
-		try {
-			$map = $this->getKeyMapForType( $type );
+		$property = $this->check($property);
+		try{
+			$map = $this->getKeyMapForType($type);
 		}
-		catch ( \PDOException $e ) {
-			return NULL;
+		catch(\PDOException $e){
+			return null;
 		}
-
-		foreach( $map as $key ) {
-			if ( $key['from'] === $property ) return $key;
+		foreach($map as $key){
+			if($key['from']===$property)
+				return $key;
 		}
-		return NULL;
+		return n ull;
 	}
 
 	function getTables(){
