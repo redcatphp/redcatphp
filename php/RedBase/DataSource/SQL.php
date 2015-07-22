@@ -74,7 +74,7 @@ abstract class SQL extends DataSource{
 		if(!$this->tableExists($type)||!in_array($uniqTextKey,array_keys($this->getColumns($type))))
 			return false;
 		$table = $this->escTable($type);
-		return $this->getCell("SELECT {$primaryKey} FROM {$table} WHERE {$uniqTextKey}=?",[$id]);
+		return $this->getCell('SELECT '.$primaryKey.' FROM '.$table.' WHERE '.$uniqTextKey.'=?',[$id]);
 	}
 	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
 		if(isset($properties[$primaryKey]))
