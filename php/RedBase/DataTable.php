@@ -2,6 +2,16 @@
 namespace RedBase;
 use RedBase\Helper\Pagination;
 abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
+	private static $defaultEvents = [
+		'beforeCreate',
+		'beforeRead',
+		'beforeUpdate',
+		'beforeDelete',
+		'afterCreate',
+		'afterRead',
+		'afterUpdate',
+		'afterDelete',
+	];
 	private $events = [];	
 	protected $name;
 	protected $primaryKey;
@@ -14,6 +24,8 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		$this->primaryKey = $primaryKey;
 		$this->uniqTextKey = $uniqTextKey;
 		$this->dataSource = $dataSource;
+		foreach(self::$defaultEvents as $event)
+			$this->on($event);
 	}
 	function getPrimaryKey(){
 		return $this->primaryKey;
@@ -189,5 +201,11 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 			}
 		}
 		return $this;
+	}
+	static function setDefaultEvents(array $events){
+		self::$defaultEvents = $events;
+	}
+	static function getDefaultEvents(){
+		return self::$defaultEvents;
 	}
 }
