@@ -120,8 +120,7 @@ abstract class SQL extends DataSource{
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
 		$row = $this->getRow($sql,[$id]);
 		if($row){
-			$c = $this->findEntityClass($type);
-			$obj = new $c();
+			$obj = $this->entityFactory($type);
 			foreach($row as $k=>$v)
 				$obj->$k = $v;
 			return $obj;

@@ -58,10 +58,7 @@ class Facade{
 	}
 	
 	static function dispense($type){
-		$c = self::$redbaseCurrent->findEntityClass($type);
-		$row = new $c;
-		$row->_table = $type;
-		return $row;
+		return self::$redbaseCurrent->entityFactory($type);
 	}
 	static function store($obj,$type=null){
 		$table = self::$redbaseCurrent->findEntityTable($obj,$type);

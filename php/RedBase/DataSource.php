@@ -9,6 +9,7 @@ abstract class DataSource implements \ArrayAccess{
 	protected $primaryKey;
 	protected $uniqTextKey;
 	protected $tableMap = [];
+	protected $entityFactory;
 	protected static $phpReservedKeywords = ['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__'];
 	function __construct(RedBase $redbase,$type,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->redbase = $redbase;
@@ -60,6 +61,19 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		return $table;
+	}
+	function arrayToEntity(array $array,$default=null){
+		if(isset($array['_table']))
+			$type = $array['_table'];
+		elseif($default)
+			$type = $default;
+		else
+			$type = $this->entityClassDefault;
+		$obj = $this->entityFactory($type);
+		foreach($array as $k=>$v){
+			$obj->$k = $v;
+		}
+		return $obj;
 	}
 	function offsetGet($k){
 		if(!isset($this->tableMap[$k]))
@@ -138,7 +152,9 @@ abstract class DataSource implements \ArrayAccess{
 			}
 			if($relation){
 				switch($relation){
-					case 'one':						
+					case 'one':
+						if(is_array($v))
+							$v = $this->arrayToEntity($v,$k);
 						$t = $this->findEntityTable($v,$k);
 						$pk = $this[$t]->getPrimaryKey();
 						if(isset($v->$pk))
@@ -153,6 +169,8 @@ abstract class DataSource implements \ArrayAccess{
 					break;
 					case 'many':
 						foreach($v as $val){
+							if(is_array($val))
+								$val = $this->arrayToEntity($val,$k);
 							$t = $this->findEntityTable($val,$k);
 							$rc = $type.'_'.$primaryKey;
 							$val->$rc = &$obj->$primaryKey;
@@ -166,13 +184,14 @@ abstract class DataSource implements \ArrayAccess{
 						$inter = [$type,$k];
 						sort($inter);
 						$inter = implode('_',$inter);
-						$interc = $this->findEntityClass($inter);
 						$rc = $type.'_'.$primaryKey;
 						foreach($v as $val){
+							if(is_array($val))
+								$val = $this->arrayToEntity($val,$k);
 							$t = $this->findEntityTable($val,$k);
 							$pk = $this[$t]->getPrimaryKey();
 							$rc2 = $k.'_'.$pk;
-							$interm = new $interc();
+							$interm = $this->entityFactory($inter);
 							$interm->$rc = &$obj->$primaryKey;
 							$interm->$rc2 = &$val->$pk;
 							$postPut[$t][] = $val;
@@ -209,6 +228,22 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		return $r;
+	}
+	
+	function entityFactory($name){
+		if($this->entityFactory){
+			$row = $this->entityFactory($name);
+		}
+		else{
+			$c = $this->findEntityClass($name);
+			$row = new $c;
+		}
+		$row->_table = $name;
+		return $row;
+	}
+	
+	function setEntityFactory($factory){
+		$this->entityFactory = $factory;
 	}
 	
 	//abstract function many2one($obj,$type){}

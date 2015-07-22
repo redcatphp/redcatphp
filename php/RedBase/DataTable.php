@@ -41,9 +41,8 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	}
 	function offsetSet($id,$obj){
 		if(is_array($obj)){
-			$c = $this->dataSource->findEntityClass($this->name);
 			$tmp = $obj;
-			$obj = new $c();
+			$obj = $this->dataSource->entityFactory($this->name);
 			foreach($tmp as $k=>$v)
 				$obj->$k = $v;
 			unset($tmp);

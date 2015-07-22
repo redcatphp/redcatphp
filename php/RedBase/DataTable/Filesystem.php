@@ -19,8 +19,7 @@ class Filesystem extends DataTable{
 	function current(){
 		$iterator = $this->directoryIterator->current();
 		if($iterator){
-			$c = $this->dataSource->findEntityClass($this->name);
-			$obj = new $c();
+			$obj = $this->dataSource->entityFactory($this->name);
 			$obj->{$this->primaryKey} = $iterator->getFilename();
 			$obj->iterator = $iterator;
 			if($this->useCache)

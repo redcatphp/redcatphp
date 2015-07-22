@@ -48,8 +48,7 @@ class SQL extends DataTable{
 	function next(){
 		$this->row = $row = $this->stmt->fetch();
 		if($row){
-			$c = $this->dataSource->findEntityClass($this->name);
-			$this->row = new $c();
+			$this->row = $this->dataSource->entityFactory($this->name);
 			foreach($row as $k=>$v)
 				$this->row->$k = $v;
 			if($this->useCache)
