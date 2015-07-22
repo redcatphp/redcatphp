@@ -60,11 +60,11 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 			unset($tmp);
 		}
 		if(!$id){
-			$id = $this->createRow($obj);
+			$id = $this->putRow($obj);
 			$obj->{$this->primaryKey} = $id;
 		}
 		else{
-			$this->updateRow($obj,$id);
+			$this->putRow($obj,$id);
 		}
 		if($this->useCache)
 			$this->data[$id] = $obj;
@@ -114,14 +114,11 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	function readId($id){
 		return $this->dataSource->readId($this->name,$id,$this->primaryKey,$this->uniqTextKey);
 	}
-	function createRow($obj){
-		return $this->dataSource->createRow($this->name,$obj,$this->primaryKey,$this->uniqTextKey);
-	}
 	function readRow($id){
 		return $this->dataSource->readRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);
 	}
-	function updateRow($obj,$id=null){
-		return $this->dataSource->updateRow($this->name,$obj,$id,$this->primaryKey,$this->uniqTextKey);
+	function putRow($obj,$id=null){
+		return $this->dataSource->putRow($this->name,$obj,$id,$this->primaryKey,$this->uniqTextKey);
 	}
 	function deleteRow($id){
 		return $this->dataSource->deleteRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);

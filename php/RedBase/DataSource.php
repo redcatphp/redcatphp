@@ -97,10 +97,6 @@ abstract class DataSource implements \ArrayAccess{
 		return new $c($k,$primaryKey,$uniqTextKey,$this);
 	}
 	function construct(array $config=[]){}
-	function createRow($type,$obj,$primaryKey='id',$uniqTextKey='uniq'){
-		$obj->_type = $type;
-		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
-	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		//$this->trigger($type,'beforeRead',$obj);
 		//$this->trigger($type,'afterRead',$obj);
@@ -110,10 +106,6 @@ abstract class DataSource implements \ArrayAccess{
 		if($row)
 			$row->_type = $type;
 		return $row;
-	}
-	function updateRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		$obj->_type = $type;
-		return $this->putRow($type,$obj,$id,$primaryKey,$uniqTextKey);
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		//if(is_object($id)){
@@ -138,6 +130,7 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$obj->_type = $type;
 		$properties = [];
 		$postPut = [];
 		$fk = [];
@@ -230,7 +223,7 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		
-		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
+		if(isset($id)&&$uniqTextKey&&!self::canBeTreatedAsInt($id)){
 			$properties[$uniqTextKey] = $id;
 		}
 		
