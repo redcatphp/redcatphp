@@ -98,35 +98,35 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function construct(array $config=[]){}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		//$this->trigger($type,'beforeRead',$obj);
-		//$this->trigger($type,'afterRead',$obj);
 		if(!$this->tableExists($type))
-			return false;
-		$row = $this->readQuery($type,$id,$primaryKey,$uniqTextKey);
-		if($row)
-			$row->_type = $type;
-		return $row;
+			return;
+		$obj = $this->entityFactory($type);
+		$this->trigger($type,'beforeRead',$obj);
+		$obj = $this->readQuery($type,$id,$primaryKey,$uniqTextKey,$obj);
+		if($obj){
+			$obj->_type = $type;
+			$this->trigger($type,'afterRead',$obj);
+		}
+		return $obj;
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
-		//if(is_object($id)){
-			//$obj = $id;
-			//if(isset($obj->$primaryKey))
-				//$id = $obj->$primaryKey;
-			//elseif(isset($obj->$uniqTextKey))
-				//$id = $obj->$uniqTextKey;
-		//}
-		//else{
-			//$obj = $this->entityFactory($this->name);
-		//}
-		//$this->trigger($this->name,'beforeDelete',$obj);
-		//$r = $this->dataSource->deleteRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);
-		//if($r)
-			//$this->trigger($this->name,'afterDelete',$obj);
-		//return $r;
-		
 		if(!$this->tableExists($type))
-			return false;
-		return $this->deleteQuery($type,$id,$primaryKey,$uniqTextKey);
+			return;
+		if(is_object($id)){
+			$obj = $id;
+			if(isset($obj->$primaryKey))
+				$id = $obj->$primaryKey;
+			elseif(isset($obj->$uniqTextKey))
+				$id = $obj->$uniqTextKey;
+		}
+		else{
+			$obj = $this->entityFactory($type);
+		}
+		$this->trigger($type,'beforeDelete',$obj);
+		$r = $this->deleteQuery($type,$id,$primaryKey,$uniqTextKey);
+		if($r)
+			$this->trigger($type,'afterDelete',$obj);
+		return $r;
 	}
 	
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
@@ -236,12 +236,16 @@ abstract class DataSource implements \ArrayAccess{
 		
 		
 		if(isset($id)){
+			$this->trigger($type,'beforeUpdate',$obj);
 			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
+			$this->trigger($type,'afterUpdate',$obj);
 		}
 		else{
 			if(array_key_exists($primaryKey,$properties))
 				unset($properties[$primaryKey]);
+			$this->trigger($type,'beforeCreate',$obj);
 			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
+			$this->trigger($type,'afterCreate',$obj);
 		}
 		$obj->{$primaryKey} = $r;
 		foreach($postPut as $k=>$v){

@@ -102,7 +102,7 @@ abstract class SQL extends DataSource{
 			$this->adaptPrimaryKey($type,$id,$primaryKey);
 		return $id;
 	}
-	function readQuery($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+	function readQuery($type,$id,$primaryKey='id',$uniqTextKey='uniq',$obj){
 		if($uniqTextKey&&!self::canBeTreatedAsInt($id))
 			$primaryKey = $uniqTextKey;
 		$table = $this->escTable($type);
@@ -111,7 +111,6 @@ abstract class SQL extends DataSource{
 		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} WHERE {$primaryKey}=? LIMIT 1";
 		$row = $this->getRow($sql,[$id]);
 		if($row){
-			$obj = $this->entityFactory($type);
 			foreach($row as $k=>$v)
 				$obj->$k = $v;
 			return $obj;
