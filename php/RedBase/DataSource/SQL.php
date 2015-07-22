@@ -72,20 +72,11 @@ abstract class SQL extends DataSource{
 	}
 	function readId($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
 		if(!$this->tableExists($type)||!in_array($uniqTextKey,array_keys($this->getColumns($type))))
-			return false;
+			return;
 		$table = $this->escTable($type);
 		return $this->getCell('SELECT '.$primaryKey.' FROM '.$table.' WHERE '.$uniqTextKey.'=?',[$id]);
 	}
 	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
-		if(isset($properties[$primaryKey]))
-			return $this->updateQuery($type,$properties,$properties[$primaryKey],$primaryKey,$uniqTextKey);
-		if($uniqTextKey&&isset($properties[$uniqTextKey])){
-			$id = $this->readId($type,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
-			if($id)
-				return $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
-		}
-		if(array_key_exists($primaryKey,$properties))
-			unset($properties[$primaryKey]);
 		$insertcolumns = array_keys($properties);
 		$insertvalues = array_values($properties);
 		$default = $this->defaultValue;
@@ -127,21 +118,14 @@ abstract class SQL extends DataSource{
 		}
 	}
 	function updateQuery($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
-		$uniqTexting = false;
-		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
-			$uniqTexting = true;
-			$properties[$uniqTextKey] = $id;
-			$id = $this->readId($type,$id,$primaryKey,$uniqTextKey);
-		}
-		if(!$id)
-			return $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
 		if(!$this->tableExists($type))
-			return false;
+			return;
 		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
-			if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
+			//if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
+			if($k==$primaryKey)
 				continue;
 			if(isset($this->sqlFiltersWrite[$type][$k]))
 				$fields[] = ' '.$this->esc($k).' = '.$this->sqlFiltersWrite[$type][$k];
@@ -623,10 +607,6 @@ abstract class SQL extends DataSource{
 	static function startsWithZeros($value){
 		$value = strval($value);
 		return strlen( $value ) > 1 && strpos( $value, '0' ) === 0 && strpos( $value, '0.' ) !== 0;
-	}
-	
-	static function canBeTreatedAsInt( $value ){
-		return (bool) ( strval( $value ) === strval( intval( $value ) ) );
 	}
 	
 	protected static function makeFKLabel($from, $type, $to){

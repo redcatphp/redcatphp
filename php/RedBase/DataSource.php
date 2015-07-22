@@ -102,6 +102,8 @@ abstract class DataSource implements \ArrayAccess{
 		return $this->putRow($type,$obj,null,$primaryKey,$uniqTextKey);
 	}
 	function readRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		//$this->trigger($type,'beforeRead',$obj);
+		//$this->trigger($type,'afterRead',$obj);
 		if(!$this->tableExists($type))
 			return false;
 		$row = $this->readQuery($type,$id,$primaryKey,$uniqTextKey);
@@ -114,6 +116,22 @@ abstract class DataSource implements \ArrayAccess{
 		return $this->putRow($type,$obj,$id,$primaryKey,$uniqTextKey);
 	}
 	function deleteRow($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		//if(is_object($id)){
+			//$obj = $id;
+			//if(isset($obj->$primaryKey))
+				//$id = $obj->$primaryKey;
+			//elseif(isset($obj->$uniqTextKey))
+				//$id = $obj->$uniqTextKey;
+		//}
+		//else{
+			//$obj = $this->entityFactory($this->name);
+		//}
+		//$this->trigger($this->name,'beforeDelete',$obj);
+		//$r = $this->dataSource->deleteRow($this->name,$id,$this->primaryKey,$this->uniqTextKey);
+		//if($r)
+			//$this->trigger($this->name,'afterDelete',$obj);
+		//return $r;
+		
 		if(!$this->tableExists($type))
 			return false;
 		return $this->deleteQuery($type,$id,$primaryKey,$uniqTextKey);
@@ -211,10 +229,25 @@ abstract class DataSource implements \ArrayAccess{
 				$properties[$k] = $v;
 			}
 		}
+		
+		if($uniqTextKey&&!self::canBeTreatedAsInt($id)){
+			$properties[$uniqTextKey] = $id;
+		}
+		
+		if(isset($properties[$primaryKey])){
+			$id = $properties[$primaryKey];
+		}
+		elseif($uniqTextKey&&isset($properties[$uniqTextKey])){
+			$id = $this->readId($type,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
+		}
+		
+		
 		if(isset($id)){
 			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
 		}
 		else{
+			if(array_key_exists($primaryKey,$properties))
+				unset($properties[$primaryKey]);
 			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
 		}
 		$obj->{$primaryKey} = $r;
@@ -294,13 +327,18 @@ abstract class DataSource implements \ArrayAccess{
 		if(func_num_args()<2){
 			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
 			$type = $this->findEntityTable($obj);
-			$pk = $this[$type]->getPrimaryKey();
-			$id = $obj->$pk;
+			//$pk = $this[$type]->getPrimaryKey();
+			//$id = $obj->$pk;
+			$id = $obj;
 		}
 		else{
 			list($type,$id) = func_get_args();
 		}
 		return $this[$type]->offsetUnset($id);
+	}
+	
+	static function canBeTreatedAsInt($value){
+		return (bool)(strval($value)===strval(intval($value)));
 	}
 	
 	//abstract function many2one($obj,$type){}
