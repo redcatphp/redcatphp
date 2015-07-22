@@ -56,9 +56,10 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		}
 		if($this->useCache)
 			$this->data[$id] = $obj;
+		return $obj;
 	}
 	function offsetUnset($id){
-		$this->deleteRow($id);
+		return $this->deleteRow($id);
 	}
 	function rewind(){
 		reset($this->data);
@@ -175,13 +176,15 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		return $this;
     }
 	function trigger($event, $row){
-		if(isset($this->events[$event])){
-			foreach($this->events[$event] as $calls){
-				foreach($calls as $call){
-					if(is_string($call))
-						call_user_func([$row,$call], $this);
-					else
-						call_user_func($call, $row, $this);
+		if($row instanceof Observer){
+			if(isset($this->events[$event])){
+				foreach($this->events[$event] as $calls){
+					foreach($calls as $call){
+						if(is_string($call))
+							call_user_func([$row,$call], $this);
+						else
+							call_user_func($call, $row, $this);
+					}
 				}
 			}
 		}
