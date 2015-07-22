@@ -61,16 +61,7 @@ class Sqlite extends SQL{
 		$t['columns'][$column] = $this->typeno_sqltype[$datatype];
 		$this->putTable($t);
 	}
-	
-	/**
-	 * Puts a table. Updates the table structure.
-	 * In SQLite we can't change columns, drop columns, change or add foreign keys so we
-	 * have a table-rebuild function. You simply load your table with getTable(), modify it and
-	 * then store it with putTable()...
-	 *
-	 * @param array $tableMap information array
-	 */
-	protected function putTable( $tableMap ){
+	protected function putTable( $tableMap ){ //In SQLite we can't change columns, drop columns, change or add foreign keys so we have a table-rebuild function. You simply load your table with getTable(), modify it and then store it with putTable()
 		$type = $tableMap['name'];
 		$table = $this->prefixTable($type);
 		$q     = [];
@@ -150,20 +141,6 @@ class Sqlite extends SQL{
 		}
 		return $keyInfoList;
 	}
-	/**
-	 * Adds a foreign key to a type
-	 *
-	 * @param  string  $type        type you want to modify table of
-	 * @param  string  $targetType  target type
-	 * @param  string  $field       field of the type that needs to get the fk
-	 * @param  string  $targetField field where the fk needs to point to
-	 * @param  integer $buildopt    0 = NO ACTION, 1 = ON DELETE CASCADE
-	 *
-	 * @return boolean $didIt
-	 *
-	 * @note: cant put this in try-catch because that can hide the fact
-	 *      that database has been damaged.
-	 */
 	function addFK( $type, $targetType, $property, $targetProperty, $constraint = false ){
 		$table           = $this->prefixTable( $type );
 		$targetTable     = $this->prefixTable( $targetType );
@@ -227,7 +204,6 @@ class Sqlite extends SQL{
 			return false;
 		}
 	}
-	
 	function clear($type){
 		$table = $this->escTable($type);
 		$this->execute('DELETE FROM '.$table);
@@ -251,7 +227,6 @@ class Sqlite extends SQL{
 		}
 		$this->execute('PRAGMA foreign_keys = 1 ');
 	}
-	
 	protected function explain($sql,$bindings=[]){
 		$sql = ltrim($sql);
 		if(!in_array(strtoupper(substr($sql,0,6)),['SELECT','DELETE','INSERT','UPDATE']))
