@@ -47,8 +47,12 @@ class SqlLogger {
 		if ( is_null( $value ) ) $value = 'NULL';
 		if(is_numeric( $value ))
 			$value = str_replace(',','.',$value);
-		elseif ( $value !== 'NULL')
-			$value = "'".str_replace("'","\'",$value)."'";
+		elseif ( $value !== 'NULL'){
+			if($this->html)
+				$value = "'".htmlentities($value)."'";
+			else
+				$value = "'".str_replace("'","\'",$value)."'";
+		}
 		return $value;
 	}
 	protected function output( $str, $wrap=true ){
