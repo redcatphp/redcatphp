@@ -5,7 +5,7 @@ use RedBase\SqlComposer\Select;
 class SQL extends DataTable{
 	private $stmt;
 	private $row;
-	private $select;
+	protected $select;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);		
 		$this->select = $this->createSelect();
