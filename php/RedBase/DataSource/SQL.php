@@ -34,6 +34,7 @@ abstract class SQL extends DataSource{
 	protected $tablePrefix;
 	protected $sqlFiltersWrite = [];
 	protected $sqlFiltersRead = [];
+	protected $ftsTableSuffix = '_fulltext_';
 	
 	private $cacheTables;
 	private $cacheColumns = [];

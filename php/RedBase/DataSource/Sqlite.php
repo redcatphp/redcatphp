@@ -7,7 +7,6 @@ class Sqlite extends SQL{
 	const C_DATATYPE_TEXT      = 2;
 	const C_DATATYPE_SPECIFIED = 99;
 	protected $quoteCharacter = '`';
-	protected $ftsTableSuffix = '_fulltext_';
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
