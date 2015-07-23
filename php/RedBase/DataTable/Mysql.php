@@ -7,9 +7,27 @@ class Mysql extends SQL{
 		else
 			return call_user_func_array([$this,'fullTextSearchMyISAM'],func_get_args());
 	}
-	function fullTextSearchInnoDB($text,$columns=[]){
+	function fullTextSearchInnoDB($text,$mode='',$columns=[]){
+		if($mode){
+			switch(strtoupper($mode)){
+				case 'EXP':
+				case 'EXPANSION':
+				case 'QUERY EXPANSION':
+				case 'WITH QUERY EXPANSION':
+					$mode = 'WITH QUERY EXPANSION';
+				break;
+				case 'BOOL':
+				case 'BOOLEAN':
+				case 'IN BOOLEAN MODE':
+					$mode = 'IN BOOLEAN MODE';
+				break;
+				default
+					$mode = '';
+				break;
+			}
+		}
 		$this->dataSource->addFtsIndex($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
-		$this->where('MATCH(`'.implode('`,`',$columns).'`) AGAINST (?)',[$text]);
+		$this->where('MATCH(`'.implode('`,`',$columns).'`) AGAINST (? '.$mode.')',[$text]);
 	}
 	function fullTextSearchMyISAM($text){
 		
