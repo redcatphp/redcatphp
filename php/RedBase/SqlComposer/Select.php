@@ -8,7 +8,7 @@ class Select extends Where {
 	protected $order_by = [];
 	protected $sort = [];
 	protected $limit;
-	protected $offset = 0;
+	protected $offset;
 	function __construct($mainTable = null,$quoteCharacter = '"', $tablePrefix = ''){
 		parent::__construct($mainTable,$quoteCharacter, $tablePrefix);
 	}
