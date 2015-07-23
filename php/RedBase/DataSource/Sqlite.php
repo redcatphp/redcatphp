@@ -6,6 +6,7 @@ class Sqlite extends SQL{
 	const C_DATATYPE_TEXT      = 2;
 	const C_DATATYPE_SPECIFIED = 99;
 	protected $quoteCharacter = '`';
+	protected $ftsTableSuffix = '_fulltext_';
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -240,5 +241,33 @@ class Sqlite extends SQL{
 			$i++;
 			return str_repeat('  ',$i-1).implode('|',$entry);;
 		}, $explain));
+	}
+	function getFtsTableSuffix(){
+		return $this->ftsTableSuffix;
+	}
+	function makeAutoFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
+		if(!$this->tableExists($type.$this->ftsTableSuffix)){
+			$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
+			$table = $this->escTable($type);
+			if($fullTextSearchLocale)
+				$tokenize = 'icu '.$fullTextSearchLocale;
+			else
+				$tokenize = 'porter';
+			if(empty($columns)){
+				$sufxL = -1*strlen($this->ftsTableSuffix);
+				foreach($this->getColumns($type) as $col=>$type){
+					if(($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix)&&$type=='TEXT')
+						$columns[] = $col;
+				}
+			}
+			else{
+				foreach($columns as &$col){
+					$col = $this->esc($col);
+				}
+			}
+			$cols = '`'.implode('`,`',$columns).'`';
+			$this->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
+			$this->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$this->esc($primaryKey).','.$cols.' FROM '.$table);
+		}
 	}
 }

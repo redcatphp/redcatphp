@@ -13,31 +13,11 @@ class Sqlite extends SQL{
 	){
 		if($tokensNumber>64)
 			$tokensNumber = 64;
-		$sufx = '_fulltext_';
+		$sufx = $this->dataSource->getFtsTableSuffix();
 		$ftsTable = $this->dataSource->escTable($this->name.$sufx);
 		$table = $this->dataSource->escTable($this->name);
 		$pk = $this->dataSource->esc($this->primaryKey);
-		if(!$this->dataSource->tableExists($this->name.$sufx)){
-			if($this->fullTextSearchLocale)
-				$tokenize = 'icu '.$this->fullTextSearchLocale;
-			else
-				$tokenize = 'porter';
-			if(empty($columns)){
-				$sufxL = -1*strlen($sufx);
-				foreach($this->dataSource->getColumns($this->name) as $col=>$type){
-					if(($col==$this->uniqTextKey||substr($col,$sufxL)==$sufx)&&$type=='TEXT')
-						$columns[] = $col;
-				}
-			}
-			else{
-				foreach($columns as &$col){
-					$col = $this->dataSource->esc($col);
-				}
-			}
-			$cols = '`'.implode('`,`',$columns).'`';
-			$this->dataSource->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
-			$this->dataSource->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$this->dataSource->esc($this->primaryKey).','.$cols.' FROM '.$table);
-		}		
+		$this->dataSource->makeAutoFtsTable($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
 		$this->select("snippet($ftsTable,?,?,?,?,?) as _snippet",
 			[$start,$end,$sep,(int)$targetColumnIndex,(int)$tokensNumber]);
 		$this->select("docid as $pk");
