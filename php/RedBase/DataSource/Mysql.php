@@ -361,4 +361,11 @@ class Mysql extends SQL{
 		}
 		$this->execute('UNLOCK TABLES');
 	}
+	
+	function fulltextAvailableOnInnoDB(){
+		if($this->isMariaDB)
+			return version_compare($this->version,'10.0.5','>=');
+		else
+			return $this->version>=5.6;
+	}
 }
