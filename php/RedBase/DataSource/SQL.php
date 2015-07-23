@@ -644,14 +644,14 @@ abstract class SQL extends DataSource{
 		return $this->createTableQuery($type,$pk);
 	}
 	function addColumn($type,$column,$field){
-		if(isset($this->cacheColumns[$type])&&!isset($this->cacheColumns[$type][$column]))
-			$this->cacheColumns[$type][$column] = isset($this->typeno_sqltype[$field])?$this->typeno_sqltype[$field]:'';
+		if(isset($this->cacheColumns[$type]))
+			$this->cacheColumns[$type][$column] = (false!==$i=array_search($field,$this->sqltype_typeno))?$i:'';
 		return $this->addColumnQuery($type,$column,$field);
 	}
-	function changeColumn($type,$property,$dataType){
+	function changeColumn($type,$column,$field){
 		if(isset($this->cacheColumns[$type]))
-			$this->cacheColumns[$type][$property] = isset($this->typeno_sqltype[$dataType])?$this->typeno_sqltype[$dataType]:'';
-		return $this->changeColumnQuery($type,$property,$dataType);
+			$this->cacheColumns[$type][$column] = $this->cacheColumns[$type][$column] = (false!==$i=array_search($field,$this->sqltype_typeno))?$i:'';
+		return $this->changeColumnQuery($type,$column,$field);
 	}
 	
 	function drops(){
