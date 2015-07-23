@@ -1,5 +1,6 @@
 <?php
 namespace RedBase\DataSource;
+use RedBase\Exception;
 class Sqlite extends SQL{
 	const C_DATATYPE_INTEGER   = 0;
 	const C_DATATYPE_NUMERIC   = 1;
@@ -245,7 +246,7 @@ class Sqlite extends SQL{
 	function getFtsTableSuffix(){
 		return $this->ftsTableSuffix;
 	}
-	function makeAutoFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
+	function makeFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
 		if(!$this->tableExists($type.$this->ftsTableSuffix)){
 			$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
 			$table = $this->escTable($type);
@@ -253,21 +254,31 @@ class Sqlite extends SQL{
 				$tokenize = 'icu '.$fullTextSearchLocale;
 			else
 				$tokenize = 'porter';
+			$newCols = [];
 			if(empty($columns)){
 				$sufxL = -1*strlen($this->ftsTableSuffix);
 				foreach($this->getColumns($type) as $col=>$type){
-					if(($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix)&&$type=='TEXT')
+					if($type=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 						$columns[] = $col;
 				}
+				if(empty($columns))
+					throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 			}
 			else{
 				foreach($columns as &$col){
 					$col = $this->esc($col);
 				}
 			}
+			$pk = $this->esc($primaryKey);
 			$cols = '`'.implode('`,`',$columns).'`';
+			$newCols = 'new.`'.implode('`,new.`',$columns).'`';
+			$pTable = $this->prefixTable($type);
 			$this->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
-			$this->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$this->esc($primaryKey).','.$cols.' FROM '.$table);
+			$this->execute("CREATE TRIGGER {$pTable}_bu BEFORE UPDATE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.id; END;");
+			$this->execute("CREATE TRIGGER {$pTable}_bd BEFORE DELETE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.id; END;");
+			$this->execute("CREATE TRIGGER {$pTable}_au AFTER UPDATE ON {$table} BEGIN INSERT INTO {$ftsTable}(docid, {$cols}) VALUES(new.{$pk}, {$newCols}); END;");
+			$this->execute("CREATE TRIGGER {$pTable}_ad AFTER INSERT ON {$table} BEGIN INSERT INTO {$ftsTable}(docid, {$cols}) VALUES(new.{$pk}, {$newCols}); END;");
+			$this->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$pk.','.$cols.' FROM '.$table);
 		}
 	}
 }
