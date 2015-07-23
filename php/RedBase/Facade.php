@@ -61,6 +61,10 @@ class Facade{
 		return self::$currentDataSource->entityFactory($type);
 	}
 	
+	static function execute($sql,$binds=[]){
+		return self::$currentDataSource->execute($sql,$binds);
+	}
+	
 	static function on($type,$event,$call=null){
 		return self::$currentDataSource[$type]->on($event,$call);
 	}
