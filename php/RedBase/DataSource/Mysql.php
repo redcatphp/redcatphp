@@ -370,8 +370,18 @@ class Mysql extends SQL{
 			return $this->version>=5.6;
 	}
 	
+	function getFtsMap($type){
+		$table = $this->prefixTable($type);
+		$names = $this->getCol("SELECT GROUP_CONCAT(DISTINCT column_name) as name FROM information_schema.STATISTICS WHERE table_schema = (SELECT DATABASE()) AND table_name = '$table' and index_type = 'FULLTEXT'");
+		$map = [];
+		foreach($names as $name){
+			$map[] = explode(',',$name);
+		}
+		return $map;
+	}
 	function addFtsIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
 		$table = $this->escTable($type);
+		$ftsMap = $this->getFtsMap($type);
 		if(empty($columns)){
 			$sufxL = -1*strlen($this->ftsTableSuffix);
 			foreach($this->getColumns($type) as $col=>$type){
@@ -382,6 +392,7 @@ class Mysql extends SQL{
 			if(empty($columns))
 				throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 		}
-		$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT(`'.implode('`,`',$columns).'`)');
+		if(!in_array($columns,$ftsMap))
+			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT(`'.implode('`,`',$columns).'`)');
 	}
 }

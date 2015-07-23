@@ -9,7 +9,7 @@ class Mysql extends SQL{
 	}
 	function fullTextSearchInnoDB($text,$columns=[]){
 		$this->dataSource->addFtsIndex($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
-		$this->where('MATCH (`'.implode('`,`',$columns).'`) AGAINST (?)',[$text]);
+		$this->where('MATCH(`'.implode('`,`',$columns).'`) AGAINST (?)',[$text]);
 	}
 	function fullTextSearchMyISAM($text){
 		
