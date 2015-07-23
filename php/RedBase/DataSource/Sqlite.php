@@ -254,7 +254,6 @@ class Sqlite extends SQL{
 				$tokenize = 'icu '.$fullTextSearchLocale;
 			else
 				$tokenize = 'porter';
-			$newCols = [];
 			if(empty($columns)){
 				$sufxL = -1*strlen($this->ftsTableSuffix);
 				foreach($this->getColumns($type) as $col=>$type){
