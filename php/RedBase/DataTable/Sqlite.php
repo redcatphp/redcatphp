@@ -22,7 +22,7 @@ class Sqlite extends SQL{
 			[$start,$end,$sep,(int)$targetColumnIndex,(int)$tokensNumber]);
 		$this->select("docid as $pk");
 		$this->select("$table.*");
-		$this->from($ftsTable);
+		$this->join("$ftsTable ON $table.$pk=$ftsTable.rowid");
 		$this->unFrom($table);
 		$limit = $this->getLimit();
 		$offset = $this->getOffset();
