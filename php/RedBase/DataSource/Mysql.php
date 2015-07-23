@@ -46,7 +46,10 @@ class Mysql extends SQL{
 		parent::connect();
 		$serverVersion = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
 		$this->isMariaDB = strpos($serverVersion,'MariaDB')!==false;
-		$this->version = floatval($serverVersion);
+		if($this->isMariaDB)
+			$this->version = substr($serverVersion,0,strpos($serverVersion,'-'));
+		else
+			$this->version = floatval($serverVersion);
 		if(!$this->isMariaDB&&$this->version>=5.5)
 			$this->encoding =  'utf8mb4';
 		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES '.$this->encoding); //on every re-connect
