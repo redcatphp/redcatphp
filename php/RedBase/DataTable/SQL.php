@@ -56,7 +56,10 @@ class SQL extends DataTable{
 		}
 	}
 	function count(){
-		return $this->countSimple();
+		if($this->counterCall)
+			return call_user_func($this->counterCall,$this);
+		else
+			return $this->countSimple();
 	}
 	function countSimple(){
 		if(!$this->exists())
