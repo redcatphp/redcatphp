@@ -369,4 +369,19 @@ class Mysql extends SQL{
 		else
 			return $this->version>=5.6;
 	}
+	
+	function addFtsIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
+		$table = $this->escTable($type);
+		if(empty($columns)){
+			$sufxL = -1*strlen($this->ftsTableSuffix);
+			foreach($this->getColumns($type) as $col=>$type){
+				if((substr($type,0,7)=='varchar'||$type='text'||$type=='longtext')
+					&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+					$columns[] = $col;
+			}
+			if(empty($columns))
+				throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
+		}
+		$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT(`'.implode('`,`',$columns).'`)');
+	}
 }
