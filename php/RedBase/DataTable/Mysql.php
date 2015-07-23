@@ -21,13 +21,17 @@ class Mysql extends SQL{
 				case 'IN BOOLEAN MODE':
 					$mode = 'IN BOOLEAN MODE';
 				break;
-				default
+				default:
 					$mode = '';
 				break;
 			}
 		}
+		$table = $this->dataSource->escTable($this->name);
 		$this->dataSource->addFtsIndex($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
 		$this->where('MATCH(`'.implode('`,`',$columns).'`) AGAINST (? '.$mode.')',[$text]);
+		$this->select('MATCH(`'.implode('`,`',$columns).'`) AGAINST (? '.$mode.') AS _rank',[$text]);
+		$this->select($table.'.*');
+		$this->orderBy('_rank DESC');
 	}
 	function fullTextSearchMyISAM($text){
 		
