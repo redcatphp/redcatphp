@@ -28,10 +28,14 @@ class Mysql extends SQL{
 		}
 		$table = $this->dataSource->escTable($this->name);
 		$this->dataSource->addFtsIndex($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
-		$this->where('MATCH(`'.implode('`,`',$columns).'`) AGAINST (? '.$mode.')',[$text]);
-		$this->select('MATCH(`'.implode('`,`',$columns).'`) AGAINST (? '.$mode.') AS _rank',[$text]);
+		$cols = '`'.implode('`,`',$columns).'`';
+		$this->where('MATCH('.$cols.') AGAINST (? '.$mode.')',[$text]);
+		$this->select('MATCH('.$cols.') AGAINST (? '.$mode.') AS _rank',[$text]);
 		$this->select($table.'.*');
 		$this->orderBy('_rank DESC');
+		$this->setCounter(function()use($cols,$table,$text){
+			return $this->dataSource->getCell('SELECT COUNT(IF(MATCH ('.$cols.') AGAINST (?), 1, NULL)) FROM '.$table,[$text]);
+		});
 	}
 	function fullTextSearchMyISAM($text){
 		
