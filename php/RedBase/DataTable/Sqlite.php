@@ -8,7 +8,9 @@ class Sqlite extends SQL{
 			throw new Exception('Locale "'.$locale.'" is not a valid locale name');
 		$this->fullTextSearchLocale = $locale;
 	}
-	function fullTextSearch($text,$tokensNumber=30,$columns=[]){
+	function fullTextSearch($text,$tokensNumber=30,$targetColumnIndex=-1,
+		$start='<b>',$end='</b>',$sep='<b>...</b>',$columns=[]
+	){
 		if($tokensNumber>64)
 			$tokensNumber = 64;
 		$sufx = '_fulltext_';
@@ -36,7 +38,8 @@ class Sqlite extends SQL{
 			$this->dataSource->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
 			$this->dataSource->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$this->dataSource->esc($this->primaryKey).','.$cols.' FROM '.$table);
 		}		
-		$this->select("snippet($ftsTable,'<b>','</b>','<b>...</b>',-1,".((int)$tokensNumber).") as _snippet");
+		$this->select("snippet($ftsTable,?,?,?,?,?) as _snippet",
+			[$start,$end,$sep,(int)$targetColumnIndex,(int)$tokensNumber]);
 		$this->select("docid as $pk");
 		$this->select("$table.*");
 		$this->from($ftsTable);
