@@ -19,6 +19,7 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	protected $dataSource;
 	protected $data = [];
 	protected $useCache = true;
+	protected $counterCall;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		$this->name = $name;
 		$this->primaryKey = $primaryKey;
@@ -89,7 +90,10 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		return key($this->data)!==null;
 	}
 	function count(){
-		return count($this->data);
+		if($this->counterCall)
+			return call_user_func($this->counterCall,$this);
+		else
+			return count($this->data);
 	}
 	function paginate($page,$limit=2,$href='',$prefix='?page=',$maxCols=6){
 		$pagination = new Pagination();
@@ -204,5 +208,8 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	}
 	static function getDefaultEvents(){
 		return self::$defaultEvents;
+	}
+	function setCounter($call){
+		$this->counterCall = $call;
 	}
 }
