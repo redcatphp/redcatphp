@@ -7,7 +7,7 @@ class Select extends Where {
 	protected $having = [];
 	protected $order_by = [];
 	protected $sort = [];
-	protected $limit = 0;
+	protected $limit;
 	protected $offset = 0;
 	function __construct($mainTable = null,$quoteCharacter = '"', $tablePrefix = ''){
 		parent::__construct($mainTable,$quoteCharacter, $tablePrefix);
