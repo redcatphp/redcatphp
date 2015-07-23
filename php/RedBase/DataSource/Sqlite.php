@@ -262,11 +262,6 @@ class Sqlite extends SQL{
 				if(empty($columns))
 					throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 			}
-			else{
-				foreach($columns as &$col){
-					$col = $this->esc($col);
-				}
-			}
 			$pk = $this->esc($primaryKey);
 			$cols = '`'.implode('`,`',$columns).'`';
 			$newCols = 'new.`'.implode('`,new.`',$columns).'`';
