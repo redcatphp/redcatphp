@@ -338,10 +338,10 @@ abstract class DataSource implements \ArrayAccess{
 		return (bool)(strval($value)===strval(intval($value)));
 	}
 	
-	static function snippet($text,$query,$start='<b>',$end='</b>',$sep='<b>...</b>'){
+	static function snippet($text,$query,$tokens=15,$start='<b>',$end='</b>',$sep=' <b>...</b> '){
 		$words = implode('|', explode(' ', preg_quote($query)));
 		$s = '\s\x00-/:-@\[-`{-~'; //character set for start/end of words
-		preg_match_all('#(?<=['.$s.']).{1,30}(('.$words.').{1,30})+(?=['.$s.'])#uis', $text, $matches, PREG_SET_ORDER);
+		preg_match_all('#(?<=['.$s.']).{1,'.$tokens.'}(('.$words.').{1,'.$tokens.'})+(?=['.$s.'])#uis', $text, $matches, PREG_SET_ORDER);
 		$results = [];
 		foreach($matches as $line)
 			$results[] = $line[0];
