@@ -65,6 +65,13 @@ class Facade{
 		return self::$currentDataSource->execute($sql,$binds);
 	}
 	
+	static function getDatabase(){
+		return self::$currentDataSource;
+	}
+	static function getTable($type){
+		return self::$currentDataSource[$type];
+	}
+	
 	static function on($type,$event,$call=null){
 		return self::$currentDataSource[$type]->on($event,$call);
 	}
