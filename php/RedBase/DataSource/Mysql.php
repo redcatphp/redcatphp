@@ -367,7 +367,6 @@ class Mysql extends SQL{
 	}
 	
 	function fulltextAvailableOnInnoDB(){
-		return false;
 		$this->connect();
 		if($this->isMariaDB)
 			return version_compare($this->version,'10.0.5','>=');
