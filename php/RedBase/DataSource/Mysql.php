@@ -372,12 +372,12 @@ class Mysql extends SQL{
 	
 	function getFtsMap($type){
 		$table = $this->prefixTable($type);
-		$names = $this->getCol("SELECT GROUP_CONCAT(DISTINCT column_name) as name FROM information_schema.STATISTICS WHERE table_schema = (SELECT DATABASE()) AND table_name = '$table' and index_type = 'FULLTEXT'");
+		$all = $this->getAll("SELECT GROUP_CONCAT(DISTINCT column_name) AS columns, INDEX_NAME AS name FROM information_schema.STATISTICS WHERE table_schema = (SELECT DATABASE()) AND table_name = '$table' AND index_type = 'FULLTEXT'");
 		$map = [];
-		foreach($names as $name){
-			$col = explode(',',$name);
+		foreach($all as $index){
+			$col = explode(',',$index['columns']);
 			sort($col);
-			$map[] = $col;
+			$map[$index['name']] = $col;
 		}
 		return $map;
 	}
@@ -387,15 +387,25 @@ class Mysql extends SQL{
 		if(empty($columns)){
 			$sufxL = -1*strlen($this->ftsTableSuffix);
 			foreach($this->getColumns($type) as $col=>$type){
+				debug(substr($type,0,7));
 				if((substr($type,0,7)=='varchar'||$type='text'||$type=='longtext')
 					&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 					$columns[] = $col;
 			}
 			if(empty($columns))
 				throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
+			$indexName = '_auto';
+			sort($columns);
+			if(isset($ftsMap[$indexName])&&$ftsMap[$indexName]!=$columns){
+				$this->execute('ALTER TABLE '.$table.' DROP INDEX `'.$indexName.'`');
+				unset($ftsMap[$indexName]);
+			}
 		}
-		sort($columns);
+		else{
+			sort($columns);
+			$indexName = implode('_',$columns);
+		}
 		if(!in_array($columns,$ftsMap))
-			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT `'.implode('_',$columns).'` (`'.implode('`,`',$columns).'`)');
+			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT `'.$indexName.'` (`'.implode('`,`',$columns).'`)');
 	}
 }
