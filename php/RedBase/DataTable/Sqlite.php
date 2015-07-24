@@ -17,7 +17,6 @@ class Sqlite extends SQL{
 			[$start,$end,$sep,(int)$targetColumnIndex,(int)$tokensNumber]);
 		$this->select("docid as $pk");
 		$this->select("$table.*");
-		$this->join("$ftsTable ON $table.$pk=$ftsTable.rowid");
 		$this->unFrom($table);
 		$limit = $this->getLimit();
 		$offset = $this->getOffset();
@@ -32,6 +31,7 @@ class Sqlite extends SQL{
 				ORDER BY rank DESC
 				$limit $offset
 		) AS _ranktable USING($pk)",[$text]);
+		$this->join("$ftsTable ON $table.$pk=$ftsTable.rowid");
 		$this->where($ftsTable.' MATCH ?',[$text]);
 		$this->orderBy('_ranktable.rank DESC');
 		$this->setCounter(function()use($ftsTable,$text){
