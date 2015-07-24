@@ -107,8 +107,9 @@ class Mysql extends SQL{
 	}
 	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
+		$pk = $this->esc($pk);
 		$encoding = $this->getEncoding();
-		$this->execute('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( id )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+		$this->execute('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( '.$pk.' )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
 	function addColumnQuery($type,$column,$field){
 		$table  = $type;
@@ -408,4 +409,5 @@ class Mysql extends SQL{
 		if(!in_array($columns,$ftsMap))
 			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT `'.$indexName.'` (`'.implode('`,`',$columns).'`)');
 	}
+	
 }
