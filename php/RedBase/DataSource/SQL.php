@@ -735,6 +735,9 @@ abstract class SQL extends DataSource{
 		return $table;
 	}
 	
+	function getFtsTableSuffix(){
+		return $this->ftsTableSuffix;
+	}
 	
 	abstract function scanType($value,$flagSpecial=false);
 	
