@@ -375,7 +375,9 @@ class Mysql extends SQL{
 		$names = $this->getCol("SELECT GROUP_CONCAT(DISTINCT column_name) as name FROM information_schema.STATISTICS WHERE table_schema = (SELECT DATABASE()) AND table_name = '$table' and index_type = 'FULLTEXT'");
 		$map = [];
 		foreach($names as $name){
-			$map[] = explode(',',$name);
+			$col = explode(',',$name);
+			sort($col);
+			$map[] = $col;
 		}
 		return $map;
 	}
@@ -392,7 +394,8 @@ class Mysql extends SQL{
 			if(empty($columns))
 				throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 		}
+		sort($columns);
 		if(!in_array($columns,$ftsMap))
-			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT(`'.implode('`,`',$columns).'`)');
+			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT `'.implode('_',$columns).'` (`'.implode('`,`',$columns).'`)');
 	}
 }
