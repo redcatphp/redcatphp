@@ -255,7 +255,7 @@ class Sqlite extends SQL{
 				$tokenize = 'porter';
 			if(empty($columns)){
 				$sufxL = -1*strlen($this->ftsTableSuffix);
-				foreach($this->getColumns($type) as $col=>$type){
+				foreach($this->getColumns($type) as $col=>$colType){
 					if($type=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 						$columns[] = $col;
 				}
