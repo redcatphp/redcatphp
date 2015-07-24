@@ -112,12 +112,6 @@ class SQL extends DataTable{
 		if(isset($this->select))
 			$this->select = clone $this->select;
 	}
-
-	function setFullTextSearchLocale($locale){
-		if(!preg_match('/[a-z]{2,3}\_[A-Z]{2,3}$/',$locale))
-			throw new Exception('Locale "'.$locale.'" is not a valid locale name');
-		$this->fullTextSearchLocale = $locale;
-	}
 	
 	function tableJoin($table, $join, array $params = null){
 		return $this->select->tableJoin($table, $join, $params);
