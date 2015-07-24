@@ -267,8 +267,8 @@ class Sqlite extends SQL{
 			$newCols = 'new.`'.implode('`,new.`',$columns).'`';
 			$pTable = $this->prefixTable($type);
 			$this->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
-			$this->execute("CREATE TRIGGER {$pTable}_bu BEFORE UPDATE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.id; END;");
-			$this->execute("CREATE TRIGGER {$pTable}_bd BEFORE DELETE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.id; END;");
+			$this->execute("CREATE TRIGGER {$pTable}_bu BEFORE UPDATE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.{$pk}; END;");
+			$this->execute("CREATE TRIGGER {$pTable}_bd BEFORE DELETE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=old.{$pk}; END;");
 			$this->execute("CREATE TRIGGER {$pTable}_au AFTER UPDATE ON {$table} BEGIN INSERT INTO {$ftsTable}(docid, {$cols}) VALUES(new.{$pk}, {$newCols}); END;");
 			$this->execute("CREATE TRIGGER {$pTable}_ad AFTER INSERT ON {$table} BEGIN INSERT INTO {$ftsTable}(docid, {$cols}) VALUES(new.{$pk}, {$newCols}); END;");
 			$this->execute('INSERT INTO '.$ftsTable.'(docid,'.$cols.') SELECT '.$pk.','.$cols.' FROM '.$table);
