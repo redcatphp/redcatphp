@@ -1,5 +1,6 @@
 <?php
 namespace RedBase\DataSource;
+use RedBase\Exception;
 class Mysql extends SQL{
 	const C_DATATYPE_BOOL             = 0;
 	const C_DATATYPE_UINT32           = 1;
@@ -361,9 +362,12 @@ class Mysql extends SQL{
 			$this->execute('ALTER TABLE `'.$fk['table'].'` ADD FOREIGN KEY (`'.$fk['column'].'`) REFERENCES '.$table.' ('.$pk.') ON DELETE '.$fk['on_delete'].' ON UPDATE '.$fk['on_update']);
 		}
 		$this->execute('UNLOCK TABLES');
+		if($this->tableExists($type.$this->ftsTableSuffix))
+			$this->execute('ALTER TABLE '.$this->escTable($type.$this->ftsTableSuffix).' CHANGE '.$pk.' '.$pk.' bigint(20) unsigned NOT NULL AUTO_INCREMENT');
 	}
 	
 	function fulltextAvailableOnInnoDB(){
+		return false;
 		$this->connect();
 		if($this->isMariaDB)
 			return version_compare($this->version,'10.0.5','>=');
@@ -382,22 +386,26 @@ class Mysql extends SQL{
 		}
 		return $map;
 	}
-	function addFtsIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
+	function autoFillTextColumns($type,$uniqTextKey){
+		$sufxL = -1*strlen($this->ftsTableSuffix);
+		$columns = [];
+		foreach($this->getColumns($type) as $col=>$colType){
+			if((substr($colType,0,7)=='varchar'||$colType=='text'||$colType=='longtext')
+				&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+				$columns[] = $col;
+		}
+		return $columns;
+	}
+	function addFtsIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq'){
 		$table = $this->escTable($type);
 		$ftsMap = $this->getFtsMap($type);
 		if(empty($columns)){
-			$sufxL = -1*strlen($this->ftsTableSuffix);
-			foreach($this->getColumns($type) as $col=>$type){
-				debug(substr($type,0,7));
-				if((substr($type,0,7)=='varchar'||$type='text'||$type=='longtext')
-					&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
-					$columns[] = $col;
-			}
+			$columns = $this->autoFillTextColumns($type,$uniqTextKey);
 			if(empty($columns))
-				throw Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
+				throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 			$indexName = '_auto';
 			sort($columns);
-			if(isset($ftsMap[$indexName])&&$ftsMap[$indexName]!=$columns){
+			if(isset($ftsMap[$indexName])&&$ftsMap[$indexName]!==$columns){
 				$this->execute('ALTER TABLE '.$table.' DROP INDEX `'.$indexName.'`');
 				unset($ftsMap[$indexName]);
 			}
@@ -409,5 +417,57 @@ class Mysql extends SQL{
 		if(!in_array($columns,$ftsMap))
 			$this->execute('ALTER TABLE '.$table.' ADD FULLTEXT `'.$indexName.'` (`'.implode('`,`',$columns).'`)');
 	}
-	
+	function makeFtsTableAndIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq'){
+		$table = $this->escTable($type);
+		$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
+		$ftsMap = $this->getFtsMap($type.$this->ftsTableSuffix);
+		if(empty($columns)){
+			$columns = $this->autoFillTextColumns($type,$uniqTextKey);
+			if(empty($columns))
+				throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
+			$indexName = '_auto';
+			sort($columns);
+			if(isset($ftsMap[$indexName])&&$ftsMap[$indexName]!==$columns){
+				$this->execute('ALTER TABLE '.$table.' DROP INDEX `'.$indexName.'`');
+				unset($ftsMap[$indexName]);
+			}
+		}
+		else{
+			sort($columns);
+			$indexName = implode('_',$columns);
+		}
+		if(!$this->tableExists($type.$this->ftsTableSuffix)){
+			$pTable = $this->prefixTable($type);
+			$pk = $this->esc($primaryKey);
+			$cols = '`'.implode('`,`',$columns).'`';
+			$newCols = 'NEW.`'.implode('`,NEW.`',$columns).'`';
+			$setCols = '';
+			foreach($columns as $col){
+				$setCols .= '`'.$col.'`=NEW.`'.$col.'`,';
+			}
+			$setCols = rtrim($setCols,',');
+			$encoding = $this->getEncoding();
+			$colsDef = implode(' TEXT NULL,',$columns).' TEXT NULL';
+			$this->execute('CREATE TABLE '.$ftsTable.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, '.$colsDef.' ) ENGINE = MyISAM DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+			try{
+				$this->execute("CREATE TRIGGER {$pTable}_insert AFTER INSERT ON {$table} FOR EACH ROW INSERT INTO {$ftsTable}({$pk}, {$cols}) VALUES(NEW.{$pk}, {$newCols})");
+				$this->execute("CREATE TRIGGER {$pTable}_update AFTER UPDATE ON {$table} FOR EACH ROW UPDATE {$ftsTable} SET {$setCols} WHERE {$pk}=OLD.{$pk}");
+				$this->execute("CREATE TRIGGER {$pTable}_delete AFTER DELETE ON {$table} FOR EACH ROW DELETE FROM {$ftsTable} WHERE {$pk}=OLD.{$pk};");
+				$this->execute('INSERT INTO '.$ftsTable.'('.$pk.','.$cols.') SELECT '.$pk.','.$cols.' FROM '.$table);
+			}
+			catch(\PDOException $e){
+				if($this->loggingEnabled){
+					$code = $e->getCode();
+					if(((string)(int)$code)!==((string)$code)&&isset($e->errorInfo)&&isset($e->errorInfo[1]))
+						$code = $e->errorInfo[1];
+					if((int)$code==1419){
+						$this->logger->log("To fix this, in a shell, try: mysql -u USERNAME -p \nset global log_bin_trust_function_creators=1;");
+					}
+				}
+				throw $e;
+			}
+		}
+		if(!in_array($columns,$ftsMap))
+			$this->execute('ALTER TABLE '.$ftsTable.' ADD FULLTEXT `'.$indexName.'` (`'.implode('`,`',$columns).'`)');
+	}
 }
