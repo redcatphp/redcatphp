@@ -256,7 +256,7 @@ class Sqlite extends SQL{
 			if(empty($columns)){
 				$sufxL = -1*strlen($this->ftsTableSuffix);
 				foreach($this->getColumns($type) as $col=>$colType){
-					if($type=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+					if($colType=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 						$columns[] = $col;
 				}
 				if(empty($columns))
