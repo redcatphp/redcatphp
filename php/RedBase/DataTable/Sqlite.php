@@ -2,6 +2,7 @@
 namespace RedBase\DataTable;
 use RedBase\Exception;
 class Sqlite extends SQL{
+	protected $fullTextSearchLocale;
 	function fullTextSearch($text,$tokensNumber=30,$targetColumnIndex=-1,
 		$start='<b>',$end='</b>',$sep='<b>...</b>',$columns=[]
 	){

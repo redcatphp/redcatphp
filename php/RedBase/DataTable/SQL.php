@@ -6,7 +6,6 @@ class SQL extends DataTable{
 	private $stmt;
 	private $row;
 	protected $select;
-	protected $fullTextSearchLocale;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);		
 		$this->select = $this->createSelect();
