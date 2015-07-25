@@ -88,6 +88,11 @@ abstract class Base {
 		}
 		return $froms;
 	}
+	function formatColumnName($v){
+		if($this->mainTable&&strpos($v,'(')===false&&strpos($v,')')===false&&strpos($v,' as ')===false&&strpos($v,'.')===false)
+			$v = $this->quote($this->tablePrefix.$this->mainTable).'.'.$this->quote($v);
+		return $v;
+	}
 	function add_table($table,  array $params = null) {
 		if(!empty($params)||!in_array($table,$this->tables))
 			$this->tables[] = $table;
