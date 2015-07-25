@@ -643,6 +643,9 @@ abstract class SQL extends DataSource{
 			$this->cacheColumns[$type] = $this->getColumnsQuery($type);
 		return $this->cacheColumns[$type];
 	}
+	function columnExists($table,$column){
+		return in_array($column,array_keys($this->getColumns($table)));
+	}
 	function createTable($type,$pk='id'){
 		$table = $this->prefixTable($type);
 		if(!in_array($table,$this->cacheTables))
