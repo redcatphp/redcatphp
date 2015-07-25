@@ -535,7 +535,7 @@ abstract class SQL extends DataSource{
 	function getSQLFiltersWrite(){
 		return $this->sqlFiltersWrite;
 	}
-	protected function getReadSnippet($type){
+	protected function getReadSnippet($type,$aliasMap=[]){
 		$sqlFilters = [];
 		$table = $this->escTable($type);
 		if(isset($this->sqlFiltersRead[$type])){
@@ -547,8 +547,13 @@ abstract class SQL extends DataSource{
 						$func = $func.'('.$select.')';
 					else
 						$func = str_replace('?',$select,$func);
-					if(strpos(strtolower($func),' as ')===false)
-						$func .= ' AS '.$property;
+					if(strpos(strtolower($func),' as ')===false){
+						$func .= ' AS ';
+						if(isset($aliasMap[$property]))
+							$func .= $aliasMap[$property];
+						else
+							$func .= $property;
+					}
 					$sqlFilters[] = $func;
 				}
 			}
