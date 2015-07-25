@@ -15,6 +15,7 @@ class Pgsql extends SQL{
 	const C_DATATYPE_SPECIFIED        = 99;
 	protected $defaultValue = 'DEFAULT';
 	protected $quoteCharacter = '"';
+	protected $version;
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -34,6 +35,13 @@ class Pgsql extends SQL{
 		foreach( $this->typeno_sqltype as $k => $v ){
 			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
 		}
+	}
+	function connect(){
+		if($this->isConnected)
+			return;
+		parent::connect();
+		$serverVersion = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		$this->version = floatval($serverVersion);
 	}
 	function createDatabase($dbname){
 		$this->pdo->exec('CREATE DATABASE "'.$dbname.'"');
@@ -296,5 +304,200 @@ class Pgsql extends SQL{
 			$this->execute('ALTER TABLE "'.$fk['table'].'" ALTER "'.$fk['column'].'" TYPE bigint');
 		}
 		$this->execute('ALTER TABLE '.$table.' ALTER '.$pk.' TYPE bigint');
+	}
+	
+	function autoFillTextColumns($type,$uniqTextKey){
+		$sufxL = -1*strlen($this->ftsTableSuffix);
+		$columns = [];
+		foreach($this->getColumns($type) as $col=>$colType){
+			if(($colType=='text'||substr($colType,0,4)=='date')
+				&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+				$columns[] = $col;
+		}
+		return $columns;
+	}
+	function addFtsColumn($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq',$lang=null){
+		$columnsMap = $this->getColumns($type);
+		$table = $this->prefixTable($type);
+		if(empty($columns)){
+			$columns = $this->autoFillTextColumns($type,$uniqTextKey);
+			if(empty($columns))
+				throw new Exception('Unable to find columns from "'.$table.'" to create FTS column "'.$col.'"');
+			sort($columns);
+			$indexName = '_auto_'.implode('_',$columns);
+			$vacuum = false;
+			foreach($columnsMap as $k=>$v){
+				if(substr($k,6)=='_auto_'&&$type='tsvector'){
+					$this->execute('ALTER TABLE "'.$table.'" DROP COLUMN `'.$indexName.'`');
+					$vacuum = true;
+				}
+			}
+			if($vacuum)
+				$this->execute('VACUUM FULL "'.$table.'"');
+		}
+		else{
+			sort($columns);
+			$indexName = implode('_',$columns);
+		}
+		if(!isset($columnsMap[$indexName])){
+			$this->execute('ALTER TABLE "'.$table.'" ADD "'.$indexName.'" tsvector');
+			if(!isset($name))
+				$name = $table.'_'.$indexName.'_fulltext';
+			$name   = preg_replace('/\W/', '', $name);
+			$this->execute('CREATE INDEX '.$name.' ON "'.$table.'" USING gin("'.$indexName.'")');
+			if($lang)
+				$this->execute('ALTER TABLE "'.$table.'" ADD language text NOT NULL DEFAULT(\''.$lang.'\')');
+			$sql = $this->buildColumnFulltextSQL($table, $indexName, $columns, $primaryKey, $lang);
+			$this->execute($sql);
+		}
+		return $indexName;
+	}
+
+	function buildColumnFulltextSQL($type, $col, $cols , $primaryKey='id', $lang=''){
+		$table = $this->prefixTable($type);
+		if($this->version>=9){
+			$agg = 'string_agg';
+			$sep = ',';
+		}
+		else{
+			$agg = 'array_to_string(array_agg';
+			$sep = '),';			
+		}
+		$cc = "' '";
+		$id = $this->esc($primaryKey);
+		$tb = $this->escTable($table);
+		$_tb = $this->esc('_'.$table);
+		$groupBy = [];
+		$columns = [];
+		$tablesJoin = [];
+		if($lang)
+			$lang = "'$lang',";
+		foreach($cols as $select){
+			$shareds = [];
+			$typeParent = $table;
+			$aliasParent = $table;
+			$type = '';
+			$l = strlen($select);
+			$weight = '';
+			$relation = null;
+			$exist = true;
+			for($i=0;$i<$l;$i++){
+				switch($select[$i]){
+					case '/':
+						$i++;
+						while(isset($select[$i])){
+							$weight .= $select[$i];
+							$i++;
+						}
+						$weight = trim($weight);
+					break;
+					case '.':
+					case '>': //many
+						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						if($superalias)
+							$alias = $superalias.'__'.$alias;
+						$joint = $type!=$alias?"\"{$this->tablePrefix}$type\" as \"$alias\"":'"'.$this->tablePrefix.$alias.'"';
+						if($exist=($this->tableExists($type)&&$this->columnExists($type,$typeParent.'_'.$primaryKey)))
+							$tablesJoin[] = "JOIN $joint ON \"{$this->tablePrefix}$aliasParent\".\"{$primaryKey}\"=\"{$this->tablePrefix}$alias\".\"{$typeParent}_{$primaryKey}\"";
+						$typeParent = $type;
+						$aliasParent = $alias;
+						$type = '';
+						$relation = '>';
+					break;
+					case '<':
+						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						if(isset($select[$i+1])&&$select[$i+1]=='>'){ //many2many
+							$i++;
+							if($superalias)
+								$alias = $superalias.'__'.($alias?$alias:$type);
+							$rels = [$typeParent,$type];
+							sort($rels);
+							$imp = implode('_',$rels);
+							$join[$imp][] = $alias;
+							if($exist=($this->tableExists($type)&&$this->tableExists($imp))){
+								$tablesJoin[] = "JOIN \"{$this->tablePrefix}$imp\" ON \"{$this->tablePrefix}$typeParent\".\"{$primaryKey}\"=\"{$this->tablePrefix}$imp\".\"{$typeParent}_{$primaryKey}\"";
+								$joint = $type!=$alias?"\"{$this->tablePrefix}$type\" as \"$alias\"":'"'.$this->tablePrefix.$alias.'"';
+								$tablesJoin[] = "JOIN $joint ON \"{$this->tablePrefix}$alias\".\"{$primaryKey}\"=\"{$this->tablePrefix}$imp\".\"{$type}".(in_array($type,$shareds)?2:'')."_{$primaryKey}\"";
+							}
+							$shareds[] = $type;
+							$typeParent = $type;
+							$relation = '<>';
+						}
+						else{ //one
+							if($superalias)
+								$alias = $superalias.'__'.$alias;
+							$join[$type][] = ($alias?[$typeParent,$alias]:$typeParent);
+							$joint = $type!=$alias?"\"{$this->tablePrefix}$type\" as \"$alias\"":'"'.$this->tablePrefix.$alias.'"';
+							if($exist=($this->tableExists($typeParent)&&$this->columnExists($typeParent,$type.'_'.$primaryKey)))
+								$tablesJoin[] = "JOIN $joint ON \"{$this->tablePrefix}$alias\".\"{$primaryKey}\"=\"{$this->tablePrefix}$typeParent\".\"{$type}_{$primaryKey}\"";
+							$typeParent = $type;
+							$relation = '<';
+						}
+						$type = '';
+					break;
+					default:
+						$type .= $select[$i];
+					break;
+				}
+			}
+			if($this->tableExists($typeParent)){
+				$localTable = $typeParent;
+				$localCol = trim($type);
+				switch($relation){
+					default:
+						$c = 'COALESCE("'.$this->tablePrefix.$localTable.'"."'.$localCol.'"'.",''::text)";
+						$gb = '"'.$this->tablePrefix.$localTable.'"."'.$localCol.'"';
+						if(!in_array($gb,$groupBy))
+							$groupBy[] = $gb;
+					break;
+					case '<':
+						$c = 'COALESCE("'.$this->tablePrefix.$localTable.'"."'.$localCol.'"'.",''::text)";
+						$gb = '"'.$this->tablePrefix.$localTable.'"."'.$localCol.'"';
+						if($this->columnExists($localTable,$localCol.'_'.$primaryKey)){
+							if(!in_array($gb,$groupBy))
+								$groupBy[] = $gb;
+							$gb = '"'.$this->tablePrefix.$localTable.'"."'.$primaryKey.'"';
+							if(!in_array($gb,$groupBy))
+								$groupBy[] = $gb;
+						}
+					break;
+					case '>':
+						$c = "{$agg}(COALESCE(\"{$this->tablePrefix}{$localTable}\".\"{$localCol}\"::text,''::text) {$sep} {$cc})";
+					break;
+					case '<>':
+						$c = "{$agg}(COALESCE(\"{$this->tablePrefix}{$localTable}\".\"{$localCol}\"::text,''::text) {$sep} {$cc})";
+					break;
+				}
+				$c = "to_tsvector($lang$c)";
+				if($weight)
+					$c = "setweight($c,'$weight')";
+				if($exist)
+					$columns[] = $c;
+			}
+		}
+		$sqlUpdate = 'UPDATE '.$tb.' as '.$_tb;
+		$sqlUpdate .= ' SET '.$col.'=(SELECT '.implode("||",$columns);
+		$sqlUpdate .= ' FROM '.$tb;
+		$sqlUpdate .= implode(" \n",$tablesJoin);
+		$sqlUpdate .= ' WHERE '.$tb.'.'.$id.'='.$_tb.'.'.$id;
+		if(!empty($groupBy))
+			$sqlUpdate .= ' GROUP BY '.implode(',',$groupBy);
+		$sqlUpdate .= ')';
+		return $sqlUpdate;
+	}
+	
+	static function specialTypeAliasExtract($type,&$superalias=null){
+		$alias = null;
+		if(($p=strpos($type,':'))!==false){
+			if(isset($type[$p+1])&&$type[$p+1]==':'){
+				$superalias = trim(substr($type,$p+2));
+				$type = trim(substr($type,0,$p));
+			}
+			else{
+				$alias = trim(substr($type,$p+1));
+				$type = trim(substr($type,0,$p));
+			}
+		}
+		return [$type,$alias?$alias:$type];
 	}
 }
