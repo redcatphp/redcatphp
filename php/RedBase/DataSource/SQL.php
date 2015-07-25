@@ -3,6 +3,7 @@ namespace RedBase\DataSource;
 use RedBase\DataSource;
 use RedBase\RedBase;
 use RedBase\Helper\SqlLogger;
+use RedBase\Exception;
 abstract class SQL extends DataSource{
 	protected $dsn;
 	protected $pdo;
@@ -455,6 +456,8 @@ abstract class SQL extends DataSource{
 					break;
 		}
 		while($containA);
+		if(($c=substr_count($sql,'?'))!=($c2=count($binds)))
+			throw new Exception('ERROR: Query "'.$sql.'" need '.$c.' parameters, but request give '.$c2);
 		return [$sql,$binds];
 	}
 	
