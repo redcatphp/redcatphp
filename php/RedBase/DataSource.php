@@ -339,6 +339,8 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	
 	static function snippet($text,$query,$tokens=15,$start='<b>',$end='</b>',$sep=' <b>...</b> '){
+		if(!trim($text))
+			return '';
 		$words = implode('|', explode(' ', preg_quote($query)));
 		$s = '\s\x00-/:-@\[-`{-~'; //character set for start/end of words
 		preg_match_all('#(?<=['.$s.']).{1,'.$tokens.'}(('.$words.').{1,'.$tokens.'})+(?=['.$s.'])#uis', $text, $matches, PREG_SET_ORDER);
