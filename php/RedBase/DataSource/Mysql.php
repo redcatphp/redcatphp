@@ -224,15 +224,17 @@ class Mysql extends SQL{
 		foreach( (array)$properties as $key => $column )
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
-		sort( $columns ); // Else we get multiple indexes due to order-effects
+		sort($columns);
 		$name = 'UQ_' . sha1( implode( ',', $columns ) );
-		try {
-			$sql = "ALTER TABLE $table
-						 ADD UNIQUE INDEX $name (" . implode( ',', $columns ) . ")";
-			$this->execute( $sql );
-		} catch ( \PDOException $e ) {
-			//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
-			return false;
+		$indexMap = $this->getRow('SHOW indexes FROM '.$table.' WHERE Key_name = ?',[$name]);
+		if(is_null($indexMap)){
+			try {
+				$sql = "ALTER TABLE $table ADD UNIQUE INDEX `$name` (" . implode( ',', $columns ) . ")";
+				$this->execute( $sql );
+			} catch ( \PDOException $e ) {
+				//do nothing, dont use alter table ignore, this will delete duplicate records in 3-ways!
+				return false;
+			}
 		}
 		return true;
 	}
