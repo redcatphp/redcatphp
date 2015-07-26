@@ -222,7 +222,7 @@ abstract class DataSource implements \ArrayAccess{
 							$interm->$rc = &$obj->$primaryKey;
 							$interm->$rc2 = &$val->$pk;
 							$manyNew[$t][] = $val;
-							$many2manyNew[$k][] = $interm;
+							$many2manyNew[$t][$k][] = $interm;
 							$addFK = [$inter,$t,$rc2,$pk,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
@@ -274,24 +274,27 @@ abstract class DataSource implements \ArrayAccess{
 				$this[$k][] = $val;
 			}
 		}
-		foreach($many2manyNew as $k=>$v){
-			if($update){
-				$except = [];
-				foreach($this->many2manyLink($obj,$k) as $id=>$old){
-					$t = [$k,$type];
-					sort($t);
-					$t = implode('_',$t);
-					$pk = $this[$t]->getPrimaryKey();
-					unset($old->$pk);
-					if(false!==$i=array_search($old,$v)){
-						$v[$i]->$pk = $id;
-						$except[] = $id;
+		foreach($many2manyNew as $t=>$v){
+			foreach($v as $k=>$val){
+				$via = [$type,$k];
+				sort($via);
+				$via = implode('_',$via);
+				if($update){
+					$except = [];
+					$viaFk = $k.'_'.$this[$t]->getPrimaryKey();
+					foreach($this->many2manyLink($obj,$t,$via,$viaFk) as $id=>$old){
+						$pk = $this[$via]->getPrimaryKey();
+						unset($old->$pk);
+						if(false!==$i=array_search($old,$val)){
+							$val[$i]->$pk = $id;
+							$except[] = $id;
+						}
 					}
+					debug($except);
+					$this->many2manyDelete($obj,$t,$via,$viaFk,$except);
 				}
-				$this->many2manyDelete($obj,$k,null,$except);
-			}
-			foreach($v as $val){
-				$this[$inter][] = $val;
+				foreach($val as $value)
+					$this[$via][] = $value;
 			}
 		}
 

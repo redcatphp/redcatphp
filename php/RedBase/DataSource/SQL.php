@@ -744,7 +744,7 @@ abstract class SQL extends DataSource{
 			$table->select($sqlFilterStr);
 		return $table;
 	}
-	function many2manyLink($obj,$type,$via=null){
+	function many2manyLink($obj,$type,$via=null,$viaFk=null){
 		$tb = $this->findEntityTable($obj);
 		if($via){
 			$tbj = $via;
@@ -758,7 +758,7 @@ abstract class SQL extends DataSource{
 		$typeE = $this->escTable($type);
 		$pk = $table->getPrimaryKey();
 		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $this->esc($type.'_'.$pk);
+		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
 		$colmun2 = $this->esc($tb.'_'.$pko);
 		$tb = $this->escTable($tb);
 		$tbj = $this->escTable($tbj);
@@ -772,6 +772,8 @@ abstract class SQL extends DataSource{
 	}
 	
 	function one2manyDelete($obj,$type,$except=[]){
+		if(!$this->tableExists($type))
+			return;
 		$typeE = $this->escTable($type);
 		$pk = $this[$type]->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
@@ -785,7 +787,8 @@ abstract class SQL extends DataSource{
 		}
 		$this->execute('DELETE FROM '.$typeE.' WHERE '.$column.' = ?'.$notIn,$params);
 	}
-	function many2manyDelete($obj,$type,$via=null,$except=[]){
+	function many2manyDelete($obj,$type,$via=null,$viaFk=null,$except=[]){
+		//work in pgsql,sqlite,cubrid but not in mysql (overloaded)
 		$tb = $this->findEntityTable($obj);
 		if($via){
 			$tbj = $via;
@@ -795,10 +798,12 @@ abstract class SQL extends DataSource{
 			sort($tbj);
 			$tbj = implode('_',$tbj);
 		}
+		if(!$this->tableExists($tbj))
+			return;
 		$typeE = $this->escTable($type);
 		$pk = $this[$tbj]->getPrimaryKey();
 		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $this->esc($type.'_'.$pk);
+		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
 		$colmun2 = $this->esc($tb.'_'.$pko);
 		$tb = $this->escTable($tb);
 		$tbj = $this->escTable($tbj);

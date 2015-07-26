@@ -365,39 +365,4 @@ class Pgsql extends SQL{
 		}
 		return $indexName;
 	}
-	
-	function many2manyDelete($obj,$type,$via=null,$viaFk=null,$except=[]){
-		$tb = $this->findEntityTable($obj);
-		if($via){
-			$tbj = $via;
-		}
-		else{
-			$tbj = [$type,$tb];
-			sort($tbj);
-			$tbj = implode('_',$tbj);
-		}
-		if(!$this->tableExists($tbj))
-			return;
-		$typeE = $this->escTable($type);
-		$pk = $this[$tbj]->getPrimaryKey();
-		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
-		$colmun2 = $this->esc($tb.'_'.$pko);
-		$tb = $this->escTable($tb);
-		$tbj = $this->escTable($tbj);
-		$pke = $this->esc($pk);
-		$pkoe = $this->esc($pko);
-		$notIn = '';
-		$params = [$obj->$pko];
-		if(!empty($except)){
-			$notIn = ' AND '.$tbj.'.'.$pke.' NOT IN ?';
-			$params[] = $except;
-		}
-		$this->execute('DELETE FROM '.$tbj.' WHERE '.$tbj.'.'.$pke.' IN(
-			SELECT '.$tbj.'.'.$pke.' FROM '.$tbj.'
-			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2.'
-			JOIN '.$typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke.'
-			AND '.$tb.'.'.$pkoe.' = ? '.$notIn.'
-		)',$params);
-	}
 }
