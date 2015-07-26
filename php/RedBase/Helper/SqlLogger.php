@@ -44,6 +44,12 @@ class SqlLogger {
 		return $newStr;
 	}
 	protected function fillInValue( $value ){
+		if(is_array($value)){
+			$r = [];
+			foreach($value as $v)
+				$r[] = $this->fillInValue($v);
+			return implode(',',$r);
+		}
 		if ( is_null( $value ) ) $value = 'NULL';
 		if(is_numeric( $value ))
 			$value = str_replace(',','.',$value);
