@@ -179,15 +179,19 @@ class Cubrid extends SQL{
 		foreach( (array)$properties as $key => $column )
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
-		sort( $columns ); // else we get multiple indexes due to order-effects
-		$name = 'UQ_' . sha1( implode( ',', $columns ) );
-		$sql = "ALTER TABLE $table ADD CONSTRAINT UNIQUE $name (" . implode( ',', $columns ) . ")";
-		try {
-			$this->execute( $sql );
-		} catch( \PDOException $e ) {
-			return false;
+		sort($columns);
+		$name = 'uq_' . sha1( implode( ',', $columns ) );
+		$indexMap = $this->getAll('SHOW indexes FROM '.$table);
+		$exists = false;
+		debug($indexMap);
+		foreach($indexMap as $index){
+			if($index['Key_name']==$name){
+				$exists = true;
+				break;
+			}
 		}
-		return true;
+		if(!$exists)
+			$this->execute("ALTER TABLE $table ADD CONSTRAINT UNIQUE `$name` (" . implode( ',', $columns ) . ")");
 	}
 	function addIndex( $type, $name, $column ){
 		try {
