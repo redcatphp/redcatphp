@@ -213,16 +213,8 @@ class Pgsql extends SQL{
 		sort($columns);
 		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = ?)',[$tableNoQ]);
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
-		if(!in_array($name,$indexMap)){
-			try {
-				$sql = 'ALTER TABLE '.$table.' ADD CONSTRAINT "'.$name.'" UNIQUE('.implode(',',$columns).')';
-				$this->execute( $sql );
-			}
-			catch( \PDOException $e ) {
-				return false;
-			}
-		}
-		return true;
+		if(!in_array($name,$indexMap))
+			$this->execute('ALTER TABLE '.$table.' ADD CONSTRAINT "'.$name.'" UNIQUE('.implode(',',$columns).')');
 	}
 	function addIndex( $type, $name, $property ){
 		$table  = $this->escTable( $type );

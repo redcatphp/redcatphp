@@ -183,12 +183,7 @@ class Sqlite extends SQL{
 		if(isset($t['indexes'][$name]))
 			return true;
 		$t['indexes'][$name] = [ 'name' => $name ];
-		try {
-			$this->putTable( $t );
-		} catch( \PDOException $e ) {
-			return false;
-		}
-		return true;
+		$this->putTable( $t );
 	}
 	function addIndex( $type, $name, $column ){
 		$columns = $this->getColumns( $type );
