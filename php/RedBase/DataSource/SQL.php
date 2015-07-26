@@ -148,6 +148,14 @@ abstract class SQL extends DataSource{
 		return $this->affectedRows;
 	}
 	
+	//function one2manyDelete($obj,$k){
+		//foreach($this->one2many($obj,$k) as $o)
+			//$this->delete($o);
+	//}
+	//function many2manyDelete($obj,$k){
+		//foreach($this->many2many($obj,$k) as $o)
+			//$this->delete($o);
+	//}	
 	
 	private function buildDsnFromArray($config){
 		$type = $config['type'].':';
@@ -707,7 +715,6 @@ abstract class SQL extends DataSource{
 	function one2many($obj,$type){
 		$table = clone $this[$type];
 		$typeE = $this->escTable($type);
-		$pk = $table->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
 		$column = $this->esc($tb.'_'.$pko);
@@ -744,6 +751,67 @@ abstract class SQL extends DataSource{
 		if($sqlFilterStr = $this->getReadSnippet($type))
 			$table->select($sqlFilterStr);
 		return $table;
+	}
+	function many2manyLink($obj,$type,$via=null){
+		$tb = $this->findEntityTable($obj);
+		if($via){
+			$tbj = $via;
+		}
+		else{
+			$tbj = [$type,$tb];
+			sort($tbj);
+			$tbj = implode('_',$tbj);
+		}
+		$table = clone $this[$tbj];
+		$typeE = $this->escTable($type);
+		$pk = $table->getPrimaryKey();
+		$pko = $this[$tb]->getPrimaryKey();
+		$colmun1 = $this->esc($type.'_'.$pk);
+		$colmun2 = $this->esc($tb.'_'.$pko);
+		$tb = $this->escTable($tb);
+		$tbj = $this->escTable($tbj);
+		$pke = $this->esc($pk);
+		$pkoe = $this->esc($pko);
+		$table->join($typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke);
+		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2
+					.' AND '.$tb.'.'.$pkoe.' =  ?',[$obj->$pko]);
+		$table->select($tbj.'.*');
+		return $table;
+	}
+	
+	function one2manyDelete($obj,$type){
+		$typeE = $this->escTable($type);
+		$pk = $this[$type]->getPrimaryKey();
+		$tb = $this->findEntityTable($obj);
+		$pko = $this[$tb]->getPrimaryKey();
+		$column = $this->esc($tb.'_'.$pko);
+		$this->execute('DELETE FROM '.$typeE.' WHERE '.$column.' = ?',[$obj->$pko]);
+	}
+	function many2manyDelete($obj,$type,$via=null){
+		$tb = $this->findEntityTable($obj);
+		if($via){
+			$tbj = $via;
+		}
+		else{
+			$tbj = [$type,$tb];
+			sort($tbj);
+			$tbj = implode('_',$tbj);
+		}
+		$typeE = $this->escTable($type);
+		$pk = $this[$tbj]->getPrimaryKey();
+		$pko = $this[$tb]->getPrimaryKey();
+		$colmun1 = $this->esc($type.'_'.$pk);
+		$colmun2 = $this->esc($tb.'_'.$pko);
+		$tb = $this->escTable($tb);
+		$tbj = $this->escTable($tbj);
+		$pke = $this->esc($pk);
+		$pkoe = $this->esc($pko);
+		$this->execute('DELETE FROM '.$tbj.' WHERE '.$tbj.'.'.$pke.' IN(
+			SELECT '.$tbj.'.'.$pke.' FROM '.$tbj.'
+			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2.'
+			JOIN '.$typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke.'
+			AND '.$tb.'.'.$pkoe.' = ?
+		)',[$obj->$pko]);
 	}
 	
 	function getFtsTableSuffix(){

@@ -132,8 +132,23 @@ abstract class DataSource implements \ArrayAccess{
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		$obj->_type = $type;
 		$properties = [];
-		$postPut = [];
+		$manyNew = [];
+		$one2manyNew = [];
+		$many2manyNew = [];
 		$fk = [];
+		
+		if(isset($id)&&$uniqTextKey&&!self::canBeTreatedAsInt($id)){
+			$obj->$uniqTextKey = $id;
+		}
+		
+		if(isset($obj->$primaryKey)){
+			$id = $obj->$primaryKey;
+		}
+		elseif($uniqTextKey&&isset($obj->$uniqTextKey)){
+			$id = $this->readId($type,$obj->$uniqTextKey,$primaryKey,$uniqTextKey);
+			$obj->$primaryKey = $id;
+		}
+		
 		foreach($obj as $k=>$v){
 			$xclusive = substr($k,-3)=='_x_';
 			if($xclusive)
@@ -186,7 +201,7 @@ abstract class DataSource implements \ArrayAccess{
 							$t = $this->findEntityTable($val,$k);
 							$rc = $type.'_'.$primaryKey;
 							$val->$rc = &$obj->$primaryKey;
-							$postPut[$t][] = $val;
+							$one2manyNew[$t][] = $val;
 							$addFK = [$t,$type,$rc,$primaryKey,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
@@ -206,8 +221,8 @@ abstract class DataSource implements \ArrayAccess{
 							$interm = $this->entityFactory($inter);
 							$interm->$rc = &$obj->$primaryKey;
 							$interm->$rc2 = &$val->$pk;
-							$postPut[$t][] = $val;
-							$postPut[$inter][] = $interm;
+							$manyNew[$t][] = $val;
+							$many2manyNew[$k][] = $interm;
 							$addFK = [$inter,$t,$rc2,$pk,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
@@ -223,19 +238,9 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		
-		if(isset($id)&&$uniqTextKey&&!self::canBeTreatedAsInt($id)){
-			$properties[$uniqTextKey] = $id;
-		}
+		$update = isset($id);
 		
-		if(isset($properties[$primaryKey])){
-			$id = $properties[$primaryKey];
-		}
-		elseif($uniqTextKey&&isset($properties[$uniqTextKey])){
-			$id = $this->readId($type,$properties[$uniqTextKey],$primaryKey,$uniqTextKey);
-		}
-		
-		
-		if(isset($id)){
+		if($update){
 			$this->trigger($type,'beforeUpdate',$obj);
 			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
 			$this->trigger($type,'afterUpdate',$obj);
@@ -248,11 +253,29 @@ abstract class DataSource implements \ArrayAccess{
 			$this->trigger($type,'afterCreate',$obj);
 		}
 		$obj->{$primaryKey} = $r;
-		foreach($postPut as $k=>$v){
+		foreach($one2manyNew as $k=>$v){
+			if($update)
+				$this->one2manyDelete($obj,$k);
 			foreach($v as $val){
 				$this[$k][] = $val;
 			}
 		}
+		foreach($manyNew as $k=>$v){
+			foreach($v as $val){
+				$this[$k][] = $val;
+			}
+		}
+		foreach($many2manyNew as $k=>$v){
+			$inter = [$type,$k];
+			sort($inter);
+			$inter = implode('_',$inter);
+			if($update)
+				$this->many2manyDelete($obj,$k);
+			foreach($v as $val){
+				$this[$inter][] = $val;
+			}
+		}
+
 		if(method_exists($this,'addFK')){
 			foreach($fk as list($type,$targetType,$property,$targetProperty,$isDep)){
 				$this->addFK($type,$targetType,$property,$targetProperty,$isDep);
@@ -352,7 +375,17 @@ abstract class DataSource implements \ArrayAccess{
 		return $sep.$result.$sep;
 	}
 	
+	function one2manyDelete($obj,$k){
+		foreach($this->one2many($obj,$k) as $o)
+			$this->delete($o);
+	}
+	function many2manyDelete($obj,$k){
+		foreach($this->many2manyLink($obj,$k) as $o)
+			$this->delete($o);
+	}
+	
 	//abstract function many2one($obj,$type){}
 	//abstract function one2many($obj,$type){}
 	//abstract function many2many($obj,$type){}
+	//abstract function many2manyLink($obj,$type){}
 }
