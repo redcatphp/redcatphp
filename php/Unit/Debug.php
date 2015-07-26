@@ -164,7 +164,7 @@ namespace Unit{
 		}
 		static function var_debug_html_return($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 			$search = ['&',"\r", "\n", ' ','"',"'",'<','>'];
-			$replace = ['&#039;',"<br />", "<br />", '&nbsp;','&amp;','&quot;','&lt;','&gt;'];
+			$replace = ['&#039;',"<br />", "<br />", '&nbsp;','&#34;','&#39;','&lt;','&gt;'];
 			$string = '';
 			switch(gettype($variable)){
 				case 'boolean':
