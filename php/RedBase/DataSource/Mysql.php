@@ -144,7 +144,7 @@ class Mysql extends SQL{
 		$fk = $this->getForeignKeyForTypeProperty( $type, $fieldNoQ );
 		if ( !is_null( $fk )
 			&&($fk['on_update']==$casc||$fk['on_update']=='CASCADE')
-			&&($fk['on_delete']==$casc||$fk['on_update']=='CASCADE')
+			&&($fk['on_delete']==$casc||$fk['on_delete']=='CASCADE')
 		)
 			return false;
 
@@ -462,5 +462,39 @@ class Mysql extends SQL{
 		}
 		if(!in_array($columns,$ftsMap))
 			$this->execute('ALTER TABLE '.$ftsTable.' ADD FULLTEXT `'.$indexName.'` (`'.implode('`,`',$columns).'`)');
+	}
+	
+	function many2manyDelete($obj,$type,$via=null,$viaFk=null,$except=[]){
+		$tb = $this->findEntityTable($obj);
+		if($via){
+			$tbj = $via;
+		}
+		else{
+			$tbj = [$type,$tb];
+			sort($tbj);
+			$tbj = implode('_',$tbj);
+		}
+		if(!$this->tableExists($tbj))
+			return;
+		$typeE = $this->escTable($type);
+		$pk = $this[$tbj]->getPrimaryKey();
+		$pko = $this[$tb]->getPrimaryKey();
+		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
+		$colmun2 = $this->esc($tb.'_'.$pko);
+		$tb = $this->escTable($tb);
+		$tbj = $this->escTable($tbj);
+		$pke = $this->esc($pk);
+		$pkoe = $this->esc($pko);
+		$notIn = '';
+		$params = [$obj->$pko];
+		if(!empty($except)){
+			$notIn = ' AND '.$tbj.'.'.$pke.' NOT IN ?';
+			$params[] = $except;
+		}
+		$this->execute('DELETE FROM '.$tbj.' USING('.$tbj.')
+			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2.'
+			JOIN '.$typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke.'
+			AND '.$tb.'.'.$pkoe.' = ? '.$notIn.'
+		',$params);
 	}
 }
