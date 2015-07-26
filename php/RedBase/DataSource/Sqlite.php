@@ -88,8 +88,8 @@ class Sqlite extends SQL{
 		}
 		$q[] = "CREATE TABLE `$table` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT  $newTableDefStr  $fkDef )";
 		foreach ( $tableMap['indexes'] as $name => $index ) {
-			if ( strpos( $name, 'UQ_' ) === 0 ) {
-				$cols = explode( '__', substr( $name, strlen( 'UQ_' . $table ) ) );
+			if ( strpos( $name, 'uq_' ) === 0 ) {
+				$cols = explode( '__', substr( $name, strlen( 'uq_' . $table ) ) );
 				foreach ( $cols as $k => $v )
 					$cols[$k] = "`$v`";
 				$q[] = "CREATE UNIQUE INDEX $name ON `$table` (" . implode( ',', $cols ) . ")";
@@ -178,7 +178,7 @@ class Sqlite extends SQL{
 		return self::C_DATATYPE_INTEGER;
 	}
 	function addUniqueConstraint( $type, $properties ){
-		$name  = 'UQ_' . $this->prefixTable( $type ) . implode( '__', (array)$properties );
+		$name  = 'uq_' . $this->prefixTable( $type ) . implode( '__', (array)$properties );
 		$t     = $this->getTable( $type );
 		if(isset($t['indexes'][$name]))
 			return true;

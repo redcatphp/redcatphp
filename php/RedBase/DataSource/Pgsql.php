@@ -212,7 +212,7 @@ class Pgsql extends SQL{
 		$table = $this->escTable( $type );
 		sort($columns);
 		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = ?)',[$tableNoQ]);
-		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
+		$name = 'uq_'.sha1( $table . implode( ',', $columns ) );
 		if(!in_array($name,$indexMap))
 			$this->execute('ALTER TABLE '.$table.' ADD CONSTRAINT "'.$name.'" UNIQUE('.implode(',',$columns).')');
 	}

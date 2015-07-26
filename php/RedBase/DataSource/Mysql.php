@@ -225,7 +225,7 @@ class Mysql extends SQL{
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
 		sort($columns);
-		$name = 'UQ_' . sha1( implode( ',', $columns ) );
+		$name = 'uq_' . sha1( implode( ',', $columns ) );
 		$indexMap = $this->getRow('SHOW indexes FROM '.$table.' WHERE Key_name = ?',[$name]);
 		if(is_null($indexMap))
 			$this->execute("ALTER TABLE $table ADD UNIQUE INDEX `$name` (" . implode( ',', $columns ) . ")");
