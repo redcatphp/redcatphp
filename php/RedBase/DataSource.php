@@ -254,8 +254,17 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		$obj->{$primaryKey} = $r;
 		foreach($one2manyNew as $k=>$v){
-			if($update)
-				$this->one2manyDelete($obj,$k);
+			if($update){
+				$except = [];
+				foreach($v as $val){
+					$t = $this->findEntityTable($val,$k);
+					$pk = $this[$t]->getPrimaryKey();
+					if(isset($val->$pk))
+						$except[] = $val->$pk;
+						
+				}
+				$this->one2manyDelete($obj,$k,$except);
+			}
 			foreach($v as $val){
 				$this[$k][] = $val;
 			}
@@ -266,11 +275,21 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		foreach($many2manyNew as $k=>$v){
-			$inter = [$type,$k];
-			sort($inter);
-			$inter = implode('_',$inter);
-			if($update)
-				$this->many2manyDelete($obj,$k);
+			if($update){
+				$except = [];
+				foreach($this->many2manyLink($obj,$k) as $id=>$old){
+					$t = [$k,$type];
+					sort($t);
+					$t = implode('_',$t);
+					$pk = $this[$t]->getPrimaryKey();
+					unset($old->$pk);
+					if(false!==$i=array_search($old,$v)){
+						$v[$i]->$pk = $id;
+						$except[] = $id;
+					}
+				}
+				$this->many2manyDelete($obj,$k,null,$except);
+			}
 			foreach($v as $val){
 				$this[$inter][] = $val;
 			}
@@ -375,13 +394,22 @@ abstract class DataSource implements \ArrayAccess{
 		return $sep.$result.$sep;
 	}
 	
-	function one2manyDelete($obj,$k){
-		foreach($this->one2many($obj,$k) as $o)
-			$this->delete($o);
+	function one2manyDelete($obj,$k,$except=[]){
+		$pk = $this[$k]->getPrimaryKey();
+		foreach($this->one2many($obj,$k,$except) as $o){
+			if(!in_array($o->$pk,$except))
+				$this->delete($o);
+		}
 	}
-	function many2manyDelete($obj,$k){
-		foreach($this->many2manyLink($obj,$k) as $o)
-			$this->delete($o);
+	function many2manyDelete($obj,$k,$via=null,$except=[]){
+		$t = [$this->findEntityTable($obj),$k];
+		sort($t);
+		$t = implode('_',$t);
+		$pk = $this[$t]->getPrimaryKey();
+		foreach($this->many2manyLink($obj,$k,$via) as $o){
+			if(!in_array($o->$pk,$except))
+				$this->delete($o);
+		}
 	}
 	
 	//abstract function many2one($obj,$type){}

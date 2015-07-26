@@ -779,15 +779,21 @@ abstract class SQL extends DataSource{
 		return $table;
 	}
 	
-	function one2manyDelete($obj,$type){
+	function one2manyDelete($obj,$type,$except=[]){
 		$typeE = $this->escTable($type);
 		$pk = $this[$type]->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
 		$column = $this->esc($tb.'_'.$pko);
-		$this->execute('DELETE FROM '.$typeE.' WHERE '.$column.' = ?',[$obj->$pko]);
+		$notIn = '';
+		$params = [$obj->$pko];
+		if(!empty($except)){
+			$notIn = ' AND '.$pko.' NOT IN ?';
+			$params[] = $except;
+		}
+		$this->execute('DELETE FROM '.$typeE.' WHERE '.$column.' = ?'.$notIn,$params);
 	}
-	function many2manyDelete($obj,$type,$via=null){
+	function many2manyDelete($obj,$type,$via=null,$except=[]){
 		$tb = $this->findEntityTable($obj);
 		if($via){
 			$tbj = $via;
@@ -806,12 +812,18 @@ abstract class SQL extends DataSource{
 		$tbj = $this->escTable($tbj);
 		$pke = $this->esc($pk);
 		$pkoe = $this->esc($pko);
+		$notIn = '';
+		$params = [$obj->$pko];
+		if(!empty($except)){
+			$notIn = ' AND '.$tbj.'.'.$pke.' NOT IN ?';
+			$params[] = $except;
+		}
 		$this->execute('DELETE FROM '.$tbj.' WHERE '.$tbj.'.'.$pke.' IN(
 			SELECT '.$tbj.'.'.$pke.' FROM '.$tbj.'
 			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2.'
 			JOIN '.$typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke.'
-			AND '.$tb.'.'.$pkoe.' = ?
-		)',[$obj->$pko]);
+			AND '.$tb.'.'.$pkoe.' = ? '.$notIn.'
+		)',$params);
 	}
 	
 	function getFtsTableSuffix(){
