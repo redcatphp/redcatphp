@@ -210,15 +210,17 @@ class Pgsql extends SQL{
 		foreach( (array)$properties as $key => $column )
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
-		sort( $columns ); //else we get multiple indexes due to order-effects
+		sort($columns); //else we get multiple indexes due to order-effects
+		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = \'video\')');
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
-		$sql = "ALTER TABLE {$table}
-                ADD CONSTRAINT $name UNIQUE (" . implode( ',', $columns ) . ")";
-		try {
-			$this->execute( $sql );
-		}
-		catch( \PDOException $e ) {
-			return false;
+		if(!in_array($name,$indexMap)){
+			try {
+				$sql = 'ALTER TABLE '.$table.' ADD CONSTRAINT "'.$name.'" UNIQUE('.implode(',',$columns).')';
+				$this->execute( $sql );
+			}
+			catch( \PDOException $e ) {
+				return false;
+			}
 		}
 		return true;
 	}
