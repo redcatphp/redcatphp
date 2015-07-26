@@ -98,7 +98,7 @@ class Mysql extends SQL{
 		return self::C_DATATYPE_TEXT32;
 	}
 	function getTablesQuery(){
-		return $this->getCol('show tables');
+		return $this->getCol('SHOW TABLES');
 	}
 	function getColumnsQuery($type){
 		$columns = [];
