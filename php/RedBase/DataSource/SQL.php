@@ -148,15 +148,6 @@ abstract class SQL extends DataSource{
 		return $this->affectedRows;
 	}
 	
-	//function one2manyDelete($obj,$k){
-		//foreach($this->one2many($obj,$k) as $o)
-			//$this->delete($o);
-	//}
-	//function many2manyDelete($obj,$k){
-		//foreach($this->many2many($obj,$k) as $o)
-			//$this->delete($o);
-	//}	
-	
 	private function buildDsnFromArray($config){
 		$type = $config['type'].':';
 		$host = isset($config['host'])&&$config['host']?'host='.$config['host']:'';
