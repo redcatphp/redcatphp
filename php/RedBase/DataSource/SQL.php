@@ -229,6 +229,7 @@ abstract class SQL extends DataSource{
 				$fetchStyle = ( isset( $options['fetchStyle'] ) ) ? $options['fetchStyle'] : NULL;
 				if ( isset( $options['noFetch'] ) && $options['noFetch'] ) {
 					$this->resultArray = [];
+					$this->logger->log('resultset via iterator cursor: '.$this->affectedRows.' rows');
 					return $statement;
 				}
 				$this->resultArray = $statement->fetchAll( $fetchStyle );
