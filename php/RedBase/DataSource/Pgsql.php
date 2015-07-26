@@ -210,7 +210,7 @@ class Pgsql extends SQL{
 		foreach( (array)$properties as $key => $column )
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
-		sort($columns); //else we get multiple indexes due to order-effects
+		sort($columns);
 		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = ?)',[$tableNoQ]);
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
 		if(!in_array($name,$indexMap)){
