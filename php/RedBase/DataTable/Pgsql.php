@@ -46,8 +46,10 @@ class Pgsql extends SQL{
 				$columns[$k] = 'to_tsvector('.$columns[$k].')';
 		}
 		$this->select("ts_rank({$c}, plainto_tsquery({$lang}?)) as $alias",[$text]);
+		$sufx = $this->dataSource->getFtsTableSuffix();
+		$sufxL = -1*strlen($sufx);
 		foreach($this->dataSource->getColumns($this->name) as $col=>$colType){
-			if(substr($col,0,6)!='_auto_'){
+			if(substr($col,0,6)!='_auto_'&&substr($col,$sufxL)!=$sufx){
 				$col = $this->dataSource->esc($col);
 				$this->select($table.'.'.$col.' as '.$col);
 			}
