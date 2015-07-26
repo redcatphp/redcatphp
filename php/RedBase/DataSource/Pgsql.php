@@ -211,7 +211,7 @@ class Pgsql extends SQL{
 			$columns[$key] = $this->esc( $column );
 		$table = $this->escTable( $type );
 		sort($columns); //else we get multiple indexes due to order-effects
-		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = \'video\')');
+		$indexMap = $this->getCol('SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname = '.$table.')');
 		$name = "UQ_" . sha1( $table . implode( ',', $columns ) );
 		if(!in_array($name,$indexMap)){
 			try {
