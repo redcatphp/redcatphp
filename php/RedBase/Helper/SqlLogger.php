@@ -48,7 +48,7 @@ class SqlLogger {
 			$r = [];
 			foreach($value as $v)
 				$r[] = $this->fillInValue($v);
-			return implode(',',$r);
+			return '('.implode(',',$r).')';
 		}
 		if ( is_null( $value ) ) $value = 'NULL';
 		if(is_numeric( $value ))
