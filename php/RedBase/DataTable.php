@@ -3,10 +3,12 @@ namespace RedBase;
 use RedBase\Helper\Pagination;
 abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	private static $defaultEvents = [
+		'beforePut',
 		'beforeCreate',
 		'beforeRead',
 		'beforeUpdate',
 		'beforeDelete',
+		'afterPut',
 		'afterCreate',
 		'afterRead',
 		'afterUpdate',

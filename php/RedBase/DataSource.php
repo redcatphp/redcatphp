@@ -130,6 +130,7 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+		$this->trigger($type,'beforePut',$obj);
 		$obj->_type = $type;
 		$properties = [];
 		$manyNew = [];
@@ -148,6 +149,8 @@ abstract class DataSource implements \ArrayAccess{
 			$id = $this->readId($type,$obj->$uniqTextKey,$primaryKey,$uniqTextKey);
 			$obj->$primaryKey = $id;
 		}
+		
+		$update = isset($id);
 		
 		foreach($obj as $k=>$v){
 			$xclusive = substr($k,-3)=='_x_';
@@ -238,8 +241,6 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		
-		$update = isset($id);
-		
 		if($update){
 			$this->trigger($type,'beforeUpdate',$obj);
 			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
@@ -302,6 +303,8 @@ abstract class DataSource implements \ArrayAccess{
 				$this->addFK($type,$targetType,$property,$targetProperty,$isDep);
 			}
 		}
+		
+		$this->trigger($type,'afterPut',$obj);
 		return $r;
 	}
 	
