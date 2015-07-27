@@ -11,7 +11,8 @@ abstract class DataSource implements \ArrayAccess{
 	protected $tableMap = [];
 	protected $entityFactory;
 	protected static $phpReservedKeywords = ['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__'];
-	protected $recursiveStorage;
+	protected $recursiveStorageOpen = [];
+	protected $recursiveStorageClose = [];
 	function __construct(RedBase $redbase,$type,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->redbase = $redbase;
 		$this->type = $type;
@@ -20,7 +21,6 @@ abstract class DataSource implements \ArrayAccess{
 		$this->primaryKey = $primaryKey;
 		$this->uniqTextKey = $uniqTextKey;
 		$this->construct($config);
-		$this->recursiveStorage = new \SplObjectStorage();
 	}
 	function getUniqTextKey(){
 		return $this->uniqTextKey;
@@ -221,6 +221,7 @@ abstract class DataSource implements \ArrayAccess{
 						sort($inter);
 						$inter = implode('_',$inter);
 						$rc = $type.'_'.$primaryKey;
+						$obj->{'_linkMany_'.$inter} = [];
 						foreach($v as &$val){
 							if(is_array($val))
 								$val = $this->arrayToEntity($val,$k);
@@ -235,7 +236,8 @@ abstract class DataSource implements \ArrayAccess{
 							$addFK = [$inter,$t,$rc2,$pk,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
-							$obj->{'_link_'.$inter} = $interm;
+							$val->{'_linkOne_'.$inter} = $interm;
+							$obj->{'_linkMany_'.$inter}[] = $interm;
 						}
 						$addFK = [$inter,$type,$rc,$primaryKey,$xclusive];
 						if(!in_array($addFK,$fk))
@@ -249,7 +251,7 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		
-		$this->trigger($type,'beforeRecursive',$obj,true,true);
+		$this->trigger($type,'beforeRecursive',$obj,'recursive',true);
 		$this->trigger($type,'beforePut',$obj);
 		
 		foreach($oneNew as $t=>$ones){
@@ -321,13 +323,13 @@ abstract class DataSource implements \ArrayAccess{
 		}
 
 		if(method_exists($this,'addFK')){
-			foreach($fk as list($type,$targetType,$property,$targetProperty,$isDep)){
-				$this->addFK($type,$targetType,$property,$targetProperty,$isDep);
+			foreach($fk as list($typ,$targetType,$property,$targetProperty,$isDep)){
+				$this->addFK($typ,$targetType,$property,$targetProperty,$isDep);
 			}
 		}
 		
 		$this->trigger($type,'afterPut',$obj);
-		$this->trigger($type,'afterRecursive',$obj,true,false);
+		$this->trigger($type,'afterRecursive',$obj,'recursive',false);
 		return $r;
 	}
 	
@@ -352,10 +354,29 @@ abstract class DataSource implements \ArrayAccess{
 	}
 	function triggerExec($events, $type, $event, $row, $recursive=false, $flow=null){
 		if($recursive){
-			if($this->recursiveStorage->contains($row))
-				return;
-			if($flow)
-				$this->recursiveStorage->attach($row);
+			if(isset($flow)){
+				if($flow){
+					if(isset($this->recursiveStorageOpen[$recursive])&&in_array($row,$this->recursiveStorageOpen[$recursive],true))
+						return;
+					$this->recursiveStorageOpen[$recursive][] = $row;
+				}
+				else{
+					if(isset($this->recursiveStorageOpen[$recursive])&&false!==$i=array_search($row,$this->recursiveStorageOpen[$recursive],true)){
+						unset($this->recursiveStorageOpen[$recursive][$i]);
+						$this->recursiveStorageClose[$recursive][$i] = $row;
+						if(!empty($this->recursiveStorageOpen[$recursive]))
+							return;
+					}
+					ksort($this->recursiveStorageClose[$recursive]);
+					$this->recursiveStorageClose[$recursive] = array_reverse($this->recursiveStorageClose[$recursive]);
+					foreach($this->recursiveStorageClose[$recursive] as $v){
+						$this->trigger($v->_type, $event, $v);
+					}
+					unset($this->recursiveStorageOpen[$recursive]);
+					unset($this->recursiveStorageClose[$recursive]);
+					return;
+				}
+			}
 		}
 
 		if($row instanceof Observer){
@@ -372,20 +393,16 @@ abstract class DataSource implements \ArrayAccess{
 		if($recursive){
 			foreach($row as $v){
 				if(is_array($v)){
-					foreach($v as $k=>$val){
+					foreach($v as $val){
 						if(is_object($val)){
-							$type = $this->findEntityTable($val,$k);
-							$this->trigger($type, $event, $val, true, $flow);
+							$this->trigger($val->_type, $event, $val, $recursive, $flow);
 						}
 					}
 				}
 				elseif(is_object($v)){
-					$type = $this->findEntityTable($val,$k);
-					$this->trigger($type, $event, $v, true, $flow);
+					$this->trigger($v->_type, $event, $v, $recursive, $flow);
 				}
-			}
-			if($flow===false)
-				$this->recursiveStorage->detach($row);
+			}				
 		}
 	}
 	
