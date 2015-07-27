@@ -290,7 +290,6 @@ abstract class DataSource implements \ArrayAccess{
 							$except[] = $id;
 						}
 					}
-					debug($except);
 					$this->many2manyDelete($obj,$t,$via,$viaFk,$except);
 				}
 				foreach($val as $value)
