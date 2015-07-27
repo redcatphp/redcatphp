@@ -14,6 +14,7 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		'afterRead',
 		'afterUpdate',
 		'afterDelete',
+		'afterRecursive',
 	];
 	private $events = [];	
 	protected $name;

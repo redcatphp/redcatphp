@@ -12,4 +12,5 @@ class Entity implements Observer{
 	function afterRead(){}
 	function afterUpdate(){}
 	function afterDelete(){}
+	function afterRecursive(){}
 }
