@@ -1,6 +1,7 @@
 <?php
 namespace RedBase;
 interface Observer{
+	function beforeRecursive();
 	function beforePut();
 	function beforeCreate();
 	function beforeRead();

@@ -3,6 +3,7 @@ namespace RedBase;
 use RedBase\Helper\Pagination;
 abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	private static $defaultEvents = [
+		'beforeRecursive',
 		'beforePut',
 		'beforeCreate',
 		'beforeRead',
@@ -22,6 +23,7 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 	protected $data = [];
 	protected $useCache = true;
 	protected $counterCall;
+	
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		$this->name = $name;
 		$this->primaryKey = $primaryKey;
@@ -190,19 +192,9 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 		}
 		return $this;
     }
-	function trigger($event, $row){
-		if($row instanceof Observer){
-			if(isset($this->events[$event])){
-				foreach($this->events[$event] as $calls){
-					foreach($calls as $call){
-						if(is_string($call))
-							call_user_func([$row,$call], $this);
-						else
-							call_user_func($call, $row, $this);
-					}
-				}
-			}
-		}
+	function trigger($event, $row, $recursive=false, $flow=null){
+		if(isset($this->events[$event]))
+			$this->dataSource->triggerExec($this->events[$event], $this->name, $event, $row, $recursive, $flow);
 		return $this;
 	}
 	static function setDefaultEvents(array $events){

@@ -11,6 +11,7 @@ abstract class DataSource implements \ArrayAccess{
 	protected $tableMap = [];
 	protected $entityFactory;
 	protected static $phpReservedKeywords = ['__halt_compiler','abstract','and','array','as','break','callable','case','catch','class','clone','const','continue','declare','default','die','do','echo','else','elseif','empty','enddeclare','endfor','endforeach','endif','endswitch','endwhile','eval','exit','extends','final','for','foreach','function','global','goto','if','implements','include','include_once','instanceof','insteadof','interface','isset','list','namespace','new','or','print','private','protected','public','require','require_once','return','static','switch','throw','trait','try','unset','use','var','while','xor','__class__','__dir__','__file__','__function__','__line__','__method__','__namespace__','__trait__'];
+	protected $recursiveStorage;
 	function __construct(RedBase $redbase,$type,$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKey='id',$uniqTextKey='uniq',array $config=[]){
 		$this->redbase = $redbase;
 		$this->type = $type;
@@ -19,6 +20,7 @@ abstract class DataSource implements \ArrayAccess{
 		$this->primaryKey = $primaryKey;
 		$this->uniqTextKey = $uniqTextKey;
 		$this->construct($config);
+		$this->recursiveStorage = new \SplObjectStorage();
 	}
 	function getUniqTextKey(){
 		return $this->uniqTextKey;
@@ -132,6 +134,8 @@ abstract class DataSource implements \ArrayAccess{
 	function putRow($type,$obj,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
 		$obj->_type = $type;
 		$properties = [];
+		$oneNew = [];
+		$oneUp = [];
 		$manyNew = [];
 		$one2manyNew = [];
 		$many2manyNew = [];
@@ -149,11 +153,10 @@ abstract class DataSource implements \ArrayAccess{
 			$obj->$primaryKey = $id;
 		}
 		
-		$this->trigger($type,'beforePut',$obj);
-		
 		$update = isset($id);
 		
-		foreach($obj as $k=>$v){
+		foreach($obj as $key=>$v){
+			$k = $key;
 			$xclusive = substr($k,-3)=='_x_';
 			if($xclusive)
 				$k = substr($k,0,-3);
@@ -189,17 +192,18 @@ abstract class DataSource implements \ArrayAccess{
 						$t = $this->findEntityTable($v,$k);
 						$pk = $this[$t]->getPrimaryKey();
 						if(isset($v->$pk))
-							$this[$t][$v->$pk] = $v;
+							$oneUp[$t][$v->$pk] = $v;
 						else
-							$this[$t][] = $v;
+							$oneNew[$t][] = $v;
 						$rc = $k.'_'.$pk;
 						$properties[$rc] = $obj->$rc = $v->$pk;
 						$addFK = [$type,$t,$rc,$pk,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
+						$obj->$key = $v;
 					break;
 					case 'many':
-						foreach($v as $val){
+						foreach($v as &$val){
 							if(is_array($val))
 								$val = $this->arrayToEntity($val,$k);
 							$t = $this->findEntityTable($val,$k);
@@ -209,14 +213,15 @@ abstract class DataSource implements \ArrayAccess{
 							$addFK = [$t,$type,$rc,$primaryKey,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
-						}						
+						}
+						$obj->$key = $v;
 					break;
 					case 'many2many':
 						$inter = [$type,$k];
 						sort($inter);
 						$inter = implode('_',$inter);
 						$rc = $type.'_'.$primaryKey;
-						foreach($v as $val){
+						foreach($v as &$val){
 							if(is_array($val))
 								$val = $this->arrayToEntity($val,$k);
 							$t = $this->findEntityTable($val,$k);
@@ -234,11 +239,26 @@ abstract class DataSource implements \ArrayAccess{
 						$addFK = [$inter,$type,$rc,$primaryKey,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
+						$obj->$key = $v;
 					break;
 				}
 			}
 			else{
 				$properties[$k] = $v;
+			}
+		}
+		
+		$this->trigger($type,'beforeRecursive',$obj,true,true);
+		$this->trigger($type,'beforePut',$obj);
+		
+		foreach($oneNew as $t=>$ones){
+			foreach($ones as $one){
+				$this[$t][] = $one;
+			}
+		}
+		foreach($oneUp as $t=>$ones){
+			foreach($ones as $i=>$one){
+				$this[$t][$i] = $one;
 			}
 		}
 		
@@ -306,6 +326,7 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		
 		$this->trigger($type,'afterPut',$obj);
+		$this->trigger($type,'afterRecursive',$obj,true,false);
 		return $r;
 	}
 	
@@ -325,8 +346,46 @@ abstract class DataSource implements \ArrayAccess{
 		$this->entityFactory = $factory;
 	}
 	
-	function trigger($type, $event, $row){
-		return $this[$type]->trigger($event, $row);
+	function trigger($type, $event, $row, $recursive=false, $flow=null){
+		return $this[$type]->trigger($event, $row, $recursive, $flow);
+	}
+	function triggerExec($events, $type, $event, $row, $recursive=false, $flow=null){
+		if($recursive){
+			if($this->recursiveStorage->contains($row))
+				return;
+			if($flow)
+				$this->recursiveStorage->attach($row);
+		}
+
+		if($row instanceof Observer){
+			foreach($events as $calls){
+				foreach($calls as $call){
+					if(is_string($call))
+						call_user_func([$row,$call], $this);
+					else
+						call_user_func($call, $row, $this);
+				}
+			}
+		}
+		
+		if($recursive){
+			foreach($row as $v){
+				if(is_array($v)){
+					foreach($v as $k=>$val){
+						if(is_object($val)){
+							$type = $this->findEntityTable($val,$k);
+							$this->trigger($type, $event, $val, true, $flow);
+						}
+					}
+				}
+				elseif(is_object($v)){
+					$type = $this->findEntityTable($val,$k);
+					$this->trigger($type, $event, $v, true, $flow);
+				}
+			}
+			if($flow===false)
+				$this->recursiveStorage->detach($row);
+		}
 	}
 	
 	function create($mixed){
@@ -372,8 +431,6 @@ abstract class DataSource implements \ArrayAccess{
 		if(func_num_args()<2){
 			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
 			$type = $this->findEntityTable($obj);
-			//$pk = $this[$type]->getPrimaryKey();
-			//$id = $obj->$pk;
 			$id = $obj;
 		}
 		else{
