@@ -1,6 +1,7 @@
 <?php
 namespace RedBase;
 class Entity implements Observer{
+	//function beforeRecursive(){}
 	//function beforePut(){}
 	//function beforeCreate(){}
 	//function beforeRead(){}

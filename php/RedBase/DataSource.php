@@ -235,6 +235,7 @@ abstract class DataSource implements \ArrayAccess{
 							$addFK = [$inter,$t,$rc2,$pk,$xclusive];
 							if(!in_array($addFK,$fk))
 								$fk[] = $addFK;
+							$obj->{'_link_'.$inter} = $interm;
 						}
 						$addFK = [$inter,$type,$rc,$primaryKey,$xclusive];
 						if(!in_array($addFK,$fk))
