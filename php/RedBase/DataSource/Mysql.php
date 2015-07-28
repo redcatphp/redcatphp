@@ -361,6 +361,7 @@ class Mysql extends SQL{
 	}
 	
 	function fulltextAvailableOnInnoDB(){
+		return false;
 		$this->connect();
 		if($this->isMariaDB)
 			return version_compare($this->version,'10.0.5','>=');
@@ -383,7 +384,7 @@ class Mysql extends SQL{
 		$sufxL = -1*strlen($this->ftsTableSuffix);
 		$columns = [];
 		foreach($this->getColumns($type) as $col=>$colType){
-			if((substr($colType,0,7)=='varchar'||$colType=='text'||$colType=='longtext')
+			if((strtolower(substr($colType,0,7))=='varchar'||strtolower($colType)=='text'||strtolower($colType=='longtext'))
 				&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 				$columns[] = $col;
 		}
@@ -412,8 +413,9 @@ class Mysql extends SQL{
 	}
 	function makeFtsTableAndIndex($type,&$columns=[],$primaryKey='id',$uniqTextKey='uniq'){
 		$table = $this->escTable($type);
-		$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
-		$ftsMap = $this->getFtsMap($type.$this->ftsTableSuffix);
+		$ftsType = $type.$this->ftsTableSuffix;
+		$ftsTable = $this->escTable($ftsType);
+		$ftsMap = $this->getFtsMap($ftsType);
 		if(empty($columns)){
 			$columns = $this->autoFillTextColumns($type,$uniqTextKey);
 			if(empty($columns))
@@ -421,7 +423,7 @@ class Mysql extends SQL{
 			$indexName = '_auto';
 			sort($columns);
 			if(isset($ftsMap[$indexName])&&$ftsMap[$indexName]!==$columns){
-				$this->execute('ALTER TABLE '.$table.' DROP INDEX `'.$indexName.'`');
+				$this->execute('ALTER TABLE '.$ftsTable.' DROP INDEX `'.$indexName.'`');
 				unset($ftsMap[$indexName]);
 			}
 		}
@@ -429,8 +431,24 @@ class Mysql extends SQL{
 			sort($columns);
 			$indexName = implode('_',$columns);
 		}
-		if(!$this->tableExists($type.$this->ftsTableSuffix)){
-			$pTable = $this->prefixTable($type);
+		$pTable = $this->prefixTable($type);
+		$exist = $this->tableExists($ftsType);
+		$makeColumns = $columns;
+		if($exist){
+			$oldColumns = array_keys($this->getColumns($ftsType));
+			foreach($columns as $col){
+				if(!in_array($col,$oldColumns)){
+					$this->execute('DROP TABLE '.$ftsTable);
+					foreach($oldColumns as $col){
+						if(!in_array($col,$makeColumns))
+							$makeColumns[] = $col;
+					}
+					$exist = false;
+					break;
+				}
+			}
+		}
+		if(!$exist){
 			$pk = $this->esc($primaryKey);
 			$cols = '`'.implode('`,`',$columns).'`';
 			$newCols = 'NEW.`'.implode('`,NEW.`',$columns).'`';
@@ -443,6 +461,9 @@ class Mysql extends SQL{
 			$colsDef = implode(' TEXT NULL,',$columns).' TEXT NULL';
 			$this->execute('CREATE TABLE '.$ftsTable.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, '.$colsDef.' ) ENGINE = MyISAM DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 			try{
+				$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_insert');
+				$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_update');
+				$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_delete');
 				$this->execute("CREATE TRIGGER {$pTable}_insert AFTER INSERT ON {$table} FOR EACH ROW INSERT INTO {$ftsTable}({$pk}, {$cols}) VALUES(NEW.{$pk}, {$newCols})");
 				$this->execute("CREATE TRIGGER {$pTable}_update AFTER UPDATE ON {$table} FOR EACH ROW UPDATE {$ftsTable} SET {$setCols} WHERE {$pk}=OLD.{$pk}");
 				$this->execute("CREATE TRIGGER {$pTable}_delete AFTER DELETE ON {$table} FOR EACH ROW DELETE FROM {$ftsTable} WHERE {$pk}=OLD.{$pk};");
@@ -457,6 +478,7 @@ class Mysql extends SQL{
 						$this->logger->log("To fix this, in a shell, try: mysql -u USERNAME -p \nset global log_bin_trust_function_creators=1;");
 					}
 				}
+				$this->execute('DROP TABLE '.$ftsTable);
 				throw $e;
 			}
 		}
