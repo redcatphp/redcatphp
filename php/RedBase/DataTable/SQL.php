@@ -49,8 +49,10 @@ class SQL extends DataTable{
 		$this->row = $row = $this->stmt->fetch();
 		if($row){
 			$this->row = $this->dataSource->entityFactory($this->name);
+			$this->trigger('beforeRead',$this->row);
 			foreach($row as $k=>$v)
 				$this->row->$k = $v;
+			$this->trigger('afterRead',$this->row);
 			if($this->useCache)
 				$this->data[$this->row->{$this->primaryKey}] = $this->row;
 		}
