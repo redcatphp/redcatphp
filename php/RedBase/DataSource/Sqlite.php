@@ -252,15 +252,15 @@ class Sqlite extends SQL{
 			if(empty($columns))
 				throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 		}
-		$ftsTableNoQ = $type.$this->ftsTableSuffix;
+		$ftsType = $type.$this->ftsTableSuffix;
 		$pTable = $this->prefixTable($type);
-		$exist = $this->tableExists($ftsTableNoQ);
+		$exist = $this->tableExists($ftsType);
 		$makeColumns = $columns;
 		if($exist){
-			$oldColumns = array_keys($this->getColumns($ftsTableNoQ));
+			$oldColumns = array_keys($this->getColumns($ftsType));
 			foreach($columns as $col){
 				if(!in_array($col,$oldColumns)){
-					$this->execute('DROP TABLE '.$ftsTableNoQ);
+					$this->execute('DROP TABLE '.$ftsType);
 					foreach($oldColumns as $col){
 						if(!in_array($col,$makeColumns))
 							$makeColumns[] = $col;
