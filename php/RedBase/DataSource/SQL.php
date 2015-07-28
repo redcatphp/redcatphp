@@ -37,6 +37,12 @@ abstract class SQL extends DataSource{
 	protected $sqlFiltersRead = [];
 	protected $ftsTableSuffix = '_fulltext_';
 	
+	protected $separator = ',';
+	protected $agg = 'GROUP_CONCAT';
+	protected $aggCaster = '';
+	protected $sumCaster = '';
+	protected $concatenator;
+	
 	private $cacheTables;
 	private $cacheColumns = [];
 	
@@ -838,6 +844,19 @@ abstract class SQL extends DataSource{
 	
 	function getFtsTableSuffix(){
 		return $this->ftsTableSuffix;
+	}
+	
+	function getAgg(){
+		return $this->agg;
+	}
+	function getAggCaster(){
+		return $this->aggCaster;
+	}
+	function getSeparator(){
+		return $this->separator;
+	}
+	function getConcatenator(){
+		return $this->concatenator;
 	}
 	
 	abstract function scanType($value,$flagSpecial=false);

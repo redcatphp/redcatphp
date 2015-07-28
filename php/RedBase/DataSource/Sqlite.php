@@ -7,6 +7,13 @@ class Sqlite extends SQL{
 	const C_DATATYPE_TEXT      = 2;
 	const C_DATATYPE_SPECIFIED = 99;
 	protected $quoteCharacter = '`';
+	
+	protected $separator = ',';
+	protected $agg = 'GROUP_CONCAT';
+	protected $aggCaster = '';
+	protected $sumCaster = '';
+	protected $concatenator = "cast(X'1D' as text)";
+	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [

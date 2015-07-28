@@ -20,6 +20,13 @@ class Mysql extends SQL{
 	protected $quoteCharacter = '`';
 	protected $isMariaDB;
 	protected $version;
+	
+	protected $separator = 'SEPARATOR';
+	protected $agg = 'GROUP_CONCAT';
+	protected $aggCaster = '';
+	protected $sumCaster = '';
+	protected $concatenator = '0x1D';
+	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [

@@ -16,6 +16,13 @@ class Pgsql extends SQL{
 	protected $defaultValue = 'DEFAULT';
 	protected $quoteCharacter = '"';
 	protected $version;
+	
+	protected $separator = ',';
+	protected $agg = 'string_agg';
+	protected $aggCaster = '::text';
+	protected $sumCaster = '::int';
+	protected $concatenator = 'chr(29)';
+	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -40,8 +47,11 @@ class Pgsql extends SQL{
 		if($this->isConnected)
 			return;
 		parent::connect();
-		$serverVersion = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
-		$this->version = floatval($serverVersion);
+		$this->version = floatval($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION));
+		if($this->version<9){
+			$this->separator = '),';
+			$this->agg = 'array_to_string(array_agg';
+		}
 	}
 	function createDatabase($dbname){
 		$this->pdo->exec('CREATE DATABASE "'.$dbname.'"');
