@@ -184,11 +184,11 @@ class SQL extends DataTable{
 						$rels = [$typeParent,$type];
 						sort($rels);
 						$imp = implode('_',$rels);
-						$impt = $q.$prefix.$imp.$q.($superalias?' as '.$q.$prefix.$superalias.'__'.$imp.$q:'');
+						$impt = $q.$prefix.$imp.$q.($superalias?' AS '.$q.$prefix.$superalias.'__'.$imp.$q:'');
 						if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->tableExists($imp))){
 							if($superalias)
 								$imp = $superalias.'__'.$imp;
-							$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
+							$joint = $type!=$alias?"{$q}{$prefix}$type{$q} AS {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
 							$sql[] = [$impt];
 							$sql[] = [
 								$joint,
@@ -219,7 +219,11 @@ class SQL extends DataTable{
 				break;
 			}
 		}
-		$Qt = $this->createSelect();
+		$Qt = new Select(
+			null,
+			$this->dataSource->getQuoteCharacter(),
+			$this->dataSource->getTablePrefix()
+		);
 		$i = 0;
 		foreach($sql as $_sql){
 			if($i){
@@ -245,9 +249,9 @@ class SQL extends DataTable{
 		if(!$colAlias)
 			$colAlias = ($superalias?$superalias:$alias).$relation.$col;
 		if($colAlias)
-			$colAlias = ' as '.$q.$colAlias.$q;
+			$colAlias = ' AS '.$q.$colAlias.$q;
 		if($autoSelectId)
-			$idAlias = ' as '.$q.($superalias?$superalias:$alias).$relation.'id'.$q;
+			$idAlias = ' AS '.$q.($superalias?$superalias:$alias).$relation.'id'.$q;
 		$Qt2 = $Qt->getClone();
 		if($exist){
 			switch($relation){
