@@ -241,16 +241,19 @@ class Sqlite extends SQL{
 		return $this->ftsTableSuffix;
 	}
 	function makeFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
+		$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
+		$table = $this->escTable($type);
 		if(empty($columns)){
 			$sufxL = -1*strlen($this->ftsTableSuffix);
 			foreach($this->getColumns($type) as $col=>$colType){
-				if($colType=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+				if(strtolower($colType)=='text'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
 					$columns[] = $col;
 			}
 			if(empty($columns))
 				throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
 		}
 		$ftsTableNoQ = $type.$this->ftsTableSuffix;
+		$pTable = $this->prefixTable($type);
 		$exist = $this->tableExists($ftsTableNoQ);
 		$makeColumns = $columns;
 		if($exist){
@@ -268,8 +271,6 @@ class Sqlite extends SQL{
 			}
 		}
 		if(!$exist){
-			$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
-			$table = $this->escTable($type);
 			if($fullTextSearchLocale)
 				$tokenize = 'icu '.$fullTextSearchLocale;
 			else
@@ -277,8 +278,11 @@ class Sqlite extends SQL{
 			$pk = $this->esc($primaryKey);
 			$cols = '`'.implode('`,`',$makeColumns).'`';
 			$newCols = 'NEW.`'.implode('`,NEW.`',$makeColumns).'`';
-			$pTable = $this->prefixTable($type);
 			$this->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
+			$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_bu');
+			$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_bd');
+			$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_au');
+			$this->execute('DROP TRIGGER IF EXISTS '.$pTable.'_ad');
 			$this->execute("CREATE TRIGGER {$pTable}_bu BEFORE UPDATE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=OLD.{$pk}; END;");
 			$this->execute("CREATE TRIGGER {$pTable}_bd BEFORE DELETE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=OLD.{$pk}; END;");
 			$this->execute("CREATE TRIGGER {$pTable}_au AFTER UPDATE ON {$table} BEGIN INSERT INTO {$ftsTable}(docid, {$cols}) VALUES(NEW.{$pk}, {$newCols}); END;");
