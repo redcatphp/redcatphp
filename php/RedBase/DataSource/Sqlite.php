@@ -241,25 +241,42 @@ class Sqlite extends SQL{
 		return $this->ftsTableSuffix;
 	}
 	function makeFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
-		if(!$this->tableExists($type.$this->ftsTableSuffix)){
+		if(empty($columns)){
+			$sufxL = -1*strlen($this->ftsTableSuffix);
+			foreach($this->getColumns($type) as $col=>$colType){
+				if($colType=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
+					$columns[] = $col;
+			}
+			if(empty($columns))
+				throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
+		}
+		$ftsTableNoQ = $type.$this->ftsTableSuffix;
+		$exist = $this->tableExists($ftsTableNoQ);
+		$makeColumns = $columns;
+		if($exist){
+			$oldColumns = array_keys($this->getColumns($ftsTableNoQ));
+			foreach($columns as $col){
+				if(!in_array($col,$oldColumns)){
+					$this->execute('DROP TABLE '.$ftsTableNoQ);
+					foreach($oldColumns as $col){
+						if(!in_array($col,$makeColumns))
+							$makeColumns[] = $col;
+					}
+					$exist = false;
+					break;
+				}
+			}
+		}
+		if(!$exist){
 			$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
 			$table = $this->escTable($type);
 			if($fullTextSearchLocale)
 				$tokenize = 'icu '.$fullTextSearchLocale;
 			else
 				$tokenize = 'porter';
-			if(empty($columns)){
-				$sufxL = -1*strlen($this->ftsTableSuffix);
-				foreach($this->getColumns($type) as $col=>$colType){
-					if($colType=='TEXT'&&($col==$uniqTextKey||substr($col,$sufxL)==$this->ftsTableSuffix))
-						$columns[] = $col;
-				}
-				if(empty($columns))
-					throw new Exception('Unable to find columns from "'.$table.'" to create FTS table "'.$ftsTable.'"');
-			}
 			$pk = $this->esc($primaryKey);
-			$cols = '`'.implode('`,`',$columns).'`';
-			$newCols = 'NEW.`'.implode('`,NEW.`',$columns).'`';
+			$cols = '`'.implode('`,`',$makeColumns).'`';
+			$newCols = 'NEW.`'.implode('`,NEW.`',$makeColumns).'`';
 			$pTable = $this->prefixTable($type);
 			$this->execute('CREATE VIRTUAL TABLE '.$ftsTable.' USING fts4('.$cols.', tokenize='.$tokenize.')');
 			$this->execute("CREATE TRIGGER {$pTable}_bu BEFORE UPDATE ON {$table} BEGIN DELETE FROM {$ftsTable} WHERE docid=OLD.{$pk}; END;");
