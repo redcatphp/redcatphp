@@ -6,6 +6,7 @@ class SQL extends DataTable{
 	private $stmt;
 	private $row;
 	protected $select;
+	protected $hasSelectRelational;
 	function __construct($name,$primaryKey='id',$uniqTextKey='uniq',$dataSource){
 		parent::__construct($name,$primaryKey,$uniqTextKey,$dataSource);		
 		$this->select = $this->createSelect();
@@ -17,11 +18,17 @@ class SQL extends DataTable{
 		return $this->dataSource->fetch($this->select->getQuery(),$this->select->getParams());
 	}
 	function getRow(){
-		return $this->dataSource->getRow($this->select->getQuery(),$this->select->getParams());
+		$row = $this->dataSource->getRow($this->select->getQuery(),$this->select->getParams());
+		if($this->hasSelectRelational)
+			$row = $this->dataSource->explodeAgg($row);
+		return $row;
 	}
 	function getAll(){
 		$table = [];
-		foreach($this->dataSource->getAll($this->select->getQuery(),$this->select->getParams()) as $row){
+		$all = $this->dataSource->getAll($this->select->getQuery(),$this->select->getParams());
+		if($this->hasSelectRelational)
+			$all = $this->dataSource->explodeAggTable($all);
+		foreach($all as $row){
 			if(isset($row[$this->primaryKey]))
 				$table[$row[$this->primaryKey]] = $row;
 			else
@@ -46,15 +53,20 @@ class SQL extends DataTable{
 		return (bool)$this->row;
 	}
 	function next(){
-		$this->row = $row = $this->stmt->fetch();
+		$this->row = $this->dataSource->entityFactory($this->name);
+		$this->trigger('beforeRead',$this->row);
+		$row = $this->stmt->fetch();
 		if($row){
-			$this->row = $this->dataSource->entityFactory($this->name);
-			$this->trigger('beforeRead',$this->row);
+			if($this->hasSelectRelational)
+				$row = $this->dataSource->explodeAgg($row);
 			foreach($row as $k=>$v)
 				$this->row->$k = $v;
-			$this->trigger('afterRead',$this->row);
 			if($this->useCache)
 				$this->data[$this->row->{$this->primaryKey}] = $this->row;
+		}
+		$this->trigger('afterRead',$this->row);
+		if(!$row){
+			$this->row = null;
 		}
 	}
 	function count(){
@@ -113,6 +125,175 @@ class SQL extends DataTable{
 	function __clone(){
 		if(isset($this->select))
 			$this->select = clone $this->select;
+	}
+	
+	function selectRelational($select,$colAlias=null){
+		$this->hasSelectRelational = true;
+		$table = $this->dataSource->escTable($this->name);
+		$this->select($table.'.*');
+		if(is_array($select)){
+			foreach($select as $k=>$s)
+				if(is_integer($k))
+					$this->selectRelationnal($s,null);
+				else
+					$this->selectRelationnal($k,$s);
+			return $this;
+		}
+		$this->processRelational($select,$colAlias,true);
+		return $this;
+	}
+	function processRelational($select,$colAlias=null,$autoSelectId=false){
+		$sql = [];
+		$l = strlen($select);
+		$type = '';
+		$typeParent = $this->name;
+		$prefix = $this->dataSource->getTablePrefix();
+		$q = $this->dataSource->getQuoteCharacter();
+		$aliasParent = $prefix.$this->name;
+		$shareds = [];
+		for($i=0;$i<$l;$i++){
+			switch($select[$i]){
+				case '>': //many
+					list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+					if($superalias)
+						$alias = $superalias.'__'.$alias;
+					$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
+					if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->columnExists($type,$typeParent.'_id'))){
+						$sql[] = [$joint,"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$alias{$q}.{$q}{$typeParent}_id{$q}"];
+					}
+					$typeParent = $type;
+					$aliasParent = $prefix.$alias;
+					$type = '';
+					$relation = '>';
+				break;
+				case '<':
+					list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+					if(substr($type,-1)=='2'){
+						if($type==$alias)
+							$alias = substr($alias,0,-1);
+						$type = substr($type,0,-1);
+						$two = true;
+					}
+					else
+						$two = false;
+						
+					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //many2many
+						$i++;
+						if($superalias)
+							$alias = $superalias.'__'.($alias?$alias:$type);
+						$rels = [$typeParent,$type];
+						sort($rels);
+						$imp = implode('_',$rels);
+						$impt = $q.$prefix.$imp.$q.($superalias?' as '.$q.$prefix.$superalias.'__'.$imp.$q:'');
+						if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->tableExists($imp))){
+							if($superalias)
+								$imp = $superalias.'__'.$imp;
+							$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
+							$sql[] = [$impt];
+							$sql[] = [
+								$joint,
+								"{$q}{$prefix}$alias{$q}.{$q}id{$q}={$q}{$prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_id{$q}",
+								"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_id{$q}"
+							];
+							if(!$two)
+								$shareds[] = $type;
+						}
+						$typeParent = $type;
+						$aliasParent = $prefix.$alias;
+						$relation = '<>';
+					}
+					else{ //one
+						if($superalias)
+							$alias = $superalias.'__'.$alias;
+						$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
+						if($exist=($this->dataSource->tableExists($typeParent)&&$this->dataSource->columnExists($typeParent,$type.'_id'))){
+							$sql[] = [$joint,"{$q}{$prefix}$alias{$q}.{$q}id{$q}={$q}{$prefix}$typeParent{$q}.{$q}{$type}_id{$q}"];
+						}
+						$typeParent = $type;
+						$relation = '<';
+					}
+					$type = '';
+				break;
+				default:
+					$type .= $select[$i];
+				break;
+			}
+		}
+		$Qt = $this->createSelect();
+		$i = 0;
+		foreach($sql as $_sql){
+			if($i){
+				$Qt->join(array_shift($_sql));
+				if(!empty($_sql)){
+					$Qt->joinOn(implode(' AND ',$_sql));
+				}
+			}
+			else{
+				$Qt->from(array_shift($_sql));
+				if(!empty($_sql)){
+					$Qt->where(implode(' AND ',$_sql));
+				}
+			}
+			$i++;
+		}		
+		$table = $typeParent;
+		$col = trim($type);
+		$agg = $this->dataSource->getAgg();
+		$aggc = $this->dataSource->getAggCaster();
+		$sep = $this->dataSource->getSeparator();
+		$cc = $this->dataSource->getConcatenator();
+		if(!$colAlias)
+			$colAlias = ($superalias?$superalias:$alias).$relation.$col;
+		if($colAlias)
+			$colAlias = ' as '.$q.$colAlias.$q;
+		if($autoSelectId)
+			$idAlias = ' as '.$q.($superalias?$superalias:$alias).$relation.'id'.$q;
+		$Qt2 = $Qt->getClone();
+		if($exist){
+			switch($relation){
+				case '<':
+					$Qt->select($this->dataSource->getReadSnippetCol($table,$col,$q.$prefix.$alias.$q.'.'.$q.$col.$q));
+					$this->select('('.$Qt.') '.$colAlias);
+					if($autoSelectId){
+						$Qt2->select($q.$prefix.$alias.$q.'.'.$q.'id'.$q);
+						$this->select('('.$Qt2.') '.$idAlias);
+					}
+				break;
+				case '>':
+					$Qt->select("{$agg}(COALESCE(".$this->dataSource->getReadSnippetCol($table,$col,"{$q}{$prefix}{$alias}{$q}.{$q}{$col}{$q}")."{$aggc},''{$aggc}) {$sep} {$cc})");
+					$this->select('('.$Qt.') '.$colAlias);
+					if($autoSelectId){
+						$Qt2->select("{$agg}(COALESCE({$q}{$prefix}{$alias}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})");
+						$this->select('('.$Qt2.') '.$idAlias);
+					}
+				break;
+				case '<>':
+					$Qt->select("{$agg}(".$this->dataSource->getReadSnippetCol($table,$col,"{$q}{$prefix}{$alias}{$q}.{$q}{$col}{$q}")."{$aggc} {$sep} {$cc})");
+					$this->select('('.$Qt.') '.$colAlias);
+					if($autoSelectId){
+						$Qt2->select("{$agg}({$q}{$prefix}{$alias}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})");
+						$this->select('('.$Qt2.') '.$idAlias);
+					}
+				break;
+			}
+		}
+	}
+	static function specialTypeAliasExtract($type,&$superalias=null){
+		$alias = null;
+		if(($p=strpos($type,':'))!==false){
+			if(isset($type[$p+1])&&$type[$p+1]==':'){
+				$superalias = trim(substr($type,$p+2));
+				$type = trim(substr($type,0,$p));
+			}
+			else{
+				$alias = trim(substr($type,$p+1));
+				$type = trim(substr($type,0,$p));
+			}
+		}
+		return [$type,$alias?$alias:$type];
+	}
+	function hasSelectRelational(){
+		return $this->hasSelectRelational;
 	}
 	
 	function tableJoin($table, $join, array $params = null){

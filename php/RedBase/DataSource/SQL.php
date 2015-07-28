@@ -859,6 +859,52 @@ abstract class SQL extends DataSource{
 		return $this->concatenator;
 	}
 	
+	static function explodeAgg($data){
+		$_gs = chr(0x1D);
+		$row = [];
+		foreach(array_keys($data) as $col){
+			$multi = stripos($col,'>');
+			$sep = stripos($col,'<>')?'<>':(stripos($col,'<')?'<':($multi?'>':false));
+			if($sep){
+				$x = explode($sep,$col);
+				$tb = &$x[0];
+				$_col = &$x[1];
+				if(!isset($row[$tb]))
+					$row[$tb] = [];
+				if(empty($data[$col])){
+					if(!isset($row[$tb]))
+						$row[$tb] = [];
+				}
+				elseif($multi){
+					$_x = explode($_gs,$data[$col]);
+					if(isset($data[$tb.$sep.'id'])){
+						$_idx = explode($_gs,$data[$tb.$sep.'id']);
+						foreach($_idx as $_i=>$_id)
+							$row[$tb][$_id][$_col] = $_x[$_i];
+					}
+					else{
+						foreach($_x as $_i=>$v)
+							$row[$tb][$_i][$_col] = $v;
+					}
+				}
+				else
+					$row[$tb][$_col] = $data[$col];
+			}
+			else
+				$row[$col] = $data[$col];
+		}
+		return $row;
+	}
+	static function explodeAggTable($data){
+		$table = [];
+		if(is_array($data)||$data instanceof \ArrayAccess)
+			foreach($data as $i=>$d){
+				$id = isset($d['id'])?$d['id']:$i;
+				$table[$id] = self::explodeAgg($d);
+			}
+		return $table;
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
