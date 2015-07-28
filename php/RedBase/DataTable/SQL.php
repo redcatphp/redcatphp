@@ -128,6 +128,15 @@ class SQL extends DataTable{
 			$this->select = clone $this->select;
 	}
 	
+	function selectMany2many($select,$colAlias=null){
+		return $this->selectRelational('<>'.$select,$colAlias);
+	}
+	function selectMany($select,$colAlias=null){
+		return $this->selectRelational('>'.$select,$colAlias);
+	}
+	function selectOne($select,$colAlias=null){
+		return $this->selectRelational('<'.$select,$colAlias);
+	}
 	function selectRelational($select,$colAlias=null){
 		$this->hasSelectRelational = true;
 		$table = $this->dataSource->escTable($this->name);
