@@ -565,7 +565,7 @@ abstract class SQL extends DataSource{
 		return !empty($sqlFilters)?implode(',',$sqlFilters):'';
 	}
 	protected function getWriteSnippet($type,$property){
-		if (isset($this->sqlFiltersWrite[$type][$property])){
+		if(isset($this->sqlFiltersWrite[$type][$property])){
 			$slot = $this->sqlFiltersWrite[$type][$property];
 			if(strpos($slot,'(')===false)
 				$slot = $slot.'(?)';
@@ -574,6 +574,17 @@ abstract class SQL extends DataSource{
 			$slot = '?';
 		}
 		return $slot;
+	}
+	function getReadSnippetCol($type,$col,$s=null){
+		if(!$s)
+			$s = $this->escTable($type).'.'.$this->esc($col);
+		if(isset($this->sqlFiltersRead[$type][$col][0])){
+			$func = $this->sqlFiltersRead[$type][$col][0];
+			if(strpos($func,'(')===false)
+				$s = $func.'('.$s.')';
+			else
+				$s = str_replace('?',$s,$func);
+		return $s;
 	}
 	
 	function check($struct){
