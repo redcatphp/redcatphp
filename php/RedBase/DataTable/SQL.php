@@ -1,5 +1,6 @@
 <?php
 namespace RedBase\DataTable;
+use RedBase\Exception;
 use RedBase\DataTable;
 use RedBase\SqlComposer\Select;
 class SQL extends DataTable{
@@ -151,34 +152,24 @@ class SQL extends DataTable{
 		$q = $this->dataSource->getQuoteCharacter();
 		$aliasParent = $prefix.$this->name;
 		$shareds = [];
-		for($i=0;$i<$l;$i++){
-			switch($select[$i]){
-				case '>': //many
-					list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
-					if($superalias)
-						$alias = $superalias.'__'.$alias;
-					$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
-					if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->columnExists($type,$typeParent.'_id'))){
-						$sql[] = [$joint,"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$alias{$q}.{$q}{$typeParent}_id{$q}"];
-					}
-					$typeParent = $type;
-					$aliasParent = $prefix.$alias;
-					$type = '';
-					$relation = '>';
-				break;
-				case '<':
-					list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
-					if(substr($type,-1)=='2'){
-						if($type==$alias)
-							$alias = substr($alias,0,-1);
-						$type = substr($type,0,-1);
-						$two = true;
-					}
-					else
-						$two = false;
-						
-					if(isset($select[$i+1])&&$select[$i+1]=='>'){ //many2many
-						$i++;
+		$selection = explode('~',ltrim(str_replace(['<','>','<>','<~~>','.'],['~<~','~>~','~<>~','<>','~.~'],$select),'~'));
+		$relation = null;
+		foreach($selection as $i=>$token){
+			if(in_array($token,['<>','<','>','.'])){
+				if(!isset($selection[$i+1]))
+					throw new Exception('Unexpected end of relational declaration expecting table or column name after "'.$token.'" in '.$select);				
+				switch($token){
+					case '<>':
+						$type = $selection[$i+1];
+						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						if(substr($type,-1)=='2'){
+							if($type==$alias)
+								$alias = substr($alias,0,-1);
+							$type = substr($type,0,-1);
+							$two = true;
+						}
+						else
+							$two = false;
 						if($superalias)
 							$alias = $superalias.'__'.($alias?$alias:$type);
 						$rels = [$typeParent,$type];
@@ -200,9 +191,32 @@ class SQL extends DataTable{
 						}
 						$typeParent = $type;
 						$aliasParent = $prefix.$alias;
+						$type = '';
 						$relation = '<>';
-					}
-					else{ //one
+					break;
+					case '>':
+						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						if($superalias)
+							$alias = $superalias.'__'.$alias;
+						$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
+						if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->columnExists($type,$typeParent.'_id'))){
+							$sql[] = [$joint,"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$alias{$q}.{$q}{$typeParent}_id{$q}"];
+						}
+						$typeParent = $type;
+						$aliasParent = $prefix.$alias;
+						$type = '';
+						$relation = '>';
+					break;
+					case '<':
+						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						if(substr($type,-1)=='2'){
+							if($type==$alias)
+								$alias = substr($alias,0,-1);
+							$type = substr($type,0,-1);
+							$two = true;
+						}
+						else
+							$two = false;
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
@@ -210,13 +224,13 @@ class SQL extends DataTable{
 							$sql[] = [$joint,"{$q}{$prefix}$alias{$q}.{$q}id{$q}={$q}{$prefix}$typeParent{$q}.{$q}{$type}_id{$q}"];
 						}
 						$typeParent = $type;
+						$type = '';
 						$relation = '<';
-					}
-					$type = '';
-				break;
-				default:
-					$type .= $select[$i];
-				break;
+					break;
+					case '.':
+						$type = $selection[$i+1];
+					break;
+				}
 			}
 		}
 		$Qt = new Select(
