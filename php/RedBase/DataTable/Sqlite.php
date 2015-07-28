@@ -18,10 +18,10 @@ class Sqlite extends SQL{
 		$table = $this->dataSource->escTable($this->name);
 		$pk = $this->dataSource->esc($this->primaryKey);
 		$this->dataSource->makeFtsTable($this->name,$columns,$this->primaryKey,$this->uniqTextKey,$this->fullTextSearchLocale);
-		$this->select("snippet($ftsTable,?,?,?,?,?) as _snippet",
+		$this->select('snippet('.$ftsTable.',?,?,?,?,?) as _snippet',
 			[$start,$end,$sep,(int)$targetColumnIndex,(int)$tokensNumber]);
-		$this->select("docid as $pk");
-		$this->select("$table.*");
+		$this->select('docid as '.$pk);
+		$this->select($table.'.*');
 		$this->unFrom($table);
 		$limit = $this->getLimit();
 		$offset = $this->getOffset();
