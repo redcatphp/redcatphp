@@ -43,7 +43,7 @@ class Mysql extends SQL{
 		$this->dataSource->makeFtsTableAndIndex($this->name,$columns,$this->primaryKey,$this->uniqTextKey);
 		$cols = '`'.implode('`,`',$columns).'`';
 		$pk = $this->dataSource->esc($this->primaryKey);
-		$this->select("$table.*");
+		$this->select($table.'.*');
 		$this->unFrom($table);
 		$limit = $this->getLimit();
 		$offset = $this->getOffset();
