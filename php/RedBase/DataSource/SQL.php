@@ -584,6 +584,7 @@ abstract class SQL extends DataSource{
 				$s = $func.'('.$s.')';
 			else
 				$s = str_replace('?',$s,$func);
+		}
 		return $s;
 	}
 	
