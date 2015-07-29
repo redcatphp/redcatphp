@@ -56,6 +56,15 @@ class Facade{
 	static function delete($mixed){
 		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
 	}
+	static function put($mixed){
+		return call_user_func_array([self::$currentDataSource,__FUNCTION__],func_get_args());
+	}
+	static function readId($type,$id){
+		return call_user_func_array([self::$currentDataSource,'readId'],func_get_args());
+	}
+	static function exists($type,$id){
+		return call_user_func_array([self::$currentDataSource,'readId'],func_get_args());
+	}
 	
 	static function dispense($type){
 		return self::$currentDataSource->entityFactory($type);
