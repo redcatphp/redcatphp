@@ -29,7 +29,9 @@ class Session{
 	function __construct(SessionHandlerInterface $sessionHandler,
 		$name,
 		$saveRoot,
-		$server=null
+		$server=null,
+		$cookieLifetime=0
+		
 	){
 		$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
@@ -40,6 +42,7 @@ class Session{
 		$this->server = $server;
 		$this->cookiePath = $this->getSuffixHref();
 		$this->cookieDomain = $this->getServerHref();
+		$this->cookieLifetime = $cookieLifetime;
 		$this->checkBlocked();
 		if(!isset($sessionHandler))
 			$sessionHandler = new SessionHandler();
