@@ -22,7 +22,7 @@ class Sqlite extends SQL{
 			self::C_DATATYPE_TEXT    => 'TEXT',
 		];
 		foreach ( $this->typeno_sqltype as $k => $v )
-			$this->sqltype_typeno[$v] = $k;
+			$this->sqltype_typeno[strtolower($v)] = $k;
 	}
 	function createDatabase($dbname){}
 	function scanType( $value, $flagSpecial = FALSE ){
@@ -179,6 +179,7 @@ class Sqlite extends SQL{
 		return true;
 	}
 	function columnCode( $typedescription, $includeSpecials = FALSE ){
+		$typedescription = strtolower($typedescription);
 		return  ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription]:99;
 	}
 	function getTypeForID(){

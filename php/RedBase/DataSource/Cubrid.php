@@ -23,9 +23,9 @@ class Cubrid extends SQL{
 		];
 		$this->sqltype_typeno = [];
 		foreach( $this->typeno_sqltype as $k => $v ){
-			$this->sqltype_typeno[trim($v)] = $k;
+			$this->sqltype_typeno[strtolower(trim($v))] = $k;
 		}
-		$this->sqltype_typeno['STRING(1073741823)'] = self::C_DATATYPE_STRING;
+		$this->sqltype_typeno['string(1073741823)'] = self::C_DATATYPE_STRING;
 	}
 	function connect(){
 		if($this->isConnected)
@@ -160,6 +160,7 @@ class Cubrid extends SQL{
 		return $list;
 	}
 	function columnCode( $typedescription, $includeSpecials = FALSE ){
+		$typedescription = strtolower($typedescription);
 		$r = ( ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription] : self::C_DATATYPE_SPECIFIED );
 		if ( $includeSpecials )
 			return $r;

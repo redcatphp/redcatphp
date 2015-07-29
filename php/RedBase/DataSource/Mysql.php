@@ -212,6 +212,7 @@ class Mysql extends SQL{
 		return $keyInfoList;
 	}
 	function columnCode($typedescription, $includeSpecials = FALSE ){
+		$typedescription = strtolower($typedescription);
 		if ( isset( $this->sqltype_typeno[$typedescription] ) )
 			$r = $this->sqltype_typeno[$typedescription];
 		else

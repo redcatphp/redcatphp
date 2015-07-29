@@ -204,6 +204,7 @@ class Pgsql extends SQL{
 		}
 	}
 	function columnCode( $typedescription, $includeSpecials = FALSE ){
+		$typedescription = strtolower($typedescription);
 		$r = isset($this->sqltype_typeno[$typedescription])?$this->sqltype_typeno[$typedescription]:99;
 		if ( $includeSpecials )
 			return $r;
