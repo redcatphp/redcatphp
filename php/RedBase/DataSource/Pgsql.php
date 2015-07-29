@@ -101,7 +101,7 @@ class Pgsql extends SQL{
 		else
 			return self::C_DATATYPE_TEXT;
 	}
-	function getColumns($table){
+	function getColumnsQuery($table){
 		$table = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("SELECT column_name, data_type FROM information_schema.columns WHERE table_name='$table'");
 		$columns = [];
@@ -114,7 +114,7 @@ class Pgsql extends SQL{
 		$table = $this->escTable($table);
 		$this->execute('CREATE TABLE '.$table.' ('.$pk.' SERIAL PRIMARY KEY)');
 	}
-	function addColumn( $type, $column, $field ){
+	function addColumnQuery( $type, $column, $field ){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable( $table );
@@ -123,7 +123,7 @@ class Pgsql extends SQL{
 			$type = isset( $this->typeno_sqltype[$type] ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumn( $type, $column, $dataType ){
+	function changeColumnQuery( $type, $column, $dataType ){
 		$table   = $this->escTable( $type );
 		$column  = $this->esc( $column );
 		if(is_integer($dataType))

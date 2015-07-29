@@ -46,7 +46,7 @@ class Sqlite extends SQL{
 	function getTablesQuery(){
 		return $this->getCol("SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';");
 	}
-	function getColumns($table){
+	function getColumnsQuery($table){
 		$table      = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("PRAGMA table_info('$table')");
 		$columns    = [];
@@ -58,14 +58,14 @@ class Sqlite extends SQL{
 		$table = $this->escTable($table);
 		$this->execute('CREATE TABLE '.$table.' ( '.$pk.' INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
-	function addColumn($table, $column, $type){
+	function addColumnQuery($table, $column, $type){
 		$column = $this->esc($column);
 		$table  = $this->escTable($table);
 		if(is_integer($type))
 			$type   = $this->typeno_sqltype[$type];
 		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumn($type, $column, $dataType){
+	function changeColumnQuery($type, $column, $dataType){
 		$t = $this->getTable( $type );
 		if(is_integer($dataType))
 			$dataType = $this->typeno_sqltype[$dataType];

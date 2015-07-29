@@ -65,7 +65,7 @@ class Cubrid extends SQL{
 	function getTablesQuery(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 	}
-	function getColumns( $table ){
+	function getColumnsQuery( $table ){
 		$table = $this->escTable( $table );
 		$columnsRaw = $this->getAll( "SHOW COLUMNS FROM $table" );
 		$columns = [];
@@ -80,7 +80,7 @@ class Cubrid extends SQL{
 			.'_'.$pk.'" PRIMARY KEY("'.$pk.'"))';
 		$this->execute( $sql );
 	}
-	function addColumn( $type, $column, $field ){
+	function addColumnQuery( $type, $column, $field ){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable( $table );
@@ -89,7 +89,7 @@ class Cubrid extends SQL{
 			$type   = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute( "ALTER TABLE $table ADD COLUMN $column $type " );
 	}
-	function changeColumn( $type, $property, $dataType ){
+	function changeColumnQuery( $type, $property, $dataType ){
 		$table   = $this->escTable( $type );
 		$column  = $this->esc( $property );
 		if(is_integer($dataType)){

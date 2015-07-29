@@ -140,6 +140,7 @@ abstract class DataSource implements \ArrayAccess{
 		$one2manyNew = [];
 		$many2manyNew = [];
 		$cast = [];
+		$func = [];
 		$fk = [];
 		
 		if(isset($id)&&$uniqTextKey&&!self::canBeTreatedAsInt($id)){
@@ -155,7 +156,6 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		
 		$update = isset($id);
-		
 		foreach($obj as $key=>$v){
 			$k = $key;
 			$xclusive = substr($k,-3)=='_x_';
@@ -178,6 +178,9 @@ abstract class DataSource implements \ArrayAccess{
 				else{
 					if(substr($k,1,5)=='cast_'){
 						$cast[substr($k,6)] = $v;
+					}
+					if(substr($k,1,5)=='func_'){
+						$func[substr($k,6)] = $v;
 					}
 					continue;
 				}
@@ -268,17 +271,16 @@ abstract class DataSource implements \ArrayAccess{
 				$this[$t][$i] = $one;
 			}
 		}
-		
 		if($update){
 			$this->trigger($type,'beforeUpdate',$obj);
-			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast);
+			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast,$func);
 			$this->trigger($type,'afterUpdate',$obj);
 		}
 		else{
 			if(array_key_exists($primaryKey,$properties))
 				unset($properties[$primaryKey]);
 			$this->trigger($type,'beforeCreate',$obj);
-			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey,$cast);
+			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey,$cast,$func);
 			$this->trigger($type,'afterCreate',$obj);
 		}
 		$obj->{$primaryKey} = $r;
@@ -441,6 +443,8 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		elseif(func_num_args()<3){
 			list($type,$obj) = func_get_args();
+			if(is_array($obj))
+				$obj = $this->arrayToEntity($obj);
 			$pk = $this[$type]->getPrimaryKey();
 			$id = $obj->$pk;
 		}
@@ -459,6 +463,16 @@ abstract class DataSource implements \ArrayAccess{
 			list($type,$id) = func_get_args();
 		}
 		return $this[$type]->offsetUnset($id);
+	}
+	function put(){
+		if(func_num_args()<2){
+			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
+			$type = $this->findEntityTable($obj);
+		}
+		else{
+			list($type,$obj) = func_get_args();
+		}
+		return $this[$type]->offsetSet(null,$obj);
 	}
 	
 	static function canBeTreatedAsInt($value){

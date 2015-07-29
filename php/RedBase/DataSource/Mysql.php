@@ -107,7 +107,7 @@ class Mysql extends SQL{
 	function getTablesQuery(){
 		return $this->getCol('SHOW TABLES');
 	}
-	function getColumns($type){
+	function getColumnsQuery($type){
 		$columns = [];
 		foreach($this->getAll('DESCRIBE '.$this->escTable($type)) as $r)
 			$columns[$r['Field']] = $r['Type'];
@@ -119,7 +119,7 @@ class Mysql extends SQL{
 		$encoding = $this->getEncoding();
 		$this->execute('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( '.$pk.' )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
-	function addColumn($type,$column,$field){
+	function addColumnQuery($type,$column,$field){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable($table);
@@ -128,7 +128,7 @@ class Mysql extends SQL{
 			$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumn($type,$property,$dataType ){
+	function changeColumnQuery($type,$property,$dataType ){
 		$table   = $this->escTable( $type );
 		$column  = $this->esc( $property );
 		if(is_integer($dataType)){
