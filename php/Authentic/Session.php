@@ -291,17 +291,26 @@ class Session{
 	}
 	
 	function __set($k,$v){
+		$this->handleOnce();
+		$this->start();
+		$this->modified = true;
 		$this->data[$k] = $v;
 	}
-	function __get($k){
+	function &__get($k){
+		$this->handleOnce();
 		return $this->data[$k];
 	}
 	function __isset($k){
+		$this->handleOnce();
 		return isset($this->data[$k]);
 	}
 	function __unset($k){
-		if(isset($this->data[$k]))
+		if(isset($this->data[$k])){
+			$this->handleOnce();
+			$this->start();
+			$this->modified = true;
 			unset($this->data[$k]);
+		}
 	}
 	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
 		if($expire&&isset($this->Cookie[$name]))
