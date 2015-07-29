@@ -139,6 +139,7 @@ abstract class DataSource implements \ArrayAccess{
 		$manyNew = [];
 		$one2manyNew = [];
 		$many2manyNew = [];
+		$cast = [];
 		$fk = [];
 		
 		if(isset($id)&&$uniqTextKey&&!self::canBeTreatedAsInt($id)){
@@ -175,6 +176,9 @@ abstract class DataSource implements \ArrayAccess{
 					$relation = 'many2many';
 				}
 				else{
+					if(substr($k,1,5)=='cast_'){
+						$cast[substr($k,6)] = $v;
+					}
 					continue;
 				}
 			}
@@ -267,14 +271,14 @@ abstract class DataSource implements \ArrayAccess{
 		
 		if($update){
 			$this->trigger($type,'beforeUpdate',$obj);
-			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey);
+			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast);
 			$this->trigger($type,'afterUpdate',$obj);
 		}
 		else{
 			if(array_key_exists($primaryKey,$properties))
 				unset($properties[$primaryKey]);
 			$this->trigger($type,'beforeCreate',$obj);
-			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey);
+			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey,$cast);
 			$this->trigger($type,'afterCreate',$obj);
 		}
 		$obj->{$primaryKey} = $r;

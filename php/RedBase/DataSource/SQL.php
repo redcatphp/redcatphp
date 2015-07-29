@@ -44,7 +44,6 @@ abstract class SQL extends DataSource{
 	protected $concatenator;
 	
 	private $cacheTables;
-	private $cacheColumns = [];
 	
 	function construct(array $config=[]){		
 		if(isset($config[0]))
@@ -84,13 +83,13 @@ abstract class SQL extends DataSource{
 		$table = $this->escTable($type);
 		return $this->getCell('SELECT '.$primaryKey.' FROM '.$table.' WHERE '.$uniqTextKey.'=?',[$id]);
 	}
-	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq'){
+	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq',$cast=[]){
 		$insertcolumns = array_keys($properties);
 		$insertvalues = array_values($properties);
 		$default = $this->defaultValue;
 		$suffix  = $this->getInsertSuffix($primaryKey);
 		$table   = $this->escTable($type);
-		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
+		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey,$cast);
 		if(!empty($insertvalues)){
 			$insertSlots = [];
 			foreach($insertcolumns as $k=>$v){
@@ -124,10 +123,10 @@ abstract class SQL extends DataSource{
 			return $obj;
 		}
 	}
-	function updateQuery($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq'){
+	function updateQuery($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq',$cast=[]){
 		if(!$this->tableExists($type))
 			return;
-		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey);
+		$this->adaptStructure($type,$properties,$primaryKey,$uniqTextKey,$cast);
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
@@ -468,7 +467,7 @@ abstract class SQL extends DataSource{
 	}
 	
 	//QueryWriter
-	function adaptStructure($type,$properties,$primaryKey='id',$uniqTextKey=null){
+	function adaptStructure($type,$properties,$primaryKey='id',$uniqTextKey=null,$cast=[]){
 		if($this->frozen)
 			return;
 		if(!$this->tableExists($type))
@@ -476,16 +475,24 @@ abstract class SQL extends DataSource{
 		$columns = $this->getColumns($type);
 		foreach($properties as $column=>$value){
 			if(!isset($columns[$column])){
-				$this->addColumn($type,$column,$this->scanType($value,true));
+				$colType = isset($cast[$column])?$cast[$column]:$this->scanType($value,true);
+				$this->addColumn($type,$column,$colType);
 			}
 			else{
-				$typeno = $this->scanType($value,false);
 				$typedesc = $columns[$column];
-				if(isset($this->sqltype_typeno[$typedesc])
-					&&$this->sqltype_typeno[$typedesc]<self::C_DATATYPE_RANGE_SPECIAL
-					&&$this->sqltype_typeno[$typedesc]<$typeno
-				)
-					$this->changeColumn($type,$column,$typeno);
+				$typenoOld = $this->columnCode($typedesc);
+				if(isset($cast[$column])){
+					$snip = explode(' ',$cast[$column]);
+					$snip = $snip[0];
+					$typeno = $this->columnCode($snip);
+					$colType = $cast[$column];
+				}
+				else{
+					$typeno = $this->scanType($value,false);
+					$colType = $typeno;
+				}
+				if($typenoOld<self::C_DATATYPE_RANGE_SPECIAL&&$typenoOld<$typeno)
+					$this->changeColumn($type,$column,$colType);
 			}
 			if(isset($uniqTextKey)&&$uniqTextKey==$column){
 				$this->addUniqueConstraint($type,$column);
@@ -659,11 +666,6 @@ abstract class SQL extends DataSource{
 			$this->cacheTables = $this->getTablesQuery();
 		return $this->cacheTables;
 	}
-	function getColumns($type){
-		if(!isset($this->cacheColumns[$type]))
-			$this->cacheColumns[$type] = $this->getColumnsQuery($type);
-		return $this->cacheColumns[$type];
-	}
 	function columnExists($table,$column){
 		return in_array($column,array_keys($this->getColumns($table)));
 	}
@@ -673,17 +675,6 @@ abstract class SQL extends DataSource{
 			$this->cacheTables[] = $table;
 		return $this->createTableQuery($type,$pk);
 	}
-	function addColumn($type,$column,$field){
-		if(isset($this->cacheColumns[$type]))
-			$this->cacheColumns[$type][$column] = (false!==$i=array_search($field,$this->sqltype_typeno))?$i:'';
-		return $this->addColumnQuery($type,$column,$field);
-	}
-	function changeColumn($type,$column,$field){
-		if(isset($this->cacheColumns[$type]))
-			$this->cacheColumns[$type][$column] = $this->cacheColumns[$type][$column] = (false!==$i=array_search($field,$this->sqltype_typeno))?$i:'';
-		return $this->changeColumnQuery($type,$column,$field);
-	}
-	
 	function drops(){
 		foreach(func_get_args() as $drop){
 			if(is_array($drop)){
@@ -699,14 +690,11 @@ abstract class SQL extends DataSource{
 	function drop($t){
 		if(isset($this->cacheTables)&&($i=array_search($t,$this->cacheTables))!==false)
 			unset($this->cacheTables[$i]);
-		if(isset($this->cacheColumns[$t]))
-			unset($this->cacheColumns[$t]);
 		$this->_drop($t);
 	}
 	function dropAll(){
 		$this->_dropAll();
 		$this->cacheTables = [];
-		$this->cacheColumns = [];
 	}
 	
 	function many2one($obj,$type){
@@ -907,10 +895,10 @@ abstract class SQL extends DataSource{
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
-	abstract function getColumnsQuery($table);
+	abstract function getColumns($table);
 	abstract function createTableQuery($table,$pk='id');
-	abstract function addColumnQuery($type,$column,$field);
-	abstract function changeColumnQuery($type,$property,$dataType);
+	abstract function addColumn($type,$column,$field);
+	abstract function changeColumn($type,$property,$dataType);
 	
 	abstract function addFK($type,$targetType,$property,$targetProperty,$isDep);
 	abstract function getKeyMapForType( $type );

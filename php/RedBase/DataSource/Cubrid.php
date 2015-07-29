@@ -65,7 +65,7 @@ class Cubrid extends SQL{
 	function getTablesQuery(){
 		return $this->getCol( "SELECT class_name FROM db_class WHERE is_system_class = 'NO';" );
 	}
-	function getColumnsQuery( $table ){
+	function getColumns( $table ){
 		$table = $this->escTable( $table );
 		$columnsRaw = $this->getAll( "SHOW COLUMNS FROM $table" );
 		$columns = [];
@@ -80,21 +80,24 @@ class Cubrid extends SQL{
 			.'_'.$pk.'" PRIMARY KEY("'.$pk.'"))';
 		$this->execute( $sql );
 	}
-	function addColumnQuery( $type, $column, $field ){
+	function addColumn( $type, $column, $field ){
 		$table  = $type;
 		$type   = $field;
 		$table  = $this->escTable( $table );
 		$column = $this->esc( $column );
-		$type   = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
+		if(is_integer($type))
+			$type   = array_key_exists( $type, $this->typeno_sqltype ) ? $this->typeno_sqltype[$type] : '';
 		$this->execute( "ALTER TABLE $table ADD COLUMN $column $type " );
 	}
-	function changeColumnQuery( $type, $property, $dataType ){
-		if ( !isset($this->typeno_sqltype[$dataType]) )
-			return false;
+	function changeColumn( $type, $property, $dataType ){
 		$table   = $this->escTable( $type );
 		$column  = $this->esc( $property );
-		$newType = $this->typeno_sqltype[$dataType];
-		$this->execute( "ALTER TABLE $table CHANGE $column $column $newType " );
+		if(is_integer($dataType)){
+			if( !isset($this->typeno_sqltype[$dataType]) )
+				return false;
+			$dataType = $this->typeno_sqltype[$dataType];
+		}
+		$this->execute( "ALTER TABLE $table CHANGE $column $column $dataType " );
 		return true;
 	}
 	

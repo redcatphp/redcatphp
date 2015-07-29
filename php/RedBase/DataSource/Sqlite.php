@@ -46,7 +46,7 @@ class Sqlite extends SQL{
 	function getTablesQuery(){
 		return $this->getCol("SELECT name FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence';");
 	}
-	function getColumnsQuery($table){
+	function getColumns($table){
 		$table      = $this->prefixTable($table);
 		$columnsRaw = $this->getAll("PRAGMA table_info('$table')");
 		$columns    = [];
@@ -58,15 +58,18 @@ class Sqlite extends SQL{
 		$table = $this->escTable($table);
 		$this->execute('CREATE TABLE '.$table.' ( '.$pk.' INTEGER PRIMARY KEY AUTOINCREMENT ) ');
 	}
-	function addColumnQuery($table, $column, $type){
+	function addColumn($table, $column, $type){
 		$column = $this->esc($column);
 		$table  = $this->escTable($table);
-		$type   = $this->typeno_sqltype[$type];
+		if(is_integer($type))
+			$type   = $this->typeno_sqltype[$type];
 		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
-	function changeColumnQuery($type, $column, $datatype){
+	function changeColumn($type, $column, $dataType){
 		$t = $this->getTable( $type );
-		$t['columns'][$column] = $this->typeno_sqltype[$datatype];
+		if(is_integer($dataType))
+			$dataType = $this->typeno_sqltype[$dataType];
+		$t['columns'][$column] = $dataType;
 		$this->putTable($t);
 	}
 	protected function putTable( $tableMap ){ //In SQLite we can't change columns, drop columns, change or add foreign keys so we have a table-rebuild function. You simply load your table with getTable(), modify it and then store it with putTable()
