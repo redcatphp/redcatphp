@@ -1,38 +1,13 @@
 <?php
 namespace Unit;
-class Model implements \ArrayAccess{
-	private $dataSource;
-	private $data = [];
-	private $getter;
-	private $setter;
-	private $dataState = [];
-    function __construct($dataSource = null, $getter = null, $setter = null){
-        $this->dataSource = $dataSource;
+class Model implements \ArrayAccess,\Iterator,\Countable{
+	protected $data = [];
+	protected $getter;
+	protected $setter;
+    function __construct($getter = null, $setter = null){
         $this->getter = $getter;
         $this->setter = $setter;
-    }
-    function getDataSource(){
-		return $this->dataSource;
-	}
-	
-	function set($k,$v){
-		$this->dataState[$k] = $v;
-	}
-	function get($k){
-		return isset($this->dataState[$k])?$this->dataState[$k]:null;
-	}
-	function __call($func,$args){
-		if(strpos('get')===0){
-			return $this->get(substr($func,3));
-		}
-		elseif(strpos('set')===0){
-			return $this->set(substr($func,3),array_shift($args));
-		}
-		else{
-			throw new \BadMethodCallException('Call to undefined method '.get_class($this).'::'.$func.'()');
-		}
-	}
-	
+    }	
 	function __get($k){
 		if(!array_key_exists($k,$this->data)){
 			$this->data[$k] = is_callable($this->getter)?call_user_func($this->getter,$k,$this):null;
@@ -62,5 +37,23 @@ class Model implements \ArrayAccess{
 	}
 	function offsetUnset($k){
 		unset($this->data[$k]);
+	}
+	function rewind(){
+		reset($this->data);
+	}
+	function current(){
+		return current($this->data);
+	}
+	function key(){
+		return key($this->data);
+	}
+	function next(){
+		return next($this->data);
+	}
+	function valid(){
+		return key($this->data)!==null;
+	}
+	function count(){
+		return count($this->data);
 	}
 }

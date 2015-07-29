@@ -1,8 +1,8 @@
 <?php
 namespace Unit;
 class View {
-	private $model;
-	private $template;
+	protected $model;
+	protected $template;
     function __construct($model = null, $template = null){
         $this->model = $model;
         $this->template = $template;
@@ -13,8 +13,7 @@ class View {
 	function getTemplate(){
 		return $this->template;
 	}
-	function __invoke($routeParams=null){
-		$template = $this->model->getTemplate();
-        return $this->template->display($template);
+	function __invoke($template=null){
+        return call_user_func_array($this->template,func_get_args());
     }
 }

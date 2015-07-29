@@ -1,7 +1,7 @@
 <?php
 namespace Unit;
-class Controller {
-	private $model;
+abstract class Controller {
+	protected $model;
     function __construct($model = null){
         $this->model = $model;
     }
