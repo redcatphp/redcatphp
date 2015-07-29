@@ -4,20 +4,20 @@ class Session{
 	private $key;
 	private $name;
 	private $maxAttempts = 10;
-	private $cookieLifetime = 0;
+	private $cookieLifetime;
 	private $cookiePath;
 	private $cookieDomain;
 	protected $attemptsPath;
 	protected $idLength = 100;
 	protected $data = [];
-	protected $modified;
+	protected $origin = [];
 	protected $saveRoot;
 	protected $savePath;
 	protected $splitter = '.';
 	protected $gc_probability = 1;
 	protected $gc_divisor = 100;
 	protected $blockedWait = 1800; //half hour
-	protected $maxLifetime = 31536000; //1 year
+	protected $maxLifetime;
 	protected $regeneratePeriod = 3600; //1 hour
 	protected $SessionHandler;
 	protected $Cookie;
@@ -30,7 +30,8 @@ class Session{
 		$name,
 		$saveRoot,
 		$server=null,
-		$cookieLifetime=0
+		$cookieLifetime=0,
+		$maxLifetime=31536000  //1 year
 		
 	){
 		$this->name = $name;
@@ -43,6 +44,7 @@ class Session{
 		$this->cookiePath = $this->getSuffixHref();
 		$this->cookieDomain = $this->getServerHref();
 		$this->cookieLifetime = $cookieLifetime;
+		$this->maxLifetime = $maxLifetime;
 		$this->checkBlocked();
 		if(!isset($sessionHandler))
 			$sessionHandler = new SessionHandler();
@@ -67,7 +69,7 @@ class Session{
 			$this->id = $this->clientId();
 			$this->key = $this->clientKey();
 			if($this->serverExist()){
-				$this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->id));
+				$this->origin = $this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->id));
 				$this->autoRegenerateId();
 			}
 			else{
@@ -184,7 +186,6 @@ class Session{
 	function set(){
 		$this->handleOnce();
 		$this->start();
-		$this->modified = true;
 		$args = func_get_args();
 		$v = array_pop($args);
 		if(empty($args)){
@@ -223,7 +224,7 @@ class Session{
 		}
 	}
 	function reset(){
-		$this->data = [];
+		$this->origin = $this->data = [];
 	}
 	function start(){
 		if(!$this->id){		
@@ -233,8 +234,11 @@ class Session{
 			$this->writeCookie();
 		}
 	}
+	function isModified(){
+		return $this->origin!==$this->data;
+	}
 	function __destruct(){
-		if($this->modified)
+		if($this->isModified())
 			$this->SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
 		else
 			$this->SessionHandler->touch($this->getPrefix().$this->id);
@@ -293,11 +297,11 @@ class Session{
 	function __set($k,$v){
 		$this->handleOnce();
 		$this->start();
-		$this->modified = true;
 		$this->data[$k] = $v;
 	}
 	function &__get($k){
 		$this->handleOnce();
+		$this->start();
 		return $this->data[$k];
 	}
 	function __isset($k){
@@ -308,7 +312,6 @@ class Session{
 		if(isset($this->data[$k])){
 			$this->handleOnce();
 			$this->start();
-			$this->modified = true;
 			unset($this->data[$k]);
 		}
 	}
