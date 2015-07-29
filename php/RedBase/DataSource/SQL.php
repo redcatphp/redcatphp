@@ -131,7 +131,6 @@ abstract class SQL extends DataSource{
 		$fields = [];
 		$binds = [];
 		foreach($properties as $k=>$v){
-			//if($k==$primaryKey||($uniqTexting&&$k==$uniqTextKey))
 			if($k==$primaryKey)
 				continue;
 			if(isset($this->sqlFiltersWrite[$type][$k]))

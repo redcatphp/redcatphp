@@ -154,7 +154,6 @@ class SQL extends DataTable{
 	}
 	function processRelational($select,$colAlias=null,$autoSelectId=false){
 		$sql = [];
-		$l = strlen($select);
 		$type = '';
 		$typeParent = $this->name;
 		$prefix = $this->dataSource->getTablePrefix();
