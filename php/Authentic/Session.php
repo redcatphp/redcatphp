@@ -296,6 +296,13 @@ class Session{
 	function __get($k){
 		return $this->data[$k];
 	}
+	function __isset($k){
+		return isset($this->data[$k]);
+	}
+	function __unset($k){
+		if(isset($this->data[$k]))
+			unset($this->data[$k]);
+	}
 	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
 		if($expire&&isset($this->Cookie[$name]))
 			$this->removeCookie($name, $path, $domain, $secure, $httponly);
