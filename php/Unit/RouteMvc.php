@@ -1,5 +1,5 @@
 <?php namespace Unit;
-class RouteMvc {
+class RouteMvc implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;
     private $controller;
@@ -56,5 +56,23 @@ class RouteMvc {
 	}
 	function offsetUnset($k){
 		unset($this->model[$k]);
+	}
+	function rewind(){
+		return reset($this->model);
+	}
+	function current(){
+		return current($this->model);
+	}
+	function key(){
+		return key($this->model);
+	}
+	function next(){
+		return next($this->model);
+	}
+	function valid(){
+		return key($this->model);
+	}
+	function count(){
+		return count($this->model);
 	}
 }
