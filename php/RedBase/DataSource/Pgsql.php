@@ -40,7 +40,7 @@ class Pgsql extends SQL{
 		];
 		$this->sqltype_typeno = [];
 		foreach( $this->typeno_sqltype as $k => $v ){
-			$this->sqltype_typeno[trim( strtolower( $v ) )] = $k;
+			$this->sqltype_typeno[trim($v)] = $k;
 		}
 	}
 	function connect(){
