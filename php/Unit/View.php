@@ -3,9 +3,11 @@ namespace Unit;
 class View {
 	protected $model;
 	protected $template;
-    function __construct($model = null, $template = null){
+	protected $di;
+    function __construct($model = null, $template = null, Di $di){
         $this->model = $model;
         $this->template = $template;
+        $this->di = $di;
     }
     function getModel(){
 		return $this->model;

@@ -2,7 +2,9 @@
 namespace Unit;
 abstract class Controller {
 	protected $model;
-    function __construct($model = null){
+	protected $di;
+    function __construct($model = null, Di $di){
         $this->model = $model;
+        $this->di = $di;
     }
 }

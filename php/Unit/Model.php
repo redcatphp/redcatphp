@@ -4,9 +4,11 @@ class Model implements \ArrayAccess,\Iterator,\Countable{
 	protected $data = [];
 	protected $getter;
 	protected $setter;
-    function __construct($getter = null, $setter = null){
+	protected $di;
+    function __construct($getter = null, $setter = null, Di $di){
         $this->getter = $getter;
         $this->setter = $setter;
+        $this->di = $di;
     }	
 	function __get($k){
 		if(!array_key_exists($k,$this->data)){
