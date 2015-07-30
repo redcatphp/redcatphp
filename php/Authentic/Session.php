@@ -53,17 +53,10 @@ class Session{
 		$this->garbageCollector();
 		
 	}
-	function handleReload(){
-		if($this->handled)
-			$this->handle();
-	}
-	function handleOnce(){
-		if(!$this->handled){
-			$this->handled = true;
-			$this->handle();
-		}
-	}
-	function handle(){
+	function handle($reload=false){
+		if($this->handled&&(!$reload||!$this->handled))
+			return;
+		$this->handled = true;
 		$this->SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
 			$this->id = $this->clientId();
@@ -83,6 +76,7 @@ class Session{
 		if(!isset($this->data['_FP_'])){
 			$this->data['_FP_'] = $this->getClientFP();
 		}
+		$this->origin['_FP_'] = $this->data['_FP_'];
 	}
 	function garbageCollector(){
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
@@ -110,6 +104,8 @@ class Session{
 		else{
 			$this->key = $key;
 		}
+		if(!$this->id)
+			$this->id = $this->clientId();
 		if(!$this->id)
 			$this->id = $this->generateId();
 		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
@@ -150,7 +146,7 @@ class Session{
 	function setName($name){
 		$this->name = $name;
 		$this->savePath = $this->saveRoot.$this->name.'/';
-		$this->handleReload();
+		$this->handle(true);
 	}
 	function serverFile(){
 		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
@@ -196,22 +192,22 @@ class Session{
 	function reset(){
 		$this->origin = $this->data = [];
 	}
-	function start(){
-		if(!$this->id){		
-			$this->id = $this->generateId();
-		}
-		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
-			$this->writeCookie();
-		}
-	}
 	function isModified(){
 		return $this->origin!==$this->data;
 	}
 	function __destruct(){
-		if($this->isModified())
+		if($this->isModified()){
+			if(!$this->id)
+				$this->id = $this->generateId();
+			if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
+				$this->writeCookie();
+			}
 			$this->SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
-		else
-			$this->SessionHandler->touch($this->getPrefix().$this->id);
+		}
+		else{
+			if($this->id)
+				$this->SessionHandler->touch($this->getPrefix().$this->id);
+		}
 		$this->SessionHandler->close();
 	}
 	function generateId(){
@@ -265,23 +261,20 @@ class Session{
 	}
 	
 	function __set($k,$v){
-		$this->handleOnce();
-		$this->start();
+		$this->handle();
 		$this->data[$k] = $v;
 	}
 	function &__get($k){
-		$this->handleOnce();
-		$this->start();
+		$this->handle();
 		return $this->data[$k];
 	}
 	function __isset($k){
-		$this->handleOnce();
+		$this->handle();
 		return isset($this->data[$k]);
 	}
 	function __unset($k){
 		if(isset($this->data[$k])){
-			$this->handleOnce();
-			$this->start();
+			$this->handle();
 			unset($this->data[$k]);
 		}
 	}
@@ -360,8 +353,7 @@ class Session{
 		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
 	}
 	function set(){
-		$this->handleOnce();
-		$this->start();
+		$this->handle();
 		$args = func_get_args();
 		$v = array_pop($args);
 		if(empty($args)){
@@ -378,7 +370,7 @@ class Session{
 		return $ref;
 	}
 	function get(){
-		$this->handleOnce();
+		$this->handle();
 		$args = func_get_args();
 		$ref =& $this->data;
 		foreach($args as $k){
