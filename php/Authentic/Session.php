@@ -134,9 +134,12 @@ class Session{
 		$now = time();
 		$mtime = filemtime($this->serverFile());
 		if($now>$mtime+$this->maxLifetime){
-			throw new SecurityException('Invalid session');
+			$this->destroy();
+			$this->reset();
+			$this->id = $this->generateId();
+			$this->writeCookie();
 		}
-		if($now>$mtime+$this->regeneratePeriod||$this->get('_FP_')!=$this->getClientFP()){
+		elseif($now>$mtime+$this->regeneratePeriod||$this->get('_FP_')!=$this->getClientFP()){
 			$this->set('_FP_',$this->getClientFP());
 			$this->regenerateId();
 		}
@@ -182,39 +185,6 @@ class Session{
 	}
 	function setCookieLifetime($time){
 		$this->cookieLifetime = $time;
-	}
-	function set(){
-		$this->handleOnce();
-		$this->start();
-		$args = func_get_args();
-		$v = array_pop($args);
-		if(empty($args)){
-			$this->data[$v] = null;
-			return;
-		}
-		$ref =& $this->data;
-		foreach($args as $k){
-			if(!is_array($ref))
-				$ref = [];
-			$ref =& $ref[$k];
-		}
-		$ref = $v;
-		return $ref;
-	}
-	function get(){
-		$this->handleOnce();
-		$args = func_get_args();
-		$ref =& $this->data;
-		foreach($args as $k){
-			if(is_array($ref)&&isset($ref[$k]))
-				$ref =& $ref[$k];
-			else{
-				unset($ref);
-				$ref = null;
-				break;
-			}
-		}
-		return $ref;
 	}
 	function checkBlocked(){
 		if($s=$this->isBlocked()){
@@ -388,5 +358,38 @@ class Session{
 	}
 	function getLocation(){
 		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+	}
+	function set(){
+		$this->handleOnce();
+		$this->start();
+		$args = func_get_args();
+		$v = array_pop($args);
+		if(empty($args)){
+			$this->data[$v] = null;
+			return;
+		}
+		$ref =& $this->data;
+		foreach($args as $k){
+			if(!is_array($ref))
+				$ref = [];
+			$ref =& $ref[$k];
+		}
+		$ref = $v;
+		return $ref;
+	}
+	function get(){
+		$this->handleOnce();
+		$args = func_get_args();
+		$ref =& $this->data;
+		foreach($args as $k){
+			if(is_array($ref)&&isset($ref[$k]))
+				$ref =& $ref[$k];
+			else{
+				unset($ref);
+				$ref = null;
+				break;
+			}
+		}
+		return $ref;
 	}
 }
