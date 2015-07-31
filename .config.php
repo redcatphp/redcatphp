@@ -99,6 +99,7 @@ return [
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
+				'$dev'=>'dev.l10n',
 			],
 		],
 		'Unit\Debug'=>[
@@ -126,11 +127,6 @@ return [
 		'Stylish\Server' => [
 			'construct'=>[
 				'$cache'=>'dev.css',
-			],
-		],
-		'InterEthnic\Translator'=>[
-			'construct'=>[
-				'$dev'=>'dev.l10n',
 			],
 		],
 	],
