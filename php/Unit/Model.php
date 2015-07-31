@@ -9,7 +9,7 @@ class Model implements \ArrayAccess,\Iterator,\Countable{
         $this->getter = $getter;
         $this->setter = $setter;
         $this->di = $di;
-    }	
+    }
 	function __get($k){
 		if(!array_key_exists($k,$this->data)){
 			$this->data[$k] = is_callable($this->getter)?call_user_func($this->getter,$k,$this):null;

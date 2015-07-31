@@ -1,5 +1,6 @@
-<?php namespace Unit;
-class RouteMvc implements \ArrayAccess,\Iterator,\Countable{
+<?php
+namespace Unit;
+class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;
     private $controller;
