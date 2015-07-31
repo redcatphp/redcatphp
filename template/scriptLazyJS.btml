@@ -7,7 +7,9 @@
 	<?if($this->devJs):?>
 		$js().dev=true;
 	<?endif;?>
-	$js('script');
+	<?if(is_file(SURIKAT_CWD.'js/script.js')):?>
+		$js('script');
+	<?endif;?>
 	<?if(Unit\Di::getInstance()->dev['chrono']):
 		$timeExec = floor($_SERVER['REQUEST_TIME_FLOAT']);
 		$chrono = microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'];
