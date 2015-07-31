@@ -9,6 +9,8 @@
 	<?endif;?>
 	$js('script');
 	<?if(Unit\Di::getInstance()->dev['chrono']):
+		if(!isset($time))
+			$time = $_SERVER["REQUEST_TIME_FLOAT"];
 		$chrono = microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"];
 		$chrono = sprintf("%.2f", ($chrono>=1?$chrono:$chrono*(float)1000)).' '.($chrono>=1?'s':'ms');
 		$memory = memory_get_peak_usage();
