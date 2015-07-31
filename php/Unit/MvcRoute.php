@@ -4,13 +4,13 @@ class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;
     private $controller;
-    private $template;
+    private $templateEngine;
     private $di;
-    function __construct($model='Unit\Model', $view='Unit\View', $controller = null, $template = null, Di $di){
+    function __construct($model='Unit\Model', $view='Unit\View', $controller = null, $templateEngine = null, Di $di){
         $this->model = $model;
         $this->view = $view;
         $this->controller = $controller;
-        $this->template = $template;
+        $this->templateEngine = $templateEngine;
         $this->di = $di;
 		if(is_string($this->model)){
 			$this->model = $this->di->create($this->model);

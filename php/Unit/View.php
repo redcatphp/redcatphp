@@ -2,20 +2,20 @@
 namespace Unit;
 class View {
 	protected $model;
-	protected $template;
+	protected $templateEngine;
 	protected $di;
-    function __construct($model = null, $template = null, Di $di){
+    function __construct($model = null, $templateEngine = null, Di $di){
         $this->model = $model;
-        $this->template = $template;
+        $this->templateEngine = $templateEngine;
         $this->di = $di;
     }
     function getModel(){
 		return $this->model;
 	}
-	function getTemplate(){
-		return $this->template;
+	function getTemplateEngine(){
+		return $this->templateEngine;
 	}
 	function __invoke($template=null){
-        return call_user_func_array($this->template,func_get_args());
+        return call_user_func_array($this->templateEngine,func_get_args());
     }
 }
