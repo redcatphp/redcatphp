@@ -19,7 +19,7 @@ return [
 			0 => [
 				'type'=>'sqlite',
 				'file'=>SURIKAT_CWD.'.data/db.sqlite',
-				'entityClassPrefix'=>['Model\\'],
+				'entityClassPrefix'=>['EntityModel\\'],
 				'entityClassDefault'=>'stdClass',
 				'primaryKey'=>'id',
 				'uniqTextKey'=>'uniq',
@@ -53,7 +53,7 @@ return [
 			'construct' => [
 				'$map' => 'databaseMap',
 				'$debug'=>'dev.db',
-				'entityClassPrefix'=>'Model\\',
+				'entityClassPrefix'=>'EntityModel\\',
 				'entityClassDefault'=>'stdClass',
 			],
 		],

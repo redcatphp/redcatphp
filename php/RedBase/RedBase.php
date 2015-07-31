@@ -8,7 +8,7 @@ class RedBase implements \ArrayAccess{
 	private $primaryKeyDefault;
 	private $uniqTextKeyDefault;
 	private $debug;
-	function __construct(array $map = [],$entityClassPrefix='Model\\',$entityClassDefault='stdClass',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq',$debug=false){
+	function __construct(array $map = [],$entityClassPrefix='EntityModel\\',$entityClassDefault='stdClass',$primaryKeyDefault='id',$uniqTextKeyDefault='uniq',$debug=false){
 		$this->map = $map;
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 		$this->entityClassDefault = $entityClassDefault;
@@ -21,7 +21,7 @@ class RedBase implements \ArrayAccess{
 		foreach($this->mapObjects as $o)
 			$o->debug($d);
 	}
-	function setEntityClassPrefix($entityClassPrefix='Model\\'){
+	function setEntityClassPrefix($entityClassPrefix='EntityModel\\'){
 		$this->entityClassPrefix = (array)$entityClassPrefix;
 	}
 	function appendEntityClassPrefix($entityClassPrefix){

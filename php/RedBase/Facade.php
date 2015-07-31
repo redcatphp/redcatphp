@@ -107,7 +107,7 @@ class Facade{
 		return self::$currentDataSource[$type]->loadMany2many($obj,$via);
 	}
 	
-	static function setEntityClassPrefix($entityClassPrefix='Model\\'){
+	static function setEntityClassPrefix($entityClassPrefix='EntityModel\\'){
 		return self::$redbase->setEntityClassPrefix($entityClassPrefix);
 	}
 	static function appendEntityClassPrefix($entityClassPrefix){

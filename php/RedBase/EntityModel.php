@@ -1,6 +1,6 @@
 <?php
 namespace RedBase;
-class Entity implements Observer{
+class EntityModel implements Observer{
 	function beforeRecursive(){}
 	function beforePut(){}
 	function beforeCreate(){}
