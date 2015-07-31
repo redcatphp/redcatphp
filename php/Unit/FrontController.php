@@ -1,6 +1,6 @@
 <?php
 namespace Unit;
-class FrontController {
+class FrontController implements \ArrayAccess{
 	private $router;
 	protected $di;
 	function __construct(Router $router,Di $di){
@@ -21,6 +21,18 @@ class FrontController {
 			$this->router->display();
 			return true;
 		}
+	}
+	function offsetSet($k,$v){
+		$this->router->offsetSet($k,$v);
+	}
+	function offsetGet($k){
+		$this->router->offsetGet($k);
+	}
+	function offsetExists($k){
+		$this->router->offsetExists($k);
+	}
+	function offsetUnset($k){
+		$this->router->offsetUnset($k);
 	}
 	function runFromGlobals(){
 		if(isset($_SERVER['SURIKAT_URI'])){
