@@ -921,7 +921,7 @@ abstract class SQL extends DataSource{
 		return $this->concatenator;
 	}
 	
-	static function explodeAgg($data){
+	function explodeAgg($data,$type=null){
 		$_gs = chr(0x1D);
 		$row = [];
 		foreach(array_keys($data) as $col){
@@ -935,34 +935,42 @@ abstract class SQL extends DataSource{
 					$row[$tb] = [];
 				if(empty($data[$col])){
 					if(!isset($row[$tb]))
-						$row[$tb] = [];
+						$row[$tb] = $this->entityFactory($tb);
 				}
 				elseif($multi){
 					$_x = explode($_gs,$data[$col]);
 					if(isset($data[$tb.$sep.'id'])){
 						$_idx = explode($_gs,$data[$tb.$sep.'id']);
-						foreach($_idx as $_i=>$_id)
-							$row[$tb][$_id][$_col] = $_x[$_i];
+						foreach($_idx as $_i=>$_id){
+							if(!isset($row[$tb][$_id]))
+								$row[$tb][$_id] = $this->entityFactory($tb);
+							$row[$tb][$_id]->$_col = $_x[$_i];
+						}
 					}
 					else{
-						foreach($_x as $_i=>$v)
-							$row[$tb][$_i][$_col] = $v;
+						foreach($_x as $_i=>$v){
+							if(!isset($row[$tb][$_i]))
+								$row[$tb][$_i] = $this->entityFactory($tb);
+							$row[$tb][$_i]->$_col = $v;
+						}
 					}
 				}
 				else
-					$row[$tb][$_col] = $data[$col];
+					$row[$tb]->$_col = $data[$col];
 			}
 			else
 				$row[$col] = $data[$col];
 		}
+		if($type)
+			$row = $this->arrayToEntity($row,$type);
 		return $row;
 	}
-	static function explodeAggTable($data){
+	function explodeAggTable($data,$type=null){
 		$table = [];
 		if(is_array($data)||$data instanceof \ArrayAccess)
 			foreach($data as $i=>$d){
 				$id = isset($d['id'])?$d['id']:$i;
-				$table[$id] = self::explodeAgg($d);
+				$table[$id] = $this->explodeAgg($d,$type);
 			}
 		return $table;
 	}

@@ -22,6 +22,7 @@ class SQL extends DataTable{
 		$row = $this->dataSource->getRow($this->select->getQuery(),$this->select->getParams());
 		if($this->hasSelectRelational)
 			$row = $this->dataSource->explodeAgg($row);
+		$row = $this->dataSource->arrayToEntity($row,$this->name);
 		return $row;
 	}
 	function getAll(){
@@ -30,8 +31,9 @@ class SQL extends DataTable{
 		if($this->hasSelectRelational)
 			$all = $this->dataSource->explodeAggTable($all);
 		foreach($all as $row){
-			if(isset($row[$this->primaryKey]))
-				$table[$row[$this->primaryKey]] = $row;
+			$row = $this->dataSource->arrayToEntity($row,$this->name);
+			if(isset($row->{$this->primaryKey}))
+				$table[$row->{$this->primaryKey}] = $row;
 			else
 				$table[] = $row;
 		}
@@ -58,10 +60,12 @@ class SQL extends DataTable{
 		$this->trigger('beforeRead',$this->row);
 		$row = $this->stmt->fetch();
 		if($row){
-			if($this->hasSelectRelational)
+			if($this->hasSelectRelational){
 				$row = $this->dataSource->explodeAgg($row);
-			foreach($row as $k=>$v)
+			}
+			foreach($row as $k=>$v){
 				$this->row->$k = $v;
+			}
 			if($this->useCache)
 				$this->data[$this->row->{$this->primaryKey}] = $this->row;
 		}
