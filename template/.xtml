@@ -1,4 +1,7 @@
 <vars basic />
+<?
+$timeExec = time();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
