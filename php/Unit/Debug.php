@@ -38,7 +38,7 @@ namespace Unit{
 				header("Content-Type: text/html; charset=utf-8");
 				$html = true;
 			}
-			$msg = 'Exception: '.$e->getMessage();
+			$msg = 'Exception: '.htmlentities($e->getMessage());
 			if($html){
 				echo $this->debugStyle;
 				echo '<pre class="error" style="'.$this->debugWrapInlineCSS.'"><span>'.$msg."</span>\nStackTrace:\n";
