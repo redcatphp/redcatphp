@@ -1,4 +1,3 @@
-<eval>
 <?
 	$langDir = SURIKAT_CWD.'langs/';
 	$di = Unit\Di::getInstance();
@@ -36,4 +35,3 @@
 		</if>
 	</li>
 </foreach>
-</eval>
