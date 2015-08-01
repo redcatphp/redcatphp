@@ -76,7 +76,8 @@ class Synaptic {
 					}
 				}
 				if(substr($k,-8,-4)=='.min'){
-					$this->minifyCSS(substr($k,0,-8).'.css');
+					if(!$this->minifyCSS(substr($k,0,-8).'.css'))
+						http_response_code(404);
 					return;
 				}
 				foreach($this->dirs as $d){
@@ -156,7 +157,7 @@ class Synaptic {
 				if(!headers_sent())
 					header('Content-Type:text/css; charset=utf-8');
 				echo $c;
-				return;
+				return true;
 			}
 		}
 		return false;
