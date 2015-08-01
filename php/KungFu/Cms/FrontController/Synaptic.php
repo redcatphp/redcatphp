@@ -60,7 +60,8 @@ class Synaptic {
 				}
 				if(substr($k,-7,-3)=='.min'){
 					$kv = (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on'?'https':'http').'://'.$_SERVER['SERVER_NAME'].($_SERVER['SERVER_PORT']&&(int)$_SERVER['SERVER_PORT']!=80?':'.$_SERVER['SERVER_PORT']:'').'/'.substr($k,0,-7).'.js';
-					$this->minifyJs($kv,$k);
+					if(!$this->minifyJS($kv,$k))
+						http_response_code(404);
 					return;
 				}				
 				http_response_code(404);
@@ -133,6 +134,7 @@ class Synaptic {
 		if(!headers_sent())
 			header('Content-Type:application/javascript; charset=utf-8');
 		echo $c;
+		return true;
 	}
 	protected function minifyCSS($file){
 		foreach($this->dirs as $d){
