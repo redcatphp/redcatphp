@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>EntityRelationModel</title>
+		<style type="text/css">
+			graph-erm {
+				width: 98%;
+				height: 100%;
+				border: 1% solid #888;
+				position:absolute;
+			}
+			a.layout-apply{
+				display:block;
+			}
+		</style>
+	</head>
+	<body>
+	<main>
+		<graph-erm>
+			<eval>
+				<?
+					use RedBase\B;
+					$listOfColumns = function($t,$details=null){
+						static $listOfColumns = array();
+						if(!isset($listOfColumns[$t]))
+							$listOfColumns[$t] = B::getColumns($t);
+						return $details?$listOfColumns[$t]:array_keys($listOfColumns[$t]);
+					};
+					$heuristic = array();
+					$listOfTables = B::getTables();
+					foreach($listOfTables as $t){
+						if(strpos($t,'_')!==false)
+							continue;
+						$h = array();
+						$tableL = strlen($t);
+						$h['fields'] = in_array($t,$listOfTables)?$listOfColumns($t,true):array();
+						$h['shared'] = array();
+						$h['own'] = array();
+						foreach($listOfTables as $table) //shared
+							if(substr($table,-1)!='_'&&strpos($table,'__')===false&&strpos($table,'_')!==false&&((strpos($table,$t)===0&&$table=substr($table,$tableL+1))||((strrpos($table,$t)===strlen($table)-$tableL)&&($table=substr($table,0,($tableL+1)*-1)))))
+								$h['shared'][] = $table;
+						foreach($listOfTables as $table) //own
+							if(strpos($table,'_')===false&&$table!=$t&&in_array($t.'_id',$listOfColumns($table)))
+								$h['own'][] = $table;
+						$heuristic[$t] = $h;
+					}
+					$shared = array();
+					foreach($heuristic as $t=>$rels){
+						echo '<table '.$t.'>';
+						foreach($rels['fields'] as $col=>$type)
+							echo '<col name="'.$col.' - '.$type.'">';
+						echo '</table>';
+						foreach($rels['own'] as $r)
+							echo "<link $t $r>";
+						foreach($rels['shared'] as $r){
+							if(in_array("<link $r $t shared>",$shared))
+								continue;
+							$link = "<link $t $r shared>";
+							echo $link;
+							$shared[] = $link;
+						}
+					}
+				?>
+			</eval>
+		</graph-erm>
+	</main>
+	<script type="application/javascript" src="../js/js.js"></script>
+	<script type="application/javascript">
+		$js().path = '../js/';
+		$css().path = '../css/';
+		$js('is.graph-erm');
+	</script>
+	</body>
+</html>
