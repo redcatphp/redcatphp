@@ -1048,7 +1048,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 					switch($state){
 						case self::STATE_PARSING_OPENER:
 						case self::STATE_PARSING:
-							if ($xmlText{($i+1)}=='!'){
+							if(!isset($xmlText{$i+1}))
+								$this->throwException('Unexpected end of file, expected end after '.$currentChar);
+							if ($xmlText{$i+1}=='!'){
 								$this->fireCharacterData($charContainer);
 								if(substr($charContainer,1,7)!='[CDATA['&&substr($xmlText,$i+2,2)!='--'){
 									$state = self::STATE_PROLOG_EXCLAMATION;
@@ -1070,7 +1072,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 						default:
 							$this->fireCharacterData($charContainer);
 							$charContainer = '';
-							if ($xmlText{($i+1)}=='!'){
+							if(!isset($xmlText{$i+1}))
+								$this->throwException('Unexpected end of file, expected end after '.$currentChar);
+							if ($xmlText{$i+1}=='!'){
 								$this->fireCharacterData($charContainer);
 								$state = self::STATE_PROLOG_EXCLAMATION;
 								$charContainer .= $currentChar;
@@ -1085,11 +1089,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				case '=':
 					switch($state){
 						case self::STATE_PARSING_OPENER:
-							$quote = $xmlText{($i+1)};
+							if(!isset($xmlText{$i+1}))
+								$this->throwException('Unexpected end of file, expected end after '.$currentChar);
+							$quote = $xmlText{$i+1};
 							$y = $i+2;
 							$charContainer .= '='.$quote;
-							while(($ch=$xmlText{($y++)})!=$quote){
+							while(($ch=$xmlText{$y++})!=$quote){
 								$charContainer .= $ch;
+								if(!isset($xmlText{$y+1}))
+									$this->throwException('Unexpected end of file, expected end after '.$ch);
 							}
 							$charContainer .= $quote;
 							$i = $y-1;
@@ -1109,8 +1117,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 					switch($state){
 						case self::STATE_PARSING_OPENER:
 						case self::STATE_PARSING:						
-							if (($xmlText{($i - 1)} == '-') && ($xmlText{($i - 2)} == '!')
-								&& ($xmlText{($i - 3)} == '<')) {
+							if (
+								isset($xmlText{$i-1})&&
+								isset($xmlText{$i-2})&&
+								isset($xmlText{$i-3})&&
+								$xmlText{$i-1}=='-'&&
+								$xmlText{$i-2}=='!'&&
+								$xmlText{$i-3}=='<'
+							)
+							{
 								$state = self::STATE_PARSING_COMMENT;
 								$charContainer = ' ';
 							}
@@ -1122,9 +1137,11 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 							$charContainer = '';
 						break;
 						case self::STATE_PROLOG_COMMENT:
-							if (!((($xmlText{($i + 1)} == '-')  && ($xmlText{($i + 2)} == '>')) || 
-								($xmlText{($i + 1)} == '>') ||
-								(($xmlText{($i - 1)} == '-')  && ($xmlText{($i - 2)}== '!')) ))
+							if (!(
+								(isset($xmlText{$i+1}) && isset($xmlText{$i+2}) && $xmlText{$i+1}=='-' && $xmlText{$i+2}=='>') ||
+								(isset($xmlText{$i+1}) && $xmlText{$i+1}=='>') ||
+								(isset($xmlText{$i-1}) && isset($xmlText{$i-2}) && $xmlText{$i-1}=='-' && $xmlText{$i-2}== '!')
+							))
 								$charContainer .= $currentChar;
 						break;
 						case self::STATE_NOPARSING:
@@ -1258,7 +1275,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 							$charContainer = '';
 						break;
 						case self::STATE_PROLOG_INLINEDTD:
-							if($xmlText{($i-1)}==']'){
+							if(isset($xmlText{$i-1}) && $xmlText{$i-1}==']'){
 								$state = self::STATE_PARSING;
 								$this->fireDTD($charContainer.$currentChar);						
 								$charContainer = '';
@@ -1267,7 +1284,10 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 								$charContainer .= $currentChar;
 						break;
 						case self::STATE_PARSING_COMMENT:
-							if(($xmlText{($i-1)}=='-')&&($xmlText{($i - 2)}=='-')){
+							if(
+								isset($xmlText{$i-1})&&isset($xmlText{$i-2})&&
+								$xmlText{$i-1}=='-'&&$xmlText{$i-2}=='-'
+							){
 								$this->fireComment(substr($charContainer,0,strlen($charContainer)-2));
 								$charContainer = '';
 								$state = self::STATE_PARSING;
