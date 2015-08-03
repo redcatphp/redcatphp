@@ -1,6 +1,4 @@
 <?php
-use Git\GitDeploy\GitDeploy;
-
 set_time_limit(0);
 
 //nocache headers
@@ -16,7 +14,7 @@ ob_implicit_flush(true);
 @ob_end_flush();
 
 echo '<pre>';
-GitDeploy::factory(SURIKAT)
+Unit\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT])
 	->maintenanceOn()
 	->getParent()
 		->deploy()

@@ -1,8 +1,5 @@
 <?php namespace Git\GitDeploy;
 class GitDeploy{
-	static function factory($repoPath=null){
-		return new self($repoPath);
-	}
 	protected $origin;
 	protected $repoPath;
 	protected $config = [
@@ -41,14 +38,13 @@ class GitDeploy{
 		}
 		if(empty($config))
 			throw new \Exception('Missing deploy config');
-		
-        $this->options = self::array_merge_recursive($this->options,$config[':shared:']);
+
         if(!$this->iniServers)
 			$this->iniServers = $config;
         if(!$this->iniServers)
             return self::error("Invalid deploy configuration");
 		foreach($this->iniServers as $uri=>$options){
-			if(!is_array($options)||$uri==':shared:')
+			if(!is_array($options))
 				continue;
 			if(strpos($uri, ":/")!==false)
 				$options = parse_url($uri);

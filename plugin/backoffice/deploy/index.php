@@ -1,6 +1,4 @@
 <?php
-use Git\GitDeploy\GitDeploy;
-
 set_time_limit(0);
 
 //nocache headers
@@ -15,7 +13,8 @@ header("Cache-Control: no-store, no-cache, must-revalidate");
 ob_implicit_flush(true);
 @ob_end_flush();
 echo '<pre>';
-GitDeploy::factory(SURIKAT_CWD)
+
+Unit\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT_CWD])
 	->maintenanceOn()
 	->getChild(SURIKAT)
 		->deploy()

@@ -129,5 +129,10 @@ return [
 				'$cache'=>'dev.css',
 			],
 		],
+		'Git\GitDeploy\GitDeploy' => [
+			'construct'=>[
+				'$config' => 'gitDeploy',
+			],
+		],
 	],
 ];
