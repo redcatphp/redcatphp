@@ -16,10 +16,10 @@ echo '<pre>';
 
 Unit\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT_CWD])
 	->maintenanceOn()
-	->getChild(SURIKAT)
-		->deploy()
 	->getOrigin()
 		->autocommit()
+		->deploy()
+	->getChild(SURIKAT)
 		->deploy()
 		->maintenanceOff()
 ;
