@@ -13,7 +13,7 @@ class Templix extends \Templix\Templix{
 			if($tml->templix->getParent())
 				return;
 			$toolbox = $this->di->create(__NAMESPACE__.'\Toolbox');
-			$toolbox->JsIs($tml);
+			$toolbox->is($tml);
 			if(!$tml->devTemplate)
 				$toolbox->autoMIN($tml);
 		});

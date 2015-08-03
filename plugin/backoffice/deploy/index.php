@@ -21,6 +21,5 @@ Unit\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT_CWD])
 		->deploy()
 	->getChild(SURIKAT)
 		->deploy()
-		->maintenanceOff()
 ;
 echo '</pre>';

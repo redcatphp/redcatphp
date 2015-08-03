@@ -10,7 +10,7 @@ class Toolbox{
 		$this->server = $server;
 	}
 	
-	function JsIs($Tml,$href='css/is.'){
+	function is($Tml,$href='css/is.'){
 		$head = $Tml->find('head',0);
 		if(!$head){
 			if($Tml->find('body',0)){
@@ -24,18 +24,14 @@ class Toolbox{
 		}
 		$s = [];
 		$Tml->recursive(function($el)use($Tml,$head,$href,&$s){
-			foreach($Tml->templix->getDirCwd() as $d){
-				if(
-					($is=$el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false))
-					&&!in_array($is,$s)
-					&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)
-					&&(
-						is_file($d.$href.strtolower($is).'.css')
-						||is_file($d.$href.strtolower($is).'.scss')
-					)
+			$is = $el->attr('is')?$el->attr('is'):(preg_match('/(?:[a-z][a-z]+)-(?:[a-z][a-z]+)/is',$el->nodeName)?$el->nodeName:false);
+			if($is&&!in_array($is,$s)&&!$head->children('link[href="'.$href.strtolower($is).'.css"]',0)){
+				if(	is_file(SURIKAT_CWD.$href.strtolower($is).'.css')
+					||is_file(SURIKAT_CWD.$href.strtolower($is).'.scss')
+					||is_file(SURIKAT.$href.strtolower($is).'.css')
+					||is_file(SURIKAT.$href.strtolower($is).'.scss')
 				){
 					$s[] = $is;
-					break;
 				}
 			}
 		});
