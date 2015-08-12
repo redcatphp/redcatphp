@@ -355,7 +355,7 @@ class Di implements \ArrayAccess{
 			}
 			$parameters = [];
 			if (!empty($args)){
-				foreach ($paramInfo as $j=>list(,,,,$name,$default)) {
+				foreach ($paramInfo as $j=>list($class, $allowsNull, $sub, $new, $name, $default)) {
 					if(false!==$offset=array_search($name, array_keys($args),true)){
 						$parameters[$j] = current(array_splice($args, $offset, 1));
 					}
