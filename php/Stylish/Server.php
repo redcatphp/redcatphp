@@ -70,7 +70,7 @@ class Server{
 	function compile($in, $out,$input=null) {
 		$start = microtime(true);
 		if($input)
-			$css = $this->compiler->compile('@import "globals";@import "'.$input.'";'); //surikat addon
+			$css = $this->compiler->compile('@import "config";@import "vars";@import "'.$input.'";'); //surikat addon
 		else
 			$css = $this->compiler->compile(file_get_contents($in), $in);
 		$elapsed = round((microtime(true) - $start), 4);
