@@ -79,8 +79,17 @@ class Session{
 		$this->origin['_FP_'] = $this->data['_FP_'];
 	}
 	function garbageCollector(){
-		if(mt_rand($this->gc_probability, $this->gc_divisor)===1)
+		if(mt_rand($this->gc_probability, $this->gc_divisor)===1){
 			$this->SessionHandler->gc($this->maxLifetime);
+			if(is_dir($this->attemptsPath)&&($dh = opendir($this->attemptsPath))){
+				while($f=readdir($dh)){
+					$file = $this->attemptsPath.$f;
+					if(is_file($file)&&time()>filemtime($file)+$this->blockedWait){
+						unlink($file);
+					}
+				}
+			}
+		}
 	}
 	function destroy(){
 		if($this->id)
@@ -216,8 +225,11 @@ class Session{
 	function getIp(){
 		return $this->server['REMOTE_ADDR'];
 	}
+	function getIpHash(){
+		return sha1($this->getIp());
+	}
 	function addAttempt(){
-		$ip = $this->getIp();
+		$ip = $this->getIpHash();
 		@mkdir($this->attemptsPath,0777,true);
 		if(is_file($this->attemptsPath.$ip))
 			$attempt_count = ((int)file_get_contents($this->attemptsPath.$ip))+1;
@@ -226,7 +238,7 @@ class Session{
 		return file_put_contents($this->attemptsPath.$ip,$attempt_count,LOCK_EX);
 	}
 	function isBlocked(){
-		$ip = $this->getIp();
+		$ip = $this->getIpHash();
 		if(is_file($this->attemptsPath.$ip))
 			$count = (int)file_get_contents($this->attemptsPath.$ip);
 		else
@@ -244,7 +256,7 @@ class Session{
 		return false;
 	}
 	function deleteAttempts(){
-		$ip = $this->getIp();
+		$ip = $this->getIpHash();
 		return is_file($this->attemptsPath.$ip)&&unlink($this->attemptsPath.$ip);
 	}
 	function writeCookie(){
