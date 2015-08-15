@@ -92,7 +92,7 @@ class Git {
 		$this->_exec('git config --local user.email "'.$email.'"');
 		$this->_exec('git config --local user.name "'.$name.'"');
 		$this->_exec('git add --all .');
-		$this->_exec("git commit -m \"auto commit by service deploy - ".@strftime('%A %e %B %G - %k:%M:%S',time()).'"');
+		$this->_exec('git commit -m "auto commit by service deploy - '.@strftime('%A %e %B %G - %k:%M:%S',time()).'"');
 		shell_exec('chmod -R 777 '.$this->repo_path.'.git 2>&1');
 	}
 }
