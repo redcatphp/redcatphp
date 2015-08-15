@@ -1,0 +1,188 @@
+fieldset {
+	border: 0;
+}
+legend {
+	display: block;
+}
+label {
+	display: inline-block;
+	max-width: 100%; // Force IE8 to wrap long content (see https://github.com/twbs/bootstrap/issues/13141)
+	margin-bottom: 5px;
+	font-weight: normal;
+}
+output {
+	display: block;
+}
+select,
+textarea,
+button,
+input{
+	display: block;
+	height: 2em;
+	padding: 0.2618em;//6px 12px;
+	font-size: 0.9em;
+	line-height: 0.9em;
+	color: #555;
+	background-color: #FFF;
+	background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+	border: 1px solid #555;
+	border-radius: 4px;
+	@include box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+	@include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
+	@include form-control-focus($color-main); //Customize the `:focus` state to imitate native WebKit styles.
+	@include placeholder();
+	&[disabled],
+	fieldset[disabled] & {
+		pointer-events: none; // Future-proof disabling of clicks
+		@include opacity(.65);
+		@include box-shadow(none);
+	}
+	&[disabled],
+	&[readonly],
+	fieldset[disabled] & { // Disabled and read-only inputs HTML5 says that controls under a fieldset > legend:first-child won't be disabled if the fieldset is disabled. Due to implementation difficulty, we don't honor that edge case; we style them as disabled anyway.
+		cursor: not-allowed;
+		background-color: #999;
+		opacity: 1; // iOS fix for unreadable disabled content
+	}
+}
+textarea {
+	height: auto; // Reset height for `textarea`s
+}
+input[type="search"] {
+	-webkit-appearance: none; // This overrides the extra rounded corners on search inputs in iOS
+	@include box-sizing(border-box); // While most of our form styles require extra classes, some basic normalization is required to ensure optimum display with or without those classes to better address browser inconsistencies. Override content-box in Normalize (* isn't specific enough)
+}
+button,
+input[type=button],
+input[type=submit]{
+	cursor: pointer;
+	padding: 2px 4px;
+	font-size: 1.1em;
+	line-height: 1.1em;
+	border-radius: 4px;
+	background-color: $color-light;
+	color: $color-dark;
+	border: 1px solid $color-dark;
+	text-align: center;
+	vertical-align: middle;
+	background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+	white-space: nowrap;
+	@include user-select(none);
+	&:hover,
+	&:focus,
+	&:active,
+	&.active{
+		color:#FFF;
+		border-color:#323232;
+	}
+	&,
+	&:active,
+	&.active {
+		&:focus {
+			@include tab-focus();
+		}
+	}
+	&:hover,
+	&:focus {
+		text-decoration: none;
+	}
+
+	&:active,
+	&.active {
+		outline: 0;
+		background-image: none;
+		@include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+	}
+	&.disabled,
+	&[disabled],
+	fieldset[disabled] & {
+		cursor: not-allowed;
+		pointer-events: none; // Future-proof disabling of clicks
+		@include opacity(.65);
+		@include box-shadow(none);
+	}
+}
+legend{
+	font-size: 1.2em;
+	line-height: 1.2em;
+	font-weight: normal;
+}
+input,
+textarea{
+	font-weight: normal;
+	vertical-align: middle;
+	background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+	border: 1px solid #ccc;
+	white-space: nowrap;
+	padding: 1px 3px;
+	font-size: 1.2em;
+	line-height: 1.2em;
+	border-radius: 4px;
+	&:hover,
+	&:focus {
+		text-decoration: none;
+	}
+	&:active,
+	&.active {
+		outline: 0;
+		background-image: none;
+		@include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+	}
+}
+input[type=submit]{
+	display:block;
+	margin:0.5em auto;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+	background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+	white-space: nowrap;
+	padding: 0.3em;
+	font-size: 1.2em;
+	line-height: 1.5em;
+	border-radius: 4px;
+	@include user-select(none);
+	&,
+	&:active,
+	&%active {
+		&:focus {
+			@include tab-focus();
+		}
+	}
+	&:hover,
+	&:focus {
+		border-color: $color-main;
+		color: $color-main;
+		background-color: lighten($color-light,2%);
+		text-decoration: none;
+	}
+	&:active,
+	&%active {
+		outline: 0;
+		background-image: none;
+		@include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+	}
+	&%disabled,
+	&[disabled],
+	fieldset[disabled] & {
+		cursor: not-allowed;
+		pointer-events: none; // Future-proof disabling of clicks
+		@include opacity(.65);
+		@include box-shadow(none);
+	}
+}
+input[required]{
+	@?include icon(asterisk,1);
+	&::after{
+		color: #FF0000;
+		font-size: 0.8em;
+		margin-left: 0.5em;
+		vertical-align: top;
+	}
+}
+input[type=file]{
+	border:0;
+	background:none;
+	box-shadow:none;
+}

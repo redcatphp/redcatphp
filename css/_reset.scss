@@ -1,0 +1,42 @@
+*{
+	margin:0;
+	padding:0;
+	border:0;
+}
+html, body {
+    height: 100%;
+}
+html{
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+body{
+ 	background: $color-light; //url(#{$img}tiny_grid.png) 0 0 repeat
+	font-family: 'Open Sans';
+	font-size: 1em;
+}
+ul{
+	list-style-type:none;
+}
+a{
+	color: $color-main;
+	text-decoration: none;
+	&:hover,
+	&:focus {
+		color: $color-dark;
+		text-decoration: underline;
+	}
+	&:focus {
+		@include tab-focus();
+	}
+}
+img{
+	vertical-align: middle;
+}
+hr{
+	border:1px solid #000;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+p{
+	margin:1em;
+}
