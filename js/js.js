@@ -1,7 +1,6 @@
 /*
-	$js
-		lightweight javascript dependencies manager
-		asynchronous module definition framework
+	$js - asynchronous module definition framework
+			or just simple lightweight javascript dependencies manager
 	
 	@version 2.0
 	@link http://github.com/surikat/js/
