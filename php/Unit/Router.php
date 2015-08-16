@@ -5,7 +5,7 @@ class Router implements \ArrayAccess{
 	private $routeParams;
 	private $di;
 	private $index = 0;
-	function __construct(Di $di){
+	function __construct(Di $di = null){
 		$this->di = $di;
 	}
 	function map($map,$index=null,$prepend=false){
@@ -25,7 +25,7 @@ class Router implements \ArrayAccess{
 		ksort($this->routes);
 		foreach($this->routes as $group){
 			foreach($group as list($match,$route)){
-				$routeParams = call_user_func($this->di->objectify($match),$uri,$server);
+				$routeParams = call_user_func($this->objectify($match),$uri,$server);
 				if($routeParams!==null){
 					$this->route = $route;
 					$this->routeParams = $routeParams;
@@ -36,7 +36,7 @@ class Router implements \ArrayAccess{
 	}
 	function display(){
 		$route = $this->route;
-		while(is_callable($route=$this->di->objectify($route))){
+		while(is_callable($route=$this->objectify($route))){
 			$route = call_user_func($route,$this->routeParams);
 		}
 	}
@@ -67,6 +67,29 @@ class Router implements \ArrayAccess{
 	}
 	function setIndex($index=0){
 		$this->index = $index;
+	}
+	function objectify($a){
+		if($this->di)
+			return $this->di->objectify($a);
+		if(is_object($a))
+			return $a;
+		if(is_array($a)){
+			if(is_array($a[0])){
+				$a[0] = $this->objectify($a[0]);
+				return $a;
+			}
+			else{
+				$args = $a;
+				$s = array_shift($args);
+			}
+		}
+		else{
+			$args = [];
+			$s = $a;
+		}
+		if(is_string($s)&&strpos($s,'new:')===0)
+			$a = (new \ReflectionClass(substr($s,4)))->newInstanceArgs($args);
+		return $a;
 	}
 	function offsetSet($k,$v){
 		list($match,$route) = $v;

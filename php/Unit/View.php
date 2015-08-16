@@ -4,7 +4,7 @@ class View {
 	protected $model;
 	protected $templateEngine;
 	protected $di;
-    function __construct($model = null, $templateEngine = null, Di $di){
+    function __construct($model = null, $templateEngine = null, Di $di=null){
         $this->model = $model;
         $this->templateEngine = $templateEngine;
         $this->di = $di;

@@ -5,7 +5,7 @@ class Model implements \ArrayAccess,\Iterator,\Countable{
 	protected $getter;
 	protected $setter;
 	protected $di;
-    function __construct($getter = null, $setter = null, Di $di){
+    function __construct($getter = null, $setter = null, Di $di=null){
         $this->getter = $getter;
         $this->setter = $setter;
         $this->di = $di;

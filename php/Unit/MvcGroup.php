@@ -1,4 +1,5 @@
-<?php namespace Unit;
+<?php
+namespace Unit;
 class MvcGroup extends MvcRoute{
 	function __construct($namespace, $templateEngine = null, Di $di){
 		$model = $namespace.'\\Model';

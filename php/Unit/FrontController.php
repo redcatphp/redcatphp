@@ -3,7 +3,7 @@ namespace Unit;
 class FrontController implements \ArrayAccess{
 	private $router;
 	protected $di;
-	function __construct(Router $router,Di $di){
+	function __construct(Router $router,Di $di=null){
 		$this->router = $router;
 		$this->di = $di;
 	}

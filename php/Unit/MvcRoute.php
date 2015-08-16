@@ -6,23 +6,35 @@ class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
     private $controller;
     private $templateEngine;
     private $di;
-    function __construct($model='Unit\Model', $view='Unit\View', $controller = null, $templateEngine = null, Di $di){
+    function __construct($model='Unit\Model', $view='Unit\View', $controller = null, $templateEngine = null, Di $di = null){
         $this->model = $model;
         $this->view = $view;
         $this->controller = $controller;
         $this->templateEngine = $templateEngine;
         $this->di = $di;
 		if(is_string($this->model)){
-			$this->model = $this->di->create($this->model);
+			if($this->di)
+				$this->model = $this->di->create($this->model);
+			else
+				$this->model = new $this->model;
 		}
 		if(is_string($this->template)){
-			$this->template = $this->di->create($this->template);
+			if($this->di)
+				$this->template = $this->di->create($this->template);
+			else
+				$this->template = new $this->template;
 		}
 		if(is_string($this->view)){
-			$this->view = $this->di->create($this->view,[$this->model,$this->template]);
+			if($this->di)
+				$this->view = $this->di->create($this->view,[$this->model,$this->template]);
+			else
+				$this->view = new $this->view($this->model,$this->template);
 		}
 		if(is_string($this->controller)){
-			$this->controller = $this->di->create($this->controller,[$this->model]);
+			if($this->di)
+				$this->controller = $this->di->create($this->controller,[$this->model]);
+			else
+				$this->controller = new $this->controller($this->model);
 		}
     }
     function __invoke(){
