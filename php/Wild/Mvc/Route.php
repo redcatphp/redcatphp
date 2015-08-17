@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Mvc;
 use Wild\Kinetic\Di;
-class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
+class Route implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;
     private $controller;
