@@ -10,7 +10,7 @@ class Backoffice extends \Wild\Route\FrontController{
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
-			->append(['new:Wild\Route\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
+			->append(['new:Wild\Route\Match\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
 			->append(['new:Wild\Plugin\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
 				$this->lock();
 				return 'new:Wild\Plugin\Templix\Templix';

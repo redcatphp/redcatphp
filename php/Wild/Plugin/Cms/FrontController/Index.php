@@ -7,7 +7,7 @@ class Index extends \Wild\Route\FrontController{
 		parent::__construct($router,$di);
 		$this->map([
 			['backend/','new:Wild\Plugin\Cms\FrontController\Backoffice'],
-			[['new:Wild\Route\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\Plugin\Cms\FrontController\Synaptic'],
+			[['new:Wild\Route\Match\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\Plugin\Cms\FrontController\Synaptic'],
 			[['new:Wild\Plugin\Cms\RouteMatch\ByTmlL10n','','template'],'new:Wild\Plugin\Templix\TemplixL10n'],
 			[['new:Wild\Plugin\Cms\RouteMatch\ByTml','','template'],'new:Wild\Plugin\Templix\Templix'],
 		]);

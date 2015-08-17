@@ -1,5 +1,6 @@
-<?php namespace Wild\Route\RouteMatch;
-class Prefix{
+<?php
+namespace Wild\Route\Match;
+class Suffix{
 	private $match;
 	function __construct($match){
 		$this->match = $match;
@@ -10,7 +11,7 @@ class Prefix{
 			if(empty($uri))
 				return '';
 		}
-		elseif(strpos($uri,$match)===0){
+		elseif(strrpos($uri,$match)===strlen($uri)-strlen($match)){
 			return (string)substr($uri,strlen($match));
 		}
 	}

@@ -1,4 +1,5 @@
-<?php namespace Wild\Route\RouteMatch;
+<?php
+namespace Wild\Route\Match;
 class ByPhp{
 	protected $dir = '';
 	protected $dirFS = '';

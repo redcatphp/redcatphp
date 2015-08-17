@@ -59,10 +59,10 @@ class Router implements \ArrayAccess{
 	private function matchType($match){
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
-				return ['new:Wild\Route\RouteMatch\Regex',$match];
+				return ['new:Wild\Route\Match\Regex',$match];
 			}
 			else{
-				return ['new:Wild\Route\RouteMatch\Prefix',$match];
+				return ['new:Wild\Route\Match\Prefix',$match];
 			}
 		}
 		return $match;
