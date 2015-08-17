@@ -1,6 +1,6 @@
 <?php namespace KungFu\TemplixPlugin\Markup;
 use KungFu\TemplixPlugin\LoremIpsum as LoremIpsumGen;
-class Loremipsum extends \Templix\Markup {
+class Loremipsum extends \Wild\Templix\Markup {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	protected $footIndentationForce = true;

@@ -1,5 +1,5 @@
 <?php namespace InterEthnic;
-use Templix\Markup;
+use Wild\Templix\Markup;
 class getTextExtractorTemplix extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		$filename = $file;

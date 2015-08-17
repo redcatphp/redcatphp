@@ -105,7 +105,7 @@ return [
 		'Unit\Debug'=>[
 			'shared'=>true,
 		],
-		'Templix\Templix'=>[
+		'Wild\Templix\Templix'=>[
 			'construct'=>[
 				'$devTemplate'=>'dev.tml',
 				'$devCss'=>'dev.css',

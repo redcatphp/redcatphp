@@ -1,6 +1,6 @@
 <?php namespace KungFu\TemplixPlugin\Markup;
 use KungFu\TemplixPlugin\Parsedown;
-class Markdown extends \Templix\Markup {
+class Markdown extends \Wild\Templix\Markup {
 	protected $hiddenWrap = true;
 	protected $noParseContent = true;
 	function load(){

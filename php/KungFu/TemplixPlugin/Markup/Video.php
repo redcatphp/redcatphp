@@ -1,6 +1,6 @@
 <?php
 namespace KungFu\TemplixPlugin\Markup;
-class Video extends \Templix\Markup{
+class Video extends \Wild\Templix\Markup{
 	function load(){
 		if($this->source){
 			$this->prepend('

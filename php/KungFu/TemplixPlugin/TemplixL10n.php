@@ -4,7 +4,6 @@ use Unit\Url;
 use InterEthnic\Translator;
 use Unit\Di;
 class TemplixL10n extends Templix{
-	protected $Templix;
 	protected $Translator;
 	protected $Url;
 	function __construct($file=null,$vars=null,

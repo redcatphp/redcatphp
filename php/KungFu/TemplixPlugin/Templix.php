@@ -1,7 +1,7 @@
 <?php
 namespace KungFu\TemplixPlugin;
 use Unit\Di;
-class Templix extends \Templix\Templix{
+class Templix extends \Wild\Templix\Templix{
 	private $di;
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
