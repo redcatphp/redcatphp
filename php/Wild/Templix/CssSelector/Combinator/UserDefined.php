@@ -1,8 +1,7 @@
 <?php
 namespace Wild\Templix\CssSelector\Combinator;
 use Wild\Templix\CssSelector\CssParserException;
-use Wild\Templix\CssSelector\Combinator\CssParserCombinator;
-class CssParserCombinatorUserDefined extends CssParserCombinator{
+class UserDefined implements CombinatorInterface{
 	private $_userDefFunction;
 	function __construct($userDefFunction){
 		$this->_userDefFunction = $userDefFunction;

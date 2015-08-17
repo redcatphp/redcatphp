@@ -1,8 +1,7 @@
 <?php
 namespace Wild\Templix\CssSelector;
 use ArrayObject;
-use Wild\Templix\CssSelector\Combinator\CssParserCombinator;
-use Wild\Templix\CssSelector\Combinator\CssParserCombinatorFactory;
+use Wild\Templix\CssSelector\Combinator\Factory;
 use Wild\Templix\CssSelector\Filter\CssParserFilter;
 use Wild\Templix\CssSelector\Filter\CssParserFilterAttr;
 use Wild\Templix\CssSelector\Filter\CssParserFilterClass;
@@ -54,10 +53,10 @@ class CssParser extends TextParser{
 		$this->registerPseudoFilter("has", "CssParserFilterPseudoHas", "selectorList");
 		$this->registerPseudoFilter("hasnt", "CssParserFilterPseudoHasnt", "selectorList");
 		$this->registerPseudoFilter("first-child", "CssParserFilterPseudoFirstChild");
-		$this->registerCombinator("", "CssParserCombinatorDescendant");
-		$this->registerCombinator(">", "CssParserCombinatorChild");
-		$this->registerCombinator("+", "CssParserCombinatorAdjacent");
-		$this->registerCombinator("~", "CssParserCombinatorGeneral");
+		$this->registerCombinator("", "Descendant");
+		$this->registerCombinator(">", "Child");
+		$this->registerCombinator("+", "Adjacent");
+		$this->registerCombinator("~", "General");
 		parent::__construct("");
 	}
 	
@@ -137,7 +136,7 @@ class CssParser extends TextParser{
 	function registerCombinator($name, $object){
 		if (is_callable($object))
 			$this->_combinators[$name] = [
-				"classname" => "CssParserCombinatorUserDefined",
+				"classname" => "UserDefined",
 				"user_def_function" => $object
 			];
 		else
@@ -152,7 +151,7 @@ class CssParser extends TextParser{
 		
 		if (list($name) = $this->in($combinatorNames)) {
 			$combinator = $this->_combinators[$name];
-			$ret = CssParserCombinatorFactory::getInstance(
+			$ret = Factory::getInstance(
 				$combinator["classname"], $combinator["user_def_function"]
 			);
 		}
@@ -270,7 +269,7 @@ class CssParser extends TextParser{
 				throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
 		}
 		elseif ($element = $this->is("element"))
-			$combinator = CssParserCombinatorFactory::getInstance("CssParserCombinatorDescendant");
+			$combinator = Factory::getInstance("Descendant");
 		else
 			return false;
 		return new CssParserModelFactor($combinator, $element);

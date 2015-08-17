@@ -1,7 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Combinator;
-use Wild\Templix\CssSelector\Combinator\CssParserCombinator;
-class CssParserCombinatorGeneral extends CssParserCombinator{
+class General implements CombinatorInterface{
 	function filter($node, $tagname){
 		$ret = [];
 		while($node=$node->nextSibling)
