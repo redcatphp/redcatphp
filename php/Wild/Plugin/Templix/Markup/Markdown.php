@@ -1,5 +1,5 @@
-<?php namespace KungFu\TemplixPlugin\Markup;
-use KungFu\TemplixPlugin\Parsedown;
+<?php namespace Wild\Plugin\Templix\Markup;
+use Wild\Plugin\Templix\Parsedown;
 class Markdown extends \Wild\Templix\Markup {
 	protected $hiddenWrap = true;
 	protected $noParseContent = true;

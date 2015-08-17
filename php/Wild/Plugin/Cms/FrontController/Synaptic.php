@@ -1,7 +1,7 @@
-<?php namespace KungFu\Cms\FrontController;
+<?php namespace Wild\Plugin\Cms\FrontController;
 use Unit\Router;
 use Unit\Di;
-use KungFu\Tools\JSMin;
+use Wild\Plugin\Tools\JSMin;
 class Synaptic {
 	
 	protected $pathFS;

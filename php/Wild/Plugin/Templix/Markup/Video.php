@@ -1,5 +1,5 @@
 <?php
-namespace KungFu\TemplixPlugin\Markup;
+namespace Wild\Plugin\Templix\Markup;
 class Video extends \Wild\Templix\Markup{
 	function load(){
 		if($this->source){

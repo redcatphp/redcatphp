@@ -1,5 +1,5 @@
 <?php
-namespace KungFu\TemplixPlugin;
+namespace Wild\Plugin\Templix;
 use Unit\Di;
 class Templix extends \Wild\Templix\Templix{
 	private $di;

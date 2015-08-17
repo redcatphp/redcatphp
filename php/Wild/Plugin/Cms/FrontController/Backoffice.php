@@ -1,5 +1,5 @@
 <?php
-namespace KungFu\Cms\FrontController;
+namespace Wild\Plugin\Cms\FrontController;
 use Wild\Identify\Auth;
 use Wild\Identify\Session;
 use Unit\Autoloader;
@@ -10,12 +10,12 @@ class Backoffice extends \Unit\FrontController{
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
-			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:KungFu\Cms\FrontController\Synaptic',$this->pathFS])
-			->append(['new:KungFu\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
+			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
+			->append(['new:Wild\Plugin\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
 				$this->lock();
-				return 'new:KungFu\TemplixPlugin\Templix';
+				return 'new:Wild\Plugin\Templix\Templix';
 			})
-			->append(['new:KungFu\Cms\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
+			->append(['new:Wild\Plugin\Cms\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
 				$this->lock();
 				list($dir,$file,$adir,$afile) = $paths;
 				chdir($adir);
@@ -35,7 +35,7 @@ class Backoffice extends \Unit\FrontController{
 	}
 	function run($path,$domain=null){
 		if(!parent::run($path,$domain)){
-			$this->di->create('KungFu\TemplixPlugin\Templix')->query(404);
+			$this->di->create('Wild\Plugin\Templix\Templix')->query(404);
 			exit;
 		}
 		return true;

@@ -1,4 +1,4 @@
-<?php namespace KungFu\Tools;
+<?php namespace Wild\Plugin\Tools;
 /**
  * JSMin.php - modified PHP implementation of Douglas Crockford's JSMin.
  *

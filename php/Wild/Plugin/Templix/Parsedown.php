@@ -1,5 +1,5 @@
 <?php
-namespace KungFu\TemplixPlugin;
+namespace Wild\Plugin\Templix;
 #
 #
 # Parsedown

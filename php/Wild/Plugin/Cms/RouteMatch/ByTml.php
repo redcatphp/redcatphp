@@ -1,4 +1,4 @@
-<?php namespace KungFu\Cms\RouteMatch;
+<?php namespace Wild\Plugin\Cms\RouteMatch;
 class ByTml {
 	protected $uriDir;
 	protected $physicalDir;

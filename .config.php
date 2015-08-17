@@ -90,7 +90,7 @@ return [
 		'Session'=>[
 			'instanceOf'=>'Wild\Identify\Session',
 		],
-		'KungFu\Cms\RouteMatch\ByTmlL10n'=>[
+		'Wild\Plugin\Cms\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
 				'langDefault'=>'en',
 			],
@@ -113,12 +113,12 @@ return [
 				'$devImg'=>'dev.img',
 			],
 		],
-		'KungFu\TemplixPlugin\Templix'=>[
+		'Wild\Plugin\Templix\Templix'=>[
 			'call'=>[
-				'addPluginPrefix'=>'KungFu\TemplixPlugin\Markup\\',
+				'addPluginPrefix'=>'Wild\Plugin\Templix\Markup\\',
 			],
 		],
-		'KungFu\Cms\FrontController\Synaptic'=>[
+		'Wild\Plugin\Cms\FrontController\Synaptic'=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
