@@ -5,13 +5,13 @@ class SqlLogger {
 	protected $echo;
 	protected $keep;
 	protected $html;
-	protected $useUnitDebug;
+	protected $useWildDebug;
 	protected $logs = [];
-	function __construct($echo=null,$keep=null,$html=true,$useUnitDebug=true){
+	function __construct($echo=null,$keep=null,$html=true,$useWildDebug=true){
 		$this->setEcho($echo);
 		$this->setKeep($keep);
 		$this->setHtml($html);
-		$this->setUseUnitDebug($useUnitDebug);
+		$this->setUseUnitDebug($useWildDebug);
 	}
 	function setEcho($b=true){
 		$this->echo = (bool)$b;
@@ -23,7 +23,7 @@ class SqlLogger {
 		$this->html = (bool)$b;
 	}
 	function setUseUnitDebug($b=true){
-		$this->useUnitDebug = (bool)$b;
+		$this->useWildDebug = (bool)$b;
 	}
 	function getLogs(){
 		return $this->logs;
@@ -101,11 +101,11 @@ class SqlLogger {
 	function logResult($r){
 		if(!$this->keep&&!$this->echo)
 			return;
-		if($this->useUnitDebug&&class_exists('Unit\Debug')){
+		if($this->useWildDebug&&class_exists('Wild\Debug\Vars')){
 			if($this->html)
-				$newStr = \Unit\Debug::var_debug_html_return($r);
+				$newStr = \Wild\Debug\Vars::debug_html_return($r);
 			else
-				$newStr = \Unit\Debug::var_debug_return($r);
+				$newStr = \Wild\Debug\Vars::debug_return($r);
 		}
 		else{
 			if($this->html){

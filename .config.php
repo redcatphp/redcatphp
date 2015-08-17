@@ -102,7 +102,7 @@ return [
 				'$dev'=>'dev.l10n',
 			],
 		],
-		'Unit\Debug'=>[
+		'Wild\Debug\ErrorHandler'=>[
 			'shared'=>true,
 		],
 		'Wild\Templix\Templix'=>[

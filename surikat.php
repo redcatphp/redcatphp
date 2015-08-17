@@ -17,7 +17,7 @@ $surikat = Unit\Di::load([
 ],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/surikat.svar');
 
 if($surikat['dev']['php']){
-	$surikat->create('Unit\Debug')->handleErrors();
+	$surikat->create('Wild\Debug\ErrorHandler')->handle();
 }
 else{
 	error_reporting(0);
