@@ -1,5 +1,5 @@
 <?php
-namespace Stylish;
+namespace Wild\Stylize;
 function autoload($class){
 	if(strpos($class,__NAMESPACE__.'\\')===0){
 		$file = __DIR__.'/'.substr($class,strlen(__NAMESPACE__)+1).'.php';

@@ -124,7 +124,7 @@ return [
 				'$devJs'=>'dev.js',
 			],
 		],
-		'Stylish\Server' => [
+		'Wild\Stylize\Server' => [
 			'construct'=>[
 				'$cache'=>'dev.css',
 			],

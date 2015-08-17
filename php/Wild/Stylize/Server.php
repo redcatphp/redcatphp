@@ -1,4 +1,4 @@
-<?php namespace Stylish;
+<?php namespace Wild\Stylize;
 class Server{
 	protected $cacheDir = '.tmp/stylish/';
 	protected $enableCache;

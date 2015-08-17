@@ -11,7 +11,7 @@
  */
 
 //namespace Leafo\ScssPhp;
-namespace Stylish;
+namespace Wild\Stylize;
 
 //use Leafo\ScssPhp\Compiler;
 
@@ -82,7 +82,7 @@ class Parser
     {
         return '('
             //. implode('|', array_map(array('Leafo\ScssPhp\Parser','pregQuote'), $operators))
-            . implode('|', array_map(array('Stylish\Parser','pregQuote'), $operators))
+            . implode('|', array_map(array('Wild\Stylize\Parser','pregQuote'), $operators))
             . ')';
     }
 

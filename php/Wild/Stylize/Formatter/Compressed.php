@@ -11,16 +11,17 @@
  */
 
 //namespace Leafo\ScssPhp\Formatter;
-namespace Stylish\Formatter;
+namespace Wild\Stylize\Formatter;
 
-use Stylish\Formatter;
+//use Leafo\ScssPhp\Formatter;
+use Wild\Stylize\Formatter;
 
 /**
- * SCSS crunched formatter
+ * SCSS compressed formatter
  *
- * @author Anthon Pang <anthon.pang@gmail.com>
+ * @author Leaf Corcoran <leafot@gmail.com>
  */
-class Crunched extends Formatter
+class Compressed extends Formatter
 {
     public function __construct()
     {
@@ -43,8 +44,10 @@ class Crunched extends Formatter
         $glue = $this->break.$inner;
 
         foreach ($block->lines as $index => $line) {
-            if (substr($line, 0, 2) === '/*') {
+            if (substr($line, 0, 2) === '/*' && substr($line, 2, 1) !== '!') {
                 unset($block->lines[$index]);
+            } elseif (substr($line, 0, 3) === '/*!') {
+                $block->lines[$index] = '/*' . substr($line, 3);
             }
         }
 
