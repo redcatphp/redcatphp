@@ -1,7 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilter;
-class CssParserFilterAttr extends CssParserFilter{
+class Attr implements FilterInterface{
 	const EQUAL_SELECTOR = '=';
 	const NOT_EQUAL_SELECTOR = '!=';
 	const CONTAIN_SELECTOR = '*=';

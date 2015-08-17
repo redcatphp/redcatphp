@@ -1,6 +1,6 @@
 <?php namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudo;
-class CssParserFilterPseudoHasnt extends CssParserFilterPseudo{
+use Wild\Templix\CssSelector\Filter\Pseudo;
+class PseudoHasnt extends Pseudo{
 	private $_items;
 	function __construct($input){
 		$this->_items = $input;

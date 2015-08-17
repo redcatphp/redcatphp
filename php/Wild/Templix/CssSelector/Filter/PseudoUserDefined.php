@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudo;
-class CssParserFilterPseudoUserDefined extends CssParserFilterPseudo{
+use Wild\Templix\CssSelector\Filter\Pseudo;
+class PseudoUserDefined extends Pseudo{
 	private $_input;
 	private $_userDefFunction;
 	function __construct($input, $userDefFunction){

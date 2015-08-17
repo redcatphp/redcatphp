@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Model;
-class CssParserModelFactor{
+class Factor{
 	const DESCENDANT_OPERATOR = "";
 	const CHILD_OPERATOR = ">";
 	const ADJACENT_OPERATOR = "+";

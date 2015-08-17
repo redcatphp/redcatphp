@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudo;
-class CssParserFilterPseudoGt extends CssParserFilterPseudo{
+use Wild\Templix\CssSelector\Filter\Pseudo;
+class PseudoGt extends Pseudo{
 	private $_position;
 	function __construct($input){
 		$this->_position = intval($input);

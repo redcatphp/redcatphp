@@ -1,7 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Model;
-use Wild\Templix\CssSelector\Filter\CssParserFilter;
-class CssParserModelElement{
+class Element{
 	private $_tagName;
 	private $_filters;
 	function __construct($tagName){

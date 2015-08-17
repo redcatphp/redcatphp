@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Model;
-class CssParserModelSelector{
+class Selector{
 	private $_factors = [];
 	function addFactor($factor){
 		array_push($this->_factors, $factor);

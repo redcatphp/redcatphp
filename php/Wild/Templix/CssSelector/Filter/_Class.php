@@ -1,7 +1,6 @@
 <?php
 namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilter;
-class CssParserFilterClass extends CssParserFilter{
+class _Class implements FilterInterface{
 	private $_className;
 	function __construct($className){
 		$this->_className = $className;

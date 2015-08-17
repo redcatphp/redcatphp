@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Templix\CssSelector\Filter;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudo;
-class CssParserFilterPseudoNthChild extends CssParserFilterPseudo{
+use Wild\Templix\CssSelector\Filter\Pseudo;
+class PseudoNthChild extends Pseudo{
 	private $_position;
 	function __construct($input){
 		$this->_position = intval($input);

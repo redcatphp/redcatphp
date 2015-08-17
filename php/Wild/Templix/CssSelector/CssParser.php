@@ -2,15 +2,14 @@
 namespace Wild\Templix\CssSelector;
 use ArrayObject;
 use Wild\Templix\CssSelector\Combinator\Factory;
-use Wild\Templix\CssSelector\Filter\CssParserFilter;
-use Wild\Templix\CssSelector\Filter\CssParserFilterAttr;
-use Wild\Templix\CssSelector\Filter\CssParserFilterClass;
-use Wild\Templix\CssSelector\Filter\CssParserFilterId;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudo;
-use Wild\Templix\CssSelector\Filter\CssParserFilterPseudoFactory;
-use Wild\Templix\CssSelector\Model\CssParserModelElement;
-use Wild\Templix\CssSelector\Model\CssParserModelFactor;
-use Wild\Templix\CssSelector\Model\CssParserModelSelector;
+use Wild\Templix\CssSelector\Filter\Attr;
+use Wild\Templix\CssSelector\Filter\_Class;
+use Wild\Templix\CssSelector\Filter\Id;
+use Wild\Templix\CssSelector\Filter\Pseudo;
+use Wild\Templix\CssSelector\Filter\PseudoFactory;
+use Wild\Templix\CssSelector\Model\Element;
+use Wild\Templix\CssSelector\Model\Factor;
+use Wild\Templix\CssSelector\Model\Selector;
 use Wild\Templix\CssSelector\TextParserException;
 use Wild\Templix\CssSelector\TextParser;
 /**
@@ -40,19 +39,19 @@ class CssParser extends TextParser{
 		$this->_pseudoFilters = [];
 		$this->_combinators = [];		
 		$this->_node = $target;
-		$this->registerPseudoFilter("first", "CssParserFilterPseudoFirst");
-		$this->registerPseudoFilter("last", "CssParserFilterPseudoLast");
-		$this->registerPseudoFilter("eq", "CssParserFilterPseudoEq");
-		$this->registerPseudoFilter("nth", "CssParserFilterPseudoEq");
-		$this->registerPseudoFilter("even", "CssParserFilterPseudoEven");
-		$this->registerPseudoFilter("odd", "CssParserFilterPseudoOdd");
-		$this->registerPseudoFilter("lt", "CssParserFilterPseudoLt");
-		$this->registerPseudoFilter("gt", "CssParserFilterPseudoGt");
-		$this->registerPseudoFilter("nth-child", "CssParserFilterPseudoNthChild");
-		$this->registerPseudoFilter("not", "CssParserFilterPseudoNot", "selectorList");
-		$this->registerPseudoFilter("has", "CssParserFilterPseudoHas", "selectorList");
-		$this->registerPseudoFilter("hasnt", "CssParserFilterPseudoHasnt", "selectorList");
-		$this->registerPseudoFilter("first-child", "CssParserFilterPseudoFirstChild");
+		$this->registerPseudoFilter("first", "PseudoFirst");
+		$this->registerPseudoFilter("last", "PseudoLast");
+		$this->registerPseudoFilter("eq", "PseudoEq");
+		$this->registerPseudoFilter("nth", "PseudoEq");
+		$this->registerPseudoFilter("even", "PseudoEven");
+		$this->registerPseudoFilter("odd", "PseudoOdd");
+		$this->registerPseudoFilter("lt", "PseudoLt");
+		$this->registerPseudoFilter("gt", "PseudoGt");
+		$this->registerPseudoFilter("nth-child", "PseudoNthChild");
+		$this->registerPseudoFilter("not", "PseudoNot", "selectorList");
+		$this->registerPseudoFilter("has", "PseudoHas", "selectorList");
+		$this->registerPseudoFilter("hasnt", "PseudoHasnt", "selectorList");
+		$this->registerPseudoFilter("first-child", "PseudoFirstChild");
 		$this->registerCombinator("", "Descendant");
 		$this->registerCombinator(">", "Child");
 		$this->registerCombinator("+", "Adjacent");
@@ -122,7 +121,7 @@ class CssParser extends TextParser{
 		if (is_callable($object))
 			// user defined pseudo-filter
 			$this->_pseudoFilters[$name] = [
-				"classname" => "CssParserFilterPseudoUserDefined",
+				"classname" => "PseudoUserDefined",
 				"user_def_function" => $object,
 				"entity" => $entity
 			];
@@ -158,7 +157,7 @@ class CssParser extends TextParser{
 		return $ret;
 	}
 	protected function attrOperator(){
-		return $this->in(CssParserFilterAttr::getOperators());
+		return $this->in(Attr::getOperators());
 	}
 	protected function identifier(){
 		if (list($id) = $this->match(CssParser::IDENTIFIER))
@@ -197,7 +196,7 @@ class CssParser extends TextParser{
 			if (!$this->eq(")"))
 				throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
 		}
-		$pseudoFilter = CssParserFilterPseudoFactory::getInstance(
+		$pseudoFilter = PseudoFactory::getInstance(
 			$filter["classname"], $input, $filter["user_def_function"]
 		);
 		return $pseudoFilter;
@@ -216,7 +215,7 @@ class CssParser extends TextParser{
 		}
 		if (!$this->eq("]"))
 			throw new TextParserException("Invalid expression".$this->_node->exceptionContext(), $this);
-		return new CssParserFilterAttr($attrName, $op, $value);
+		return new Attr($attrName, $op, $value);
 	}
 	protected function idFilter(){
 		$id = "";
@@ -224,7 +223,7 @@ class CssParser extends TextParser{
 			return false;
 		if (!list($id) = $this->is("identifier"))
 			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
-		return new CssParserFilterId($id);
+		return new Id($id);
 	}
 	protected function classFilter(){
 		$className = "";
@@ -232,7 +231,7 @@ class CssParser extends TextParser{
 			return false;
 		if (!list($className) = $this->is("identifier"))
 			throw new TextParserException("Invalid identifier".$this->_node->exceptionContext(), $this);
-		return new CssParserFilterClass($className);
+		return new _Class($className);
 	}
 	protected function filter(){
 		$filter = null;
@@ -255,7 +254,7 @@ class CssParser extends TextParser{
 			$tagName = $name? $name : "*";
 		elseif (!$filter = $this->is("filter"))
 			return false;
-		$element = new CssParserModelElement($tagName);
+		$element = new Element($tagName);
 		if($filter)
 			$element->addFilter($filter);
 		while($filter = $this->is("filter"))
@@ -272,13 +271,13 @@ class CssParser extends TextParser{
 			$combinator = Factory::getInstance("Descendant");
 		else
 			return false;
-		return new CssParserModelFactor($combinator, $element);
+		return new Factor($combinator, $element);
 	}
 	protected function selector(){
 		$factor = null;
 		if (!$factor = $this->is("factor"))
 			return false;
-		$selector = new CssParserModelSelector();
+		$selector = new Selector();
 		$selector->addFactor($factor);
 		while ($factor = $this->is("factor"))
 			$selector->addFactor($factor);
