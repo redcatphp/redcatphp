@@ -1,5 +1,5 @@
 <?php namespace Wild\Identify;
-use RedBase\R;
+use Wild\DataMap\R;
 use Mail\PHPMailer;
 use Exception;
 if (version_compare(phpversion(), '5.5.0', '<')){

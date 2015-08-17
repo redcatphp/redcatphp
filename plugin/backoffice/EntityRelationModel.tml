@@ -20,7 +20,7 @@
 		<graph-erm>
 			<eval>
 				<?
-					use RedBase\B;
+					use Wild\DataMap\B;
 					$listOfColumns = function($t,$details=null){
 						static $listOfColumns = array();
 						if(!isset($listOfColumns[$t]))

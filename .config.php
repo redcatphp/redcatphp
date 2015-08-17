@@ -48,7 +48,7 @@ return [
 		],
 	],
 	'rules'=>[
-		'RedBase\RedBase'	=> [
+		'Wild\DataMap\Bases'	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',
