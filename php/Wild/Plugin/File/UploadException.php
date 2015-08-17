@@ -1,4 +1,5 @@
-<?php namespace Unit\File;
+<?php
+namespace Wild\Plugin\File;
 class UploadException extends \Exception{
     public function __construct($code){
         parent::__construct($this->codeToMessage($code));
