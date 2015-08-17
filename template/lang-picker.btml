@@ -1,7 +1,7 @@
 <?
 	$langDir = SURIKAT_CWD.'langs/';
 	$di = Unit\Di::getInstance();
-	$lgC = $di->create('InterEthnic\Translator')->getLangCode();
+	$lgC = $di->create('Wild\Localize\Translator')->getLangCode();
 	$lgD = 'en';
 	$langs = [$lgD];
 	foreach(glob($langDir.'*.ini') as $langFile)
@@ -9,8 +9,8 @@
 ?>
 <foreach "$langs as $lg">
 	<?
-		$language = InterEthnic\Punic\Language::getName($lg,$lg);
-		$language = InterEthnic\Strings::ucfirst($language);
+		$language = Wild\Localize\Punic\Language::getName($lg,$lg);
+		$language = Wild\Localize\Strings::ucfirst($language);
 		$lcPath = $URI;
 		if($lg!=$lgC){
 			if($lg==$lgD){

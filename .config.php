@@ -95,7 +95,7 @@ return [
 				'langDefault'=>'en',
 			],
 		],
-		'InterEthnic\Translator'=>[
+		'Wild\Localize\Translator'=>[
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
