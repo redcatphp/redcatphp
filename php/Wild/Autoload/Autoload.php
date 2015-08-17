@@ -1,5 +1,6 @@
-<?php namespace Unit;
-class Autoloader{
+<?php
+namespace Wild\Autoload;
+class Autoload{
 	protected $namespaces = [];
 	protected $checked = [];
 	private static $instance;

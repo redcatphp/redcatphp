@@ -1,5 +1,5 @@
 <?
-Unit\Autoloader::getInstance()->addNamespace('Translator',$this->dirCompileToDirCwd(__DIR__));
+Wild\Autoload\Autoload::getInstance()->addNamespace('Translator',$this->dirCompileToDirCwd(__DIR__));
 header('Content-Type: application/json; charset=UTF-8;');
 $service = new Translator\MessageService();
 $response = ['error'=>null];

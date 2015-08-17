@@ -3,8 +3,8 @@ define('SURIKAT',__DIR__.'/');
 define('SURIKAT_CWD',getcwd().'/');
 if(!defined('SURIKAT_FREEZE_DI')) define('SURIKAT_FREEZE_DI',false);
 
-require_once __DIR__.'/php/Unit/Autoloader.php';
-Unit\Autoloader::register([
+require_once __DIR__.'/php/Wild/Autoload/Autoload.php';
+Wild\Autoload\Autoload::register([
 	SURIKAT_CWD.'php',
 	SURIKAT.'php',
 	SURIKAT_CWD.'plugin/php',

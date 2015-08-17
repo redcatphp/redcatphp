@@ -2,7 +2,7 @@
 namespace Wild\Plugin\Cms\FrontController;
 use Wild\Identify\Auth;
 use Wild\Identify\Session;
-use Unit\Autoloader;
+use Wild\Autoload\Autoload;
 use Unit\Router;
 use Unit\Di;
 class Backoffice extends \Unit\FrontController{
@@ -30,7 +30,7 @@ class Backoffice extends \Unit\FrontController{
 		$AuthServer->htmlLock('RIGHT_MANAGE',true);
 	}
 	function __invoke($uri,$domain=null){
-		Autoloader::getInstance()->addNamespace('',SURIKAT_CWD.$this->pathFS.'/php');
+		Autoload::getInstance()->addNamespace('',SURIKAT_CWD.$this->pathFS.'/php');
 		return $this->run($uri);
 	}
 	function run($path,$domain=null){
