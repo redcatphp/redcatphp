@@ -1,7 +1,7 @@
 <?php
 namespace KungFu\Cms\FrontController;
-use Authentic\Auth;
-use Authentic\Session;
+use Wild\Identify\Auth;
+use Wild\Identify\Session;
 use Unit\Autoloader;
 use Unit\Router;
 use Unit\Di;
@@ -24,9 +24,9 @@ class Backoffice extends \Unit\FrontController{
 		;
 	}
 	function lock(){
-		$Session = $this->di->create('Authentic\Session',['name'=>'surikat_backoffice']);
-		$Auth = $this->di->create('Authentic\Auth',[$Session]);
-		$AuthServer = $this->di->create('Authentic\AuthServer',[$Auth]);
+		$Session = $this->di->create('Wild\Identify\Session',['name'=>'surikat_backoffice']);
+		$Auth = $this->di->create('Wild\Identify\Auth',[$Session]);
+		$AuthServer = $this->di->create('Wild\Identify\AuthServer',[$Auth]);
 		$AuthServer->htmlLock('RIGHT_MANAGE',true);
 	}
 	function __invoke($uri,$domain=null){

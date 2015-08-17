@@ -57,7 +57,7 @@ return [
 				'entityClassDefault'=>'stdClass',
 			],
 		],
-		'Authentic\Auth'=>[
+		'Wild\Identify\Auth'=>[
 			'construct'=>[
 				'$rootLogin' => 'superRoot.login',
 				'$rootPassword' => 'superRoot.password',
@@ -76,11 +76,11 @@ return [
 				'mailSecure' => 'tls',
 			],
 		],
-		'Authentic\Session'=>[
+		'Wild\Identify\Session'=>[
 			'shared'=>true,
-			'newInstances'=>'Authentic\SessionHandlerInterface',
+			'newInstances'=>'Wild\Identify\SessionHandlerInterface',
 			'substitutions'=>[
-				'Authentic\SessionHandlerInterface'=>'Authentic\SessionHandler',
+				'Wild\Identify\SessionHandlerInterface'=>'Wild\Identify\SessionHandler',
 			],
 			'construct'=>[
 				'name'=>'surikat',
@@ -88,7 +88,7 @@ return [
 			],
 		],
 		'Session'=>[
-			'instanceOf'=>'Authentic\Session',
+			'instanceOf'=>'Wild\Identify\Session',
 		],
 		'KungFu\Cms\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
