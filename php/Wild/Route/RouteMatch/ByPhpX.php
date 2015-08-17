@@ -1,4 +1,4 @@
-<?php namespace Unit\RouteMatch;
+<?php namespace Wild\Route\RouteMatch;
 class ByPhpX extends ByPhp {
 	function __invoke($uri){
 		if($this->dir&&strpos($uri,$this->dir)!==0)

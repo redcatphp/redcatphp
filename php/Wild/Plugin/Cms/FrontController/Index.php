@@ -1,13 +1,13 @@
 <?php
 namespace Wild\Plugin\Cms\FrontController;
-use Unit\Router;
+use Wild\Route\Router;
 use Wild\Kinetic\Di;
-class Index extends \Unit\FrontController{
+class Index extends \Wild\Route\FrontController{
 	function __construct(Router $router,Di $di,$config=[]){
 		parent::__construct($router,$di);
 		$this->map([
 			['backend/','new:Wild\Plugin\Cms\FrontController\Backoffice'],
-			[['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\Plugin\Cms\FrontController\Synaptic'],
+			[['new:Wild\Route\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\Plugin\Cms\FrontController\Synaptic'],
 			[['new:Wild\Plugin\Cms\RouteMatch\ByTmlL10n','','template'],'new:Wild\Plugin\Templix\TemplixL10n'],
 			[['new:Wild\Plugin\Cms\RouteMatch\ByTml','','template'],'new:Wild\Plugin\Templix\Templix'],
 		]);

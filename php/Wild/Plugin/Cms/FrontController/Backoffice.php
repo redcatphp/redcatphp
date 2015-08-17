@@ -3,14 +3,14 @@ namespace Wild\Plugin\Cms\FrontController;
 use Wild\Identify\Auth;
 use Wild\Identify\Session;
 use Wild\Autoload\Autoload;
-use Unit\Router;
+use Wild\Route\Router;
 use Wild\Kinetic\Di;
-class Backoffice extends \Unit\FrontController{
+class Backoffice extends \Wild\Route\FrontController{
 	public $pathFS = 'surikat/plugin/backoffice';
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
-			->append(['new:Unit\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
+			->append(['new:Wild\Route\RouteMatch\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
 			->append(['new:Wild\Plugin\Cms\RouteMatch\ByTml','',$this->pathFS],function(){
 				$this->lock();
 				return 'new:Wild\Plugin\Templix\Templix';

@@ -1,5 +1,5 @@
 <?php
-namespace Unit;
+namespace Wild\Mvc;
 use Wild\Kinetic\Di;
 class View {
 	protected $model;

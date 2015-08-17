@@ -1,4 +1,5 @@
-<?php namespace Unit;
+<?php
+namespace Wild\Route;
 class Url {
 	protected $baseHref;
 	protected $suffixHref;

@@ -1,4 +1,5 @@
-<?php namespace Unit;
+<?php
+namespace Wild\Route;
 use Wild\Kinetic\Di;
 class Router implements \ArrayAccess{
 	private $routes = [];
@@ -58,10 +59,10 @@ class Router implements \ArrayAccess{
 	private function matchType($match){
 		if(is_string($match)){
 			if(strpos($match,'/^')===0&&strrpos($match,'$/')-strlen($match)===-2){
-				return ['new:Unit\RouteMatch\Regex',$match];
+				return ['new:Wild\Route\RouteMatch\Regex',$match];
 			}
 			else{
-				return ['new:Unit\RouteMatch\Prefix',$match];
+				return ['new:Wild\Route\RouteMatch\Prefix',$match];
 			}
 		}
 		return $match;

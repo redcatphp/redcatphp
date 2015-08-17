@@ -1,4 +1,4 @@
-<?php namespace Unit\RouteMatch;
+<?php namespace Wild\Route\RouteMatch;
 class Regex{
 	private $match;
 	function __construct($match){

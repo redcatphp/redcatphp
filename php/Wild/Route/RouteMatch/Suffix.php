@@ -1,4 +1,4 @@
-<?php namespace Unit\RouteMatch;
+<?php namespace Wild\Route\RouteMatch;
 class Suffix{
 	private $match;
 	function __construct($match){

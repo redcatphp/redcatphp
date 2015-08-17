@@ -1,4 +1,4 @@
 <?php
 return [
-	'BASE_HREF'		=> (new \Unit\Url())->getBaseHref(),
+	'BASE_HREF'		=> (new \Wild\Route\Url())->getBaseHref(),
 ];

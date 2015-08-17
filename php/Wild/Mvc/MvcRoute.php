@@ -1,5 +1,5 @@
 <?php
-namespace Unit;
+namespace Wild\Mvc;
 use Wild\Kinetic\Di;
 class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
@@ -7,7 +7,7 @@ class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
     private $controller;
     private $templateEngine;
     private $di;
-    function __construct($model='Unit\Model', $view='Unit\View', $controller = null, $templateEngine = null, Di $di = null){
+    function __construct($model='Wild\Route\Model', $view='Wild\Route\View', $controller = null, $templateEngine = null, Di $di = null){
         $this->model = $model;
         $this->view = $view;
         $this->controller = $controller;

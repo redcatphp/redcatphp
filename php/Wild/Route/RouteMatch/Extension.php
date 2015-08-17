@@ -1,4 +1,4 @@
-<?php namespace Unit\RouteMatch;
+<?php namespace Wild\Route\RouteMatch;
 class Extension{
 	private $extensions;
 	function __construct($extensions){

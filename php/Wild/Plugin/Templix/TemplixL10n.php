@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Plugin\Templix;
-use Unit\Url;
+use Wild\Route\Url;
 use Wild\Localize\Translator;
 use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{

@@ -1,4 +1,4 @@
 <?php namespace Wild\Plugin\Cms\RouteMatch;
-class ByPhpX extends \Unit\RouteMatch\ByPhpX {
+class ByPhpX extends \Wild\Route\RouteMatch\ByPhpX {
 	protected $dirs = ['','surikat/'];
 }
