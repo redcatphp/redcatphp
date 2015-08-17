@@ -1,4 +1,5 @@
-<?php namespace Unit\File;
+<?php
+namespace Unit\File;
 abstract class Image {
 	public static $extensions = ['jpg','jpeg','png','gif','bmp','tiff','ico'];
 	public static $extensions_resizable = ['jpeg','jpg','png','gif','tiff','bmp'];

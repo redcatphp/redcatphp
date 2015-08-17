@@ -1,4 +1,5 @@
-<?php namespace Unit\File;
+<?php
+namespace Unit\File;
 class Uploader{
 	public $extensionRewrite = [
 		'jpeg'=>'jpg',
