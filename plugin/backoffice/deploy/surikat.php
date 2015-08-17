@@ -14,7 +14,7 @@ ob_implicit_flush(true);
 @ob_end_flush();
 
 echo '<pre>';
-Unit\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT])
+Wild\Kinetic\Di::make('Git\GitDeploy\GitDeploy',[SURIKAT])
 	->maintenanceOn()
 	->getParent()
 		->deploy()

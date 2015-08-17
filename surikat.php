@@ -11,7 +11,7 @@ Wild\Autoload\Autoload::register([
 	SURIKAT.'plugin/php'
 ]);
 
-$surikat = Unit\Di::load([
+$surikat = Wild\Kinetic\Di::load([
 	SURIKAT.'.config.php',
 	SURIKAT_CWD.'.config.php'
 ],SURIKAT_FREEZE_DI,SURIKAT_CWD.'.tmp/surikat.svar');

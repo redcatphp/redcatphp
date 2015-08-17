@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Plugin\Cms\FrontController;
 use Unit\Router;
-use Unit\Di;
+use Wild\Kinetic\Di;
 class Index extends \Unit\FrontController{
 	function __construct(Router $router,Di $di,$config=[]){
 		parent::__construct($router,$di);

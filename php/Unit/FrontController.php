@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 class FrontController implements \ArrayAccess{
 	private $router;
 	protected $di;

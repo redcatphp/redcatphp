@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 abstract class Controller {
 	protected $model;
 	protected $di;

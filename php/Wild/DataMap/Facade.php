@@ -3,11 +3,11 @@ namespace Wild\DataMap;
 class Facade{
 	protected static $bases;
 	protected static $currentDataSource;
-	static $useUnitDi = true;
+	static $useKineticDi = true;
 	static function _initialiaze(){
 		if(!isset(self::$bases)){
-			if(class_exists('Unit\Di')&&self::$useUnitDi){
-				self::$bases = \Unit\Di::getInstance()->create('Wild\DataMap\Bases');
+			if(class_exists('Wild\Kinetic\Di')&&self::$useKineticDi){
+				self::$bases = \Wild\Kinetic\Di::getInstance()->create('Wild\DataMap\Bases');
 				if(isset(self::$bases[0]))
 					self::selectDatabase(0);
 			}

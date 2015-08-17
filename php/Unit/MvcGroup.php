@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 class MvcGroup extends MvcRoute{
 	function __construct($namespace, $templateEngine = null, Di $di){
 		$model = $namespace.'\\Model';

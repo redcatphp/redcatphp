@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 class MvcRoute implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;

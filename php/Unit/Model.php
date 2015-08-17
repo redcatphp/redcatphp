@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 class Model implements \ArrayAccess,\Iterator,\Countable{
 	protected $data = [];
 	protected $getter;

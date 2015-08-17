@@ -1,6 +1,6 @@
 <?php namespace Wild\Plugin\Cms\FrontController;
 use Unit\Router;
-use Unit\Di;
+use Wild\Kinetic\Di;
 use Wild\Plugin\Tools\JSMin;
 class Synaptic {
 	

@@ -1,5 +1,6 @@
 <?php
 namespace Unit;
+use Wild\Kinetic\Di;
 class View {
 	protected $model;
 	protected $templateEngine;

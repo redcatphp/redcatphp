@@ -4,7 +4,7 @@ use Wild\Identify\Auth;
 use Wild\Identify\Session;
 use Wild\Autoload\Autoload;
 use Unit\Router;
-use Unit\Di;
+use Wild\Kinetic\Di;
 class Backoffice extends \Unit\FrontController{
 	public $pathFS = 'surikat/plugin/backoffice';
 	function __construct(Router $router,Di $di){

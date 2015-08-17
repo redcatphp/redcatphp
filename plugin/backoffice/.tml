@@ -18,7 +18,7 @@
 	</head>
 	<body>
 		<?
-		 Unit\Di::make('Wild\Identify\AuthServer')->lougoutBTN();
+			Wild\Kinetic\Di::make('Wild\Identify\AuthServer')->lougoutBTN();
 		?>
 		<?
 			$db=(object)@include('model/config.php');

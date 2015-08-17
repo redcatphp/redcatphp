@@ -2,7 +2,7 @@
 namespace Wild\Plugin\Templix;
 use Unit\Url;
 use Wild\Localize\Translator;
-use Unit\Di;
+use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
 	protected $Url;

@@ -1,5 +1,5 @@
 <?php
-namespace Unit;
+namespace Wild\Kinetic;
 class DiExpand{
 	private $x;
 	function __construct($x,$params=[]){

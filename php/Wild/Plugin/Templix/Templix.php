@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Plugin\Templix;
-use Unit\Di;
+use Wild\Kinetic\Di;
 class Templix extends \Wild\Templix\Templix{
 	private $di;
 	function __construct($file=null,$vars=null,

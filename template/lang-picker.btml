@@ -1,6 +1,6 @@
 <?
 	$langDir = SURIKAT_CWD.'langs/';
-	$di = Unit\Di::getInstance();
+	$di = Wild\Kinetic\Di::getInstance();
 	$lgC = $di->create('Wild\Localize\Translator')->getLangCode();
 	$lgD = 'en';
 	$langs = [$lgD];

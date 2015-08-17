@@ -1,4 +1,5 @@
 <?php namespace Unit;
+use Wild\Kinetic\Di;
 class Router implements \ArrayAccess{
 	private $routes = [];
 	private $route;
