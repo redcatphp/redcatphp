@@ -1,4 +1,17 @@
 <?php
+/*
+ * Bases - Data-Map - ORM-like structuring database on the fly - inspired by RedBean
+ *
+ * Support Opensource Relational Databases: MySQL, MariaDB, SQLite, PostgreSQL and CUBRID
+ *   but planned to accommodate with any others database like NoSQL: Cassandra,MongoDB, or simple XML, JSON etc...
+ *   due to following DataMapper Pattern
+ *
+ * @package DataMap
+ * @version 1.0
+ * @link http://github.com/surikat/DataMap/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
 namespace Wild\DataMap;
 class Bases implements \ArrayAccess{
 	private $map;

@@ -1,4 +1,14 @@
 <?php
+/*
+ * ErrorHandler - Error and Exception hanlder with syntax highlighting
+ *
+ * @package Debug
+ * @version 1.0
+ * @link http://github.com/surikat/Debug/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
+
 namespace Wild\Debug;
 class ErrorHandler{
 	private static $errorType;

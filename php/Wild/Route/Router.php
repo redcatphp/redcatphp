@@ -1,4 +1,13 @@
 <?php
+/*
+ * Router - A mirco-framework for manage entry point of applications
+ *
+ * @package Router
+ * @version 1.0
+ * @link http://github.com/surikat/Router/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
 namespace Wild\Route;
 use Wild\Kinetic\Di;
 class Router implements \ArrayAccess{

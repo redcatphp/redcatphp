@@ -1,5 +1,7 @@
 <?php
 /*
+ * Kinetic - Dependency Injection Made Universal
+ * 
  * inspired from a fusion of
  * Dice 2.0-Transitional - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
  *		for clean decoupled dependencies resolution
@@ -7,7 +9,13 @@
  *		for arbitrary data and manual hook
  * with lot of Surikat improvements, addons and remixs
  *		for powerfull API, lazy load cascade rules resolution,
- *		full registry implementation, full xml API, freeze optimisation
+ *		full registry implementation, freeze optimisation
+ * 
+ * @package Kinetic
+ * @version 1.0
+ * @link http://github.com/surikat/Kinetic/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
  */
 
 namespace Wild\Kinetic;

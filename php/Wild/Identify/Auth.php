@@ -1,4 +1,14 @@
-<?php namespace Wild\Identify;
+<?php
+/*
+ * Auth - Complete Authentication System
+ *
+ * @package Identify
+ * @version 1.0
+ * @link http://github.com/surikat/Identify/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
+namespace Wild\Identify;
 use Wild\DataMap\R;
 use Mail\PHPMailer;
 use Exception;

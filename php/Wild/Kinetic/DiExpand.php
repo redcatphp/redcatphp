@@ -1,4 +1,13 @@
 <?php
+/*
+ * DiExpand - Dependencies lazy loader
+ *
+ * @package Kinetic
+ * @version 1.0
+ * @link http://github.com/surikat/Kinetic/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
 namespace Wild\Kinetic;
 class DiExpand{
 	private $x;

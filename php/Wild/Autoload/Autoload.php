@@ -1,4 +1,16 @@
 <?php
+/*
+ * Autoload
+ *
+ *   Simple and Concise PHP Autoloader
+ *   PSR-4 convention - for details: see http://www.php-fig.org/psr/psr-4/
+ *
+ * @package Autoload
+ * @version 1.0
+ * @link http://github.com/surikat/Autoload/
+ * @author Jo Surikat <jo@surikat.pro>
+ * @website http://wildsurikat.com
+ */
 namespace Wild\Autoload;
 class Autoload{
 	protected $namespaces = [];
