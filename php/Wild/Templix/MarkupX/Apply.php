@@ -5,8 +5,6 @@ class Apply extends \Wild\Templix\Markup {
 	var $_extender;
 	var $_extended;
 	function load(){
-		//if(!$this->templix)
-			//return;
 		$this->remapAttr('file');
 		if(!$this->_extended){
 			$file = $this->__get('file');

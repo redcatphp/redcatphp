@@ -5,8 +5,6 @@ class Extend extends \Wild\Templix\Markup{
 	var $_extender;
 	var $_extended;
 	function load(){
-		//if(!$this->templix)
-			//return;
 		$this->remapAttr('file');
 		if(!isset($this->file))
 			$this->file = '';
