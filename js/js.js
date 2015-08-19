@@ -123,7 +123,7 @@
 			}
 			if(typeof(u[k])=='object'){
 				for(var ks in u[k]){
-					if(typeof(u[k][ks])=='string'&&arr.indexOf(u[k][ks])===-1){
+					if(typeof(u[k][ks])=='string'&&indexOf(arr,u[k][ks])===-1){
 						arr.push(u[k][ks]);
 					}
 				}
@@ -142,10 +142,10 @@
 					deps[key] = [];
 				}
 				for(var ks in $js.dependenciesMap[key]){
-					if(deps[key].indexOf($js.dependenciesMap[key][ks])===-1){
+					if(indexOf(deps[key],$js.dependenciesMap[key][ks])===-1){
 						deps[key].push($js.dependenciesMap[key][ks]);
 					}
-					if(typeof(arr)!='undefined'&&arr.indexOf($js.dependenciesMap[key][ks])===-1){
+					if(typeof(arr)!='undefined'&&indexOf(arr,$js.dependenciesMap[key][ks])===-1){
 						arr.push($js.dependenciesMap[key][ks]);
 					}
 				}
@@ -159,10 +159,10 @@
 				}
 				for(var ks in u[k]){
 					if(typeof(u[k][ks])=='string'){
-						if(deps[key].indexOf(u[k][ks])===-1){
+						if(indexOf(deps[key],u[k][ks])===-1){
 							deps[key].push(u[k][ks]);
 						}
-						if($js.dependenciesMap[key].indexOf(u[k][ks])===-1){
+						if(indexOf($js.dependenciesMap[key],u[k][ks])===-1){
 							$js.dependenciesMap[key].push(u[k][ks]);
 						}
 					}
@@ -191,7 +191,7 @@
 		if(typeof(deps[lib])!='undefined'){
 			for(var k in deps[lib]){
 				depsLibPush(deps,deps[lib][k],container);
-				if(container.indexOf(deps[lib][k])===-1)
+				if(indexOf(container,deps[lib][k])===-1)
 					container.push(deps[lib][k]);
 			}
 		}
@@ -225,9 +225,9 @@
 		while(!isEmptyObject(deps)){
 			var top = [];
 			for(var i in splices){
-				deps[splices[i][0]].splice(deps[splices[i][0]].indexOf(splices[i][1]),1);
+				deps[splices[i][0]].splice(indexOf(deps[splices[i][0]],splices[i][1]),1);
 				if(deps[splices[i][0]].length===0){
-					if(topAll.indexOf(splices[i][0])===-1){
+					if(indexOf(topAll,splices[i][0])===-1){
 						top.push(splices[i][0]);
 						topAll.push(splices[i][0]);
 					}
@@ -239,7 +239,7 @@
 				for(var ks in deps[k]){
 					var dep = deps[k][ks];
 					if(typeof(deps[dep])=='undefined'){
-						if(topAll.indexOf(dep)===-1){
+						if(indexOf(topAll,dep)===-1){
 							top.push(dep);
 							topAll.push(dep);
 						}
@@ -254,7 +254,7 @@
 	var r = function(g,depTree,depMap,rio,arrSrc,c){ //recLoad
 		var src = getSrc(g);
 		if(typeof(arrSrc)!='undefined'){
-			if(requiredGroups[rio].indexOf(src)===-1)
+			if(indexOf(requiredGroups[rio],src)===-1)
 				requiredGroups[rio].push(src);
 			if(requiredGroups[rio].sort().toString()==arrSrc){
 				c();
@@ -265,7 +265,7 @@
 			if(depMap[dp]){
 				var ok = true;
 				for(var z2 in depMap[dp]){
-					if(required.indexOf(getSrc(depMap[dp][z2]))===-1){
+					if(indexOf(required,getSrc(depMap[dp][z2]))===-1){
 						ok = false;
 						break;
 					}
@@ -303,19 +303,19 @@
 									var aliasii = ii;
 								}
 								aliasii = resolveAlias(aliasii);
-								if(un.indexOf(aliasii)===-1)
+								if(indexOf(un,aliasii)===-1)
 									un.push(aliasii);
 							}
 						}
 						else{
 							alias = resolveAlias(alias);
-							if(un.indexOf(alias)===-1)
+							if(indexOf(un,alias)===-1)
 								un.push(alias);
 						}
 					}
 					else{
 						u[i] = resolveAlias(u[i]);
-						if(un.indexOf(u[i])===-1)
+						if(indexOf(un,u[i])===-1)
 							un.push(u[i]);
 					}
 				}
@@ -368,7 +368,7 @@
 		h = h.sort().toString();
 		var depTreeKeys = [];
 		for(var k in t){
-			if(depTreeKeys.indexOf(k)===-1)
+			if(indexOf(depTreeKeys,k)===-1)
 				depTreeKeys.push(k);
 		}
 		var b = function(){
@@ -403,7 +403,7 @@
 					p = u[k];
 				else
 					p = k;
-				if(tops[0].indexOf(p)===-1)
+				if(indexOf(tops[0],p)===-1)
 					tops[0].push(p);
 			}
 		}
