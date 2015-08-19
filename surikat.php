@@ -8,7 +8,6 @@ Wild\Autoload\Autoload::register([
 	SURIKAT_CWD.'php',
 	SURIKAT.'php',
 	SURIKAT_CWD.'plugin/php',
-	SURIKAT.'plugin/php'
 ]);
 
 $surikat = Wild\Kinetic\Di::load([
