@@ -46,6 +46,8 @@ return [
 				//'upload_untracked' => ['folder/to/upload','another/file/upload.php'],
 			],
 		],
+		'l10n'=>false,
+		'l10nDefault'=>'en',
 	],
 	'rules'=>[
 		'Wild\DataMap\Bases'	=> [
@@ -87,12 +89,14 @@ return [
 				'saveRoot'=>SURIKAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'Session'=>[
-			'instanceOf'=>'Wild\Identify\Session',
+		'Wild\Plugin\Cms\FrontController\Index'=>[
+			'construct'=>[
+				'$l10n'=>'l10n',
+			],
 		],
 		'Wild\Plugin\Cms\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
-				'langDefault'=>'en',
+				'$langDefault'=>'l10nDefault',
 			],
 		],
 		'Wild\Localize\Translator'=>[
