@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Stylize;
 /*
- * Server - Stylize - Scss 3.2 parser ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp
+ * Css Preprocessor using Scss syntax ( SASS 3.2 ) ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp
  *
  * @package Stylize
  * @version 1.0
