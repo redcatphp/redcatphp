@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 use Wild\Templix\CallerMarkup;
 class Css extends \Wild\Templix\CallerMarkup{
 	protected $selfClosed = true;

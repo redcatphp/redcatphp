@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX;
+<?php
+namespace Wild\Templix\MarkupX;
 use Wild\Templix\MarkupHtml5\Img as MarkupHtml5_Img;
 class Img extends MarkupHtml5_Img{
 	function loaded(){

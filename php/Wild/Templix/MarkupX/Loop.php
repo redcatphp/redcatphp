@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class Loop extends \Wild\Templix\Markup{
 	protected $hiddenWrap = true;
 	protected $loop = [];

@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class _Var extends \Wild\Templix\Markup{
 	protected $hiddenWrap = true;
 	function load(){

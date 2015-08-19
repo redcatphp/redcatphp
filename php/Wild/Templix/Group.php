@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix;
+<?php
+namespace Wild\Templix;
 use Wild\Templix\Markup;
 class Group extends Markup{
 	protected $hiddenWrap = true;

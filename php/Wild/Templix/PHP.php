@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix; 
+<?php
+namespace Wild\Templix; 
 class PHP extends Markup{
 	protected $hiddenWrap = true;
 	var $nodeName = 'PHP';

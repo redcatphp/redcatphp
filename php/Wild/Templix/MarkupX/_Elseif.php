@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class _Elseif extends \Wild\Templix\_If {
 	protected $selfClosed = true;
 	function load(){

@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\CssSelector\Filter;
+<?php
+namespace Wild\Templix\CssSelector\Filter;
 use Wild\Templix\CssSelector\Filter\Pseudo;
 class PseudoHas extends Pseudo{
 	private $_items;

@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix; 
+<?php
+namespace Wild\Templix; 
 class COMMENT extends Markup{
 	protected $hiddenWrap = true;
 	private $contentText = '';

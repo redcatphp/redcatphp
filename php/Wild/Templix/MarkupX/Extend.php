@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 use Wild\Templix\COMMENT;
 class Extend extends \Wild\Templix\Markup{
 	protected $hiddenWrap = true;

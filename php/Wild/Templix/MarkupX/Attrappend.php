@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX;
+<?php
+namespace Wild\Templix\MarkupX;
 class Attrappend extends \Wild\Templix\CallerMarkup {
 	protected $selfClosed = true;
 	function extendLoad(){

@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class Js extends \Wild\Templix\CallerMarkup{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

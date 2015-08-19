@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class Incorpore extends _Include{
 	function load(){
 		$this->remapAttr('file');

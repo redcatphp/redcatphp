@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix;
+<?php
+namespace Wild\Templix;
 use Wild\Templix\MarkupX\Apply;
 class Markup implements \ArrayAccess,\IteratorAggregate{	
 	//Parser

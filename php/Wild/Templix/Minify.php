@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix;
+<?php
+namespace Wild\Templix;
 class Minify {
 	
 	static function PHP($src){

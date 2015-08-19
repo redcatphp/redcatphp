@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix;
+<?php
+namespace Wild\Templix;
 use ArrayIterator;
 class Iterator implements \ArrayAccess,\IteratorAggregate{
 	private $__dataNodes;

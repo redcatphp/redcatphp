@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class T extends \Wild\Templix\Markup{
 	function load(){
 		$this->attr('tmp-wrap',1);

@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class _Include extends \Wild\Templix\Markup{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

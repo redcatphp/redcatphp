@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class _Case extends \Wild\Templix\Markup {
 	protected $hiddenWrap = true;
 	function load(){

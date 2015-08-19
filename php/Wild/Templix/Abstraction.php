@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix; 
+<?php
+namespace Wild\Templix; 
 class Abstraction extends Markup{
 	protected $hiddenWrap = true;
 	function __construct($nodeName,$attributes){

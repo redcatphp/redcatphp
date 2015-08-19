@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix; 
+<?php
+namespace Wild\Templix; 
 class CDATA extends Markup{
 	var $nodeName = 'CDATA';
 	protected $hiddenWrap = true;

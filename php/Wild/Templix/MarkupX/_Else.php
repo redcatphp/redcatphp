@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class _Else extends \Wild\Templix\Markup {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;

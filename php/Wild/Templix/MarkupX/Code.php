@@ -1,4 +1,5 @@
-<?php namespace Wild\Templix\MarkupX; 
+<?php
+namespace Wild\Templix\MarkupX; 
 class Code extends \Wild\Templix\Markup{
 	protected $noParseContent = true;
 	function load(){
