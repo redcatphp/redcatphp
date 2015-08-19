@@ -1,8 +1,10 @@
 <?
 	$langDir = SURIKAT_CWD.'langs/';
 	$di = Wild\Kinetic\Di::getInstance();
-	$lgC = $di->create('Wild\Localize\Translator')->getLangCode();
 	$lgD = 'en';
+	$lgC = $di->create('Wild\Localize\Translator')->getLangCode();
+	if(!$lgC)
+		$lgC = $lgD;
 	$langs = [$lgD];
 	foreach(glob($langDir.'*.ini') as $langFile)
 		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
