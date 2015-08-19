@@ -1,5 +1,5 @@
 <?php
-namespace Wild\Plugin\Cms\RouteMatch;
+namespace Wild\Plugin\RouteMatch;
 class ByTmlL10n extends ByTml {
 	private $langDefault;
 	private $lang;

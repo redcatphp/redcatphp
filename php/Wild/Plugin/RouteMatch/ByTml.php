@@ -1,5 +1,5 @@
 <?php
-namespace Wild\Plugin\Cms\RouteMatch;
+namespace Wild\Plugin\RouteMatch;
 class ByTml {
 	protected $uriDir;
 	protected $physicalDir;

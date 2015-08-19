@@ -1,5 +1,5 @@
 <?php
-namespace Wild\Plugin\Cms\FrontController;
+namespace Wild\Plugin\FrontController;
 use Wild\Identify\Auth;
 use Wild\Identify\Session;
 use Wild\Autoload\Autoload;
@@ -10,12 +10,12 @@ class Backoffice extends \Wild\Route\FrontController{
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
-			->append(['new:Wild\Route\Match\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\Cms\FrontController\Synaptic',$this->pathFS])
-			->append(['new:Wild\Plugin\Cms\RouteMatch\ByTmlL10n','',$this->pathFS],function(){
+			->append(['new:Wild\Route\Match\Extension','css|js|png|jpg|jpeg|gif'],['new:Wild\Plugin\FrontController\Synaptic',$this->pathFS])
+			->append(['new:Wild\Plugin\RouteMatch\ByTmlL10n','',$this->pathFS],function(){
 				$this->lock();
 				return 'new:Wild\Plugin\Templix\TemplixL10n';
 			})
-			->append(['new:Wild\Plugin\Cms\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
+			->append(['new:Wild\Plugin\RouteMatch\ByPhpX','',$this->pathFS],function($paths){
 				$this->lock();
 				list($dir,$file,$adir,$afile) = $paths;
 				chdir($adir);
