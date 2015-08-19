@@ -8,11 +8,6 @@ class TEXT extends Markup{
 		$text = self::phpImplode($text,$this->constructor);
 		$this->innerHead = [];
 		$this->textInject($text);
-		//$this->biohazard();
-	}
-	function biohazard(){
-		if(!$this->parent||!$this->parent->antibiotique)
-			$this->write(new Markup('<loremipsum mini>'));
 	}
 	function textInject($text){
 		if(strpos($text,'<?php ')===false)
