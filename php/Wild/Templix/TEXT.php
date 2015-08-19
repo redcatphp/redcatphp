@@ -6,6 +6,7 @@ class TEXT extends Markup{
 		if($this->parent&&$this->parent->templix&&$this->parent->templix->isXhtml)
 			$text = preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/S',['self','convert_entity'], $text);
 		$text = self::phpImplode($text,$this->constructor);
+		$this->innerHead = [];
 		$this->textInject($text);
 		//$this->biohazard();
 	}

@@ -22,6 +22,7 @@ class Apply extends \Wild\Templix\Markup {
 			foreach($this->_extender->childNodes as $extender)
 				if(method_exists($extender,'applyLoad')&&!($extender instanceof COMMENT))
 					$extender->applyLoad($apply);
+			$this->clear();
 		}
 		$this->preventLoad = false;
 	}
