@@ -7,7 +7,7 @@ class ByTmlL10n extends ByTml {
 		parent::__construct($dir,$dirFS);
 		$this->langDefault = $langDefault;
 	}
-	function __invoke($path,$domain){
+	function __invoke($path,$domain=null){
 		if($lang=$this->extractLang($domain)){
 			if(file_exists($langFile='langs/'.$lang.'.ini')){
 				$langMap = parse_ini_file($langFile);
@@ -23,7 +23,10 @@ class ByTmlL10n extends ByTml {
 			$lang = $this->langDefault;
 			$langMap = false;
 		}
-		return [$lang,$langMap,$path];
+		$path = parent::__invoke($path);
+		if($path){
+			return [$lang,$langMap,$path];
+		}
 	}
 	function extractLang($domain){
 		$urlParts = explode('.', $domain);

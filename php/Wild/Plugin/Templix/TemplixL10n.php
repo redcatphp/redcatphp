@@ -39,8 +39,7 @@ class TemplixL10n extends Templix{
 				}
 			}
 		});
-		
-		
+
 		return $this->query($file);
 	}
 	function i18nGettext($Tml,$cache=true){
