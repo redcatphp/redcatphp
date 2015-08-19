@@ -6,7 +6,7 @@ use Wild\Autoload\Autoload;
 use Wild\Route\Router;
 use Wild\Kinetic\Di;
 class Backoffice extends \Wild\Route\FrontController{
-	public $pathFS = 'surikat/plugin/backoffice';
+	public $pathFS = 'plugin/backoffice';
 	function __construct(Router $router,Di $di){
 		parent::__construct($router,$di);
 		$this
