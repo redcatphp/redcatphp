@@ -1545,5 +1545,8 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$msg .= $this->exceptionContext();
 		throw new MarkupException($msg);
 	}
+	function isHiddenWrap(){
+		return $this->hiddenWrap;
+	}
 }
 Markup::initialize();
