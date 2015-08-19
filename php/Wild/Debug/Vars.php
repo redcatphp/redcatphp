@@ -226,14 +226,14 @@ abstract class Vars{
 	static function debug_backtrace_html(){
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		do $caller = array_shift($backtrace);
-			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
+			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__||$caller['file']===__DIR__.'/functions.inc.php'));
 		if($caller)
 			return '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
 	}
 	static function debug_backtrace(){
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		do $caller = array_shift($backtrace);
-			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__));
+			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__||$caller['file']===__DIR__.'/functions.inc.php'));
 		if ($caller)
 			return "\n".$caller['file'].':'.$caller['line']."\n";
 	}
