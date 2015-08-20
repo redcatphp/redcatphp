@@ -28,7 +28,7 @@ $is = (function(d,w){
 			if(indexOf(src,u)<0)
 				src.push(u);
 		}
-		$js(src,true);
+		$js(src);
 	};
 })(document,window);
 $is();

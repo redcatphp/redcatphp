@@ -338,7 +338,8 @@
 		$js(s,function(){
 			requiredGroups[i].push(getSrc(s));
 			if(requiredGroups[i].sort().toString()==u){
-				c();
+				if(typeof(c)=='function')
+					c();
 			}
 		},0);
 	};
@@ -407,9 +408,9 @@
 					tops[0].push(p);
 			}
 		}
-		var ev = c?'c();':'';
+		var ev = c?'if(c)c();':'';
 		for(var k in tops.reverse()){
-			for(var ks in tops[k]){
+			for(var ks in tops[k].reverse()){
 				var d = tops[k][ks];
 				if(typeof(m[d])!='undefined'){
 					for(var i in m[d].reverse()){
