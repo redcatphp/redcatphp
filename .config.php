@@ -89,7 +89,7 @@ return [
 				'saveRoot'=>SURIKAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'Wild\Plugin\FrontController\Index'=>[
+		'Wild\Plugin\FrontController\FrontOffice'=>[
 			'construct'=>[
 				'$l10n'=>'l10n',
 			],
