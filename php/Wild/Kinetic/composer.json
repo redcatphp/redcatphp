@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Kinetic",
+	"name": "surikat/kinetic",
 	"type": "library",
 	"description": "Kinetic - Dependency Injection Made Universal",
 	"keywords": ["Kinetic","Dependency Injection","Configuration","Inversion of Control"],

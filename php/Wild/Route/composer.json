@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Route",
+	"name": "surikat/route",
 	"type": "library",
 	"description": "Route - A mirco-framework for manage entry point of applications ",
 	"keywords": ["Route","Mirco Framework","Front Controller","Dispatcher"],

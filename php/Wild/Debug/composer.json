@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Debug",
+	"name": "surikat/debug",
 	"type": "library",
 	"description": "Debug - Common vars dump helpers and error handler for debugging purpose",
 	"keywords": ["Debug","Error Hanlder","var dump helpers","Dev"],

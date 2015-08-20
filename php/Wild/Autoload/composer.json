@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Autoload",
+	"name": "surikat/autoload",
 	"type": "library",
 	"description": "Autoload - Simple and Concise PHP Autoloader - PSR-4 convention",
 	"keywords": ["Autoload", "PSR-4"],

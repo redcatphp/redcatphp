@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Stylize",
+	"name": "surikat/stylize",
 	"type": "library",
 	"description": "Stylize - Css Preprocessor using Scss syntax ( SASS 3.2 ) ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp",
 	"keywords": ["Stylize","CSS","CSS Preprocessor","SCSS","SASS","Style","Stylesheet","mixin","font","autoload"],

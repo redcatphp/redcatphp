@@ -1,5 +1,5 @@
 {
-	"name": "surikat/DataMap",
+	"name": "surikat/datamap",
 	"type": "library",
 	"description": "DataMap - ORM-like structuring database on the fly - following DataMapper Pattern - inspired by RedBean",
 	"keywords": ["DataMap","ORM","DataMapper","DataBase","Relational","NoSQL","RDBMS"],

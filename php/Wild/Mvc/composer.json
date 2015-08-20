@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Mvc",
+	"name": "surikat/mvc",
 	"type": "library",
 	"description": "Mvc - Model-View-Controller basics classes and modular routing helpers",
 	"keywords": ["Mvc","Model View Controller","Module","Modularity"],

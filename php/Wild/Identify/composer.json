@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Identify",
+	"name": "surikat/identify",
 	"type": "library",
 	"description": "Identify - Complete Authentication System, Session Management and Cryptographic libraries",
 	"keywords": ["Identify","Authentication","Session","Cryptography","Security","Bruteforce protection","Cookie"],

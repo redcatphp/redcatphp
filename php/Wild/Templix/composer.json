@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Templix",
+	"name": "surikat/templix",
 	"type": "library",
 	"description": "Templix - HTML5 based Template Engine with Recursive Extends and CSS3 Selectors to work on DOM like with Jquery",
 	"keywords": ["Templix","Template","Template Engine","HTML5","CSS3 Selectors","Recursive Extends","XML","Jquery","DOM","Template Motor"],

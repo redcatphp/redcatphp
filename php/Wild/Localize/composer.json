@@ -1,5 +1,5 @@
 {
-	"name": "surikat/Localize",
+	"name": "surikat/localize",
 	"type": "library",
 	"description": "Localize - Internationalization Toolbox with Gettext wrapper, Extractors, Unicode Common Locale Data Repository",
 	"keywords": ["Localize","l10n","i18n","Localization","Internationalization","Gettext","CLDR","Common Locale Data Repository"],
