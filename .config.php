@@ -89,12 +89,12 @@ return [
 				'saveRoot'=>SURIKAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'Wild\Plugin\Cms\FrontController\Index'=>[
+		'Wild\Plugin\FrontController\Index'=>[
 			'construct'=>[
 				'$l10n'=>'l10n',
 			],
 		],
-		'Wild\Plugin\Cms\RouteMatch\ByTmlL10n'=>[
+		'Wild\Plugin\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
@@ -122,7 +122,7 @@ return [
 				'addPluginPrefix'=>'Wild\Plugin\Templix\Markup\\',
 			],
 		],
-		'Wild\Plugin\Cms\FrontController\Synaptic'=>[
+		'Wild\Plugin\FrontController\Synaptic'=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
