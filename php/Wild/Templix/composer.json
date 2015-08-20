@@ -1,0 +1,25 @@
+{
+	"name": "surikat/Templix",
+	"type": "library",
+	"description": "Templix - HTML5 based Template Engine with Recursive Extends and CSS3 Selectors to work on DOM like with Jquery",
+	"keywords": ["Templix","Template","Template Engine","HTML5","CSS3 Selectors","Recursive Extends","XML","Jquery","DOM","Template Motor"],
+	"license": ["LGPL-3.0+","CC0-1.0"],
+	"homepage": "https://github.com/surikat/Templix",
+	"authors": [
+		{
+			"name": "Jo Surikat",
+			"email": "jo@surikat.pro",
+			"homepage": "http://wildsurikat.com/Documentation/Templix",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0"
+	},
+	"autoload": {
+		"psr-4":{
+			"Wild\\Templix\\": ""
+		}
+	},
+	"minimum-stability": "dev"
+}

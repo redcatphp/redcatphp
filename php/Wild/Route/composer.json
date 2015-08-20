@@ -1,0 +1,25 @@
+{
+	"name": "surikat/Route",
+	"type": "library",
+	"description": "Route - A mirco-framework for manage entry point of applications ",
+	"keywords": ["Route","Mirco Framework","Front Controller","Dispatcher"],
+	"license": ["LGPL-3.0+","CC0-1.0"],
+	"homepage": "https://github.com/surikat/Route",
+	"authors": [
+		{
+			"name": "Jo Surikat",
+			"email": "jo@surikat.pro",
+			"homepage": "http://wildsurikat.com/Documentation/Route",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0"
+	},
+	"autoload": {
+		"psr-4":{
+			"Wild\\Route\\": ""
+		}
+	},
+	"minimum-stability": "dev"
+}
