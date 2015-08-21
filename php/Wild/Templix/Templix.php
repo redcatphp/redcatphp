@@ -184,7 +184,7 @@ class Templix implements \ArrayAccess {
 	function writeCompile(){
 		$file = $this->getPath();
 		$node = new Markup();
-		$node->settemplix($this);		
+		$node->setTemplix($this);		
 		$node->parse(file_get_contents($file));
 		ksort($this->compile);
 		foreach($this->compile as $callback)

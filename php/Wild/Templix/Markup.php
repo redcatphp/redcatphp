@@ -127,7 +127,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$this->templix = $this->constructor->templix;
 		}
 	}
-	function settemplix($template){
+	function setTemplix($template){
 		$this->templix = $template;
 	}
 	function setNodeName($nodeName){
@@ -568,9 +568,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected function isIndented(){
 		return (!$this->temlix||$this->temlix->devTemplate)&&$this->nodeName&&!$this->hiddenWrap;
 	}
-	protected function indentationTab($force=null){
+	protected function indentationTab($force=null,$n=true){
 		if($this->isIndented()||$force)
-			return "\n".str_repeat("\t",$this->indentationIndex());
+			return ($n?"\n":'').str_repeat("\t",$this->indentationIndex());
 	}
 	function getInnerMarkups(){
 		return implode('',$this->childNodes);
@@ -619,12 +619,33 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$inner = substr($inner,$ind);
 		}
 		$str .= $inner;
-		$foot = implode('',$this->foot);		
-		if($this->footIndentationForce||(!$this->selfClosed&&!$this->hiddenWrap
-			&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1))
-			$str .= $this->indentationTab($this->footIndentationForce);
-		if(!$this->selfClosed&&!$this->hiddenWrap)
+		$foot = implode('',$this->foot);
+		$indentClose = false;
+		$indentCloseN = true;
+		if($this->footIndentationForce){
+			$indentClose = true;
+		}
+		elseif(!$this->selfClosed&&!$this->hiddenWrap&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1){
+			if(empty($this->childNodes)){
+				$indentClose = true;
+			}
+			else{
+				$endcn = end($this->childNodes);
+				if(!$endcn instanceof TEXT){
+					$indentClose = true;
+				}
+				elseif(substr(rtrim("$endcn","\t\0\x0B"),-1)=="\n"){
+					$indentClose = true;
+					$indentCloseN = false;
+				}
+			}
+		}
+		if($indentClose)
+			$str .= $this->indentationTab($this->footIndentationForce,$indentCloseN);
+		
+		if(!$this->selfClosed&&!$this->hiddenWrap){
 			$str .= '</'.$this->nodeName.'>';
+		}
 		$str = $head.$str.$foot;
 		return $str;
 	}

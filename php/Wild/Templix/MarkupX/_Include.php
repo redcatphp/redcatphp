@@ -15,11 +15,14 @@ class _Include extends \Wild\Templix\Markup{
 		$find = $templix->getPath();
 		if(!$find)
 			$this->throwException('<include "'.$file.'"> template not found ');
+		$templix->onCompile(function($rootNode){
+			$rootNode->setParent($this);
+		});
 		$templix->writeCompile();
-		
 		$r = self::findRelativePath($this->templix->getPath(),$find);
 		$relativity = "__DIR__.'/".addslashes($r)."'";
-		$this->innerHead('<?php include '.$relativity.';?>');
+		$ln = (!$this->temlix||$this->temlix->devTemplate)?"\n":'';
+		$this->innerHead($ln.'<?php include '.$relativity.';?>'.$ln);
 	}
 	static function findRelativePath($frompath, $topath){
 		$from = explode('/', $frompath);
