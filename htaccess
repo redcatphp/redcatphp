@@ -143,6 +143,8 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 </IfModule>
 
 Options All -Indexes
+DirectoryIndex index.php
+
 #Block access to certain file types
 <FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
 	Order Allow,Deny
@@ -201,9 +203,11 @@ RewriteRule ^(.*)$ %{ENV:SURIKAT_URI}surikat/$1/index.php [L,QSA]
 
 #Avoid Duplicate Content on by removing index.php access
 RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
-RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
+RewriteRule (.*?)/index\.php/*(.*) /$1$2 [R=301,NE,L]
 
 #surikat Bootstrap
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}%{REQUEST_URI}/index.php !-f
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ index.php/$1 [L,QSA]
