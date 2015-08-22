@@ -6,7 +6,7 @@
  *   PSR-4 convention - for details: see http://www.php-fig.org/psr/psr-4/
  *
  * @package Autoload
- * @version 1.0
+ * @version 2.0
  * @link http://github.com/surikat/Autoload/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
@@ -15,6 +15,9 @@ namespace Wild\Autoload;
 class Autoload{
 	protected $namespaces = [];
 	protected $checked = [];
+	protected $classMap = [];
+	protected $useCache = true;
+	protected $useIncludePath = false;
 	private static $instance;
 	static function register($base_dir,$prefix=''){
 		return self::getInstance()->addNamespace($prefix,$base_dir)->splRegister();
@@ -48,28 +51,41 @@ class Autoload{
 		}
 		return $this;
 	}
+	function addClass($class,$file){
+		$this->classMap[$class] = $file;
+	}
+	function addClassMap(array $classMap){
+		$this->classMap = array_merge($this->classMap, $classMap);
+    }
+	function useCache($b=true){
+		$this->useCache = $b;
+	}
+	function useIncludePath($b=true){
+		$this->useIncludePath = $b;
+	}
 	protected function loadFile($file,$class){
-		if(file_exists($file)){
+		if(file_exists($file)
+			||($this->useIncludePath&&($file=stream_resolve_include_path($file))))
+		{
 			require $file;
 			if(!class_exists($class,false)&&!interface_exists($class,false)&&!trait_exists($class,false))
 				throw new \Exception('Class "'.$class.'" not found as expected in "'.$file.'"');
-			$this->checked[] = $class;
+			if($this->useCache)
+				$this->checked[] = $class;
 			return true;
 		}
 		return false;
 	}
-	function findClass($class,$relative_class,$prefix){
+	protected function findRelative($class,$relative_class,$prefix,$ext){		
 		if(isset($this->namespaces[$prefix])){
 			foreach($this->namespaces[$prefix] as $base_dir){
-				$file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
+				$file = $base_dir.str_replace('\\', '/', $relative_class).$ext;
 				if($this->loadFile($file,$class))
 					return true;
 			}
 		}		
 	}
-	function classLoad($class){
-		if(in_array($class,$this->checked))
-			return;
+	function findClass($class,$ext='.php',$psr0=false){
 		$prefix = $class;
 		while($prefix!='\\'){
 			$prefix = rtrim($prefix, '\\');
@@ -82,15 +98,31 @@ class Autoload{
 				$prefix = '\\';
 				$relative_class = $class;
 			}
-			if($this->findClass($class,$relative_class,$prefix))
-				return;
+			if($psr0)
+				$relative_class = str_replace('_','/',$relative_class);
+			if($this->findRelative($class,$relative_class,$prefix,$ext))
+				return true;
 		}
+	}
+	function classLoad($class){
+		if($this->useCache&&in_array($class,$this->checked))
+			return;
+		if(isset($this->classMap[$class])&&$this->loadFile($this->classMap[$class],$class))
+			return;
+		if($this->findClass($class))
+			return;
+		if($this->findClass($class,true))
+			return;
+		if(defined('HHVM_VERSION'))
+			$this->findClass($class, '.hh');
 	}
 	function __invoke($class){
 		return $this->classLoad($class);
 	}
 	function splRegister(){
-		spl_autoload_register($this);
-		return $this;
+		spl_autoload_register([$this,'classLoad']);
+	}
+	function splUnregister(){
+		spl_autoload_unregister([$this,'classLoad']);
 	}
 }
