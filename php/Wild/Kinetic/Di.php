@@ -438,7 +438,7 @@ class Di implements \ArrayAccess{
 			$php = include($php);
 		return $php;
 	}
-	private function defineClass($class,$rule){
+	function defineClass($class,$rule){
 		if(isset($rule['instanceOf']))
 			$rule['instanceOf'] = str_replace('/','\\',$rule['instanceOf']);
 		if(isset($rule['newInstances'])&&is_string($rule['newInstances']))
