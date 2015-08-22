@@ -191,7 +191,7 @@ RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}surikat/robots_ssl.txt [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|php|txt|xml|html)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
 
 #surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
