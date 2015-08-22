@@ -77,6 +77,9 @@ abstract class SQL extends DataSource{
 		
 		$this->frozen = $frozen;
 		$this->tablePrefix = $tablePrefix;
+		
+		if(defined('HHVM_VERSION')||$this->dsn==='test-sqlite-53')
+			$this->max = 2147483647;
 	}
 	function readId($type,$id,$primaryKey=null,$uniqTextKey=null){
 		if(is_null($primaryKey))
