@@ -2,8 +2,10 @@
 /*
  * Autoload
  *
- *   Simple and Concise PHP Autoloader
+ *   Autoload - Simple and Concise PHP Autoloader
+ *       PSR-4 and PSR-0 convention with classMap API and include_path support
  *   PSR-4 convention - for details: see http://www.php-fig.org/psr/psr-4/
+ *   PSR-0 convention - for details: see http://www.php-fig.org/psr/psr-0/
  *
  * @package Autoload
  * @version 2.0
