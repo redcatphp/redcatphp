@@ -30,7 +30,7 @@ class Code extends \Wild\Templix\Markup{
 		}
 		if($pos){
 			foreach($x as &$tx){
-				$tx = substr($tx,$pos+1);
+				$tx = substr($tx,$pos);
 			}
 		}
 		$text = implode("\n",$x);
