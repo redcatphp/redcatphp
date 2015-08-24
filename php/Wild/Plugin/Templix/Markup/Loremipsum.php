@@ -3,7 +3,6 @@ use Wild\Plugin\Templix\LoremIpsum as LoremIpsumGen;
 class Loremipsum extends \Wild\Templix\Markup {
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
-	protected $footIndentationForce = true;
 	function load(){
 		if($this->mini){
 			$this->html="false";

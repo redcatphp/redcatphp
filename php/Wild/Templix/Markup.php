@@ -43,7 +43,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected $selfClosed;
 	protected $__closed;
 	protected $noParseContent;
-	protected $footIndentationForce;
 	protected $foot = [];
 	protected $head = [];
 	protected $innerFoot = [];
@@ -580,7 +579,10 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	}
 	private $maxCharByLine = 80;
 	function __toString(){
-		$str = $this->indentationTab();
+		$str = '';
+		$indentOpen = true;
+		if($indentOpen)
+			$str .= $this->indentationTab();
 		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
 			$str .= '<'.$this->nodeName;
@@ -622,10 +624,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$foot = implode('',$this->foot);
 		$indentClose = false;
 		$indentCloseN = true;
-		if($this->footIndentationForce){
-			$indentClose = true;
-		}
-		elseif(!$this->selfClosed&&!$this->hiddenWrap&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1){
+		if(!$this->selfClosed&&!$this->hiddenWrap&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1){
 			if(empty($this->childNodes)){
 				$indentClose = true;
 			}
@@ -641,7 +640,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			}
 		}
 		if($indentClose)
-			$str .= $this->indentationTab($this->footIndentationForce,$indentCloseN);
+			$str .= $this->indentationTab(false,$indentCloseN);
 		
 		if(!$this->selfClosed&&!$this->hiddenWrap){
 			$str .= '</'.$this->nodeName.'>';
