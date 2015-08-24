@@ -580,9 +580,24 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	private $maxCharByLine = 80;
 	function __toString(){
 		$str = '';
-		$indentOpen = true;
+		
+		$indentOpen = false;
+		$indentOpenN = true;
+		if(!$this->previousSibling){
+			$indentOpen = true;
+		}
+		else{
+			if(!$this->previousSibling instanceof TEXT){
+				$indentOpen = true;
+			}
+			elseif(substr(rtrim($this->previousSibling,"\t\0\x0B"),-1)=="\n"){
+				$indentOpen = true;
+				$indentOpenN = false;
+			}
+		}
 		if($indentOpen)
-			$str .= $this->indentationTab();
+			$str .= $this->indentationTab(false,$indentOpenN);
+			
 		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
 			$str .= '<'.$this->nodeName;
@@ -633,7 +648,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				if(!$endcn instanceof TEXT){
 					$indentClose = true;
 				}
-				elseif(substr(rtrim("$endcn","\t\0\x0B"),-1)=="\n"){
+				elseif(substr(rtrim($endcn,"\t\0\x0B"),-1)=="\n"){
 					$indentClose = true;
 					$indentCloseN = false;
 				}
