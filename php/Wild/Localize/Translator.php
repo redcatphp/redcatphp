@@ -82,26 +82,34 @@ class Translator {
 				&&strpos($this->locale,'_')===false
 				&&is_dir($this->localesRoot.'/'.$this->locale)
 			){
-				foreach(self::$systemLocales as $lc){
-					if(strpos($lc,$this->locale.'_')===0){
-						if(!is_dir($this->localesRoot.'/'.$lc)){
-							if(defined('SURIKAT_CWD'))
-								$cwd = SURIKAT_CWD;
-							else
-								$cwd = getcwd();
-							chdir($this->localesRoot);
-							symlink($this->locale,$this->localesRoot.'/'.$lc);
-							chdir($cwd);
+				$found = false;
+				$lookFor = $lc.'_'.strtoupper($lc);
+				if(in_array($lookFor,self::$systemLocales)){
+					$found = $lookFor;
+				}
+				else{
+					foreach(self::$systemLocales as $lc){
+						if(strpos($lc,$this->locale.'_')===0){
+							$found = $lc;
+							break;
 						}
-						if(false!==$p=strpos($lc,'.'))
-							$lc = substr($lc,0,$p);
-						if(false!==$p=strpos($lc,'@'))
-							$lc = substr($lc,0,$p);
-						$this->locale = $lc;
-						$this->realLocale = $this->locale.$this->suffixLocales;
-						$this->EMULATEGETTEXT = 0;
-						break;
 					}
+				}
+				if($found){				
+					$lc = $found;	
+					if(!is_dir($this->localesRoot.'/'.$lc)){
+						$cwd = getcwd();
+						chdir($this->localesRoot);
+						symlink($this->locale,$lc);
+						chdir($cwd);
+					}
+					if(false!==$p=strpos($lc,'.'))
+						$lc = substr($lc,0,$p);
+					if(false!==$p=strpos($lc,'@'))
+						$lc = substr($lc,0,$p);
+					$this->locale = $lc;
+					$this->realLocale = $this->locale.$this->suffixLocales;
+					$this->EMULATEGETTEXT = 0;
 				}
 			}
 		}
