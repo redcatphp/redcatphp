@@ -1,20 +1,17 @@
 <?php
 namespace Wild\Plugin\Templix;
-use Wild\Route\Url;
 use Wild\Localize\Translator;
 use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
-	protected $Url;
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
-		Di $di,Url $Url=null,Translator $Translator=null, $server=null
+		Di $di,Translator $Translator=null, $server=null
 	){
 		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg,$di);
 		$this->di = $di;
 		if(!$server)
 			$server = &$_SERVER;
-		$this->Url = $Url;
 		$this->Translator = $Translator;
 		$this->server = $server;
 	}
