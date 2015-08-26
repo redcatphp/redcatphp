@@ -183,8 +183,8 @@ RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^.*$ - [E=SURIKAT_URI:%2]
 
 #CDN - Avoid Duplicate-Content from Content-Delivery-Network
-RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
-RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}surikat/robots_cdn.txt [L]
+#RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
+#RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}surikat/robots_cdn.txt [L]
 
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
