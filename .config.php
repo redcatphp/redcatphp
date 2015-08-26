@@ -117,6 +117,9 @@ return [
 				'$cache'=>'dev.css',
 			],
 		],
+		'Wild\Route\Url' => [
+			'shared'=>true,
+		],
 		'Banago\PHPloy\PHPloy' => [
 			'construct'=>[
 				'$map' => 'gitDeploy',
