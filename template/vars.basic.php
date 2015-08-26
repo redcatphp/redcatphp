@@ -1,4 +1,4 @@
 <?php
 return [
-	'BASE_HREF'		=> (new \Wild\Route\Url())->getBaseHref(),
+	'BASE_HREF'		=> Wild\Kinetic\Di::getInstance()->create('Wild\Route\Url')->getBaseHref(),
 ];
