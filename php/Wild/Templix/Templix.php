@@ -36,19 +36,23 @@ class Templix implements \ArrayAccess {
 	public $devJs;
 	public $devCss;
 	public $devImg;
-	
-	public $httpCache;
-	public $lastChangeTime;
-	public $expireTime;
+
+	public $httpMtime;
+	public $httpExpireTime;
+	public $httpEtag;
 	
 	function __construct($file=null,$vars=null,
-		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,$httpCache=true
+		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
+		$httpMtime=false,$httpEtag=false,$httpExpireTime=false
 	){
 		$this->devTemplate = $devTemplate;
 		$this->devCss = $devCss;
 		$this->devJs = $devJs;
 		$this->devImg = $devImg;
-		$this->httpCache = $httpCache;
+		$this->httpMtime = $httpMtime;
+		$this->httpEtag = $httpEtag;
+		$this->httpExpireTime = $httpExpireTime;
+		
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
 		$this->setDirSync('.tmp/sync/');
@@ -62,6 +66,15 @@ class Templix implements \ArrayAccess {
 			$this->setPath($file);
 		if(isset($vars))
 			$this->set($vars);
+	}
+	function setHttpMtime($mtime){
+		$this->httpMtime = $mtime;
+	}
+	function setHttpExpireTime($time){
+		$this->httpExpireTime = $time;
+	}
+	function setHttpEtag($etag){
+		$this->httpEtag = $etag;
 	}
 	function getPluginPrefix(){
 		return $this->__pluginPrefix;
@@ -183,34 +196,46 @@ class Templix implements \ArrayAccess {
 		$this->devRegeneration();
 		if((!isset($this->forceCompile)&&$this->devTemplate)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
 			$this->writeCompile();
-		if($this->httpCache)
-			$this->includeVarsCache($file);
-		else
-			$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
+		$this->includeVarsCache($file);
 		return $this;
 	}
 	function includeVarsCache($file){
-		if($this->lastChangeTime){
-			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$this->lastChangeTime){
+		if($this->httpMtime){
+			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$this->httpMtime){
 				http_response_code(304);
 				header('Connection: close');
 				exit;
 			}
-			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->lastChangeTime).' GMT');
+			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->httpMtime).' GMT');
 		}
-		ob_start();
-		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
-		$buffer = ob_get_clean();
-		$etag = sha1($buffer);
-		if(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH']==$etag){
-			http_response_code(304);
-			header('Connection: close');
-			exit;
+		if($this->httpEtag){
+			if($this->httpEtag===true){
+				ob_start();
+				$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
+				$buffer = ob_get_clean();
+				$etag = sha1($buffer);
+			}
+			else{
+				$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
+			}
+			if(isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+				$etagH = trim($_SERVER['HTTP_IF_NONE_MATCH'],'"');
+				if(substr($etagH,-5)=='-gzip')
+					$etagH = substr($etagH,0,-5);
+				if($etagH==$etag){
+					http_response_code(304);
+					header('Connection: close');
+					exit;
+				}
+			}
+			header('Etag: "'.$etag.'"');
 		}
-		header('Etag: '.$etag);
-		if($this->expireTime){
-			header('Cache-Control: max-age=' . $this->expireTime);
-			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expireTime).' GMT');
+		else{
+			$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
+		}
+		if(is_integer($this->httpExpireTime)){
+			header('Cache-Control: max-age=' . $this->httpExpireTime);
+			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->httpExpireTime).' GMT');
 		}
 		print $buffer;
 	}
