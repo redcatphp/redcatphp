@@ -3,12 +3,23 @@ namespace Wild\Plugin\Templix;
 use Wild\Kinetic\Di;
 class Templix extends \Wild\Templix\Templix{
 	private $di;
+	
+	public $httpMtime;
+	public $httpExpireTime;
+	public $httpEtag;
+	
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
-		Di $di
+		Di $di,
+		$httpMtime=false,$httpEtag=false,$httpExpireTime=false
 	){
 		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg);
 		$this->di = $di;
+		
+		$this->httpMtime = $httpMtime;
+		$this->httpEtag = $httpEtag;
+		$this->httpExpireTime = $httpExpireTime;
+		
 		$this->onCompile(function($tml){
 			if($tml->templix->getParent())
 				return;
@@ -24,10 +35,54 @@ class Templix extends \Wild\Templix\Templix{
 		],$vars);
 		if(!pathinfo($path,PATHINFO_EXTENSION))
 			$path .= '.tml';
-		if($this->setPath($path)||$this->setPath('404.tml'))
-			$this->display(null,$vars);
-		else
+		
+		if($this->setPath($path)||$this->setPath('404.tml')){
+			$this->displayC($vars);
+		}
+		else{
 			http_response_code(404);
+		}
+	}
+	function displayC($vars){
+		if($this->httpMtime){
+			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$this->httpMtime){
+				http_response_code(304);
+				header('Connection: close');
+				exit;
+			}
+			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->httpMtime).' GMT');
+		}
+		if($this->httpEtag){
+			if($this->httpEtag===true){
+				ob_start();
+				$this->display(null,$vars);
+				$buffer = ob_get_clean();
+				$etag = sha1($buffer);
+			}
+			else{
+				$this->display(null,$vars);
+			}
+			if(isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+				$etagH = trim($_SERVER['HTTP_IF_NONE_MATCH'],'"');
+				if(substr($etagH,-5)=='-gzip')
+					$etagH = substr($etagH,0,-5);
+				if($etagH==$etag){
+					http_response_code(304);
+					header('Connection: close');
+					exit;
+				}
+			}
+			header('Etag: "'.$etag.'"');
+		}
+		else{
+			$this->display(null,$vars);
+		}
+		if(is_integer($this->httpExpireTime)){
+			header('Cache-Control: max-age=' . $this->httpExpireTime);
+			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->httpExpireTime).' GMT');
+		}
+		if(isset($buffer))
+			print $buffer;			
 	}
 	function __invoke($file){
 		if(is_array($file)){

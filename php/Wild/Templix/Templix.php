@@ -36,22 +36,14 @@ class Templix implements \ArrayAccess {
 	public $devJs;
 	public $devCss;
 	public $devImg;
-
-	public $httpMtime;
-	public $httpExpireTime;
-	public $httpEtag;
 	
 	function __construct($file=null,$vars=null,
-		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
-		$httpMtime=false,$httpEtag=false,$httpExpireTime=false
+		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false
 	){
 		$this->devTemplate = $devTemplate;
 		$this->devCss = $devCss;
 		$this->devJs = $devJs;
 		$this->devImg = $devImg;
-		$this->httpMtime = $httpMtime;
-		$this->httpEtag = $httpEtag;
-		$this->httpExpireTime = $httpExpireTime;
 		
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
@@ -196,49 +188,8 @@ class Templix implements \ArrayAccess {
 		$this->devRegeneration();
 		if((!isset($this->forceCompile)&&$this->devTemplate)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
 			$this->writeCompile();
-		$this->includeVarsCache($file);
+		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
 		return $this;
-	}
-	function includeVarsCache($file){
-		if($this->httpMtime){
-			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])>=$this->httpMtime){
-				http_response_code(304);
-				header('Connection: close');
-				exit;
-			}
-			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->httpMtime).' GMT');
-		}
-		if($this->httpEtag){
-			if($this->httpEtag===true){
-				ob_start();
-				$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
-				$buffer = ob_get_clean();
-				$etag = sha1($buffer);
-			}
-			else{
-				$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
-			}
-			if(isset($_SERVER['HTTP_IF_NONE_MATCH'])){
-				$etagH = trim($_SERVER['HTTP_IF_NONE_MATCH'],'"');
-				if(substr($etagH,-5)=='-gzip')
-					$etagH = substr($etagH,0,-5);
-				if($etagH==$etag){
-					http_response_code(304);
-					header('Connection: close');
-					exit;
-				}
-			}
-			header('Etag: "'.$etag.'"');
-		}
-		else{
-			$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
-		}
-		if(is_integer($this->httpExpireTime)){
-			header('Cache-Control: max-age=' . $this->httpExpireTime);
-			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->httpExpireTime).' GMT');
-		}
-		if(isset($buffer))
-			print $buffer;
 	}
 	
 	function writeCompile(){
