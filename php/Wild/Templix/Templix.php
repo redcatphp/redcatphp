@@ -201,16 +201,16 @@ class Templix implements \ArrayAccess {
 		ob_start();
 		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
 		$buffer = ob_get_clean();
-		$etag = md5($buffer);
-		header('Etag: '.$etag);
-		if($this->expireTime){
-			header('Cache-Control: max-age=' . $this->expireTime);
-			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expireTime).' GMT');
-		}
+		$etag = sha1($buffer);
 		if(isset($_SERVER['HTTP_IF_NONE_MATCH'])&&$_SERVER['HTTP_IF_NONE_MATCH']==$etag){
 			http_response_code(304);
 			header('Connection: close');
 			exit;
+		}
+		header('Etag: '.$etag);
+		if($this->expireTime){
+			header('Cache-Control: max-age=' . $this->expireTime);
+			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->expireTime).' GMT');
 		}
 		print $buffer;
 	}
