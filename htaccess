@@ -1,4 +1,3 @@
-#optimizations and browsers compatibilty
 <IfModule mod_headers.c>
 	Header set X-UA-Compatible "IE=Edge,chrome=1"
 	<FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)$" >
@@ -66,7 +65,8 @@ AddType text/x-vcard                   vcf
 			FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/x-font-ttf
 			FilterProvider  COMPRESS  DEFLATE resp=Content-Type $font/opentype
 			FilterChain     COMPRESS
-			FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no
+			#FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no
+			FilterProtocol  COMPRESS  DEFLATE byteranges=no
 		</IfModule>
 	</IfVersion>
 	<IfVersion >= 2.4.4>
@@ -89,7 +89,8 @@ AddType text/x-vcard                   vcf
 			FilterProvider  COMPRESS  DEFLATE "%{Content_Type} = 'application/x-font-ttf'"
 			FilterProvider  COMPRESS  DEFLATE "%{Content_Type} = 'font/opentype'"
 			FilterChain     COMPRESS
-			FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no
+			#FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no
+			FilterProtocol  COMPRESS  DEFLATE byteranges=no
 		</IfModule>
 	</IfVersion>
 	<IfModule !mod_filter.c>
@@ -132,19 +133,27 @@ AddType text/x-vcard                   vcf
 		Header append Cache-Control "public"
 	</IfModule>
 </IfModule>
-<IfModule mod_headers.c>
-	Header unset ETag
-</IfModule>
-FileETag None
+
+<FilesMatch "\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|txt|xml|html|swf)(\.gz)?$">
+	<IfModule mod_headers.c>
+		Header unset ETag
+	</IfModule>
+	FileETag None
+	#FileETag Size Mtime
+</FilesMatch>
+
 Options -MultiViews
+Options +FollowSymlinks
+Options All -Indexes
+DirectoryIndex index.php
+
+ServerSignature Off
+
 AddDefaultCharset utf-8
 AddCharset utf-8 .html .css .js .xml .json .rss .atom
 <IfModule php5_module>
 	php_value session.cookie_httponly true
 </IfModule>
-
-Options All -Indexes
-DirectoryIndex index.php
 
 #Block access to certain file types
 <FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
@@ -156,7 +165,6 @@ ErrorDocument 403 /403
 ErrorDocument 404 /404
 ErrorDocument 500 /500
 
-Options +FollowSymlinks
 RewriteEngine On
 
 #Force remove www
@@ -194,7 +202,7 @@ RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}surikat/robots_ssl.txt [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}surikat/$1.$2 -f
-RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
+RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html|swf)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
 
 #surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
