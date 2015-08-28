@@ -237,7 +237,8 @@ class Templix implements \ArrayAccess {
 			header('Cache-Control: max-age=' . $this->httpExpireTime);
 			header('Expires: '.gmdate('D, d M Y H:i:s', time()+$this->httpExpireTime).' GMT');
 		}
-		print $buffer;
+		if(isset($buffer))
+			print $buffer;
 	}
 	
 	function writeCompile(){
