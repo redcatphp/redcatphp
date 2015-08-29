@@ -130,6 +130,11 @@ class Synaptic {
 			@mkdir(dirname($min),0777,true);
 			$this->registerMini($min);
 			file_put_contents($min,$c,LOCK_EX);
+			
+			$gzfile = $min.'.gz';
+			$fp = gzopen($gzfile, 'w9');
+			gzwrite($fp,$c);
+			gzclose($fp);
 		}
 		if(!headers_sent())
 			header('Content-Type:application/javascript; charset=utf-8');
@@ -155,6 +160,11 @@ class Synaptic {
 						@mkdir($dir,0777,true);
 					$this->registerMini($min);
 					file_put_contents($min,$c,LOCK_EX);
+					
+					$gzfile = $min.'.gz';
+					$fp = gzopen($gzfile, 'w9');
+					gzwrite($fp,$c);
+					gzclose($fp);
 				}
 				if(!headers_sent())
 					header('Content-Type:text/css; charset=utf-8');
