@@ -1,3 +1,4 @@
+#cross-brwoser compatibility
 <IfModule mod_headers.c>
 	Header set X-UA-Compatible "IE=Edge,chrome=1"
 	<FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)$" >
@@ -7,6 +8,8 @@
 		Header set Access-Control-Allow-Origin "*"
 	</FilesMatch>
 </IfModule>
+
+#mime types
 AddType application/javascript         js
 AddType audio/ogg                      oga ogg
 AddType audio/mp4                      m4a
@@ -27,6 +30,8 @@ AddType application/x-chrome-extension crx
 AddType application/x-xpinstall        xpi
 AddType application/octet-stream       safariextz
 AddType text/x-vcard                   vcf
+
+#SSI (enable Server-Side-Include)
 <IfModule mod_include.c>
 	SSILastModified on
 	<FilesMatch "(?<!\.min)\.js$">
@@ -39,6 +44,8 @@ AddType text/x-vcard                   vcf
 		</IfModule>
 	</FilesMatch>
 </IfModule>
+
+#Compress on the fly
 <IfModule mod_deflate.c>
 	<IfModule mod_setenvif.c>
 		<IfModule mod_headers.c>
@@ -101,6 +108,8 @@ AddType text/x-vcard                   vcf
 		AddOutputFilterByType DEFLATE image/svg+xml application/vnd.ms-fontobject application/x-font-ttf font/opentype
 	</IfModule>
 </IfModule>
+
+#Add expire headers
 <IfModule mod_expires.c>
 	ExpiresActive on
 	ExpiresDefault                          "access plus 1 month"
@@ -134,6 +143,7 @@ AddType text/x-vcard                   vcf
 	</IfModule>
 </IfModule>
 
+#Disable Etag
 <FilesMatch "\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|txt|xml|html|swf)(\.gz)?$">
 	<IfModule mod_headers.c>
 		Header unset ETag
@@ -142,13 +152,12 @@ AddType text/x-vcard                   vcf
 	#FileETag Size Mtime
 </FilesMatch>
 
+#Configure options
 Options -MultiViews
 Options +FollowSymlinks
 Options All -Indexes
 DirectoryIndex index.php
-
 ServerSignature Off
-
 AddDefaultCharset utf-8
 AddCharset utf-8 .html .css .js .xml .json .rss .atom
 <IfModule php5_module>
@@ -161,10 +170,12 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 	Deny from all
 </FilesMatch>
 
+#Custom Error Document
 ErrorDocument 403 /403
 ErrorDocument 404 /404
 ErrorDocument 500 /500
 
+#Enable Rewrite Engine
 RewriteEngine On
 
 #Force remove www
@@ -204,6 +215,19 @@ RewriteCond %{REQUEST_URI} !^/surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}surikat/$1.$2 -f
 RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html|swf)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
 
+#Pre-compressed gzip
+AddEncoding gzip .gz .tgz
+<Files *.js.gz>
+	ForceType text/javascript
+</Files>
+<Files *.css.gz>
+	ForceType text/css
+</Files>
+RewriteCond %{HTTP_USER_AGENT} !MSIE
+RewriteCond %{HTTP:Accept-encoding} gzip
+RewriteCond %{REQUEST_FILENAME}.gz -f
+RewriteRule ^(.*)\.min\.(js|css)$ $1.min.$2.gz [L]
+
 #surikat Mirroring for directory to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !^/surikat/
@@ -215,7 +239,6 @@ RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
 RewriteRule (.*?)/index\.php/*(.*) /$1$2 [R=301,NE,L]
 
 #surikat Bootstrap
-#RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}%{REQUEST_URI}/index.php !-f
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
