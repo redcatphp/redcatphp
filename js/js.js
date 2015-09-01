@@ -58,7 +58,7 @@
 				(requiring[u].shift())(u);
 	};
 	var getSrc = function(u){
-		return u?($js.path&&u.indexOf('://')<0&&u.indexOf('/')!==0&&(!$js.pathDetection||u.indexOf($js.path)!=0)?($js.path+u):u)+($js.pathSuffix&&u.indexOf('://')<0&&(!$js.pathDetection||u.substr(u.length-$js.pathSuffix.length)!=$js.pathSuffix)?$js.pathSuffix:''):u;
+		return u&&u.indexOf('/')!==0?($js.path&&u.indexOf('://')<0&&(!$js.pathDetection||u.indexOf($js.path)!=0)?($js.path+u):u)+($js.pathSuffix&&u.indexOf('://')<0&&(!$js.pathDetection||u.substr(u.length-$js.pathSuffix.length)!=$js.pathSuffix)?$js.pathSuffix:''):u;
 	};
 	var createScript = function(u){
 		var s = d.createElement('script');
@@ -426,7 +426,7 @@
 	};
 	var apt = function(u,c,m){
 		m = m?0:1;
-		u = getSrc(u);
+		//u = getSrc(u);
 		if(!scripts[m][u])
 			scripts[m][u] = [];
 		if(typeof(c)=='function')
