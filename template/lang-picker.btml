@@ -8,6 +8,7 @@
 	$langs = [$lgD];
 	foreach(glob($langDir.'*.ini') as $langFile)
 		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
+	$url = $di->create('Wild\Route\Url');
 ?>
 <foreach "$langs as $lg">
 	<?
@@ -26,7 +27,7 @@
 					$lcPath = $k;
 			}
 		}
-		$lcLink = $di->create('Wild\Route\Url')->getSubdomainHref($lg!=$lgD?$lg:null);
+		$lcLink = $url->getSubdomainHref($lg!=$lgD?$lg:null);
 		$lcLink .= $lcPath;
 	?>
 	<li>
