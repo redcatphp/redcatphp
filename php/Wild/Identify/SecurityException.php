@@ -1,2 +1,3 @@
-<?php namespace Wild\Identify;
+<?php
+namespace Wild\Identify;
 class SecurityException extends \Exception{}
