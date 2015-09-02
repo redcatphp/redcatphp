@@ -99,6 +99,8 @@ class Auth{
 	protected $mailPort;
 	protected $mailSecure;
 	
+	protected $rootPasswordNeedRehash;
+	
 	function __construct(Session $Session=null,
 		$rootLogin = 'root',
 		$rootPassword = 'root',
@@ -142,6 +144,9 @@ class Auth{
 	function getSession(){
 		return $this->Session;
 	}
+	function rootPasswordNeedRehash(){
+		return $this->rootPasswordNeedRehash;
+	}
 	function sendMail($email, $type, $key, $login){
 		$fromName = isset($this->mailFromName)?$this->mailFromName:null;
 		$fromEmail = isset($this->mailFromEmail)?$this->mailFromEmail:null;
@@ -181,10 +186,7 @@ class Auth{
 				$options = ['cost' => $this->cost];
 				if(password_needs_rehash($pass, $this->algo, $options)){
 					$this->rootPassword = password_hash($password, $this->algo, $options);
-					//$this->Config('auth')->root = $this->rootPassword;
-					//if(!$this->Config('auth')->store()){
-						//return self::ERROR_SYSTEM_ERROR;
-					//}
+					$this->rootPasswordNeedRehash = true;
 				}
 			}
 		}
