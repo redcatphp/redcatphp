@@ -26,12 +26,13 @@ class Session{
     protected $baseHref;
 	protected $suffixHref;
 	protected $server;
-	function __construct(SessionHandlerInterface $sessionHandler,
+	function __construct(
 		$name,
-		$saveRoot,
-		$server=null,
 		$cookieLifetime=0,
-		$maxLifetime=31536000  //1 year
+		$maxLifetime=31536000,  //1 year
+		$saveRoot = null,
+		SessionHandlerInterface $sessionHandler = null,
+		$server=null
 		
 	){
 		$this->name = $name;
