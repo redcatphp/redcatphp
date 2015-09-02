@@ -28,31 +28,32 @@ class PHPMailer extends OPHPMailer{
 		}
 		return $this->send();
 	}
-	function __construct($exceptions = false){
+	function __construct(
+		$fromEmail=null,$fromName=null,
+		$replyEmail=null,$replyName=null,
+		$host=null,$port=25,$username=null,$passowrd=null,$secure=null,
+		$sendmail=null,
+		$debug=false,$exceptions=false
+	){
         parent::__construct($exceptions);
-        $config = $this->Config('mailer');
-		$fromName = isset($config['fromName'])?$config['fromName']:null;
-		$fromEmail = isset($config['fromEmail'])?$config['fromEmail']:null;
-		$replyName = isset($config['replyName'])?$config['replyName']:null;
-		$replyEmail = isset($config['replyEmail'])?$config['replyEmail']:null;
-        if(isset($config['host'])&&$config['host']){
+		if($host){
 			$this->isSMTP();
-			if(isset($config['debug'])){
-				$this->SMTPDebug = $config['debug'];
-				if($config['debug'])
+			if(isset($debug)){
+				$this->SMTPDebug = $debug;
+				if($debug)
 					$this->Debugoutput = 'html';
 			}
-			$this->Host = $config['host'];
-			$this->Port = isset($config['port'])?$config['port']:25;
-			if(isset($config['username'])){
+			$this->Host = $host;
+			$this->Port = $port;
+			if(isset($username)){
 				$this->SMTPAuth = true;
-				if(isset($config['secure']))
-					$this->SMTPSecure = $config['secure']===true?'tls':$config['secure'];
-				$this->Username = $config['username'];
-				$this->Password = $config['password'];
+				if(isset($secure))
+					$this->SMTPSecure = $secure===true?'tls':$secure;
+				$this->Username = $username;
+				$this->Password = $password;
 			}
 		}
-		elseif(isset($config['sendmail'])&&$config['sendmail']){
+		elseif($sendmail){
 			$this->isSendmail();
 		}
 		if($fromEmail)
