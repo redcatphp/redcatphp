@@ -20,6 +20,12 @@ class AuthServer{
 			$server = &$_SERVER;
 		$this->server = $server;
 	}
+	function getAuth(){
+		return $this->Auth;
+	}
+	function getSession(){
+		return $this->Session;
+	}
 	function getResultMessage($lg=0,$widget=false){
 		if($this->lastResult&&!is_bool($this->lastResult)){
 			return $this->getMessage($this->lastResult,$lg,$widget);
