@@ -59,15 +59,6 @@ class Templix implements \ArrayAccess {
 		if(isset($vars))
 			$this->set($vars);
 	}
-	function setHttpMtime($mtime){
-		$this->httpMtime = $mtime;
-	}
-	function setHttpExpireTime($time){
-		$this->httpExpireTime = $time;
-	}
-	function setHttpEtag($etag){
-		$this->httpEtag = $etag;
-	}
 	function getPluginPrefix(){
 		return $this->__pluginPrefix;
 	}

@@ -29,6 +29,15 @@ class Templix extends \Wild\Templix\Templix{
 				$toolbox->autoMIN($tml);
 		});
 	}
+	function setHttpMtime($mtime){
+		$this->httpMtime = $mtime;
+	}
+	function setHttpExpireTime($time){
+		$this->httpExpireTime = $time;
+	}
+	function setHttpEtag($etag){
+		$this->httpEtag = $etag;
+	}
 	function query($path=null,$vars=[]){
 		$vars = array_merge([
 			'URI'=>$path,
