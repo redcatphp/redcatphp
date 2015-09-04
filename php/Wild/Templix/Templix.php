@@ -59,6 +59,18 @@ class Templix implements \ArrayAccess {
 		if(isset($vars))
 			$this->set($vars);
 	}
+	function setDevTemplate($b){
+		$this->devTemplate = $b;
+	}
+	function setDevCss($b){
+		$this->devCss = $b;
+	}
+	function setDevJs($b){
+		$this->devJs = $b;
+	}
+	function setDevImg($b){
+		$this->devImg = $b;
+	}
 	function getPluginPrefix(){
 		return $this->__pluginPrefix;
 	}
