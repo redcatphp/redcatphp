@@ -1,5 +1,5 @@
 <?php
-namespace Wild\Templix\MarkupX; 
+namespace Wild\Plugin\Templix\Markup; 
 class Graph_Erm extends \Wild\Templix\Markup{
 	function load(){
 		foreach($this->children('table') as $t){
