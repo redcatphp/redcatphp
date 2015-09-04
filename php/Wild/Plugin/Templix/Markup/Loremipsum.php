@@ -1,4 +1,5 @@
-<?php namespace Wild\Plugin\Templix\Markup;
+<?php
+namespace Wild\Plugin\Templix\Markup;
 use Wild\Plugin\Templix\LoremIpsum as LoremIpsumGen;
 class Loremipsum extends \Wild\Templix\Markup {
 	protected $selfClosed = true;
