@@ -1,4 +1,5 @@
-<?php namespace Wild\Localize;
+<?php
+namespace Wild\Localize;
 use Wild\Localize\FileReader;
 use Wild\Localize\domain;
 use Wild\Localize\gettext_reader;
