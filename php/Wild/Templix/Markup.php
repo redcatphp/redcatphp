@@ -518,6 +518,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		}
 		return $obj;
 	}
+	function replace($arg){
+		$this->parse($arg);
+	}
 	function remove(){
 		if(!$this->parent){
 			$this->clear();
