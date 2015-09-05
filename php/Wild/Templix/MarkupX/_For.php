@@ -6,7 +6,7 @@ class _For extends \Wild\Templix\Markup{
 		$this->remapAttr('for');
 		$c = $this->for;
 		if(!$c&&$this->i)
-			$c = '$i=0;$i<'.$this->attributes['i'].';$i++';
+			$c = '$i=0;$i<='.$this->attributes['i'].';$i++';
 		if(!$c&&$this->from&&$this->to)
 			$c = '$i='.$this->from.';$i<='.$this->to.';$i++';
 		if(!$c)
