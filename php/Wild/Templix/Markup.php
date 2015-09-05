@@ -132,13 +132,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	function setNodeName($nodeName){
 		$this->nodeName = $nodeName;
 	}
-	function recursiveMethod($callback,$node=null,$args=null){
-		if(func_num_args()<2)
-			$node = &$this;
-		call_user_func_array([&$node,$callback],(array)$args);
-		foreach($node->childNodes as $el)
-			$this->recursiveMethod($callback,$el,$args);
-	}
 	function recursive($callback,$node=null,$break=false){
 		if(func_num_args()<2)
 			$node = &$this;
