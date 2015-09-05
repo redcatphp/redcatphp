@@ -684,18 +684,32 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$this->innerFoot = [];
 		$this->childNodes = [];
 	}
-	function &head($arg){
-		if(func_num_args()>1)
-			array_splice($this->head, func_get_arg(1), 0,[$arg]);
-		else
+	function head($arg,$index=null){
+		if(!is_null($index)){
+			if($index===true){
+				array_push($this->head,$arg);
+			}
+			else{
+				array_splice($this->head, $index, 0,[$arg]);
+			}
+		}
+		else{
 			array_unshift($this->head,$arg);
+		}
 		return $arg;
 	}
-	function &foot($arg){
-		if(func_num_args()>1)
-			array_splice($this->foot, func_get_arg(1), 0,[$arg]);
-		else
+	function foot($arg,$index=null){
+		if(!is_null($index)){
+			if($index===true){
+				array_unshift($this->foot,$arg);
+			}
+			else{
+				array_splice($this->foot, $index, 0,[$arg]);
+			}
+		}
+		else{
 			array_push($this->foot,$arg);
+		}
 		return $arg;
 	}
 	function &innerHead($arg){
