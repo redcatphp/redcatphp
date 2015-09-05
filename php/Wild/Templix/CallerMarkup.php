@@ -69,7 +69,10 @@ abstract class CallerMarkup extends Markup{
 	}
 	function extendLoad(){
 		$c = $this->callback();
-		if($extend = $this->closest('extend')){
+		if(is_array($c)){
+			call_user_func($c);
+		}
+		elseif($extend = $this->closest('extend')){
 			if($this->selector){
 				foreach($extend->children($this->selector) as $i=>$tg){
 					if($i)
@@ -87,7 +90,10 @@ abstract class CallerMarkup extends Markup{
 	}
 	function applyLoad($apply = null){
 		$c = $this->callback();
-		if($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
+		if(is_array($c)){
+			call_user_func($c);
+		}
+		elseif($apply || (($apply = $this->closest('apply'))) && ($apply = $apply->selfClosed?$this->closest():$apply->_extended))
 			if($this->selector)
 				foreach($apply->children($this->selector) as $select)
 					$select->$c($this->selectorCodeTHIS($select));

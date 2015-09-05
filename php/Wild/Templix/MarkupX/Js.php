@@ -18,4 +18,26 @@ class Js extends \Wild\Templix\CallerMarkup{
 	function loaded(){
 		$this->addJsScript();
 	}
+	function callback(){
+		return [$this,'addJsScript'];
+	}
+	function addJsScript($js=null){
+		if(!$js)
+			$js = $this;
+		$dom = $this->closest()->find('body',0);
+		if(!$dom)
+			return;
+		$src = trim($js->src);
+		if($src){
+			$script = $dom->find('script:not([src]):last',0);
+			if(!$script){
+				$dom[] = '<script type="text/javascript"></script>';
+				$script = $dom->find('script:not([src]):last',0);
+			}
+			$sync = isset($js->sync)&&$js->sync!='false'||$js->async=='false'?',true':'';
+			$app = "\$js('$src'$sync);";
+			if(strpos("$script",$app)===false)
+				$script->append($app);
+		}
+	}
 }

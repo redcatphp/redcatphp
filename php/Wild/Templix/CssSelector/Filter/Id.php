@@ -6,6 +6,6 @@ class Id implements FilterInterface{
 		$this->_id = $id;
 	}
 	function match($node, $position, $items){
-		return trim($node->attr("id")) == $this->_id;
+		return trim($node->attr('id')) == $this->_id;
 	}
 }
