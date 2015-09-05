@@ -30,15 +30,15 @@ class Attr implements FilterInterface{
 	}
 	private function _isEqualSelector($node){
 		return $node->hasAttribute($this->_attrName)
-			&& $node->getAttribute($this->_attrName) == $this->_value;
+			&& $node->attr($this->_attrName) == $this->_value;
 	}
 	private function _isNotEqualSelector($node){
 		return !$node->hasAttribute($this->_attrName)
-			|| $node->getAttribute($this->_attrName) != $this->_value;
+			|| $node->attr($this->_attrName) != $this->_value;
 	}
 	private function _isContainSelector($node){
 		if ($node->hasAttribute($this->_attrName)) {
-			$attr = $node->getAttribute($this->_attrName);
+			$attr = $node->attr($this->_attrName);
 			$len = strlen($this->_value);
 			if ($len > 0) {
 				$pos = strpos($attr, $this->_value);
@@ -49,7 +49,7 @@ class Attr implements FilterInterface{
 	}
 	private function _isContainWordSelector($node){
 		if ($node->hasAttribute($this->_attrName)) {
-			$items = explode(" ", trim($node->getAttribute($this->_attrName)));
+			$items = explode(" ", trim($node->attr($this->_attrName)));
 			foreach ($items as $item) {
 				if (preg_match("/^\w+$/", $item) && $this->_value == $item) {
 					return true;
@@ -61,7 +61,7 @@ class Attr implements FilterInterface{
 	}
 	private function _isContainPrefixSelector($node){
 		if ($node->hasAttribute($this->_attrName)) {
-			$attr = $node->getAttribute($this->_attrName);
+			$attr = $node->attr($this->_attrName);
 			$len = strlen($this->_value);
 			if ($len > 0) {
 				$pos = stripos($attr, $this->_value);
@@ -73,7 +73,7 @@ class Attr implements FilterInterface{
 	}
 	private function _isStartWithSelector($node){
 		if ($node->hasAttribute($this->_attrName) && strlen($this->_value) > 0) {
-			$attrValue = $node->getAttribute($this->_attrName);
+			$attrValue = $node->attr($this->_attrName);
 			return strpos($attrValue, $this->_value) === 0;
 		}
 		return false;
@@ -82,7 +82,7 @@ class Attr implements FilterInterface{
 		if ($node->hasAttribute($this->_attrName)) {
 			$len = strlen($this->_value);
 			if ($len > 0) {
-				$attr = $node->getAttribute($this->_attrName);
+				$attr = $node->attr($this->_attrName);
 				$attrLen = strlen($attr);
 				return $len <= $attrLen
 					&& strpos($attr, $this->_value, $attrLen - $len) !== false;

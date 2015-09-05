@@ -17,6 +17,6 @@ class _Class implements FilterInterface{
 		return false;
 	}
 	function match($node, $position, $items){
-		return $this->_isClassInList($this->_className,$node->getAttribute("class"));
+		return $this->_isClassInList($this->_className,$node->attr("class"));
 	}
 }

@@ -474,9 +474,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$a[$k] = (string)$v;
 		return $a;
 	}
-	function getAttribute($k){
-		return $this->attr($k);
-	}
 	function hasAttribute($k){
 		return isset($this->attributes[$k]);
 	}
