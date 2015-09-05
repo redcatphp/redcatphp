@@ -868,10 +868,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$ref = $this->closest($arg);
 		$ref->replaceWith($ref->getInner());
 	}
-	function replace($mix){
-		$this->parse($mix);
-	}
-
+	
 	function addJsScript($js=null){
 		if(!$js)
 			$js = $this;
