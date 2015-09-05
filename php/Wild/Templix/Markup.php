@@ -347,6 +347,26 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		if($foot!==null)
 			$this->innerFoot($foot);
 	}
+	function _merging($args,$callback){
+		foreach($args as $nodes){
+			if($nodes instanceof Iterator)
+				$nodes = $nodes->getIterator();
+			if(!is_array($nodes))
+				$nodes = [$nodes];
+			foreach($nodes as $node){
+				if(is_scalar($node))
+					$node = $this->createChild($node);
+				$found = false;
+				foreach($this->childNodes as $n)
+					if($n->isSameNode($node)){
+						$found = true;
+						break;
+					}
+				if(!$found)
+					$callback($this->childNodes,$node);
+			}
+		}
+	}
 	function attrFind($opts,$sdef=null,$unset=null){
 		foreach($opts as $k)
 			if(isset($this->attributes[$k])){
@@ -364,13 +384,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	function attrFinder(){
 		return $this->attrFind(func_get_args(),func_get_arg(0));
 	}
-
+	
+	
 	function selector(){
 		if(!func_num_args())
 			return isset($this->selectorService)?$this->selectorService:($this->selectorService=new CssSelector($this));
 		else
 			return $this->selector()->query(func_get_arg(0));
 	}
+	
 	function closest($selector=null){
 		$ref = &$this;
 		if($selector===null){
@@ -385,7 +407,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 					return $ref;
 			}
 	}
-	
 	function searchNode($node, $offset = 0){
         $len = count($this->childNodes);
         for ($i = $offset; $i < $len; $i++) {
@@ -395,7 +416,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
         }
         return false;
     }
-    
 	function match($selector){
 		$ABS = new Abstraction($this->nodeName,$this->attributes);
 		$c = count($ABS->selector($selector));
@@ -429,6 +449,12 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		elseif($index!==null)
 			$r = isset($r[$index])?$r[$index]:null;
 		return $r;
+	}
+	function merge(){
+		return $this->_merging(func_get_args(),'array_push');
+	}
+	function premerge(){
+		return $this->_merging(func_get_args(),'array_unshift');
 	}
 	function submerge($node){
 		if(is_scalar($node))
@@ -482,32 +508,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		array_unshift($this->childNodes,$v);
 		return $v;
 	}
-	function _merging($args,$callback){
-		foreach($args as $nodes){
-			if($nodes instanceof Iterator)
-				$nodes = $nodes->getIterator();
-			if(!is_array($nodes))
-				$nodes = [$nodes];
-			foreach($nodes as $node){
-				if(is_scalar($node))
-					$node = $this->createChild($node);
-				$found = false;
-				foreach($this->childNodes as $n)
-					if($n->isSameNode($node)){
-						$found = true;
-						break;
-					}
-				if(!$found)
-					$callback($this->childNodes,$node);
-			}
-		}
-	}
-	function merge(){
-		return $this->_merging(func_get_args(),'array_push');
-	}
-	function premerge(){
-		return $this->_merging(func_get_args(),'array_unshift');
-	}
 	function each($v){
 		return call_user_func($v,$this);
 	}
@@ -515,7 +515,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		if(is_scalar($obj))
 			$obj = $this->parent->createChild($obj);
 		if(!$this->parent){
-			$this->clean();
+			$this->clear();
 			$this[] = $obj;
 		}
 		else{
@@ -529,14 +529,24 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return $obj;
 	}
 	function remove(){
-		if(!$this->parent)
-			$this->clean();
-		else
+		if(!$this->parent){
+			$this->clear();
+		}
+		else{
 			foreach($this->parent->childNodes as $i=>$child)
 				if($child===$this){
 					unset($this->parent->childNodes[$i]);
 					break;
 				}
+		}
+		if($this->nextSibling){
+			$this->nextSibling->previousSibling = $this->previousSibling;
+			unset($this->nextSibling);
+		}
+		if($this->previousSibling){
+			$this->previousSibling->nextSibling = $this->nextSibling;
+			unset($this->previousSibling);
+		}
 	}
 	function applyFile($tpl,$params=[]){
 		if(($pos=strpos($tpl,':'))!==false)
@@ -664,36 +674,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return $str;
 	}
 	function clear(){
-		$this->clean();
 		$this->clearInner();
+		$this->hiddenWrap = true;
+		$this->head = [];
+		$this->foot = [];
 	}
 	function clearInner(){
 		$this->innerHead = [];
 		$this->innerFoot = [];
 		$this->childNodes = [];
-	}
-	function clean(){
-		$this->clearInner();
-		$this->hiddenWrap = true;
-		$this->head = [];
-		$this->foot = [];
-	}
-	function delete(){
-		if($this->nextSibling)
-			$this->nextSibling->previousSibling = $this->previousSibling;
-		if($this->previousSibling)
-			$this->previousSibling->nextSibling = $this->nextSibling;
-		$this->parent = null;
-		$this->nodeName = null;
-		$this->previousSibling = null;
-		$this->nextSibling = null;
-		$this->childNodes = [];
-		$this->attributes = [];
-		$this->hiddenWrap = true;
-		$this->innerHead = [];
-		$this->innerFoot = [];
-		$this->head = [];
-		$this->foot = [];
 	}
 	function &head($arg){
 		if(func_num_args()>1)
@@ -1546,7 +1535,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return ob_start()&&eval('?>'.$this)!==false?ob_get_clean():'';
 	}
 	function parse($arg){
-		$this->clean();
+		$this->clear();
 		if(!is_string($arg))
 			$arg = "$arg";
 		$n = func_num_args();
