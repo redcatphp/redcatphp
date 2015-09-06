@@ -310,6 +310,7 @@ abstract class SQL extends DataSource{
 				$this->isConnected = true;
 			}
 			else{
+				$this->isConnected = false;
 				throw $exception;
 			}
 		}
@@ -389,10 +390,10 @@ abstract class SQL extends DataSource{
 	}
 	function close(){
 		$this->pdo         = null;
-		$this->isConnected = false;
+		$this->isConnected = null;
 	}
 	function isConnected(){
-		return $this->isConnected && $this->pdo;
+		return $this->isConnected;
 	}
 	function debug($enable=true,$loggingResult=true,$loggingExplain=true){
 		$this->loggingEnabled = (bool)$enable;
