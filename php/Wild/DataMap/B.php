@@ -16,6 +16,9 @@ class B{
 			}
 		}
 	}
+	static function getBases(){
+		return self::$bases;
+	}
 	static function setup($dsn = null, $user = null, $password = null, $config = []){
 		if(is_null($dsn))
 			$dsn = 'sqlite:/'.sys_get_temp_dir().'/bases.db';
