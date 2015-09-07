@@ -13,6 +13,7 @@ class Sqlite extends SQL{
 	protected $aggCaster = '';
 	protected $sumCaster = '';
 	protected $concatenator = "cast(X'1D' as text)";
+	protected $unknownDatabaseCode = 14;
 	
 	function construct(array $config=[]){
 		parent::construct($config);
@@ -24,7 +25,38 @@ class Sqlite extends SQL{
 		foreach ( $this->typeno_sqltype as $k => $v )
 			$this->sqltype_typeno[strtolower($v)] = $k;
 	}
-	function createDatabase($dbname){}
+	function connect(){
+		if($this->isConnected)
+			return;
+		try {
+			$this->setPDO($this->dsn);
+			$this->isConnected = true;
+		}
+		catch ( \PDOException $exception ) {
+			if($this->createDb&&(!$this->unknownDatabaseCode||$this->unknownDatabaseCode==$exception->getCode())){
+				$p = strpos($this->dsn,'file=')+7;
+				$p2 = strpos($this->dsn,';',$p);
+				if($p2===false){
+					$dbfile = substr($this->dsn,$p);
+				}
+				else{
+					$dbfile = substr($this->dsn,$p,$p2-$p);
+				}
+				$this->createDatabase($dbfile);
+				$this->setPDO($this->dsn);
+				$this->isConnected = true;
+			}
+			else{
+				$this->isConnected = false;
+				throw $exception;
+			}
+		}
+	}
+	function createDatabase($dbfile){
+		if(!mkdir(dirname($dbfile),0777,true)){
+			throw new Exception('Unable to make '.dirname($dbfile).' directory');
+		}
+	}
 	function scanType( $value, $flagSpecial = FALSE ){
 		if ( $value === NULL ) return self::C_DATATYPE_INTEGER;
 		if ( $value === INF ) return self::C_DATATYPE_TEXT;
