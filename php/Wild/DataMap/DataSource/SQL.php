@@ -277,7 +277,7 @@ abstract class SQL extends DataSource{
 		$this->max = $max;
 		return $oldMax;
 	}
-	private function setPDO($dsn){
+	protected function setPDO($dsn){
 		$this->pdo = new \PDO($dsn,$this->connectUser,$this->connectPass);
 		$this->pdo->setAttribute( \PDO::ATTR_STRINGIFY_FETCHES, TRUE );
 		$this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
