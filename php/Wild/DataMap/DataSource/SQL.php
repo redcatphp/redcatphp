@@ -319,9 +319,9 @@ abstract class SQL extends DataSource{
 		$this->runQuery( $sql, $bindings );
 		return $this->resultArray;
 	}
-	function getAssocRow( $sql, $bindings = [] ){
-		$this->runQuery($sql,$bindings,['fetchStyle' => \PDO::FETCH_ASSOC]);
-		return $this->resultArray;
+	function getRow( $sql, $bindings = [] ){
+		$arr = $this->getAll( $sql, $bindings );
+		return array_shift( $arr );
 	}
 	function getCol( $sql, $bindings = [] ){
 		$rows = $this->getAll( $sql, $bindings );
@@ -341,10 +341,6 @@ abstract class SQL extends DataSource{
 		if ( count( $row1 ) === 0 ) return NULL;
 		$col1 = array_shift( $row1 );
 		return $col1;
-	}
-	function getRow( $sql, $bindings = [] ){
-		$arr = $this->getAll( $sql, $bindings );
-		return array_shift( $arr );
 	}
 	function execute( $sql, $bindings = [] ){
 		$this->runQuery( $sql, $bindings );
