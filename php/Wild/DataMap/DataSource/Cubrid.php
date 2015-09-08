@@ -167,7 +167,7 @@ class Cubrid extends SQL{
 		$r = ( ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription] : self::C_DATATYPE_SPECIFIED );
 		if ( $includeSpecials )
 			return $r;
-		if ( $r >= QueryWriter::C_DATATYPE_RANGE_SPECIAL )
+		if ( $r >= self::C_DATATYPE_RANGE_SPECIAL )
 			return self::C_DATATYPE_SPECIFIED;
 		return $r;
 	}
