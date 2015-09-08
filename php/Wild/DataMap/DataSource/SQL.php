@@ -362,14 +362,20 @@ abstract class SQL extends DataSource{
 	}
 	function beginTransaction(){
 		$this->connect();
+		if($this->loggingEnabled)
+			$this->logger->log('TRANSACTION BEGIN');
 		$this->pdo->beginTransaction();
 	}
 	function commit(){
 		$this->connect();
+		if($this->loggingEnabled)
+			$this->logger->log('TRANSACTION COMMIT');
 		$this->pdo->commit();
 	}
 	function rollback(){
 		$this->connect();
+		if($this->loggingEnabled)
+			$this->logger->log('TRANSACTION ROLLBACK');
 		$this->pdo->rollback();
 	}
 	function getDatabaseType(){
