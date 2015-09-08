@@ -66,7 +66,7 @@ abstract class SQL extends DataSource{
 			$options = isset($config['options'])?$config['options']:[];
 		
 		$frozen = isset($config[4])?$config[4]:(isset($config['frozen'])?$config['frozen']:null);
-		$createDb = isset($config[5])?$config[5]:(isset($config['createDb'])?$config['createDb']:null);
+		$createDb = isset($config[5])?$config[5]:(isset($config['createDb'])?$config['createDb']:true);
 
 		$tablePrefix = isset($config['tablePrefix'])?$config['tablePrefix']:null;
 		
