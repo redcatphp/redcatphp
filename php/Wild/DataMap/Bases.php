@@ -64,6 +64,7 @@ class Bases implements \ArrayAccess{
 	}
 	function offsetSet($k,$v){
 		$this->map[$k] = (array)$v;
+		$this->mapObjects[$k] = null;
 	}
 	function offsetExists($k){
 		return isset($this->map[$k]);
@@ -71,6 +72,8 @@ class Bases implements \ArrayAccess{
 	function offsetUnset($k){
 		if(isset($this->map[$k]))
 			unset($this->map[$k]);
+		if(isset($this->mapObjects[$k]))
+			unset($this->mapObjects[$k]);
 	}
 	private function loadDataSource(array $config){
 		$entityClassPrefix = $this->entityClassPrefix;
