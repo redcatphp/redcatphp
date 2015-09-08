@@ -22,6 +22,7 @@ abstract class SQL extends DataSource{
 	protected $unknownDatabaseCode;
 	protected $encoding = 'utf8';
 	protected $flagUseStringOnlyBinding = false;
+	protected $transactionCount = 0;
 	
 	//QueryWriter
 	const C_DATATYPE_RANGE_SPECIAL   = 80;
@@ -360,24 +361,42 @@ abstract class SQL extends DataSource{
 	function getLogger(){
 		return $this->logger;
 	}
+	
 	function beginTransaction(){
 		$this->connect();
+		if(!$this->transactionCount++){
+			if($this->loggingEnabled)
+				$this->logger->log('TRANSACTION BEGIN');
+			return $this->pdo->beginTransaction();
+		}
+		$this->exec('SAVEPOINT trans'.$this->transactionCount);
 		if($this->loggingEnabled)
-			$this->logger->log('TRANSACTION BEGIN');
-		$this->pdo->beginTransaction();
+			$this->logger->log('TRANSACTION SAVEPOINT trans'.$this->transactionCount);
+		return $this->transactionCount >= 0;
 	}
+
 	function commit(){
 		$this->connect();
-		if($this->loggingEnabled)
-			$this->logger->log('TRANSACTION COMMIT');
-		$this->pdo->commit();
+		if(!--$this->transactionCount){
+			if($this->loggingEnabled)
+				$this->logger->log('TRANSACTION COMMIT');
+			return $this->pdo->commit();
+		}
+		return $this->transactionCount >= 0;
 	}
+
 	function rollback(){
 		$this->connect();
-		if($this->loggingEnabled)
-			$this->logger->log('TRANSACTION ROLLBACK');
-		$this->pdo->rollback();
+		if(--$this->transactionCount){
+			if($this->loggingEnabled)
+				$this->logger->log('TRANSACTION ROLLBACK TO trans'.$this->transactionCount+1);
+			$this->exec('ROLLBACK TO trans'.$this->transactionCount+1);
+			return true;
+		}
+		$this->logger->log('TRANSACTION ROLLBACK');
+		return $this->pdo->rollback();
 	}
+
 	function getDatabaseType(){
 		$this->connect();
 		return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME );
