@@ -27,6 +27,8 @@ class Mysql extends SQL{
 	protected $sumCaster = '';
 	protected $concatenator = '0x1D';
 	
+	protected $fluidPDO;
+	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -113,11 +115,29 @@ class Mysql extends SQL{
 			$columns[$r['Field']] = $r['Type'];
 		return $columns;
 	}
+	
+	function getFluidPDO(){
+		if(!isset($this->fluidPDO)){
+			$this->fluidPDO = new \PDO($this->dsn,$this->connectUser,$this->connectPass);
+			$this->fluidPDO->setAttribute( \PDO::ATTR_STRINGIFY_FETCHES, TRUE );
+			$this->fluidPDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+			$this->fluidPDO->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
+			if(!empty($this->options)) foreach($this->options as $opt=>$attr) $this->fluidPDO->setAttribute($opt,$attr);
+		}
+		return $this->fluidPDO;
+	}
+	function executeFluid($sql,$bindings=[]){
+		$pdo = $this->pdo;
+		$this->pdo = $this->getFluidPDO();
+		$this->execute($sql,$bindings);
+		$this->pdo = $pdo;
+	}
+	
 	function createTableQuery($table,$pk='id'){
 		$table = $this->escTable($table);
 		$pk = $this->esc($pk);
 		$encoding = $this->getEncoding();
-		$this->execute('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( '.$pk.' )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
+		$this->executeFluid('CREATE TABLE '.$table.' ('.$pk.' INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY ( '.$pk.' )) ENGINE = InnoDB DEFAULT CHARSET='.$encoding.' COLLATE='.$encoding.'_unicode_ci ');
 	}
 	function addColumnQuery($type,$column,$field){
 		$table  = $type;
@@ -125,8 +145,8 @@ class Mysql extends SQL{
 		$table  = $this->escTable($table);
 		$column = $this->esc($column);
 		if(is_integer($type))
-			$type = ( isset( $this->typeno_sqltype[$type] ) ) ? $this->typeno_sqltype[$type] : '';
-		$this->execute('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
+			$type = isset($this->typeno_sqltype[$type])?$this->typeno_sqltype[$type]:'';
+		$this->executeFluid('ALTER TABLE '.$table.' ADD '.$column.' '.$type);
 	}
 	function changeColumnQuery($type,$property,$dataType ){
 		$table   = $this->escTable( $type );
@@ -136,7 +156,7 @@ class Mysql extends SQL{
 				return false;
 			$dataType = $this->typeno_sqltype[$dataType];
 		}
-		$this->execute('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$dataType);
+		$this->executeFluid('ALTER TABLE '.$table.' CHANGE '.$column.' '.$column.' '.$dataType);
 		return true;
 	}
 	
@@ -168,7 +188,7 @@ class Mysql extends SQL{
 		$fkName = 'fk_'.$tableNoQ.'_'.$fieldNoQ;
 		$cName = 'c_'.$fkName;
 		try {
-			$this->execute( "
+			$this->executeFluid( "
 				ALTER TABLE {$table}
 				ADD CONSTRAINT $cName
 				FOREIGN KEY $fkName ( {$fieldNoQ} ) REFERENCES {$targetTableNoQ}
@@ -239,14 +259,14 @@ class Mysql extends SQL{
 		$name = 'uq_' . sha1( implode( ',', $columns ) );
 		$indexMap = $this->getRow('SHOW indexes FROM '.$table.' WHERE Key_name = ?',[$name]);
 		if(is_null($indexMap))
-			$this->execute("ALTER TABLE $table ADD UNIQUE INDEX `$name` (" . implode( ',', $columns ) . ")");
+			$this->executeFluid("ALTER TABLE $table ADD UNIQUE INDEX `$name` (" . implode( ',', $columns ) . ")");
 	}
 	function addIndex( $type, $name, $property ){
 		try {
 			$table  = $this->escTable( $type );
 			$name   = preg_replace( '/\W/', '', $name );
 			$column = $this->esc( $property );
-			$this->execute("CREATE INDEX $name ON $table ($column) ");
+			$this->executeFluid("CREATE INDEX $name ON $table ($column) ");
 			return true;
 		}
 		catch( \PDOException $e ){
