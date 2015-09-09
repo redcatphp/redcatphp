@@ -9,9 +9,8 @@
  * @website http://wildsurikat.com
  */
 namespace Wild\Identify;
-use Wild\DataMap\R;
-use Mail\PHPMailer;
-use Exception;
+use Wild\DataMap\B;
+use Wild\DataMap\DataSource;
 if (version_compare(phpversion(), '5.5.0', '<')){
 	require_once __DIR__.'/password-compat.inc.php';
 }
@@ -116,7 +115,8 @@ class Auth{
 		$mailUsername=null,
 		$mailPassword= null,
 		$mailPort=25,
-		$mailSecure='tls'
+		$mailSecure='tls',
+		DataSource $db = null
 	){
 		$this->rootLogin = $rootLogin;
 		$this->rootPassword = $rootPassword;
@@ -137,7 +137,9 @@ class Auth{
 		if(!$Session)
 			$Session = new Session();
 		$this->Session = $Session;
-		//$this->db = 
+		if(!isset($db)&&class_exists('Wild\DataMap\B')){
+			$this->db = B::getDatabase();
+		}
 		$this->siteUrl = $this->getBaseHref();
 		$this->siteUrl = rtrim($this->siteUrl,'/').'/';
 	}
@@ -191,20 +193,21 @@ class Auth{
 			}
 		}
 		if($this->db){
-			$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$this->rootLogin]);
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$this->rootLogin]);
 			if(!$id){
-				$id = $this->db
-					->newOne($this->tableUsers,[
-						'login'=>$this->rootLogin,
-						'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
-						'email'=>isset($this->rootPasswordEmail)?$this->rootPasswordEmail:null,
-						'active'=>1,
-						'right'=>static::ROLE_ADMIN,
-						'type'=>'root'
-					])
-					->store()
-				;
-				if(!$id){
+				try{
+					$id = $this->db
+						->create($this->tableUsers,[
+							'login'=>$this->rootLogin,
+							'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
+							'email'=>isset($this->rootPasswordEmail)?$this->rootPasswordEmail:null,
+							'active'=>1,
+							'right'=>static::ROLE_ADMIN,
+							'type'=>'root'
+						])
+					;
+				}
+				catch(\Exception $e){
 					return self::ERROR_SYSTEM_ERROR;
 				}
 			}
@@ -233,8 +236,10 @@ class Auth{
 		if($this->db){
 			$user = $this->db->findOne($this->tableUsers,' WHERE email = ? AND type = ?',[$email,'persona']);
 			if(!$user){
-				$user = $this->db->newOne($this->tableUsers,$userDefault);
-				if(!$user->store()){
+				try{
+					$user = $this->db->create($this->tableUsers,$userDefault);
+				}
+				catch(\Exception $e){
 					return self::ERROR_SYSTEM_ERROR;
 				}
 			}
@@ -253,7 +258,7 @@ class Auth{
 		if($login==$this->rootLogin)
 			return $this->loginRoot($password,$lifetime);
 		if(!ctype_alnum($login)&&filter_var($login,FILTER_VALIDATE_EMAIL)){
-			$login = $this->db->getCell('SELECT login FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$login]);
+			$login = $this->db->getCell('SELECT login FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$login]);
 		}
 		if($e=($this->validateLogin($login)||$this->validatePassword($password))){
 			$this->Session->addAttempt();
@@ -273,9 +278,12 @@ class Auth{
 			$options = ['salt' => $user['salt'], 'cost' => $this->cost];
 			if(password_needs_rehash($user['password'], $this->algo, $options)){
 				$password = password_hash($password, $this->algo, $options);
-				$row = $this->db->load($this->tableUsers,(int)$user['id']);
+				$row = $this->db->read($this->tableUsers,(int)$user['id']);
 				$row->password = $password;
-				if(!$row->store()){
+				try{
+					$this->db->put($row);
+				}
+				catch(\Exception $e){
 					return self::ERROR_SYSTEM_ERROR;
 				}
 			}
@@ -333,9 +341,9 @@ class Auth{
 			$this->deleteRequest($getRequest['id']);
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		$row = $this->db->load($this->tableUsers,(int)$getRequest[$this->tableUsers.'_id']);
+		$row = $this->db->read($this->tableUsers,(int)$getRequest[$this->tableUsers.'_id']);
 		$row->active = 1;
-		$row->store();
+		$this->db->put($row);
 		$this->deleteRequest($getRequest['id']);
 		return self::OK_ACCOUNT_ACTIVATED;
 	}
@@ -345,7 +353,7 @@ class Auth{
 		}
 		if($e=$this->validateEmail($email))
 			return $e;
-		$id = $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
+		$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
 		if(!$id){
 			$this->Session->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
@@ -366,7 +374,7 @@ class Auth{
 		return password_hash($string, $this->algo, ['salt' => $salt, 'cost' => $this->cost]);
 	}
 	public function getUID($login){
-		return $this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE login = ?',[$login]);
+		return $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$login]);
 	}
 	private function addSession($user,$lifetime=0){
 		$this->Session->setCookieLifetime($lifetime);
@@ -382,14 +390,16 @@ class Auth{
 		return true;
 	}
 	private function isEmailTaken($email){
-		return !!$this->db->getCell('SELECT id FROM '.$this->db->safeTable($this->tableUsers).' WHERE email = ?',[$email]);
+		return !!$this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
 	}
 	private function isLoginTaken($login){
 		return !!$this->getUID($login);
 	}
 	private function addUser($email, $password, $login=null, $name=null){
-		$row = $this->db->create($this->tableUsers);
-		if(!$row->store()){
+		try{
+			$row = $this->db->create($this->tableUsers,[]);
+		}
+		catch(\Exception $e){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		$uid = $row->id;
@@ -410,14 +420,17 @@ class Auth{
 		$row->salt = $salt;
 		$row->right = self::ROLE_MEMBER;
 		$row->type = 'local';
-		if(!$row->store()){
-			$row->trash();
+		try{
+			$this->db->create($row);
+		}
+		catch(\Exception $e){
+			$this->db->delete($row);
 			return self::ERROR_SYSTEM_ERROR;
 		}
 	}
 
 	public function getUser($uid){
-		return $this->db->load($this->tableUsers,(int)$uid);
+		return $this->db->read($this->tableUsers,(int)$uid);
 	}
 
 	public function deleteUser($uid, $password){
@@ -433,7 +446,7 @@ class Auth{
 			$this->Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
-		$row = $this->db->load($this->tableUsers,(int)$uid);
+		$row = $this->db->read($this->tableUsers,(int)$uid);
 		if(!$row->trash()){
 			return self::ERROR_SYSTEM_ERROR;
 		}
@@ -459,8 +472,11 @@ class Auth{
 		}
 		$key = (new RandomLib\Factory())->getMediumStrengthGenerator()->generate(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$user['xown'.ucfirst($this->tableRequests)][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
-		if(!$user->store()){
+		$user['_many_'.ucfirst($this->tableRequests).'_x_'][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
+		try{
+			$this->db->put($user);
+		}
+		catch(\Exception $e){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		if(!$this->sendMail($email, $type, $key, $user['name'])){
@@ -493,7 +509,7 @@ class Auth{
 		];
 	}
 	private function deleteRequest($id){
-		return $this->db->exec('DELETE FROM '.$this->db->safeTable($this->tableRequests).' WHERE id = ?',[$id]);
+		return $this->db->exec('DELETE FROM '.$this->db->escTable($this->tableRequests).' WHERE id = ?',[$id]);
 	}
 	public function validateLogin($login){
 		if (strlen($login) < 1)
@@ -542,9 +558,12 @@ class Auth{
 		}
 		if(!($password&&password_verify($password, $user['password']))){
 			$password = $this->getHash($password, $user['salt']);
-			$row = $this->db->load($this->tableUsers,$data[$this->tableUsers.'_id']);
+			$row = $this->db->read($this->tableUsers,$data[$this->tableUsers.'_id']);
 			$row->password = $password;
-			if (!$row->store()){
+			try{
+				$this->db->put($row);
+			}
+			catch(\Exception $e){
 				return self::ERROR_SYSTEM_ERROR;
 			}
 		}
@@ -596,14 +615,14 @@ class Auth{
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
 		if($currpass != $newpass){			
-			$row = $this->db->load($this->tableUsers,(int)$uid);
+			$row = $this->db->read($this->tableUsers,(int)$uid);
 			$row->password = $newpass;
-			$row->store();
+			$this->db->put($row);
 		}
 		return self::OK_PASSWORD_CHANGED;
 	}
 	public function getEmail($uid){
-		$row = $this->db->load($this->tableUsers,(int)$uid);
+		$row = $this->db->read($this->tableUsers,(int)$uid);
 		if (!$row->id){
 			return false;
 		}
@@ -630,9 +649,12 @@ class Auth{
 			$this->Session->addAttempt();
 			return self::ERROR_NEWEMAIL_MATCH;
 		}
-		$row = $this->db->load($this->tableUsers,(int)$uid);
+		$row = $this->db->read($this->tableUsers,(int)$uid);
 		$row->email = $email;
-		if(!$row->store()){
+		try{
+			$this->db->put($row);
+		}
+		catch(\Exception $e){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 		return self::OK_EMAIL_CHANGED;
