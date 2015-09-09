@@ -1,8 +1,9 @@
-<?php namespace Wild\DataMap\Validation;
+<?php
+namespace Wild\DataMap\Validation;
 class Ruler {
 	// static function __callStatic($func,array $args=array()){return true;} //court-circuit
-	static function unique($v){
-		return $this->model->id||!R::findOne($this->model->tableName,' WHERE '.$this->col.'=?',[$v]);
+	static function unique($v,$db){
+		return $this->model->id||!$db->getRow($this->model->tableName,' WHERE '.$this->col.'=?',[$v]);
 	}
 	static function required($v){
 		return !empty($v);
