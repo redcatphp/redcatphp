@@ -1000,6 +1000,58 @@ abstract class SQL extends DataSource{
 		return $table;
 	}
 	
+	function findRow($type,$snip,$bindings=[]){
+		if(!$this->tableExists($type))
+			return;
+		$table = $this->escTable($type);
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$sqlFilterStr .= ',';
+		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} {$snip} LIMIT 1";
+		return $this->getRow($sql,$bindings);
+	}
+	function findOne($type,$snip,$bindings=[]){
+		if(!$this->tableExists($type))
+			return;
+
+		$obj = $this->entityFactory($type);
+		$this->trigger($type,'beforeRead',$obj);
+		
+		$row = $this->findRow($type,$sql,$bindings);
+		
+		if($row){
+			foreach($row as $k=>$v)
+				$obj->$k = $v;
+		}
+		$this->trigger($type,'afterRead',$obj);
+		return $obj;
+	}
+	
+	function findRows($type,$snip,$bindings=[]){
+		if(!$this->tableExists($type))
+			return;
+		$table = $this->escTable($type);
+		if($sqlFilterStr = $this->getReadSnippet($type))
+			$sqlFilterStr .= ',';
+		$sql = "SELECT {$table}.* {$sqlFilterStr} FROM {$table} {$snip}";
+		return $this->getAll($sql,$bindings);
+	}
+	function findAll($type,$snip,$bindings=[]){
+		if(!$this->tableExists($type))
+			return;
+		$rows = $this->findRows($type,$sql,$bindings);
+		$all = [];
+		foreach($rows as $row){
+			$obj = $this->entityFactory($type);
+			$this->trigger($type,'beforeRead',$obj);
+			foreach($row as $k=>$v){
+				$obj->$k = $v;
+			}
+			$this->trigger($type,'afterRead',$obj);
+			$all[] = $obj;
+		}
+		return $all;
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
