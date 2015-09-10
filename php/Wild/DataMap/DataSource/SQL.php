@@ -1016,7 +1016,8 @@ abstract class SQL extends DataSource{
 		$obj = $this->entityFactory($type);
 		$this->trigger($type,'beforeRead',$obj);
 		
-		$row = $this->findRow($type,$sql,$bindings);
+		$snip = 'WHERE '.$snip;
+		$row = $this->findRow($type,$snip,$bindings);
 		
 		if($row){
 			foreach($row as $k=>$v)
@@ -1038,7 +1039,7 @@ abstract class SQL extends DataSource{
 	function findAll($type,$snip,$bindings=[]){
 		if(!$this->tableExists($type))
 			return;
-		$rows = $this->findRows($type,$sql,$bindings);
+		$rows = $this->findRows($type,$snip,$bindings);
 		$all = [];
 		foreach($rows as $row){
 			$obj = $this->entityFactory($type);
@@ -1050,6 +1051,9 @@ abstract class SQL extends DataSource{
 			$all[] = $obj;
 		}
 		return $all;
+	}
+	function find($type,$snip,$bindings=[]){
+		return $this->findAll($type,'WHERE '.$snip,$bindings);
 	}
 	
 	abstract function scanType($value,$flagSpecial=false);
