@@ -362,7 +362,7 @@ abstract class SQL extends DataSource{
 		return $this->logger;
 	}
 	
-	function beginTransaction(){
+	function begin(){
 		$this->connect();
 		if(!$this->transactionCount++){
 			if($this->loggingEnabled)
