@@ -828,8 +828,8 @@ abstract class SQL extends DataSource{
 		$pk = $table->getPrimaryKey();
 		$tb = $this->findEntityTable($obj);
 		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $this->esc($type.'_'.$pk);
-		$colmun2 = $this->esc($tb.'_'.$pko);
+		$column1 = $this->esc($type.'_'.$pk);
+		$column2 = $this->esc($tb.'_'.$pko);
 		if($via){
 			$tbj = $via;
 		}
@@ -842,8 +842,8 @@ abstract class SQL extends DataSource{
 		$tbj = $this->escTable($tbj);
 		$pke = $this->esc($pk);
 		$pkoe = $this->esc($pko);
-		$table->join($tbj.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke);
-		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2
+		$table->join($tbj.' ON '.$tbj.'.'.$column1.' = '.$typeE.'.'.$pke);
+		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$column2
 					.' AND '.$tb.'.'.$pkoe.' =  ?',[$obj->$pko]);
 		$table->select($typeE.'.*');
 		if($sqlFilterStr = $this->getReadSnippet($type))
@@ -864,14 +864,14 @@ abstract class SQL extends DataSource{
 		$typeE = $this->escTable($type);
 		$pk = $table->getPrimaryKey();
 		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
-		$colmun2 = $this->esc($tb.'_'.$pko);
+		$column1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
+		$column2 = $this->esc($tb.'_'.$pko);
 		$tb = $this->escTable($tb);
 		$tbj = $this->escTable($tbj);
 		$pke = $this->esc($pk);
 		$pkoe = $this->esc($pko);
-		$table->join($typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke);
-		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2
+		$table->join($typeE.' ON '.$tbj.'.'.$column1.' = '.$typeE.'.'.$pke);
+		$table->join($tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$column2
 					.' AND '.$tb.'.'.$pkoe.' =  ?',[$obj->$pko]);
 		$table->select($tbj.'.*');
 		return $table;
@@ -909,8 +909,8 @@ abstract class SQL extends DataSource{
 		$typeE = $this->escTable($type);
 		$pk = $this[$tbj]->getPrimaryKey();
 		$pko = $this[$tb]->getPrimaryKey();
-		$colmun1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
-		$colmun2 = $this->esc($tb.'_'.$pko);
+		$column1 = $viaFk?$this->esc($viaFk):$this->esc($type.'_'.$pk);
+		$column2 = $this->esc($tb.'_'.$pko);
 		$tb = $this->escTable($tb);
 		$tbj = $this->escTable($tbj);
 		$pke = $this->esc($pk);
@@ -923,8 +923,8 @@ abstract class SQL extends DataSource{
 		}
 		$this->execute('DELETE FROM '.$tbj.' WHERE '.$tbj.'.'.$pke.' IN(
 			SELECT '.$tbj.'.'.$pke.' FROM '.$tbj.'
-			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$colmun2.'
-			JOIN '.$typeE.' ON '.$tbj.'.'.$colmun1.' = '.$typeE.'.'.$pke.'
+			JOIN '.$tb.' ON '.$tb.'.'.$pkoe.' = '.$tbj.'.'.$column2.'
+			JOIN '.$typeE.' ON '.$tbj.'.'.$column1.' = '.$typeE.'.'.$pke.'
 			AND '.$tb.'.'.$pkoe.' = ? '.$notIn.'
 		)',$params);
 	}
