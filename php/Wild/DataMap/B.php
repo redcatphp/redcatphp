@@ -84,11 +84,11 @@ class B{
 		return self::$currentDataSource[$type];
 	}
 	
-	static function on($type,$event,$call=null){
-		return self::$currentDataSource[$type]->on($event,$call);
+	static function on($type,$event,$call=null,$index=0,$prepend=false){
+		return self::$currentDataSource[$type]->on($event,$call,$index,$prepend);
 	}
-	static function off($type,$event,$call=null){
-		return self::$currentDataSource[$type]->off($event,$call);
+	static function off($type,$event,$call=null,$index=0){
+		return self::$currentDataSource[$type]->off($event,$call,$index);
 	}
 	
 	static function many2one($obj,$type){
