@@ -188,8 +188,11 @@ abstract class DataTable implements \ArrayAccess,\Iterator,\Countable{
 				}
 			}
 		}
-        elseif(isset($this->events[$event][$index])&&false!==$i=array_search($call,$this->events[$event][$index],true)){
-			unset($this->events[$event][$index][$i]);
+        elseif(isset($this->events[$event][$index])){
+			if(!$call)
+				unset($this->events[$event][$index]);
+			elseif(false!==$i=array_search($call,$this->events[$event][$index],true))
+				unset($this->events[$event][$index][$i]);
 		}
 		return $this;
     }
