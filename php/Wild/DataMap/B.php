@@ -4,7 +4,7 @@ class B{
 	protected static $bases;
 	protected static $currentDataSource;
 	static $useKineticDi = true;
-	static function _initialiaze(){
+	static function _init(){
 		if(!isset(self::$bases)){
 			if(class_exists('Wild\Kinetic\Di')&&self::$useKineticDi){
 				self::$bases = \Wild\Kinetic\Di::getInstance()->create('Wild\DataMap\Bases');
@@ -133,4 +133,4 @@ class B{
 		return call_user_func_array([self::$currentDataSource,'debug'],func_get_args());
 	}
 }
-B::_initialiaze();
+B::_init();
