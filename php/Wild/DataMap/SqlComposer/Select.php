@@ -252,8 +252,16 @@ class Select extends Where {
 			$from .= ',';
 		}
 		$from = rtrim($from,',');
-		foreach($joins as $j)
-			$from .= ' '.$j;
+		foreach($joins as $k=>$j){
+			if(is_array($j)){
+				foreach($j as $jj){
+					$from .= ' '.$jj;
+				}
+			}
+			else{
+				$from .= ' '.$j;
+			}
+		}
 		
 		$from = "FROM ".$from;
 		$where = $this->_render_where($removeUnbinded);
