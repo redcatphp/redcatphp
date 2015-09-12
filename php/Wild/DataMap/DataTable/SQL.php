@@ -600,4 +600,11 @@ class SQL extends DataTable{
 	function getOffset(){
 		return $this->select->getOffset();
 	}
+	
+	function getQuery(){
+		return $this->select->getQuery();
+	}
+	function getParams(){
+		return $this->select->getParams();
+	}
 }
