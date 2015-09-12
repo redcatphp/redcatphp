@@ -99,7 +99,7 @@ class SQL extends DataTable{
 			->getClone()
 			->unOrderBy()
 			->unSelect()
-			->select('id')
+			->select($this->primaryKey)
 		;
 		$select
 			->select('COUNT(*)')
@@ -157,6 +157,7 @@ class SQL extends DataTable{
 		return $this;
 	}
 	function processRelational($select,$colAlias=null,$autoSelectId=false){
+		$pk = $this->primaryKey;
 		$sql = [];
 		$type = '';
 		$typeParent = $this->name;
