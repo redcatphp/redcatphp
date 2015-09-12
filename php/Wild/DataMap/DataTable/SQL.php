@@ -157,7 +157,6 @@ class SQL extends DataTable{
 		return $this;
 	}
 	function processRelational($select,$colAlias=null,$autoSelectId=false){
-		$pk = $this->primaryKey;
 		$sql = [];
 		$type = '';
 		$typeParent = $this->name;
@@ -169,12 +168,14 @@ class SQL extends DataTable{
 		$relation = null;
 		foreach($selection as $i=>$token){
 			if(in_array($token,['<>','<','>','.'])){
+				$pkP = $this->dataSource[$typeParent]->primaryKey;
 				if(!isset($selection[$i+1]))
 					throw new Exception('Unexpected end of relational declaration expecting table or column name after "'.$token.'" in '.$select);				
 				switch($token){
 					case '<>':
 						$type = $selection[$i+1];
 						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						$pkT = $this->dataSource[$type]->primaryKey;
 						if(substr($type,-1)=='2'){
 							if($type==$alias)
 								$alias = substr($alias,0,-1);
@@ -196,8 +197,8 @@ class SQL extends DataTable{
 							$sql[] = [$impt];
 							$sql[] = [
 								$joint,
-								"{$q}{$prefix}$alias{$q}.{$q}id{$q}={$q}{$prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_id{$q}",
-								"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_id{$q}"
+								"{$q}{$prefix}$alias{$q}.{$q}{$pkT}{$q}={$q}{$prefix}$imp{$q}.{$q}{$type}".(!$two&&in_array($type,$shareds)?'2':'')."_{$pkT}{$q}",
+								"{$q}$aliasParent{$q}.{$q}{$pkP}{$q}={$q}{$prefix}$imp{$q}.{$q}{$typeParent}".($two?'2':'')."_{$pkP}{$q}"
 							];
 							if(!$two)
 								$shareds[] = $type;
@@ -209,11 +210,12 @@ class SQL extends DataTable{
 					break;
 					case '>':
 						list($type,$alias) = self::specialTypeAliasExtract($type,$superalias);
+						$pkT = $this->dataSource[$type]->primaryKey;
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
-						if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->columnExists($type,$typeParent.'_id'))){
-							$sql[] = [$joint,"{$q}$aliasParent{$q}.{$q}id{$q}={$q}{$prefix}$alias{$q}.{$q}{$typeParent}_id{$q}"];
+						if($exist=($this->dataSource->tableExists($type)&&$this->dataSource->columnExists($type,$typeParent.'_'.$pkP))){
+							$sql[] = [$joint,"{$q}$aliasParent{$q}.{$q}{$pkP}{$q}={$q}{$prefix}$alias{$q}.{$q}{$typeParent}_{$pkP}{$q}"];
 						}
 						$typeParent = $type;
 						$aliasParent = $prefix.$alias;
@@ -230,11 +232,12 @@ class SQL extends DataTable{
 						}
 						else
 							$two = false;
+						$pkT = $this->dataSource[$type]->primaryKey;
 						if($superalias)
 							$alias = $superalias.'__'.$alias;
 						$joint = $type!=$alias?"{$q}{$prefix}$type{$q} as {$q}{$prefix}$alias{$q}":$q.$prefix.$alias.$q;
-						if($exist=($this->dataSource->tableExists($typeParent)&&$this->dataSource->columnExists($typeParent,$type.'_id'))){
-							$sql[] = [$joint,"{$q}{$prefix}$alias{$q}.{$q}id{$q}={$q}{$prefix}$typeParent{$q}.{$q}{$type}_id{$q}"];
+						if($exist=($this->dataSource->tableExists($typeParent)&&$this->dataSource->columnExists($typeParent,$type.'_'.$pkT))){
+							$sql[] = [$joint,"{$q}{$prefix}$alias{$q}.{$q}{$pkT}{$q}={$q}{$prefix}$typeParent{$q}.{$q}{$type}_{$pkT}{$q}"];
 						}
 						$typeParent = $type;
 						$type = '';
@@ -278,7 +281,7 @@ class SQL extends DataTable{
 		if($colAlias)
 			$colAlias = ' AS '.$q.$colAlias.$q;
 		if($autoSelectId)
-			$idAlias = ' AS '.$q.($superalias?$superalias:$alias).$relation.'id'.$q;
+			$idAlias = ' AS '.$q.($superalias?$superalias:$alias).$relation.$pkT.$q;
 		$Qt2 = $Qt->getClone();
 		if($exist){
 			switch($relation){
@@ -286,7 +289,7 @@ class SQL extends DataTable{
 					$Qt->select($this->dataSource->getReadSnippetCol($table,$col,$q.$prefix.$alias.$q.'.'.$q.$col.$q));
 					$this->select('('.$Qt.') '.$colAlias);
 					if($autoSelectId){
-						$Qt2->select($q.$prefix.$alias.$q.'.'.$q.'id'.$q);
+						$Qt2->select($q.$prefix.$alias.$q.'.'.$q.$pkT.$q);
 						$this->select('('.$Qt2.') '.$idAlias);
 					}
 				break;
@@ -294,7 +297,7 @@ class SQL extends DataTable{
 					$Qt->select("{$agg}(COALESCE(".$this->dataSource->getReadSnippetCol($table,$col,"{$q}{$prefix}{$alias}{$q}.{$q}{$col}{$q}")."{$aggc},''{$aggc}) {$sep} {$cc})");
 					$this->select('('.$Qt.') '.$colAlias);
 					if($autoSelectId){
-						$Qt2->select("{$agg}(COALESCE({$q}{$prefix}{$alias}{$q}.{$q}id{$q}{$aggc},''{$aggc}) {$sep} {$cc})");
+						$Qt2->select("{$agg}(COALESCE({$q}{$prefix}{$alias}{$q}.{$q}{$pkT}{$q}{$aggc},''{$aggc}) {$sep} {$cc})");
 						$this->select('('.$Qt2.') '.$idAlias);
 					}
 				break;
@@ -302,7 +305,7 @@ class SQL extends DataTable{
 					$Qt->select("{$agg}(".$this->dataSource->getReadSnippetCol($table,$col,"{$q}{$prefix}{$alias}{$q}.{$q}{$col}{$q}")."{$aggc} {$sep} {$cc})");
 					$this->select('('.$Qt.') '.$colAlias);
 					if($autoSelectId){
-						$Qt2->select("{$agg}({$q}{$prefix}{$alias}{$q}.{$q}id{$q}{$aggc} {$sep} {$cc})");
+						$Qt2->select("{$agg}({$q}{$prefix}{$alias}{$q}.{$q}{$pkT}{$q}{$aggc} {$sep} {$cc})");
 						$this->select('('.$Qt2.') '.$idAlias);
 					}
 				break;
