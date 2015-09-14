@@ -3,7 +3,7 @@
  * Templix - HTML5 based Template Engine with Recursive Extends and CSS3 Selectors to work on DOM like with Jquery
  *
  * @package Templix
- * @version 1.0
+ * @version 1.3
  * @link http://github.com/surikat/Templix/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

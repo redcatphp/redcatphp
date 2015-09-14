@@ -3,7 +3,7 @@
  * Translator - gettext wrapper
  *
  * @package Localize
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Localize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

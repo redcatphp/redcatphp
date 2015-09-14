@@ -3,7 +3,7 @@
  * Auth - Complete Authentication System
  *
  * @package Identify
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Identify/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
