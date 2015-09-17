@@ -10,7 +10,7 @@ namespace Wild\Stylize;
  * @website http://wildsurikat.com
  */
 class Server{
-	protected $cacheDir = '.tmp/stylish/';
+	protected $cacheDir = '.tmp/stylize/';
 	protected $enableCache;
 	protected $compiler;
 	function __construct($from=null,$cache=true){
