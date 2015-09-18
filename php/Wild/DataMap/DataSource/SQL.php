@@ -1056,6 +1056,14 @@ abstract class SQL extends DataSource{
 		return $this->findAll($type,'WHERE '.$snip,$bindings);
 	}
 	
+	function execMultiline($sql,$bindings=[]){
+		$this->connect();
+		$this->pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+		$r = $this->execute($sql, $bindings);
+		$this->pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+		return $r;
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
