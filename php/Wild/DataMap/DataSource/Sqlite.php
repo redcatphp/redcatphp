@@ -34,7 +34,7 @@ class Sqlite extends SQL{
 		}
 		catch ( \PDOException $exception ) {
 			if($this->createDb&&(!$this->unknownDatabaseCode||$this->unknownDatabaseCode==$exception->getCode())){
-				$p = strpos($this->dsn,'file=')+7;
+				$p = strpos($this->dsn,'file=')+5;
 				$p2 = strpos($this->dsn,';',$p);
 				if($p2===false){
 					$dbfile = substr($this->dsn,$p);
@@ -42,6 +42,7 @@ class Sqlite extends SQL{
 				else{
 					$dbfile = substr($this->dsn,$p,$p2-$p);
 				}
+				debugs($this->dsn,$dbfile);
 				$this->createDatabase($dbfile);
 				$this->setPDO($this->dsn);
 				$this->isConnected = true;
