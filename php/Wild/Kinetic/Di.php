@@ -322,10 +322,12 @@ class Di implements \ArrayAccess{
 
 	private function getParams(\ReflectionMethod $method, array $rule) {
 		$paramInfo = [];
-		foreach ($method->getParameters() as $param) {
+		foreach ($method->getParameters() as $param){
 			try{
 				$classObject = $param->getClass();
-				$class = $classObject&&$classObject->isInstantiable() ? $classObject->name : null;
+				$class = $classObject ? $classObject->name : null;
+				if($class&&!array_key_exists($class, $rule['substitutions'])&&!$classObject->isInstantiable())
+					$class = null;
 			}
 			catch(\ReflectionException $e){
 				if($param->allowsNull()) $class = null;
