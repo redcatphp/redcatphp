@@ -330,6 +330,13 @@ class SQL extends DataTable{
 		return $this->hasSelectRelational;
 	}
 	
+	function getCol(){
+		return $this->dataSource->getCol($this->getQuery(),$this->getParams());
+	}
+	function getCell(){
+		return $this->dataSource->getCell($this->getQuery(),$this->getParams());
+	}
+	
 	function tableJoin($table, $join, array $params = null){
 		return $this->select->tableJoin($table, $join, $params);
 	}
