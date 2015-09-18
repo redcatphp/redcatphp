@@ -464,7 +464,7 @@ abstract class DataSource implements \ArrayAccess{
 		}
 		return $this[$type]->offsetUnset($id);
 	}
-	function put(){
+	function put($mixed){
 		if(func_num_args()<2){
 			$obj = is_array($mixed)?$this->arrayToEntity($mixed):$mixed;
 			$type = $this->findEntityTable($obj);
