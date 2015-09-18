@@ -193,7 +193,10 @@ class Auth{
 			}
 		}
 		if($this->db){
-			$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$this->rootLogin]);
+			if($this->db[$this->tableUsers]->exists())
+				$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$this->rootLogin]);
+			else
+				$id = null;
 			if(!$id){
 				try{
 					$id = $this->db
@@ -258,7 +261,10 @@ class Auth{
 		if($login==$this->rootLogin)
 			return $this->loginRoot($password,$lifetime);
 		if(!ctype_alnum($login)&&filter_var($login,FILTER_VALIDATE_EMAIL)){
-			$login = $this->db->getCell('SELECT login FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$login]);
+			if($this->db[$this->tableUsers]->exists())
+				$login = $this->db->getCell('SELECT login FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$login]);
+			else
+				$login = null;
 		}
 		if($e=($this->validateLogin($login)||$this->validatePassword($password))){
 			$this->Session->addAttempt();
@@ -353,7 +359,10 @@ class Auth{
 		}
 		if($e=$this->validateEmail($email))
 			return $e;
-		$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
+		if($this->db[$this->tableUsers]->exists())
+			$id = $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
+		else
+			$id = null;
 		if(!$id){
 			$this->Session->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
@@ -374,7 +383,8 @@ class Auth{
 		return password_hash($string, $this->algo, ['salt' => $salt, 'cost' => $this->cost]);
 	}
 	public function getUID($login){
-		return $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$login]);
+		if($this->db[$this->tableUsers]->exists())
+			return $this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE login = ?',[$login]);
 	}
 	private function addSession($user,$lifetime=0){
 		$this->Session->setCookieLifetime($lifetime);
@@ -390,7 +400,8 @@ class Auth{
 		return true;
 	}
 	private function isEmailTaken($email){
-		return !!$this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
+		if($this->db[$this->tableUsers]->exists())
+			return !!$this->db->getCell('SELECT id FROM '.$this->db->escTable($this->tableUsers).' WHERE email = ?',[$email]);
 	}
 	private function isLoginTaken($login){
 		return !!$this->getUID($login);
