@@ -1024,7 +1024,8 @@ abstract class SQL extends DataSource{
 				$obj->$k = $v;
 		}
 		$this->trigger($type,'afterRead',$obj);
-		return $obj;
+		if($row)
+			return $obj;
 	}
 	
 	function findRows($type,$snip,$bindings=[]){
@@ -1080,6 +1081,7 @@ abstract class SQL extends DataSource{
 			if($row = $this->findOne($t,$query,$bind))
 				break;
 		}
+		debug($query);
 		if(!$row){
 			$row = $this->arrayToEntity($params,array_pop($type));
 		}
