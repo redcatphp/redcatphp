@@ -53,7 +53,11 @@ class Sqlite extends SQL{
 		}
 	}
 	function createDatabase($dbfile){
-		if(!mkdir(dirname($dbfile),0777,true)){
+		$dir = dirname($dbfile);
+		if(is_dir($dir)){
+			throw new Exception('Unable to write '.$dbfile.' db file');
+		}
+		elseif(!mkdir($dir,0777,true)){
 			throw new Exception('Unable to make '.dirname($dbfile).' directory');
 		}
 	}
