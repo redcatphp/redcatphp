@@ -33,7 +33,6 @@ class Session{
 		$saveRoot = null,
 		SessionHandlerInterface $sessionHandler = null,
 		$server=null
-		
 	){
 		$this->name = $name;
 		$this->saveRoot = rtrim($saveRoot,'/').'/';
