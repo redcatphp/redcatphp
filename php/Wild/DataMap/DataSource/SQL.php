@@ -1081,7 +1081,6 @@ abstract class SQL extends DataSource{
 			if($row = $this->findOne($t,$query,$bind))
 				break;
 		}
-		debug($query);
 		if(!$row){
 			$row = $this->arrayToEntity($params,array_pop($type));
 		}
