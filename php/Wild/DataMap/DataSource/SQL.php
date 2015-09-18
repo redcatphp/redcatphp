@@ -1064,6 +1064,28 @@ abstract class SQL extends DataSource{
 		return $r;
 	}
 	
+	function findOrNewOne($type,$params=[]){
+		$query = [];
+		$bind = [];
+		foreach($params as $k=>$v){
+			if($v===null)
+				$query[] = $k.' IS ?';
+			else
+				$query[] = $k.'=?';
+			$bind[] = $v;
+		}
+		$query = implode(' AND ',$query);
+		$type = (array)$type;
+		foreach($type as $t){
+			if($row = $this->findOne($t,$query,$bind))
+				break;
+		}
+		if(!$row){
+			$row = $this->arrayToEntity($params,array_pop($type));
+		}
+		return $row;
+	}
+	
 	abstract function scanType($value,$flagSpecial=false);
 	
 	abstract function getTablesQuery();
