@@ -29,12 +29,13 @@ class Sqlite extends SQL{
 		if($this->isConnected)
 			return;
 		try {
+			debug($this->dsn);
 			$this->setPDO($this->dsn);
 			$this->isConnected = true;
 		}
 		catch ( \PDOException $exception ) {
 			if($this->createDb&&(!$this->unknownDatabaseCode||$this->unknownDatabaseCode==$exception->getCode())){
-				$p = strpos($this->dsn,'file=')+5;
+				$p = strpos($this->dsn,':')+1;
 				$p2 = strpos($this->dsn,';',$p);
 				if($p2===false){
 					$dbfile = substr($this->dsn,$p);
