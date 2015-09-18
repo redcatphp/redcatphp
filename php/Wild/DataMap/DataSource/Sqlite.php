@@ -29,7 +29,6 @@ class Sqlite extends SQL{
 		if($this->isConnected)
 			return;
 		try {
-			debug($this->dsn);
 			$this->setPDO($this->dsn);
 			$this->isConnected = true;
 		}
