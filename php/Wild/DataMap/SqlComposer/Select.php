@@ -94,6 +94,7 @@ class Select extends Where {
 		if(is_string($desc))
 			$desc = strtoupper($desc);
 		$this->sort[] = ($desc&&$desc!='ASC')||$desc=='DESC'?'DESC':'ASC';
+		return $this;
 	}
 	function limit($limit){
 		$this->limit = (int)$limit;
