@@ -2,6 +2,8 @@
 namespace Wild\Templix\MarkupX;
 class Link extends \Wild\Templix\MarkupHtml5\Link{
 	function load(){
+		if(!$this->templix)
+			return;
 		if(
 			$this->templix&&$this->href&&strpos($this->href,'://')===false&&strpos($this->href,'_t=')===false&&
 			($this->templix->devCss&&pathinfo($this->href,PATHINFO_EXTENSION)=='css')

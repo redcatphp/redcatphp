@@ -3,6 +3,8 @@ namespace Wild\Templix\MarkupX;
 class Vars extends \Wild\Templix\Markup{
 	protected $hiddenWrap = true;
 	function load(){
+		if(!$this->templix)
+			return;
 		$this->remapAttr('file');
 		$prefix = $this->__get('prefix');
 		if(!isset($prefix))

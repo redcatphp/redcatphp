@@ -4,6 +4,8 @@ class _Include extends \Wild\Templix\Markup{
 	protected $selfClosed = true;
 	protected $hiddenWrap = true;
 	function load(){
+		if(!$this->templix)
+			return;
 		$this->remapAttr('file');
 		$file = $this->__get('file');
 		if(!pathinfo($file,PATHINFO_EXTENSION))
