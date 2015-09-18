@@ -324,7 +324,8 @@ class Di implements \ArrayAccess{
 		$paramInfo = [];
 		foreach ($method->getParameters() as $param) {
 			try{
-				$class = $param->getClass() ? $param->getClass()->name : null;
+				$classObject = $param->getClass();
+				$class = $classObject&&$classObject->isInstantiable() ? $classObject->name : null;
 			}
 			catch(\ReflectionException $e){
 				if($param->allowsNull()) $class = null;
