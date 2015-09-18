@@ -338,190 +338,251 @@ class SQL extends DataTable{
 	}
 	
 	function tableJoin($table, $join, array $params = null){
-		return $this->select->tableJoin($table, $join, $params);
+		$this->select->tableJoin($table, $join, $params);
+		return $this;
 	}
 	function joinAdd($join,array $params = null){
-		return $this->select->joinAdd($join, $params);
+		$this->select->joinAdd($join, $params);
+		return $this;
 	}
 	function join($join, array $params = null){
-		return $this->select->join($join, $params);
+		$this->select->join($join, $params);
+		return $this;
 	}
 	function joinLeft($join, array $params = null){
-		return $this->select->joinLeft($join, $params);
+		$this->select->joinLeft($join, $params);
+		return $this;
 	}
 	function joinRight($join, array $params = null){
-		return $this->select->joinRight($join, $params);
+		$this->select->joinRight($join, $params);
+		return $this;
 	}
 	function joinOn($join, array $params = null){
-		return $this->select->joinOn($join, $params);
+		$this->select->joinOn($join, $params);
+		return $this;
 	}
 	function from($table, array $params = null){
-		return $this->select->from($table, $params);
+		$this->select->from($table, $params);
+		return $this;
 	}
 	function unTableJoin($table=null,$join=null,$params=null){
-		return $this->select->unTableJoin($table,$join,$params);
+		$this->select->unTableJoin($table,$join,$params);
+		return $this;
 	}
 	function unJoin($join=null,$params=null){
-		return $this->select->unJoin($join,$params);
+		$this->select->unJoin($join,$params);
+		return $this;
 	}
 	function unFrom($table=null,$params=null){
-		return $this->select->unFrom($table,$params);
+		$this->select->unFrom($table,$params);
+		return $this;
 	}
 	function setParam($k,$v){
-		return $this->select->set($k,$v);
+		$this->select->set($k,$v);
+		return $this;
 	}
 	function getParam($k){
 		return $this->select->get($k);
 	}
 	function unWhere($where=null,$params=null){
-		return $this->select->unWhere($where,$params);
+		$this->select->unWhere($where,$params);
+		return $this;
 	}
 	function unWith($with=null,$params=null){
-		return $this->select->unWith($with,$params);
+		$this->select->unWith($with,$params);
+		return $this;
 	}
 	function unWhereIn($where,$params=null){
-		return $this->select->unWhereIn($where,$params);
+		$this->select->unWhereIn($where,$params);
+		return $this;
 	}
 	function unWhereOp($column, $op,  array $params=null){
-		return $this->select->unWhereOp($column, $op, $params);
+		$this->select->unWhereOp($column, $op, $params);
+		return $this;
 	}
 	function unOpenWhereAnd(){
-		return $this->select->unOpenWhereAnd();
+		$this->select->unOpenWhereAnd();
+		return $this;
 	}
 	function unOpenWhereOr(){
-		return $this->select->unOpenWhereOr();
+		$this->select->unOpenWhereOr();
+		return $this;
 	}
 	function unOpenWhereNotAnd(){
-		return $this->select->unOpenWhereNotAnd();
+		$this->select->unOpenWhereNotAnd();
+		return $this;
 	}
 	function unOpenWhereNotOr(){
-		return $this->select->unOpenWhereNotOr();
+		$this->select->unOpenWhereNotOr();
+		return $this;
 	}
 	function unCloseWhere(){
-		return $this->select->unCloseWhere();
+		$this->select->unCloseWhere();
+		return $this;
 	}
 	function where($where, array $params = null){
-		return $this->select->where($where, $params);
+		$this->select->where($where, $params);
+		return $this;
 	}
 	function whereIn($where, array $params){
-		return $this->select->whereIn($where, $params);
+		$this->select->whereIn($where, $params);
+		return $this;
 	}
 	function whereOp($column, $op, array $params=null){
-		return $this->select->whereOp($column, $op, $params);
+		$this->select->whereOp($column, $op, $params);
+		return $this;
 	}
 	function openWhereAnd(){
-		return $this->select->openWhereAnd();
+		$this->select->openWhereAnd();
+		return $this;
 	}
 	function openWhereOr(){
-		return $this->select->openWhereOr();
+		$this->select->openWhereOr();
+		return $this;
 	}
 	function openWhereNotAnd(){
-		return $this->select->openWhereNotAnd();
+		$this->select->openWhereNotAnd();
+		return $this;
 	}
 	function openWhereNotOr(){
-		return $this->select->openWhereNotOr();
+		$this->select->openWhereNotOr();
+		return $this;
 	}
 	function closeWhere(){
-		return $this->select->closeWhere();
+		$this->select->closeWhere();
+		return $this;
 	}
 	function with($with, array $params = null){
-		return $this->select->with($with, $params);
+		$this->select->with($with, $params);
+		return $this;
 	}
 	function select($select, array $params = null){
-		return $this->select->select($select, $params);
+		$this->select->select($select, $params);
+		return $this;
 	}
 	function distinct($distinct = true){
-		return $this->select->distinct($distinct);
+		$this->select->distinct($distinct);
+		return $this;
 	}
 	function groupBy($group_by, array $params = null){
-		return $this->select->groupBy($group_by, $params);
+		$this->select->groupBy($group_by, $params);
+		return $this;
 	}
 	function withRollup($with_rollup = true){
-		return $this->select->withRollup($with_rollup);
+		$this->select->withRollup($with_rollup);
+		return $this;
 	}
 	function orderBy($order_by, array $params = null){
-		return $this->select->orderBy($order_by, $params);
+		$this->select->orderBy($order_by, $params);
+		return $this;
 	}
 	function sort($desc=false){
-		return $this->select->sort($desc);
+		$this->select->sort($desc);
+		return $this;
 	}
 	function limit($limit){
-		return $this->select->limit($limit);
+		$this->select->limit($limit);
+		return $this;
 	}
 	function offset($offset){
-		return $this->select->offset($offset);
+		$this->select->offset($offset);
+		return $this;
 	}
 	function having($having, array $params = null){
-		return $this->select->having($having, $params);
+		$this->select->having($having, $params);
+		return $this;
 	}
 	function havingIn($having, array $params){
-		return $this->select->havingIn($having, $params);
+		$this->select->havingIn($having, $params);
+		return $this;
 	}
 	function havingOp($column, $op, array $params=null){
-		return $this->select->havingOp($column, $op, $params);
+		$this->select->havingOp($column, $op, $params);
+		return $this;
 	}
 	function openHavingAnd(){
-		return $this->select->openHavingAnd();
+		$this->select->openHavingAnd();
+		return $this;
 	}
 	function openHavingOr(){
-		return $this->select->openHavingOr();
+		$this->select->openHavingOr();
+		return $this;
 	}
 	function openHavingNotAnd(){
-		return $this->select->openHavingNotAnd();
+		$this->select->openHavingNotAnd();
+		return $this;
 	}
 	function openHavingNotOr(){
-		return $this->select->openHavingNotOr();
+		$this->select->openHavingNotOr();
+		return $this;
 	}
 	function closeHaving(){
-		return $this->select->closeHaving();
+		$this->select->closeHaving();
+		return $this;
 	}
 	function unSelect($select=null, array $params = null){
-		return $this->select->unSelect($select, $params);
+		$this->select->unSelect($select, $params);
+		return $this;
 	}
 	function unDistinct(){
-		return $this->select->unDistinct();
+		$this->select->unDistinct();
+		return $this;
 	}
 	function unGroupBy($group_by=null, array $params = null){
-		return $this->select->unGroupBy($group_by, $params);
+		$this->select->unGroupBy($group_by, $params);
+		return $this;
 	}
 	function unWithRollup(){
-		return $this->select->unWithRollup();
+		$this->select->unWithRollup();
+		return $this;
 	}
 	function unOrderBy($order_by=null, array $params = null){
-		return $this->select->unOrderBy($order_by, $params);
+		$this->select->unOrderBy($order_by, $params);
+		return $this;
 	}
 	function unSort(){
-		return $this->select->unSort();
+		$this->select->unSort();
+		return $this;
 	}
 	function unLimit(){
-		return $this->select->unLimit();
+		$this->select->unLimit();
+		return $this;
 	}
 	function unOffset(){
-		return $this->select->unOffset();
+		$this->select->unOffset();
+		return $this;
 	}
 	function unHaving($having=null, array $params = null){
-		return $this->select->unHaving($having,  $params);
+		$this->select->unHaving($having,  $params);
+		return $this;
 	}
 	function unHavingIn($having, array $params){
-		return $this->select->unHavingIn($having, $params);
+		$this->select->unHavingIn($having, $params);
+		return $this;
 	}
 	function unHavingOp($column, $op, array $params=null){
-		return $this->select->unHavingOp($column, $op,  $params);
+		$this->select->unHavingOp($column, $op,  $params);
+		return $this;
 	}
 	function unOpenHavingAnd(){
-		return $this->select->unOpenHavingAnd();
+		$this->select->unOpenHavingAnd();
+		return $this;
 	}
 	function unOpenHavingOr(){
-		return $this->select->unOpenHavingOr();
+		$this->select->unOpenHavingOr();
+		return $this;
 	}
 	function unOpenHavingNotAnd(){
-		return $this->select->unOpenHavingNotAnd();
+		$this->select->unOpenHavingNotAnd();
+		return $this;
 	}
 	function unOpenHavingNotOr(){
-		return $this->select->unOpenHavingNotOr();
+		$this->select->unOpenHavingNotOr();
+		return $this;
 	}
 	function unCloseHaving(){
-		return $this->select->unCloseHaving();
+		$this->select->unCloseHaving();
+		return $this;
 	}
 	function hasColumn(){
 		return $this->select->hasColumn();
