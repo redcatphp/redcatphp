@@ -42,7 +42,6 @@ class Sqlite extends SQL{
 				else{
 					$dbfile = substr($this->dsn,$p,$p2-$p);
 				}
-				debugs($this->dsn,$dbfile);
 				$this->createDatabase($dbfile);
 				$this->setPDO($this->dsn);
 				$this->isConnected = true;
