@@ -177,9 +177,9 @@ class Synaptic {
 	protected function scss($path) {
 		$from = [];
 		foreach($this->dirs as $d){
-			if(is_dir($dir=$d.'css'))
-				$from[] = $dir;
 			if(is_dir($dir=$d.dirname($path)))
+				$from[] = $dir;
+			if(is_dir($dir=$d.'css'))
 				$from[] = $dir;
 		}
 		$scss = $this->di->create('Wild\Stylize\Server');
