@@ -55,29 +55,11 @@ class TemplixL10n extends Templix{
 		$Tml->prepend('<?php include SURIKAT.\'php/Wild/Localize/__.php\'; ?>');
 		$Tml('html')->attr('lang',$this->Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP), *[ni18n] t')->data('i18n',false);
-		$Tml('t')->each(function($el)use($cache){
-			$rw = $el->getInner();
-			$l = strlen($rw);
-			$left = $l-strlen(ltrim($rw));
-			$right = $l-strlen(rtrim($rw));
-			if($left)
-				$left = substr($rw,0,$left);
+		$Tml('TEXT:hasnt(PHP), t')->each(function($el)use($cache){
+			if($el->nodeName=='t')
+				$rw = $el->getInner();
 			else
-				$left = '';
-			if($right)
-				$right = substr($rw,-1*$right);
-			else
-				$right = '';
-			$rw = trim($rw);
-			if(!$rw)
-				return;
-			if($el->data('i18n')!==false){
-				$rw = $this->i18nWrapCode($rw,$cache);
-				$el->write($left.$rw.$right);
-			}
-		});
-		$Tml('TEXT:hasnt(PHP)')->each(function($el)use($cache){
-			$rw = "$el";
+				$rw = "$el";
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
 			$right = $l-strlen(rtrim($rw));
@@ -99,11 +81,11 @@ class TemplixL10n extends Templix{
 		});
 		$Tml('*')->each(function($markup){
 			foreach($markup->attributes as $k=>$v){
-				if($k=='title'){
+				if($k=='title'||($k=='href'&&$markup->nodeName=='a')){
 					if(strpos($v,'<?')===false)
 						$markup->attr($k,$this->i18nWrapCode($v));
 				}
-				if(strpos($k,'i18n-')===0){
+				elseif(strpos($k,'i18n-')===0){
 					$markup->removeAttr($k);
 					$markup->attr(substr($k,5),$this->i18nWrapCode($v));
 				}
