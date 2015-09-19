@@ -96,6 +96,8 @@ class Templix extends \Wild\Templix\Templix{
 	function __invoke($file){
 		if(is_array($file)){
 			list($hook,$file) = (array)$file;
+			if(substr($hook,0,8)=='surikat/')
+				$hook = substr($hook,8);
 			$this->setDirCwd([$hook.'/','surikat/'.$hook.'/']);
 		}
 		return $this->query($file);

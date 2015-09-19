@@ -19,6 +19,8 @@ class TemplixL10n extends Templix{
 		list($lang,$langMap,$file) = (array)$file;
 		if(is_array($file)){
 			list($hook,$file) = (array)$file;
+			if(substr($hook,0,8)=='surikat/')
+				$hook = substr($hook,8);
 			$this->setDirCwd([$hook.'/','surikat/'.$hook.'/']);
 		}
 		
