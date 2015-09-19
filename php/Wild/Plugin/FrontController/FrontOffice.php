@@ -11,6 +11,7 @@ class FrontOffice extends \Wild\Route\FrontController{
 			['backend/','new:Wild\Plugin\FrontController\Backoffice'],
 			[['new:Wild\Route\Match\Extension','css|js|png|jpg|jpeg|gif'],'new:Wild\Plugin\FrontController\Synaptic'],
 			[['new:Wild\Plugin\RouteMatch\ByTml'.($this->l10n?'L10n':''),'','template'],'new:Wild\Plugin\Templix\Templix'.($this->l10n?'L10n':'')],
+			[['new:Wild\Plugin\RouteMatch\ByTml'.($this->l10n?'L10n':''),'','surikat/template'],'new:Wild\Plugin\Templix\Templix'.($this->l10n?'L10n':'')],
 		]);
 	}
 	function run($path,$domain=null){
