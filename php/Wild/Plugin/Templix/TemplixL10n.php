@@ -42,12 +42,14 @@ class TemplixL10n extends Templix{
 		return $this->query($file);
 	}
 	function i18nWrapCode($rw,$cache=true){
-		if($cache){
-			$rw = $this->Translator->__($rw);
-		}
-		else{
-			$rw = str_replace("'","\'",$rw);
-			$rw = '<?php echo __(\''.$rw.'\');?>';
+		if(!empty($rw)){
+			if($cache){
+				$rw = $this->Translator->__($rw);
+			}
+			else{
+				$rw = str_replace("'","\'",$rw);
+				$rw = '<?php echo __(\''.$rw.'\');?>';
+			}
 		}
 		return $rw;
 	}
