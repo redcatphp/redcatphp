@@ -78,6 +78,16 @@ class msgfmt{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/
 						// untranslated-string
 					case 'msgid_plural' :
 						// untranslated-string-plural
+						// start a new entry
+						if($state=='msgstr'){
+							if (sizeof($temp) && array_key_exists('msgid', $temp) && array_key_exists('msgstr', $temp)) {
+								if (!$fuzzy)
+									$hash[]= $temp;
+								$temp= array ();
+								$state= null;
+								$fuzzy= false;
+							}
+						}
 						$state= $key;
 						$temp[$state]= $data;
 						break;
