@@ -41,6 +41,16 @@ class TemplixL10n extends Templix{
 
 		return $this->query($file);
 	}
+	function i18nWrapCode($rw,$cache=true){
+		if($cache){
+			$rw = $this->Translator->__($rw);
+		}
+		else{
+			$rw = str_replace("'","\'",$rw);
+			$rw = '<?php echo __(\''.$rw.'\');?>';
+		}
+		return $rw;
+	}
 	function i18nGettext($Tml,$cache=true){
 		$Tml->prepend('<?php include SURIKAT.\'php/Wild/Localize/__.php\'; ?>');
 		$Tml('html')->attr('lang',$this->Translator->getLangCode());
@@ -62,21 +72,19 @@ class TemplixL10n extends Templix{
 			if(!$rw)
 				return;
 			if($el->data('i18n')!==false){
-				if($cache){
-					$rw = $this->Translator->__($rw);
-				}
-				else{
-					$rw = str_replace("'","\'",$rw);
-					$rw = '<?php echo __(\''.$rw.'\');?>';
-				}
+				$rw = $this->i18nWrapCode($rw,$cache);
 				$el->write($left.$rw.$right);
 			}
 		});
-		$Tml('*')->each(function($Tml){
-			foreach($Tml->attributes as $k=>$v){
+		$Tml('*')->each(function($markup){
+			foreach($markup->attributes as $k=>$v){
+				if($k=='title'){
+					if(strpos($v,'<?')===false)
+						$markup->attr($k,$this->i18nWrapCode($v));
+				}
 				if(strpos($k,'i18n-')===0){
-					$Tml->removeAttr($k);
-					$Tml->attr(substr($k,5),$this->Translator->__($v));
+					$markup->removeAttr($k);
+					$markup->attr(substr($k,5),$this->i18nWrapCode($v));
 				}
 			}
 		});
