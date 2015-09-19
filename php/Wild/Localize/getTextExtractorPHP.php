@@ -8,7 +8,7 @@ class getTextExtractorPHP extends getTextExtractor{
 			else
 				$cwd = getcwd();
 			chdir($sourceDir);
-			$file = substr($file,strlen($sourceDir));
+			//$file = substr($file,strlen($sourceDir));
 		}
 		$msg = '';
 		$translations = PhpCode::fromFile($file);

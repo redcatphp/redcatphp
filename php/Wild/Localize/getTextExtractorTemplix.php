@@ -3,8 +3,8 @@ use Wild\Templix\Markup;
 class getTextExtractorTemplix extends getTextExtractor{
 	protected static function parseFile($file,$sourceDir=null){
 		$filename = $file;
-		if($sourceDir)
-			$filename = substr($filename,strlen($sourceDir));
+		//if($sourceDir)
+			//$filename = substr($filename,strlen($sourceDir));
 		$content = file_get_contents($file);
 		if(empty($content))
 			return;

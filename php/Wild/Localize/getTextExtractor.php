@@ -1,4 +1,5 @@
-<?php namespace Wild\Localize;
+<?php
+namespace Wild\Localize;
 class getTextExtractor{
 	static function parse($sources,$sourceDir=null){
 		$msg = '';
