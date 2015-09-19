@@ -389,7 +389,7 @@ class Auth{
 	private function addSession($user,$lifetime=0){
 		$this->Session->setCookieLifetime($lifetime);
 		$this->Session->setKey($user->id);
-		$this->Session->set('_AUTH_',$user);
+		$this->Session->set('_AUTH_',(array)$user);
 		return true;
 	}
 	private function isEmailTaken($email){

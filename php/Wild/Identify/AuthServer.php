@@ -237,9 +237,9 @@ class AuthServer{
 		if($this->Auth->allowed($r))
 			return;
 		if($this->Auth->connected()){
-			if($redirect)
-				header('Location: '.$this->Auth->siteUrl.'403',false,302);
-			else
+			//if($redirect)
+				//header('Location: '.$this->Auth->siteUrl.'403',false,302);
+			//else
 				http_response_code(403);
 			exit;
 		}
