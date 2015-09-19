@@ -215,7 +215,7 @@ class Auth{
 				}
 			}
 		}
-		$this->addSession([
+		$this->addSession((object)[
 			'id'=>$id,
 			'login'=>$this->rootLogin,
 			'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
@@ -249,7 +249,7 @@ class Auth{
 		}
 		else{
 			$user = $userDefault;
-			$user['id'] = $email;
+			$user->id = $email;
 		}
 		$this->addSession($user,$lifetime);
 		return self::OK_LOGGED_IN;
@@ -276,15 +276,15 @@ class Auth{
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		$user = $this->getUser($uid);
-		if(!($password&&password_verify($password, $user['password']))){
+		if(!($password&&password_verify($password, $user->password))){
 			$this->Session->addAttempt();
 			return self::ERROR_LOGIN_PASSWORD_INCORRECT;
 		}
 		else{
-			$options = ['salt' => $user['salt'], 'cost' => $this->cost];
-			if(password_needs_rehash($user['password'], $this->algo, $options)){
+			$options = ['salt' => $user->salt, 'cost' => $this->cost];
+			if(password_needs_rehash($user->password, $this->algo, $options)){
 				$password = password_hash($password, $this->algo, $options);
-				$row = $this->db->read($this->tableUsers,(int)$user['id']);
+				$row = $this->db->read($this->tableUsers,(int)$user->id);
 				$row->password = $password;
 				try{
 					$this->db->put($row);
@@ -294,7 +294,7 @@ class Auth{
 				}
 			}
 		}
-		if(!isset($user['active'])||$user['active']!=1){
+		if(!isset($user->active)||$user->active!=1){
 			$this->Session->addAttempt();
 			return self::ERROR_ACCOUNT_INACTIVE;
 		}
@@ -342,7 +342,7 @@ class Auth{
 		}
 		$getRequest = $this->getRequest($key, "activation");
 		$user = $this->getUser($getRequest[$this->tableUsers.'_id']);
-		if(isset($user['active'])&&$user['active']==1){
+		if(isset($user->active)&&$user->active==1){
 			$this->Session->addAttempt();
 			$this->deleteRequest($getRequest['id']);
 			return self::ERROR_SYSTEM_ERROR;
@@ -388,15 +388,8 @@ class Auth{
 	}
 	private function addSession($user,$lifetime=0){
 		$this->Session->setCookieLifetime($lifetime);
-		$this->Session->setKey($user['id']);
-		$this->Session->set('_AUTH_',[
-			'id'=>$user['id'],
-			'email'=>$user['email'],
-			'login'=>$user['login'],
-			'name'=>$user['name'],
-			'right'=>$user['right'],
-			'type'=>$user['type'],
-		]);
+		$this->Session->setKey($user->id);
+		$this->Session->set('_AUTH_',$user);
 		return true;
 	}
 	private function isEmailTaken($email){
@@ -475,22 +468,28 @@ class Auth{
 		}
 		$row = $this->db->findOne($this->tableRequests,' WHERE '.$this->db->safeColumn($this->tableUsers.'_id').' = ? AND type = ?',[$uid, $type]);
 		if($row){
-			$this->deleteRequest($row['id']);
+			$this->deleteRequest($row->id);
 		}
 		$user = $this->getUser($uid);
-		if($type == "activation" && isset($user['active']) && $user['active'] == 1){
+		if($type == "activation" && isset($user->active) && $user->active == 1){
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
 		$key = (new RandomLib\Factory())->getMediumStrengthGenerator()->generate(40);
 		$expire = date("Y-m-d H:i:s", strtotime("+1 day"));
-		$user['_many_'.ucfirst($this->tableRequests).'_x_'][] = $this->db->create($this->tableRequests,['rkey'=>$key, 'expire'=>$expire, 'type'=>$type]);
+		$request = [
+			'_type'=>$this->tableRequests,
+			'_one_'.$this->tableUsers.'_x_'=>$user,
+			'rkey'=>$key,
+			'expire'=>$expire,
+			'type'=>$type
+		];
 		try{
 			$this->db->put($user);
 		}
 		catch(\Exception $e){
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!$this->sendMail($email, $type, $key, $user['name'])){
+		if(!$this->sendMail($email, $type, $key, $user->name)){
 			return self::ERROR_SYSTEM_ERROR;
 		}
 	}
@@ -504,19 +503,19 @@ class Auth{
 				return self::ERROR_RESETKEY_INCORRECT;
 			return;
 		}
-		$expiredate = strtotime($row['expire']);
+		$expiredate = strtotime($row->expire);
 		$currentdate = strtotime(date("Y-m-d H:i:s"));
 		if ($currentdate > $expiredate){
 			$this->Session->addAttempt();
-			$this->deleteRequest($row['id']);
+			$this->deleteRequest($row->id);
 			if($type=='activation')
 				return self::ERROR_ACTIVEKEY_EXPIRED;
 			elseif($type=='reset')
 				return self::ERROR_ACTIVEKEY_EXPIRED;
 		}
 		return [
-			'id' => $row['id'],
-			$this->tableUsers.'_id' => $row[$this->tableUsers]['id']
+			'id' => $row->id,
+			$this->tableUsers.'_id' => $row->{'_one_'.$this->tableUsers}->id
 		];
 	}
 	private function deleteRequest($id){
@@ -567,8 +566,8 @@ class Auth{
 			$this->deleteRequest($data['id']);
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!($password&&password_verify($password, $user['password']))){
-			$password = $this->getHash($password, $user['salt']);
+		if(!($password&&password_verify($password, $user->password))){
+			$password = $this->getHash($password, $user->salt);
 			$row = $this->db->read($this->tableUsers,$data[$this->tableUsers.'_id']);
 			$row->password = $password;
 			try{
@@ -592,11 +591,11 @@ class Auth{
 			$this->Session->addAttempt();
 			return self::ERROR_EMAIL_INCORRECT;
 		}
-		if(isset($row['active'])&&$row['active'] == 1){
+		if(isset($row->active)&&$row->active == 1){
 			$this->Session->addAttempt();
 			return self::ERROR_ALREADY_ACTIVATED;
 		}
-		if($e=$this->addRequest($row['id'], $email, "activation")){
+		if($e=$this->addRequest($row->id, $email, "activation")){
 			$this->Session->addAttempt();
 			return $e;
 		}
@@ -620,8 +619,8 @@ class Auth{
 			$this->Session->addAttempt();
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		$newpass = $this->getHash($newpass, $user['salt']);
-		if(!($password&&password_verify($currpass, $user['password']))){
+		$newpass = $this->getHash($newpass, $user->salt);
+		if(!($password&&password_verify($currpass, $user->password))){
 			$this->Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
@@ -637,7 +636,7 @@ class Auth{
 		if (!$row->id){
 			return false;
 		}
-		return $row['email'];
+		return $row->email;
 	}
 	public function changeEmail($uid, $email, $password){
 		if($s=$this->Session->isBlocked()){
@@ -652,11 +651,11 @@ class Auth{
 			$this->Session->addAttempt();
 			return self::ERROR_SYSTEM_ERROR;
 		}
-		if(!($password&&password_verify($password, $user['password']))){
+		if(!($password&&password_verify($password, $user->password))){
 			$this->Session->addAttempt();
 			return self::ERROR_PASSWORD_INCORRECT;
 		}
-		if ($email == $user['email']){
+		if ($email == $user->email){
 			$this->Session->addAttempt();
 			return self::ERROR_NEWEMAIL_MATCH;
 		}
