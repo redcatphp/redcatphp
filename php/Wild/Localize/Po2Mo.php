@@ -1,5 +1,5 @@
 <?php namespace Wild\Localize;
-class msgfmt{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/php-msgfmt/msgfmt-functions.php
+class Po2Mo{ //from http://wordpress-soc-2007.googlecode.com/svn/trunk/moeffju/php-msgfmt/msgfmt-functions.php
 	static function convert($input, $output=null){
 		if(!isset($output))
 			$output = substr($input,0,-2).'mo';
