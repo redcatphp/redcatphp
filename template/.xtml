@@ -21,6 +21,6 @@
 	<footer>
 		<incorpore "surikat-powered.btml">
 	</footer>
-	<incorpore "scriptLazyJS.btml">
+	<incorpore "js.btml">
 </body>
 </html>
