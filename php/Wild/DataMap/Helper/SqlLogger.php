@@ -68,7 +68,7 @@ class SqlLogger {
 			if($wrap&&$this->html)
 				echo '<pre class="debug-model">',$str,'</pre><br />';
 			else
-				echo $str;
+				echo $str."\n";
 		}
 	}
 	protected function normalizeSlots( $sql ){
