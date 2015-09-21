@@ -21,5 +21,8 @@
 			"Wild\\Identify\\": ""
 		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"suggest": {
+		"surikat/datamap": "Allows to use a database instead or in addition of a single configured user"
+	}
 }
