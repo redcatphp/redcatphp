@@ -21,5 +21,8 @@
 			"Wild\\Mvc\\": ""
 		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"suggest": {
+		"surikat/kinetic": "Use Dependency Injection Container for registry"
+	}
 }
