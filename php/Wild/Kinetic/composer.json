@@ -21,5 +21,8 @@
 			"Wild\\Kinetic\\": ""
 		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"suggest": {
+		"surikat/autoload": "Enable autoloading of classes"
+	}
 }
