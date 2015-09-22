@@ -7,6 +7,7 @@ class Templix extends \Wild\Templix\Templix{
 	public $httpMtime;
 	public $httpExpireTime;
 	public $httpEtag;
+	public $cleanDir = '.tmp/min/';
 	
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
@@ -28,6 +29,10 @@ class Templix extends \Wild\Templix\Templix{
 			if(!$tml->devTemplate)
 				$toolbox->autoMIN($tml);
 		});
+		$this->setCleanCallback([$this,'cleanMin']);
+	}
+	function cleanMin(){
+		self::rmdir($this->cleanDir);
 	}
 	function setHttpMtime($mtime){
 		$this->httpMtime = $mtime;
