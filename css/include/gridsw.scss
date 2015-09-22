@@ -1,0 +1,150 @@
+@import "include/grid.reset-star";
+@mixin gridsw($grid,$mw: false,$selector: false){
+	@if($selector){
+		$ml: nth($grid,1);
+		$w: nth($grid,2);
+		$mr: nth($grid,3);
+		$tt: $w;
+		@if($ml){
+			$tt: $tt+$ml;
+		}
+		@if($mr){
+			$tt: $tt+$mr;
+		}
+		@if($ml>0){
+			$ml: unquote("#{$ml}%");
+		}
+		@if($mr>0){
+			$mr: unquote("#{$mr}%");
+		}
+		@if($w>0){
+			$w: unquote("#{$w}%");
+		}
+		@if($mw>0){
+			@media(min-width:#{$mw}){
+				>#{$selector}{
+					@if($tt>=100){
+						clear:left;
+					}
+					@else{
+						clear:none;
+					}
+					
+					margin-left: $ml;
+					margin-right: $mr;
+					@if($w){
+						width: $w;
+					}
+					@else{
+						width: auto;
+					}
+				}
+			}
+		}
+		@else{
+			>#{$selector}{
+				position: relative;
+				display:block;
+				float:left;
+				min-height: 1px;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				
+				@if($tt>=100){
+					clear:left;
+				}
+				@else{
+					clear:none;
+				}
+				
+				margin-left: $ml;
+				margin-right: $mr;
+				@if($w>0){
+					width: $w;
+				}
+				@else{
+					width: auto;
+				}
+			}
+		}
+	}
+	@else{
+		
+		$tt: 0;
+		@for $i from 1 through length($grid){
+			$tt: 0 !default;
+			$el: nth($grid,$i);
+			$ml: nth($el,1);
+			$w: nth($el,2);
+			$mr: nth($el,3);
+			$mlo: $ml;
+			$mro: $mr;
+			$wo: $w;
+			@if($ml>0){
+				$ml: unquote("#{$ml}%");
+			}
+			@if($mr>0){
+				$mr: unquote("#{$mr}%");
+			}
+			@if($w>0){
+				$w: unquote("#{$w}%");
+			}
+			@if($mw>0){
+				@media(min-width:#{$mw}){
+					>*:nth-child(#{$i}){
+						@if($tt>=100){
+							$tt: 0;
+							clear:left;
+						}
+						@else{
+							clear:none;
+						}
+						
+						margin-left: $ml;
+						margin-right: $mr;
+						@if($w>0){
+							width: $w;
+						}
+						@else{
+							width: auto;
+						}
+					}
+				}
+			}
+			@else{
+				>*:nth-child(#{$i}){
+					position: relative;
+					display:block;
+					float:left;
+					min-height: 1px;
+					-webkit-box-sizing: border-box;
+					-moz-box-sizing: border-box;
+					box-sizing: border-box;
+					@if($tt>=100){
+						$tt: 0;
+						clear:left;
+					}
+					@else{
+						clear:none;
+					}
+					margin-left: $ml;
+					margin-right: $mr;
+					@if($w){
+						width: $w;
+					}
+					@else{
+						width: auto;
+					}
+				}
+			}
+			$tt: $tt+$wo;
+			@if($mlo){
+				$tt: $tt+$mlo;
+			}
+			@if($mro){
+				$tt: $tt+$mro;
+			}
+		}
+	}
+}
