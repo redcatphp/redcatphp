@@ -13,6 +13,8 @@ class Synaptic {
 	public $devJs;
 	public $devCss;
 	
+	public $prefixMinPath = '.tmp/min/';
+	
 	function __construct($pathFS='',$devJs=true,$devCss=true,Di $di){
 		$this->pathFS = rtrim($pathFS,'/');
 		if(!empty($this->pathFS))
@@ -116,19 +118,19 @@ class Synaptic {
 			break;
 		}
 	}
-	protected function registerMini($min){
-		$f = '.tmp/synaptic/min-registry.txt';
-		@mkdir(dirname($f),0777,true);
-		file_put_contents($f,$min."\n",FILE_APPEND|LOCK_EX);
-	}
 	protected function minifyJS($f,$min){
 		if(strpos($f,'://')===false&&!is_file($f))
 			return false;
 		set_time_limit(0);
 		$c = JSMin::minify(file_get_contents($f));
 		if(!$this->devJs){
-			@mkdir(dirname($min),0777,true);
-			$this->registerMini($min);
+			
+			if($this->prefixMinPath)
+				$min = $this->prefixMinPath.$min;
+			
+			$dir = dirname($min);
+			if(!is_dir($dir))
+				@mkdir($dir,0777,true);
 			file_put_contents($min,$c,LOCK_EX);
 			
 			$gzfile = $min.'.gz';
@@ -156,9 +158,14 @@ class Synaptic {
 				if(!$this->devCss){
 					$dir = dirname($file);
 					$min = $dir.'/'.pathinfo($file,PATHINFO_FILENAME).'.min.css';
+					
+					if($this->prefixMinPath){
+						$min = $this->prefixMinPath.$min;
+						$dir = $this->prefixMinPath.$dir;
+					}
+					
 					if(!is_dir($dir))
 						@mkdir($dir,0777,true);
-					$this->registerMini($min);
 					file_put_contents($min,$c,LOCK_EX);
 					
 					$gzfile = $min.'.gz';
