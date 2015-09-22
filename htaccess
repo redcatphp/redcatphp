@@ -194,8 +194,10 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 #RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
 #RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-#Directory Traversal Protection
-RewriteRule "(^|/)\." - [F]
+#Block access to dot prefixed files and directories
+RewriteCond %{THE_REQUEST} "(^|/)\."
+RewriteCond %{REQUEST_URI} !/404
+RewriteRule ^(.*)$ - [L,R=404]
 
 #Get the current CWD
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
@@ -208,6 +210,11 @@ RewriteRule ^.*$ - [E=SURIKAT_URI:%2]
 #SSL - Avoid Duplicate-Content from SSL
 RewriteCond %{SERVER_PORT} ^443$
 RewriteRule ^robots\.txt$ %{ENV:SURIKAT_URI}surikat/robots_ssl.txt [L]
+
+#Tmp min
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}.tmp/min/$1.min.$2 -f
+RewriteRule ^(.*)\.min\.(js|css)$ %{ENV:SURIKAT_URI}.tmp/min/$1.min.$2 [L]
 
 #surikat Mirroring
 RewriteCond %{REQUEST_FILENAME} !-f
