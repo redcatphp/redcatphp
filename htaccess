@@ -224,12 +224,22 @@ RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xm
 
 #Pre-compressed gzip
 AddEncoding gzip .gz .tgz
-<Files *.js.gz>
-	ForceType 'text/javascript; charset=UTF-8'
-</Files>
-<Files *.css.gz>
-	ForceType 'text/css; charset=UTF-8'
-</Files>
+<IfVersion < 2.4.4>
+	<Files *.js.gz>
+		ForceType text/javascript
+	</Files>
+	<Files *.css.gz>
+		ForceType text/css
+	</Files>
+</IfVersion>
+<IfVersion >= 2.4.4>	
+	<Files *.js.gz>
+		ForceType "text/javascript; charset=UTF-8"
+	</Files>
+	<Files *.css.gz>
+		ForceType "text/css; charset=UTF-8"
+	</Files>
+</IfVersion>
 RewriteCond %{HTTP_USER_AGENT} !MSIE
 RewriteCond %{HTTP:Accept-encoding} gzip
 RewriteCond %{REQUEST_FILENAME}.gz -f
