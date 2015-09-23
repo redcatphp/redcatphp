@@ -43,6 +43,8 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected $selfClosed;
 	protected $__closed;
 	protected $noParseContent;
+	protected $spaceAfterOpen;
+	protected $spaceAfterClose;
 	protected $foot = [];
 	protected $head = [];
 	protected $innerFoot = [];
@@ -582,9 +584,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$str = '';
 		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
-			$l = $this->previousSibling?substr($this->previousSibling,-1):false;
-			if(!$l||$l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
-				$str .= $this->indentationTab();
+			if($this->previousSibling){
+				if($this->previousSibling->spaceAfterClose){
+					$str .= $this->indentationTab();
+				}
+			}
+			elseif($this->parent){
+				if($this->parent->spaceAfterOpen){
+					$str .= $this->indentationTab();
+				}
 			}
 			$str .= '<'.$this->nodeName;
 			foreach($this->metaAttribution as $k=>$v){
@@ -603,17 +611,20 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			elseif($this->selfClosed>1)
 				$str .= ' /';
 			$str .= '>';
+			if($this->spaceAfterOpen)
+				$str .= ' ';
 		}
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
 		if(!$this->selfClosed&&!$this->hiddenWrap){
-			$l = ($lc=end($this->childNodes))?substr($lc,-1):false;
-			if(!$l||$l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
+			if(!($lc=end($this->childNodes))||$lc->spaceAfterClose){
 				$str .= $this->indentationTab();
 			}
 			$str .= '</'.$this->nodeName.'>';
 		}
 		$str = $head.$str.$foot;
+		if($this->spaceAfterClose)
+			$str .= ' ';
 		return $str;
 	}
 	
@@ -638,12 +649,16 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			elseif($this->selfClosed>1)
 				$str .= ' /';
 			$str .= '>';
+			if($this->spaceAfterOpen)
+				$str .= ' ';
 		}
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
 		if(!$this->selfClosed&&!$this->hiddenWrap)
 			$str .= '</'.$this->nodeName.'>';
 		$str = $head.$str.$foot;
+		if($this->spaceAfterClose)
+			$str .= ' ';
 		return $str;
 	}
 	function getTemplix(){
@@ -1489,10 +1504,25 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	}
 	private function fireCharacterData($text){
 		if($text){
-			if(trim($text))
-				$this->addToCurrent('TEXT',$text,true);
-			else
-				$this->addToCurrent('SPACE',$text,true);
+			if(trim($text)){
+				$node = $this->addToCurrent('TEXT',$text,true);
+				$f = substr($text,0,1);
+				$l = substr($text,-1);
+				if($l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
+					$node->spaceAfterClose = true;
+				}
+				if($f==" "||$f=="\t"||$f=="\0"||$f=="\x0B"||$f=="\n"){
+					$this->currentTag->spaceAfterOpen = true;
+				}
+			}
+			elseif($this->currentTag){
+				if($node=end($this->currentTag->childNodes)){
+					$node->spaceAfterClose = true;
+				}
+				else{
+					$this->currentTag->spaceAfterOpen = true;
+				}
+			}
 		}
 	}
 	private function fireCDataSection($text){
