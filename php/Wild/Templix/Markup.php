@@ -1489,9 +1489,10 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	}
 	private function fireCharacterData($text){
 		if($text){
-			if(!trim($text))
-				$text = ' ';
-			$this->addToCurrent('TEXT',$text,true);
+			if(trim($text))
+				$this->addToCurrent('TEXT',$text,true);
+			else
+				$this->addToCurrent('SPACE',$text,true);
 		}
 	}
 	private function fireCDataSection($text){
