@@ -272,9 +272,12 @@ abstract class DataSource implements \ArrayAccess{
 			}
 		}
 		if($update){
-			$this->trigger($type,'beforeUpdate',$obj);
-			$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast,$func);
-			$this->trigger($type,'afterUpdate',$obj);
+			if(!isset($obj->_modified)||$obj->_modified){
+				$this->trigger($type,'beforeUpdate',$obj);
+				$r = $this->updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast,$func);
+				$this->trigger($type,'afterUpdate',$obj);
+				$obj->{$primaryKey} = $r;
+			}
 		}
 		else{
 			if(array_key_exists($primaryKey,$properties))
@@ -282,8 +285,8 @@ abstract class DataSource implements \ArrayAccess{
 			$this->trigger($type,'beforeCreate',$obj);
 			$r = $this->createQuery($type,$properties,$primaryKey,$uniqTextKey,$cast,$func);
 			$this->trigger($type,'afterCreate',$obj);
+			$obj->{$primaryKey} = $r;
 		}
-		$obj->{$primaryKey} = $r;
 		foreach($one2manyNew as $k=>$v){
 			if($update){
 				$except = [];
