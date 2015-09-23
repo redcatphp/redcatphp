@@ -18,9 +18,17 @@ class Apply extends \Wild\Templix\Markup {
 				$this->_extender->parseFile($file,$this->attributes,'apply');
 			else
 				$apply = $this->closest();
-			foreach($this->_extender->childNodes as $extender)
-				if(method_exists($extender,'applyLoad')&&!($extender instanceof COMMENT))
+			foreach($this->_extender->childNodes as $i=>$extender){
+				if(	$extender instanceof COMMENT
+					||$extender instanceof TEXT
+					||$extender instanceof PHP
+				){
+					unset($this->_extender->childNodes[$i]);
+					continue;
+				}
+				if(method_exists($extender,'applyLoad'))
 					$extender->applyLoad($apply);
+			}
 			$this->clear();
 		}
 		$this->preventLoad = false;
@@ -29,7 +37,14 @@ class Apply extends \Wild\Templix\Markup {
 		$apply = new self();
 		$apply->setParent($obj);
 		$apply->parseFile($file,$params,'apply');
-		foreach($apply->childNodes as $extender)
+		foreach($apply->childNodes as $i=>$extender){
+			if(	$extender instanceof COMMENT
+					||$extender instanceof TEXT
+					||$extender instanceof PHP
+			){
+				unset($apply->childNodes[$i]);
+				continue;
+			}
 			if(method_exists($extender,'applyLoad'))
 				$extender->applyLoad($obj);
 			else{
@@ -38,5 +53,6 @@ class Apply extends \Wild\Templix\Markup {
 					$selector .= '['.$k.'="'.$v.'"]';
 				$obj->children($selector,true)->write($extender);
 			}
+		}
 	}
 }

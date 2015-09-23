@@ -564,55 +564,30 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				return $i;
 	}
 
-	protected function indentationIndex(){
-		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
-	}
-	protected function isIndented(){
-		return (!$this->temlix||$this->temlix->devTemplate)&&$this->nodeName&&!$this->hiddenWrap;
-	}
-	protected function indentationTab($force=null,$n=true){
-		if($this->isIndented()||$force)
-			return ($n?"\n":'').str_repeat("\t",$this->indentationIndex());
-	}
 	function getInnerMarkups(){
 		return implode('',$this->childNodes);
 	}
 	function getInner(){
 		return implode('',$this->innerHead).implode('',$this->childNodes).implode('',$this->innerFoot);
 	}
-	private $maxCharByLine = 80;
-	function __toString(){
+	
+	protected function indentationIndex(){
+		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
+	}
+	protected function indentationTab(){
+		return "\n".str_repeat("\t",$this->indentationIndex());
+	}
+	
+	function toStringIndented(){
 		$str = '';
-		
-		$indentOpen = false;
-		$indentOpenN = true;
-		if(!$this->previousSibling){
-			$indentOpen = true;
-		}
-		else{
-			if(!$this->previousSibling instanceof TEXT){
-				$indentOpen = true;
-			}
-			elseif(substr(rtrim($this->previousSibling,"\t\0\x0B"),-1)=="\n"){
-				$indentOpen = true;
-				$indentOpenN = false;
-			}
-		}
-		if($indentOpen)
-			$str .= $this->indentationTab(false,$indentOpenN);
-			
 		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
+			$l = $this->previousSibling?substr($this->previousSibling,-1):false;
+			if(!$l||$l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
+				$str .= $this->indentationTab();
+			}
 			$str .= '<'.$this->nodeName;
-			$maxChar = $this->maxCharByLine;
-			$lp = false;
 			foreach($this->metaAttribution as $k=>$v){
-				if(strlen($str)>$maxChar){
-					$maxChar += $this->maxCharByLine;
-					if($lp)
-						$str .= "\n";
-					$str .= $this->indentationTab();
-				}
 				if(is_integer($k)){
 					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
 						$str .= ' '.$v.'="'.$v.'"';
@@ -622,7 +597,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				else{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
-				$lp = is_integer($k)&&($v instanceof PHP);
 			}
 			if($this->selfClosed&&$this->templix&&$this->templix->isXhtml)
 				$str .= '></'.$this->nodeName;
@@ -630,41 +604,56 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				$str .= ' /';
 			$str .= '>';
 		}
-		$inner = $this->getInner();
-		if(substr_count($inner,"\n")<2&&strlen($str)<$this->maxCharByLine
-			&&strlen($inner)<$this->maxCharByLine
-			&&!empty($this->childNodes)&&$this->isIndented()
-		){
-			$ind = strlen(array_values($this->childNodes)[0]->indentationTab());
-			$inner = substr($inner,$ind);
-		}
-		$str .= $inner;
+		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
-		$indentClose = false;
-		$indentCloseN = true;
-		if(!$this->selfClosed&&!$this->hiddenWrap&&(substr_count($str,"\n")+substr_count($foot,"\n"))>1){
-			if(empty($this->childNodes)){
-				$indentClose = true;
-			}
-			else{
-				$endcn = end($this->childNodes);
-				if(!$endcn instanceof TEXT){
-					$indentClose = true;
-				}
-				elseif(substr(rtrim($endcn,"\t\0\x0B"),-1)=="\n"){
-					$indentClose = true;
-					$indentCloseN = false;
-				}
-			}
-		}
-		if($indentClose)
-			$str .= $this->indentationTab(false,$indentCloseN);
-		
 		if(!$this->selfClosed&&!$this->hiddenWrap){
+			$l = ($lc=end($this->childNodes))?substr($lc,-1):false;
+			if(!$l||$l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
+				$str .= $this->indentationTab();
+			}
 			$str .= '</'.$this->nodeName.'>';
 		}
 		$str = $head.$str.$foot;
 		return $str;
+	}
+	
+	function toString(){
+		$str = '';
+		$head = implode('',$this->head);
+		if(!$this->hiddenWrap){
+			$str .= '<'.$this->nodeName;
+			foreach($this->metaAttribution as $k=>$v){
+				if(is_integer($k)){
+					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+						$str .= ' '.$v.'="'.$v.'"';
+					else
+						$str .= ' '.$v;
+				}
+				else{
+					$str .= ' '.$k.'="'.$v.'"';
+				}
+			}
+			if($this->selfClosed&&$this->templix&&$this->templix->isXhtml)
+				$str .= '></'.$this->nodeName;
+			elseif($this->selfClosed>1)
+				$str .= ' /';
+			$str .= '>';
+		}
+		$str .= $this->getInner();
+		$foot = implode('',$this->foot);
+		if(!$this->selfClosed&&!$this->hiddenWrap)
+			$str .= '</'.$this->nodeName.'>';
+		$str = $head.$str.$foot;
+		return $str;
+	}
+	function getTemplix(){
+		return $this->templix?$this->templix:($this->parent?$this->parent->getTemplix():($this->constructor?$this->constructor->getTemplix():null));
+	}
+	function __toString(){
+		if(($t=$this->getTemplix())&&$t->devTemplate)
+			return $this->toStringIndented();
+		else
+			return $this->toString();
 	}
 	function clear(){
 		$this->clearInner();
@@ -1052,6 +1041,10 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				case '<':
 					switch($state){
 						case self::STATE_PARSING_OPENER:
+							$state = self::STATE_PARSING_OPENER;
+							$this->fireCharacterData($charContainer);
+							$charContainer = '';
+						break;
 						case self::STATE_PARSING:
 							if(!isset($xmlText{$i+1}))
 								$this->throwException('Unexpected end of file, expected end after '.$currentChar);
@@ -1179,14 +1172,12 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 							$charContainer .= $currentChar;
 							if(substr($charContainer,$lnn)==$nnn){
 								$charContainer = substr($charContainer,0,$lnn);
-								if(trim($charContainer)){
-									$textNode = new TEXT();
-									$textNode->setParent($on);
-									$textNode->setNodeName('TEXT_UNPARSED');
-									$textNode->setBuilder($this);
-									$textNode->parse($charContainer);
-									$on[] = $textNode;
-								}
+								$textNode = new TEXT();
+								$textNode->setParent($on);
+								$textNode->setNodeName('TEXT_UNPARSED');
+								$textNode->setBuilder($this);
+								$textNode->parse($charContainer);
+								$on[] = $textNode;
 								$this->fireEndElement($nn);
 								$charContainer = '';
 								$state = self::STATE_PARSING;
@@ -1201,8 +1192,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 							}
 							else {
 								$state = self::STATE_PARSING;
-								$charContainer = trim($charContainer);			
-								$firstChar = @$charContainer{0};
+								$firstChar = isset($charContainer{0})?$charContainer{0}:'';
 								$myAttributes = [];
 								switch($firstChar){
 									case '/':
@@ -1257,7 +1247,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 														$myAttributes[] = $k;
 											}
 											if (strpos($charContainer, '/') !== false) {
-												$charContainer = trim(substr($charContainer, 0, (strrchr($charContainer, '/') - 1)));
+												$charContainer = substr($charContainer, 0, (strrchr($charContainer, '/') - 1));
 												$this->fireElement($charContainer, $myAttributes);
 											}
 											else {
@@ -1498,8 +1488,11 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$this->addToCurrent('COMMENT',$comment,true);
 	}
 	private function fireCharacterData($text){
-		if(trim($text))
+		if($text){
+			if(!trim($text))
+				$text = ' ';
 			$this->addToCurrent('TEXT',$text,true);
+		}
 	}
 	private function fireCDataSection($text){
 		$this->addToCurrent('CDATA',$text,true);
