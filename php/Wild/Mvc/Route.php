@@ -3,7 +3,7 @@
  * Route - Modular Router for Mvc
  *
  * @package Mvc
- * @version 1.0
+ * @version 1.1
  * @link http://github.com/surikat/Mvc/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
@@ -16,7 +16,7 @@ class Route implements \ArrayAccess,\Iterator,\Countable{
     private $controller;
     private $templateEngine;
     private $di;
-    function __construct($model='Wild\Route\Model', $view='Wild\Route\View', $controller = null, $templateEngine = null, Di $di = null){
+    function __construct($model='Wild\Mvc\Model', $view='Wild\Mvc\View', $controller = null, $templateEngine = null, Di $di = null){
         $this->model = $model;
         $this->view = $view;
         $this->controller = $controller;

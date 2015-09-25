@@ -15,6 +15,12 @@ class Group extends Route{
 		$model = $namespace.'\\Model';
 		$view = $namespace.'\\View';
 		$controller = $namespace.'\\Controller';
+		if(!class_exists($model))
+			$model = 'Wild\Mvc\Model';
+		if(!class_exists($view))
+			$view = 'Wild\Mvc\View';
+		if(!class_exists($controller))
+			$controller = null;
 		parent::__construct($model, $view, $controller, $templateEngine, $di);
     }
 }
