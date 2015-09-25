@@ -4,6 +4,7 @@ use Wild\Localize\Translator;
 use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
+	protected $autoWrapL10n = true;
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
 		Di $di,Translator $Translator=null, $server=null
@@ -53,13 +54,46 @@ class TemplixL10n extends Templix{
 		}
 		return $rw;
 	}
-	function i18nGettext($Tml,$cache=true){
-		if(!$cache){
-			$Tml->prepend('<?php include SURIKAT.\'php/Wild/Localize/__.php\'; ?>');
+	function i18nGettext($TML,$cache=true){
+		
+		//auto-wrap
+		if($this->autoWrapL10n){
+			$aggr = [];
+			$TML('*[ni18n] *,script,style,code')->data('i18n',false);
+			$inlineEls = ['br','i','b','u','em','strong','abbr','a'];
+			$inlineStr = implode(',',$inlineEls);
+			$inlineElsCheck = $inlineEls;
+			$inlineElsCheck[] = 'TEXT';
+			$TML($inlineStr)->each(function($el)use(&$aggr,&$inlineElsCheck){
+				if($el->data('i18n')===false)
+					return;
+				if(
+					$el->previousSibling&&$el->previousSibling->nodeName=='TEXT'
+					||($el->nextSibling&&in_array($el->nextSibling->nodeName,$inlineElsCheck))
+				){
+					$id = '{{.-;-:-'.uniqid('translateAggr',true).'-:-;-.}}';
+					$t = (string)$el;
+					$t = preg_replace('/(?:\s\s+|\n|\t|\r)/', ' ', $t);
+					$aggr[$id] = $t;
+					$el('*')->data('i18n',false);
+					$el->clear();
+					$el->write($id);
+					$el->nodeName = 'TEXT';
+				}
+			});
+			$aggrK = array_keys($aggr);
+			$aggrV = array_values($aggr);
+			
+			$TML->write((string)$TML);
 		}
-		$Tml('html')->attr('lang',$this->Translator->getLangCode());
-		$Tml('*[ni18n] TEXT:hasnt(PHP), script, style, code')->data('i18n',false);
-		$Tml('t, TEXT:hasnt(PHP)')->each(function($el)use($cache){
+		
+		
+		if(!$cache){
+			$TML->prepend('<?php include SURIKAT.\'php/Wild/Localize/__.php\'; ?>');
+		}
+		$TML('html')->attr('lang',$this->Translator->getLangCode());
+		$TML('*[ni18n] *, script, style, code')->data('i18n',false);
+		$TML('t, TEXT:hasnt(PHP)')->each(function($el)use($cache,&$aggrK,&$aggrV,&$TML){
 			if($el->data('i18n')===false)
 				return;
 			if($el->nodeName=='t')
@@ -81,16 +115,20 @@ class TemplixL10n extends Templix{
 			$rw = trim($rw);
 			if(!$rw)
 				return;
-			if($el->nodeName=='t'){
-				$rw = preg_replace('!\s+!', ' ', $rw);
+			if($this->autoWrapL10n){
+				$rw = str_replace($aggrK,$aggrV,$rw);
 			}
+			if(!$el->parent||$el->parent->nodeName!='pre')
+				$rw = preg_replace('/(?:\s\s+|\n|\t|\r)/', ' ', $rw);
 			$rw = $this->i18nWrapCode($rw,$cache);
 			$el->write($left.$rw.$right);
 			if($el->nodeName=='t'){
 				$el('*')->data('i18n',false);
 			}
 		});
-		$Tml('*')->each(function($markup){
+		$TML('*')->each(function($markup){
+			if($markup->data('i18n')===false)
+				return;
 			foreach($markup->attributes as $k=>$v){
 				if($k=='title'||($k=='href'&&$markup->nodeName=='a')){
 					if(strpos($v,'<?')===false)
@@ -103,8 +141,8 @@ class TemplixL10n extends Templix{
 			}
 		});
 	}
-	function i18nRel($Tml,$lang,$path,$langMap=null){
-		$head = $Tml->find('head',0);
+	function i18nRel($TML,$lang,$path,$langMap=null){
+		$head = $TML->find('head',0);
 		if(!$head)
 			return;
 		
