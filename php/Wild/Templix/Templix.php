@@ -388,4 +388,9 @@ class Templix implements \ArrayAccess {
 		}
 		return is_dir($dir);
 	}
+	function __clone(){
+		foreach($this->childNodes as $i=>$node){
+			$this->childNodes[$i] = clone $node;
+		}
+	}
 }

@@ -1576,5 +1576,30 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	function isHiddenWrap(){
 		return $this->hiddenWrap;
 	}
+	function __clone(){
+		foreach($this->childNodes as $i=>$node){
+			$this->childNodes[$i] = clone $node;
+		}
+		foreach($this->head as $i=>$node){
+			if($node instanceof Markup){
+				$this->head[$i] = clone $node;
+			}
+		}
+		foreach($this->innerHead as $i=>$node){
+			if($node instanceof Markup){
+				$this->innerHead[$i] = clone $node;
+			}
+		}
+		foreach($this->innerFoot as $i=>$node){
+			if($node instanceof Markup){
+				$this->innerFoot[$i] = clone $node;
+			}
+		}
+		foreach($this->foot as $i=>$node){
+			if($node instanceof Markup){
+				$this->foot[$i] = clone $node;
+			}
+		}
+	}
 }
 Markup::initialize();
