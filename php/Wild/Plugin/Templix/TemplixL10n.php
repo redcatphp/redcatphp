@@ -59,14 +59,13 @@ class TemplixL10n extends Templix{
 		}
 		$Tml('html')->attr('lang',$this->Translator->getLangCode());
 		$Tml('*[ni18n] TEXT:hasnt(PHP), script, style, code')->data('i18n',false);
-		$Tml('script')->data('i18n',false);
 		$Tml('t, TEXT:hasnt(PHP)')->each(function($el)use($cache){
 			if($el->data('i18n')===false)
 				return;
 			if($el->nodeName=='t')
 				$rw = $el->getInner();
 			else
-				$rw = "$el";
+				$rw = (string)$el;
 				
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
