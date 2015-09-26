@@ -282,8 +282,10 @@ class Compiler
 					continue;
 				$font = str_replace(' ','-',strtolower(trim(str_replace([':','"',"'"],'',$matches[2][$i]))));
 				$x = explode(',',$font);
-				foreach($x as $f)
+				foreach($x as $f){
+					$this->autoGenerateFont($f);
 					$code = "@import 'font/$f';\r\n$code";
+				}
 				$tmpCode = substr($tmpCode,0,$pos=strpos($tmpCode,$matches[0][$i],$pos)).substr($tmpCode,$pos+1+strlen($matches[0][$i])); //strip
 			}
 		}
@@ -303,8 +305,10 @@ class Compiler
 				}
 				$font = implode('-',$y);
 				$x = explode(',',$font);
-				foreach($x as $f)
+				foreach($x as $f){
+					$this->autoGenerateFont($f);
 					$code = "@import 'font/$f';\r\n$code";
+				}
 			}
 		}
 		return $code;
@@ -3237,4 +3241,77 @@ class Compiler
 
         throw new \Exception($msg);
     }
+    
+    protected function autoGenerateFont($f){ //added by surikat
+		foreach($this->importPaths as $path){
+			if(
+				is_file($path.'/font/'.$f.'.scss')
+				||is_file($path.'/font/_'.$f.'.scss')
+				||is_file($path.'/font/'.$f.'.css')
+			) return;
+		}
+		foreach($this->importPaths as $path){
+			$ttf = is_file($path.'/../font/'.$f.'.ttf');
+			$eot = is_file($path.'/../font/'.$f.'.eot');
+			$woff = is_file($path.'/../font/'.$f.'.woff');
+			$woff2 = is_file($path.'/../font/'.$f.'.woff2');
+			$svg = is_file($path.'/../font/'.$f.'.svg');
+			if($ttf||$eot||$woff||$woff2||$svg){
+				$fontName = ucwords(str_replace('-',' ',$f));
+				$fontFace = '@font-face {
+	font-family: \''.$fontName.'\';
+';
+				if($eot)
+					$fontFace .= '	src: url(\'#{$font}'.$f.'.eot\');';
+				$fontFace .= "\n	src: ";
+				$n = false;
+				if($eot){
+					if($n)
+						$fontFace .= "\n";
+					$n = true;
+					$fontFace .= '		url(\'#{$font}'.$f.'.eot?#iefix\') format(\'embedded-opentype\'),';
+				}
+				if($woff2){
+					if($n)
+						$fontFace .= "\n";
+					$n = true;
+					$fontFace .= '		url(\'#{$font}'.$f.'.woff2\') format(\'woff2\'),';
+				}
+				if($woff){
+					if($n)
+						$fontFace .= "\n";
+					$n = true;
+					$fontFace .= '		url(\'#{$font}'.$f.'.woff\') format(\'woff\'),';
+				}
+				if($ttf){
+					if($n)
+						$fontFace .= "\n";
+					$n = true;
+					$fontFace .= '		url(\'#{$font}'.$f.'.ttf\') format(\'truetype\'),';
+				}
+				if($svg){
+					if($n)
+						$fontFace .= "\n";
+					$n = true;
+					$svg = simplexml_load_file($path.'/../font/'.$f.'.svg');
+					$svgid = '';
+					foreach($svg as $v){
+						if($v->font&&($svgid=$v->font['id']))
+							break;
+					}
+					$fontFace .= '		url(\'#{$font}'.$f.'.svg#'.$svgid.'\') format(\'svg\'),';
+				}
+				$fontFace = rtrim($fontFace,',');
+				$fontFace .= ';
+	font-weight: normal;
+	font-style: normal;
+}';
+				$dir = $path.'/font/';
+				if(!is_dir($dir))
+					@mkdir($dir,0777,true);
+				file_put_contents($dir.$f.'.scss',$fontFace);
+				return;
+			}
+		}
+	}
 }
