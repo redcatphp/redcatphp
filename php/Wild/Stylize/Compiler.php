@@ -3252,6 +3252,8 @@ class Compiler
 		}
 		foreach($this->importPaths as $path){
 			$ttf = is_file($path.'/../font/'.$f.'.ttf');
+			if($ttf)
+				$this->makeFontFromTTF($path.'/../font/',$f);
 			$eot = is_file($path.'/../font/'.$f.'.eot');
 			$woff = is_file($path.'/../font/'.$f.'.woff');
 			$woff2 = is_file($path.'/../font/'.$f.'.woff2');
@@ -3312,6 +3314,61 @@ class Compiler
 				file_put_contents($dir.$f.'.scss',$fontFace);
 				return;
 			}
+		}
+	}
+	
+	public $bin_ttf2eot;
+	public $bin_fontforge;
+	public $bin_sfnt2woff;
+	public $bin_woff2_compress;
+	protected function makeFontFromTTF($dir,$f){
+		$path = $dir.'/'.$f.'.ttf';
+		$path = realpath($path);
+		$base = basename($path);
+		
+		if(!$path)
+			return;
+		
+		if(!isset($this->bin_ttf2eot)&&is_file('/usr/bin/ttf2eot'))
+			$this->bin_ttf2eot = '/usr/bin/ttf2eot';
+		if(!isset($this->bin_fontforge)&&is_file('/usr/bin/fontforge'))
+			$this->bin_fontforge = '/usr/bin/fontforge';
+		if(!isset($this->bin_sfnt2woff)&&is_file('/usr/bin/sfnt2woff'))
+			$this->bin_sfnt2woff = '/usr/bin/sfnt2woff';
+		if(!isset($this->bin_woff2_compress)&&is_file('/usr/bin/woff2_compress'))
+			$this->bin_woff2_compress = '/usr/bin/woff2_compress';
+		
+		$eotPath = $dir.'/'.$f.'.eot';
+		$woffPath = $dir.'/'.$f.'.woff';
+		$woff2Path = $dir.'/'.$f.'.woff2';
+		$svgPath = $dir.'/'.$f.'.svg';
+
+		if($this->bin_fontforge){
+			exec($this->bin_fontforge.' -script '.__DIR__.'/scripts-fontforge/tottf.pe "'.$path.'"',$output,$return);
+			if(0!==$return)
+				throw new \RuntimeException('Fontforge could not convert '.$base.' to TrueType format.');
+		}
+		if(!is_file($eotPath)&&$this->bin_ttf2eot){
+			exec($this->bin_ttf2eot.' "'.$path. '" > ' . $eotPath.'',$output,$return);
+			$outputHuman = implode('<br/>', $output);
+			if(0!==$return)
+				throw new \RuntimeException('ttf2eot could not convert '.$base.' to EOT format.' . $outputHuman);
+		}
+		if(!is_file($svgPath)&&$this->bin_fontforge){
+			exec($this->bin_fontforge.' -script '.__DIR__.'/scripts-fontforge/tosvg.pe "'.$path.'"',$output,$return);
+			if(0!==$return)
+				throw new \RuntimeException('Fontforge could not convert '.$base.' to SVG format.');
+		}
+        
+        if(!is_file($woffPath)&&$this->bin_sfnt2woff){
+			exec($this->bin_sfnt2woff.' "'.$path.'"',$output,$return);
+			if(0!==$return)
+				throw new \RuntimeException('sfnt2woff could not convert '.$base.' to Woff format.');
+		}
+		if(!is_file($woff2Path)&&$this->bin_woff2_compress){	
+			exec($this->bin_woff2_compress.' "'.$path.'"',$output,$return);
+			if(0!==$return)
+				throw new \RuntimeException('woff2_compress could not convert '.$base.' to Woff2 format.');
 		}
 	}
 }
