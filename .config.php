@@ -15,12 +15,7 @@ return [
 			'login'=>'root',
 			'password'=>'root',
 		],
-		'databaseMap'=>[
-			'translation' => [
-				'type'			=>'sqlite',
-				'file'			=>SURIKAT_CWD.'.data/db.translation.sqlite',
-			],
-		],
+		'databaseMap'=>[],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
 	],
