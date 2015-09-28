@@ -13,6 +13,7 @@ class Server{
 	protected $cacheDir = '.tmp/stylize/';
 	protected $enableCache;
 	protected $compiler;
+	protected $extraImports = [];
 	function __construct($from=null,$cache=true){
 		$this->setCache($cache);
 		$this->compiler = new Compiler();
@@ -22,10 +23,18 @@ class Server{
 	function setCache($enable){
 		$this->enableCache = (bool)$enable;
 	}
-	function serveFrom($file,$from=null,$salt = ''){
+	function serveFrom($file,$from=null,$extraImports=null,$salt = ''){
 		if(isset($from))
 			$this->setImportPaths($from);
-		$this->serve($file);
+		if($extraImports)
+			$this->addExtraImports($extraImports);
+		$this->serve($file,$salt);
+	}
+	function addExtraImports($extraImports){
+		foreach((array)$extraImports as $ei){
+			if(!in_array($ei,$this->extraImports))
+				$this->extraImports[] = $ei;
+		}
 	}
 	function serve($in,$salt = '') {
 		if(strpos($in, '..')!==false)
@@ -79,10 +88,17 @@ class Server{
 	}
 	function compile($in, $out,$input=null) {
 		$start = microtime(true);
-		if($input)
-			$css = $this->compiler->compile('@import "config";@import "vars";@import "'.$input.'";'); //surikat addon
-		else
+		if($input){
+			$compile = '';
+			foreach($this->extraImports as $ei){
+				$compile .= '@import "'.$ei.'";';
+			}
+			$compile .= '@import "'.$input.'";';
+			$css = $this->compiler->compile($compile);
+		}
+		else{
 			$css = $this->compiler->compile(file_get_contents($in), $in);
+		}
 		$elapsed = round((microtime(true) - $start), 4);
 		$v = Compiler::Scss_VERSION;
 		$v2 = Compiler::Stylize_VERSION;

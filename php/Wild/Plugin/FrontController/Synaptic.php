@@ -190,7 +190,7 @@ class Synaptic {
 				$from[] = $dir;
 		}
 		$scss = $this->di->create('Wild\Stylize\Server');
-		$scss->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from);
+		$scss->serveFrom(pathinfo($path,PATHINFO_FILENAME).'.scss',$from,['config','vars']);
 	}
 	function fileCache($output){
 		$mtime = filemtime($output);

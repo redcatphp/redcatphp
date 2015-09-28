@@ -2200,7 +2200,24 @@ class Compiler
             $this->parsedFiles[] = $path;
 
             $this->importCache[$realPath] = $tree;
+
+			$x = explode('/',dirname($path));
+			$dotScss = [];
+			while(!empty($x)){
+				$dir = implode('/',$x);
+				array_pop($x);
+				if(is_file($dir.'/.scss')){
+					$dotScss[] = $dir.'/.scss';
+				}
+			}
+			if(!empty($dotScss)){
+				$dotScss = array_reverse($dotScss);
+				foreach($dotScss as $dscss){
+					$this->importFile($dscss,$out);
+				}
+			}
         }
+        
 
         $pi = pathinfo($path);
         array_unshift($this->importPaths, $pi['dirname']);
