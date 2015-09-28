@@ -16,15 +16,6 @@ return [
 			'password'=>'root',
 		],
 		'databaseMap'=>[
-			0 => [
-				'type'=>'sqlite',
-				'file'=>SURIKAT_CWD.'.data/db.sqlite',
-				'entityClassPrefix'=>['EntityModel\\'],
-				'entityClassDefault'=>'stdClass',
-				'primaryKey'=>'id',
-				'uniqTextKey'=>'uniq',
-				'createDb'=>true,
-			],
 			'translation' => [
 				'type'			=>'sqlite',
 				'file'			=>SURIKAT_CWD.'.data/db.translation.sqlite',
