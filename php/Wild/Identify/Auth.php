@@ -199,7 +199,7 @@ class Auth{
 				$id = null;
 			if(!$id){
 				try{
-					$id = $this->db
+					$user = $this->db
 						->create($this->tableUsers,[
 							'login'=>$this->rootLogin,
 							'name'=>isset($this->rootName)?$this->rootName:$this->rootLogin,
@@ -209,6 +209,7 @@ class Auth{
 							'type'=>'root'
 						])
 					;
+					$id = $user->id;
 				}
 				catch(\Exception $e){
 					return self::ERROR_SYSTEM_ERROR;
