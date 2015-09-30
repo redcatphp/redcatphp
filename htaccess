@@ -223,6 +223,10 @@ RewriteCond %{REQUEST_URI} !^/surikat/
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}surikat/$1.$2 -f
 RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html|swf)$ %{ENV:SURIKAT_URI}surikat/$1.$2 [L,QSA]
 
+#favicon.ico
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^favicon.ico$ %{ENV:SURIKAT_URI}img/favicon.ico [L]
+
 #Pre-compressed gzip
 AddEncoding gzip .gz .tgz
 <IfVersion < 2.4.4>
