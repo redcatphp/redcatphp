@@ -171,6 +171,7 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 </FilesMatch>
 
 #Custom Error Document
+ErrorDocument 401 /401
 ErrorDocument 403 /403
 ErrorDocument 404 /404
 ErrorDocument 500 /500
