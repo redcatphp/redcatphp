@@ -3,6 +3,9 @@ namespace Wild\Templix\MarkupX;
 class Code extends \Wild\Templix\Markup{
 	protected $noParseContent = true;
 	function load(){
+		if($this->attr('tmp-once'))
+			return;
+		$this->attr('tmp-once',1);
 		$this->remapAttr('file');
 		if($this->file){
 			if($this->templix&&($find = $this->templix->findPath($this->file))){
