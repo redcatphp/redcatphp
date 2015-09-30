@@ -179,6 +179,11 @@ ErrorDocument 500 /500
 #Enable Rewrite Engine
 RewriteEngine On
 
+#Domain - Canonicalize domain
+#RewriteCond %{HTTP_HOST} !my-canonical-domain.com$ [NC]
+#RewriteCond %{HTTP_HOST} !my-canonical-domain.dev$ [NC]
+#RewriteRule ^(.*)$ http://my-canonical-domain.com/$1 [L,R=301]
+
 #Force remove www
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
