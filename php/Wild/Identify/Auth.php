@@ -732,13 +732,13 @@ class Auth{
 		
 		if($redirect){
 			if($this->connected())
-				$redirect = '403';
+				$redirect = '401';
 			if($redirect===true)
-				$redirect = isset($this->siteLoginUri)?$this->siteLoginUri:'403';
+				$redirect = isset($this->siteLoginUri)?$this->siteLoginUri:'401';
 			header('Location: '.$this->siteUrl.$redirect,false,302);
 		}
 		else{
-			http_response_code(403);
+			http_response_code(401);
 		}
 		exit;
 	}

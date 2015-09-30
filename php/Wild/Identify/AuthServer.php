@@ -238,11 +238,12 @@ class AuthServer{
 			return;
 		if($this->Auth->connected()){
 			if($redirect)
-				header('Location: '.$this->Auth->siteUrl.'403',false,302);
+				header('Location: '.$this->Auth->siteUrl.'401',false,302);
 			else
-				http_response_code(403);
+				http_response_code(401);
 			exit;
 		}
+		http_response_code(401);
 		echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Authentication</title>
 		<style type="text/css">
 			form{
