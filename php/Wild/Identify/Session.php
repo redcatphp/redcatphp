@@ -122,14 +122,14 @@ class Session{
 		}
 	}
 	function regenerateId(){
-		$old = $this->serverFile();
-		$this->id = $this->generateId();
-		$new = $this->serverFile();
-		while(file_exists($new)){ //avoid collision
+		$old = $this->serverExist()?$this->serverFile():false;
+		do{
 			$this->id = $this->generateId();
 			$new = $this->serverFile();
 		}
-		rename($old,$new);
+		while(file_exists($new));
+		if($old)
+			rename($old,$new);
 		$this->writeCookie();
 	}
 	function getClientFP(){
