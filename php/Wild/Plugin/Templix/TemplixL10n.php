@@ -101,6 +101,10 @@ class TemplixL10n extends Templix{
 			else
 				$rw = (string)$el;
 				
+			if($this->autoWrapL10n){
+				$rw = str_replace($aggrK,$aggrV,$rw);
+			}
+			
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
 			$right = $l-strlen(rtrim($rw));
@@ -115,9 +119,6 @@ class TemplixL10n extends Templix{
 			$rw = trim($rw);
 			if(!$rw)
 				return;
-			if($this->autoWrapL10n){
-				$rw = str_replace($aggrK,$aggrV,$rw);
-			}
 			if(!$el->parent||$el->parent->nodeName!='pre')
 				$rw = preg_replace('/(?:\s\s+|\n|\t|\r)/', ' ', $rw);
 			$rw = $this->i18nWrapCode($rw,$cache);
