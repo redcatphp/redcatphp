@@ -1511,7 +1511,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				if($l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
 					$node->spaceAfterClose = true;
 				}
-				if($f==" "||$f=="\t"||$f=="\0"||$f=="\x0B"||$f=="\n"){
+				if(!$node->previousSibling&&($f==" "||$f=="\t"||$f=="\0"||$f=="\x0B"||$f=="\n")){
 					$this->currentTag->spaceAfterOpen = true;
 				}
 			}
