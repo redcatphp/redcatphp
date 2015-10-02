@@ -152,6 +152,7 @@ class Templix implements \ArrayAccess {
 		});
 		$node('[tmp-tag]')->remove();
 		$node('[tmp-attr]')->removeAttr('tmp-attr');
+		$node('[tmp-once]')->removeAttr('tmp-once');
 	}
 	function devRegeneration(){
 		$exist = is_file($this->devCompileFile);
