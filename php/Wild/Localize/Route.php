@@ -31,9 +31,9 @@ class Route{
 				return $map[$k];
 			}
 		},$default,$http_accept_language);
+		setcookie('language',$language);
 		$current = $this->getBaseHref();
 		if($current!=$redirect){
-			setcookie('language',$language);
 			header('Location: '.$redirect,false,302);
 			exit;
 		}
