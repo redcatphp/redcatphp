@@ -31,7 +31,13 @@ class Route{
 				return $map[$k];
 			}
 		},$default,$http_accept_language);
-		setcookie('language',$language);
+		
+		$lg = $this->getSubdomainLang();
+		$domain = $this->getServerHref();
+		if($lg)
+			$domain = substr($domain,strlen($lg)+1);
+		setcookie('language',$language,0,'/',$domain);
+		
 		$current = $this->getBaseHref();
 		if($current!=$redirect){
 			header('Location: '.$redirect,false,302);
