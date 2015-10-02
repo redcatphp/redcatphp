@@ -9,6 +9,8 @@ class Templix extends \Wild\Templix\Templix{
 	public $httpEtag;
 	public $cleanDir = '.tmp/min/';
 	
+	protected $toolbox;
+	
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
 		Di $di,
@@ -21,13 +23,14 @@ class Templix extends \Wild\Templix\Templix{
 		$this->httpEtag = $httpEtag;
 		$this->httpExpireTime = $httpExpireTime;
 		
+		$this->toolbox = $this->di->create(__NAMESPACE__.'\Toolbox');
+		
 		$this->onCompile(function($tml){
 			if($tml->templix->getParent())
 				return;
-			$toolbox = $this->di->create(__NAMESPACE__.'\Toolbox');
-			$toolbox->is($tml);
+			$this->toolbox->is($tml);
 			if(!$tml->devTemplate)
-				$toolbox->autoMIN($tml);
+				$this->toolbox->autoMIN($tml);
 		});
 		$this->setCleanCallback([$this,'cleanMin']);
 	}

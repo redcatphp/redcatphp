@@ -5,9 +5,11 @@ use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
 	protected $autoWrapL10n = true;
+	protected $cdnSubdomain;
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
-		Di $di,Translator $Translator=null, $server=null
+		Di $di,Translator $Translator=null, $server=null,
+		$cdnSubdomain = null
 	){
 		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg,$di);
 		$this->di = $di;
@@ -15,6 +17,7 @@ class TemplixL10n extends Templix{
 			$server = &$_SERVER;
 		$this->Translator = $Translator;
 		$this->server = $server;
+		$this->cdnSubdomain = $cdnSubdomain;
 	}
 	function __invoke($file){
 		list($lang,$langMap,$file) = (array)$file;
@@ -38,8 +41,14 @@ class TemplixL10n extends Templix{
 					}
 				}
 			}
+			
+			if($this->cdnSubdomain){
+				$cdn = $this->getSubdomainHref($this->cdnSubdomain);
+				$this->toolbox->setCDN($TML,$cdn);
+			}
 		});
-
+		
+		
 		return $this->query($file);
 	}
 	function i18nWrapCode($rw,$cache=true){
