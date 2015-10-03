@@ -90,6 +90,7 @@ class TemplixL10n extends Templix{
 					$el->nodeName = 'TEXT';
 				}
 			});
+			$aggr = array_reverse($aggr);
 			$aggrK = array_keys($aggr);
 			$aggrV = array_values($aggr);
 			
