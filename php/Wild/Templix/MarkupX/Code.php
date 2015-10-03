@@ -38,10 +38,11 @@ class Code extends \Wild\Templix\Markup{
 		}
 		$text = implode("\n",$x);
 			
-		if($this->parent->nodeName!='pre'&&!$this->keepNl){
+		if($this->parent&&$this->parent->nodeName!='pre'&&!$this->keepNl){
 			$text = str_replace("\t","    ",$text);
 			$text = str_replace(" ","&nbsp;",$text);
-			$text = nl2br($text);
+			$text = str_replace(["\r\n","\r"],"\n",$text);
+			$text = str_replace("\n",'<br>',$text);
 		}
 		$this->innerHead[] = $text;
 	}
