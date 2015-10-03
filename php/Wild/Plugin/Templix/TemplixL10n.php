@@ -5,11 +5,12 @@ use Wild\Kinetic\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
 	protected $autoWrapL10n = true;
+	protected $langDefault;
 	protected $cdnSubdomain;
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false,
 		Di $di,Translator $Translator=null, $server=null,
-		$cdnSubdomain = null
+		$cdnSubdomain = null, $langDefault = null
 	){
 		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg,$di);
 		$this->di = $di;
@@ -17,6 +18,7 @@ class TemplixL10n extends Templix{
 			$server = &$_SERVER;
 		$this->Translator = $Translator;
 		$this->server = $server;
+		$this->langDefault = $langDefault;
 		$this->cdnSubdomain = $cdnSubdomain;
 	}
 	function __invoke($file){
@@ -31,7 +33,8 @@ class TemplixL10n extends Templix{
 		$this->Translator->set($lang);
 		$this->setDirCompileSuffix('.'.$lang.'/');
 		$this->onCompile(function($TML)use($lang,$file,$langMap){
-			$this->i18nGettext($TML);
+			if($this->langDefault!=$lang)
+				$this->i18nGettext($TML);
 			$this->i18nRel($TML,$lang,$file,$langMap);
 			if($langMap){
 				foreach($TML('a[href]') as $a){

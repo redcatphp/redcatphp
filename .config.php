@@ -69,6 +69,11 @@ return [
 				'$langDefault'=>'l10nDefault',
 			],
 		],
+		'Wild\Plugin\Templix\TemplixL10n'=>[
+			'construct'=>[
+				'$langDefault'=>'l10nDefault',
+			],
+		],
 		'Wild\Localize\Translator'=>[
 			'shared'=>true,
 			'construct'=>[
