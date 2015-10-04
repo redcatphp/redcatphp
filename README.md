@@ -1,7 +1,6 @@
 # Surikat - Full Stack Web Framework
-## Power to Extend the Web
 
-Welcome
+Power to Extend the Web
 -------
 
  Surikat is designed to enhance developer abilities and bring project's quality to excellence. Surikat is a full stack framework, a group of decoupled components workings together to make a complete web developement solution. If you're aware of [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming) and you like [PHP](http://php.et), the most popular language for web developement, Surikat can help you to boost your workflow and increase your productivity.
