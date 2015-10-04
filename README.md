@@ -30,17 +30,17 @@ The Developement Theorem
 
  Surikat paradigm: See Away, Be Light, Run Fast - like the [Meerkat](https://en.wikipedia.org/wiki/Meerkat) behavior
 
-See Away
+### See Away
 -	Scalabilty (durability)
 -	Reusability
 -	Reliability
 
-Be Light
+### Be Light
 -	Maintainability
 -	Accuracy (consistency)
 -	Lightness ([DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
 
-Run Fast
+### Run Fast
 -	Performance
 -	Lightweight (memory size)
 -	Speed (execution time)
