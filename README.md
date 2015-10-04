@@ -50,4 +50,4 @@ About
 
 Surikat-Framework, designed with madness and  by a [web developer](http://jo-developer.ninja) for web developers !
 
-[continue to documentation](http://wildsurikat.com/Documentation/) [download it](Download)
+[continue to documentation](http://wildsurikat.com/Documentation/)
