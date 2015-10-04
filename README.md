@@ -30,8 +30,22 @@ The Developement Theorem
 
  Surikat paradigm: See Away, Be Light, Run Fast - like the [Meerkat](https://en.wikipedia.org/wiki/Meerkat) behavior
 
-See Away:Scalabilty (durability)ReusabilityReliabilityBe Light:MaintainabilityAccuracy (consistency)Lightness ([DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself))Run Fast:PerformanceLightweight (memory size)Speed (execution time)
+See Away
+-	Scalabilty (durability)
+-	Reusability
+-	Reliability
 
+Be Light
+-	Maintainability
+-	Accuracy (consistency)
+-	Lightness ([DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
+
+Run Fast
+-	Performance
+-	Lightweight (memory size)
+-	Speed (execution time)
+
+ 
  In coding we often have to find balance between these objectives and sometimes we have to take care of one to the detriment of others. But more often the one side can improve the others and we just didn't find the good way to conciliate all.   
  In each phase of developement, Surikat was designed with this theory in mind and respect, in all of his components, as much as suitable, all these qualities that make a good source code.
 
