@@ -61,6 +61,6 @@ About
 
  Surikat-Framework is designed by the [BDFL](https://en.wikipedia.org/wiki/Benevolent_dictator_for_life) [Jo](http://surikat.pro) ([jo@surikat.pro](mailto:%6a%6f@%73%75%72%69%6b%61%74.%70%72%6f)). Surikat come from many years of personal studies and developement but it need your support to build an open source community around and improve its solidity by [reporting issues and bugs](https://github.com/surikat/surikat/issues), bring suggestions and [sharing it](About).
 
-Surikat-Framework, designed with madness and  by a [web developer](http://jo-developer.ninja) for web developers !
+Surikat-Framework, designed with madness and love by a [web developer](http://jo-developer.ninja) for web developers !
 
 [continue to documentation](http://wildsurikat.com/Documentation/)
