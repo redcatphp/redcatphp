@@ -58,7 +58,10 @@
 				(requiring[u].shift())(u);
 	};
 	var getSrc = function(u){
-		return u&&u.indexOf('/')!==0?($js.path&&u.indexOf('://')<0&&(!$js.pathDetection||u.indexOf($js.path)!=0)?($js.path+u):u)+($js.pathSuffix&&u.indexOf('://')<0&&(!$js.pathDetection||u.substr(u.length-$js.pathSuffix.length)!=$js.pathSuffix)?$js.pathSuffix:''):u;
+		if(typeof(u)=='undefined'||!u)
+			return;
+		var relative = u.indexOf('://')<0;
+		return ($js.cdn&&relative?$js.cdn:'')+(u.indexOf('/')!==0?($js.path&&relative&&(!$js.pathDetection||u.indexOf($js.path)!=0)?($js.path+u):u)+($js.pathSuffix&&relative&&(!$js.pathDetection||u.substr(u.length-$js.pathSuffix.length)!=$js.pathSuffix)?$js.pathSuffix:''):u);
 	};
 	var createScript = function(u){
 		var s = d.createElement('script');
@@ -493,6 +496,7 @@
 		js.pathDetection = true;
 		js.pathSuffix = '.js';
 		js.min = false;
+		js.cdn = false;
 		
 		//methods
 		js.alias = function(alias,concrete){
@@ -607,7 +611,10 @@
 
 
 	var getHref = function(u){
-		return u?($css.path&&u.indexOf('://')<0&&u.indexOf('/')!==0&&(!$css.pathDetection||u.indexOf($css.path)!=0)?($css.path+u):u)+($css.pathSuffix&&u.indexOf('://')<0&&(!$css.pathDetection||u.substr(u.length-$css.pathSuffix.length)!=$css.pathSuffix)?$css.pathSuffix:''):u;
+		if(typeof(u)=='undefined'||!u)
+			return;
+		var relative = u.indexOf('://')<0;
+		return ($css.cdn&&relative?$css.cdn:'')+($css.path&&relative&&u.indexOf('/')!==0&&(!$css.pathDetection||u.indexOf($css.path)!=0)?($css.path+u):u)+($css.pathSuffix&&relative&&(!$css.pathDetection||u.substr(u.length-$css.pathSuffix.length)!=$css.pathSuffix)?$css.pathSuffix:'');
 	};
 	var loadedCSS = [];
 	$css = (function(){
@@ -638,8 +645,18 @@
 		css.pathDetection = true;
 		css.pathSuffix = '.css';
 		css.min = false;
+		css.cdn = false;
 		return css;
 	})();
+	
+	var base = d.getElementsByTagName('base');
+	if(base.length){
+		var dcdn = base[0].getAttribute('data-cdn');
+		if(typeof(dcdn)!='undefined'){
+			$js.cdn = dcdn;
+			$css.cdn = dcdn;
+		}
+	}
 	
 	var load = function(){			
 		apt = x;
@@ -647,7 +664,7 @@
 			loader(0,k);
 		for(var k in scripts[1])
 			loader(1,k);
-
+		
 		var ev = '';
 		var keys = keysOf(y).reverse();
 		for(var u in keys){

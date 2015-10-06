@@ -53,16 +53,10 @@ class Toolbox{
 	function setCDN($Tml,$url){
 		$url = rtrim($url,'/').'/';
 		$Tml('script[src],img[src],link[href]')->each(function($el)use($url,$Tml){
-			if(
-				($el->nodeName=='link'&&$el->type=='text/css'&&$Tml->templix&&$Tml->templix->devCss)
-				|| ($el->nodeName=='link'&&$el->type=='image/x-icon'&&$Tml->templix&&$Tml->templix->devImg)
-				|| ($el->nodeName=='img'&&$Tml->templix&&$Tml->templix->devImg)
-				|| ($el->nodeName=='script'&&$Tml->templix&&$Tml->templix->devJs)
-			)
-				return;
 			$k = $el->src?'src':'href';
 			if($el->$k&&strpos($el->$k,'://')===false)
 				$el->$k = $url.ltrim($el->$k,'/');
 		});
+		$Tml('base')->attr('data-cdn',$url);
 	}
 }
