@@ -25,15 +25,18 @@
 		return true;
 	};
 	var ts = (new Date().getTime()).toString();
-	var cacheFix = function(fileName,dev,min,ext){
-		if(dev){
-			if(fileName.indexOf('://')<0&&fileName.indexOf('_t=')<0)
-				fileName += (fileName.indexOf('?')<0?'?':'&')+'_t='+ts;
-		}
-		else if(min){
-			if(fileName.indexOf('://')<0&&fileName.indexOf('.min.'+ext)<0&&fileName.indexOf('.'+ext)){
-				var p = fileName.lastIndexOf('.'+ext);
-				fileName = fileName.substr(0,p)+'.min'+fileName.substr(p);
+	var cacheFix = function(fileName,dev,min,ext,cdn){
+		if(dev||min){
+			var relative = fileName.indexOf('://')<0||(cdn&&fileName.indexOf(cdn)===0);
+			if(min){
+				if(relative&&fileName.indexOf('.min.'+ext)<0&&fileName.indexOf('.'+ext)){
+					var p = fileName.lastIndexOf('.'+ext);
+					fileName = fileName.substr(0,p)+'.min'+fileName.substr(p);
+				}
+			}
+			else{
+				if(relative&&fileName.indexOf('_t=')<0)
+					fileName += (fileName.indexOf('?')<0?'?':'&')+'_t='+ts;
 			}
 		}
 		return fileName;
@@ -88,7 +91,7 @@
 		s.onload = callback;
 		s.onreadystatechange = function(){if(callback&&this.readyState==='loaded'){callback();}}; //old browsers
 		s.setAttribute('async','async');
-		s.src = cacheFix(u,$js.dev,$js.min,'js');
+		s.src = cacheFix(u,$js.dev,$js.min,'js',$js.cdn);
 	};
 	var x = function(u,c){
 		if(!u){
@@ -635,7 +638,7 @@
 					style.rel = 'stylesheet';
 					if(media)
 						style.media =	media;
-					style.href = cacheFix(fileName,$css.dev,$css.min,'css');
+					style.href = cacheFix(fileName,$css.dev,$css.min,'css',$css.cdn);
 					d.getElementsByTagName('head')[0].appendChild(style);
 				}
 			}
