@@ -1,4 +1,5 @@
-<?php namespace Wild\Localize;
+<?php
+namespace Wild\Localize;
 /*
  * Translator - gettext wrapper
  *
@@ -86,6 +87,9 @@ class Translator {
 				$lookFor = $lc.'_'.strtoupper($lc);
 				if(in_array($lookFor,self::$systemLocales)){
 					$found = $lookFor;
+				}
+				elseif($this->suffixLocales&&in_array($lookFor.$this->suffixLocales,self::$systemLocales)){				
+					$found = $lookFor.$this->suffixLocales;
 				}
 				else{
 					foreach(self::$systemLocales as $lc){
