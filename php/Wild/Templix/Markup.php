@@ -606,9 +606,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
 			}
-			if($this->selfClosed&&$this->templix&&$this->templix->isXhtml)
-				$str .= '></'.$this->nodeName;
-			elseif($this->selfClosed>1)
+			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
 				$str .= ' /';
 			$str .= '>';
 			if($this->spaceAfterOpen)
@@ -644,9 +642,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 					$str .= ' '.$k.'="'.$v.'"';
 				}
 			}
-			if($this->selfClosed&&$this->templix&&$this->templix->isXhtml)
-				$str .= '></'.$this->nodeName;
-			elseif($this->selfClosed>1)
+			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
 				$str .= ' /';
 			$str .= '>';
 			if($this->spaceAfterOpen)
@@ -1458,21 +1454,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	
 	private function fireElement($name,$attributes){
 		$attributes['/'] = '';
-		if(($pos=strpos($name,'&'))!==false){
-			$x = explode('&',$name);
-			$name = array_pop($x);
-			foreach($x as $n)
-				$this->fireElement($n,$attributes);
-		}
 		$this->addToCurrent($name,$attributes)->closed();
 	}
 	private function fireStartElement($name,$attributes,&$state=null){
-		if(($pos=strpos($name,'&'))!==false){
-			$x = explode('&',$name);
-			$name = array_pop($x);
-			foreach($x as $n)
-				$this->fireStartElement($n,$attributes);
-		}
 		$this->currentTag = $this->addToCurrent($name,$attributes);
 		if($this->currentTag->noParseContent)
 			$state = self::STATE_NOPARSING;
@@ -1483,13 +1467,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		}
 	}
 	private function fireEndElement($name){
-		if(($pos=strpos($name,'&'))!==false){
-			$x = explode('&',$name);
-			$x = array_reverse($x);
-			$name = array_pop($x);
-			foreach($x as $n)
-				$this->fireEndElement($n);
-		}
 		if($name!=$this->currentTag->nodeName)
 			$this->throwException('Unexpected </'.$name.'>, expected </'.$this->currentTag->nodeName.'>');
 		$this->currentTag->closed();
@@ -1571,6 +1548,7 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected function throwException($msg){
 		if($this->templix)
 			$msg .= $this->exceptionContext();
+		//$msg .= "\n\nCONTEXT:\n\n".(string)$this;
 		throw new MarkupException($msg);
 	}
 	function isHiddenWrap(){
