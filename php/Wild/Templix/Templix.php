@@ -138,10 +138,10 @@ class Templix implements \ArrayAccess {
 			if(!in_array($dir,$this->dirCwd))
 				$this->dirCwd[] = rtrim($dir,'/').'/';
 	}
-	function onCompile($call,$prepend=false){
-		if(is_integer($prepend))
-			$this->compile[$prepend] = $call;
-		elseif($prepend)
+	function onCompile($call,$append=false){
+		if(is_integer($append))
+			$this->compile[$append] = $call;
+		elseif($append)
 			array_push($this->compile,$call);
 		else
 			array_unshift($this->compile,$call);
