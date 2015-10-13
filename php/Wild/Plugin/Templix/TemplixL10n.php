@@ -45,11 +45,13 @@ class TemplixL10n extends Templix{
 				}
 			}
 			
-			if($this->cdnSubdomain){
-				$cdn = $this->getSubdomainHref($this->cdnSubdomain);
-				$this->toolbox->setCDN($TML,$cdn);
-			}
 		});
+		if($this->cdnSubdomain){
+			$cdn = $this->getSubdomainHref($this->cdnSubdomain);
+			$this->onCompile(function($TML)use($cdn){
+				$this->toolbox->setCDN($TML,$cdn);
+			},true);
+		}
 		
 		
 		return $this->query($file);

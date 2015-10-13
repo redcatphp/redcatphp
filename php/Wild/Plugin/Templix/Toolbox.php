@@ -53,6 +53,8 @@ class Toolbox{
 	function setCDN($Tml,$url){
 		$url = rtrim($url,'/').'/';
 		$Tml('script[src],img[src],link[href]')->each(function($el)use($url,$Tml){
+			if($el->attr('no-cdn')||($el->nodeName=='link'&&$el->rel&&$el->rel!='stylesheet'))
+				return;
 			$k = $el->src?'src':'href';
 			if($el->$k&&strpos($el->$k,'://')===false)
 				$el->$k = $url.ltrim($el->$k,'/');
