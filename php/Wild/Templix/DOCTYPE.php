@@ -12,6 +12,10 @@ class DOCTYPE extends Markup{
 		$this->__compat = substr($this->contentText,10,-1);
 		if($this->__compat!='html'&&$this->templix)
 			$this->templix->isXhtml = true;
+		if($this->previousSibling&&$this->previousSibling->spaceAfterClose)
+			$this->previousSibling->spaceAfterClose = false;
+		if($this->parent&&$this->parent->spaceAfterOpen)
+			$this->parent->spaceAfterOpen = false;
 	}
 	function getInner(){
 		return $this->contentText;
