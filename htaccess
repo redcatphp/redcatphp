@@ -158,6 +158,7 @@ AddType text/x-vcard                   vcf
 Options -MultiViews
 Options +FollowSymlinks
 Options All -Indexes
+DirectorySlash Off
 DirectoryIndex index.php
 ServerSignature Off
 AddDefaultCharset utf-8
