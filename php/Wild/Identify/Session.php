@@ -82,7 +82,7 @@ class Session{
 		if(mt_rand($this->gc_probability, $this->gc_divisor)===1){
 			$this->SessionHandler->gc($this->maxLifetime);
 			if(is_dir($this->attemptsPath)&&($dh = opendir($this->attemptsPath))){
-				while($f=readdir($dh)){
+				while(false!==($f=readdir($dh))){
 					$file = $this->attemptsPath.$f;
 					if(is_file($file)&&time()>filemtime($file)+$this->blockedWait){
 						unlink($file);

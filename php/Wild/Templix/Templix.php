@@ -375,7 +375,7 @@ class Templix implements \ArrayAccess {
 		if(is_dir($dir)){
 			$dh = opendir($dir);
 			if($dh){
-				while($file=readdir($dh)){
+				while(false!==($file=readdir($dh))){
 					if($file!='.'&&$file!='..'){
 						$fullpath = $dir.'/'.$file;
 						if(is_file($fullpath))
