@@ -126,7 +126,7 @@ class ErrorHandler{
 		if(!$this->handle)
 			return;
 		$error = error_get_last();
-		if($error['type']===E_ERROR){
+		if($error&&$error['type']&(E_ERROR | E_USER_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR)){
 			self::errorHandle(E_ERROR,$error['message'],$error['file'],$error['line']);
 		}
 	}
