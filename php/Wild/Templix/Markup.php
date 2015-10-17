@@ -511,12 +511,19 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$this[] = $obj;
 		}
 		else{
-			foreach($this->parent->childNodes as $i=>$child)
+			$found = false;
+			foreach($this->parent->childNodes as $i=>$child){
 				if($child===$this){
 					$this->parent->childNodes[$i] = $obj;
 					$obj->parent = $this->parent;
+					$found = true;
 					break;
 				}
+			}
+			if(!$found){
+				$this->clear();
+				$this->write($obj);
+			}
 		}
 		return $obj;
 	}
