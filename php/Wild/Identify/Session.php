@@ -114,7 +114,10 @@ class Session{
 			if(is_dir($this->attemptsPath)&&($dh = opendir($this->attemptsPath))){
 				while(false!==($f=readdir($dh))){
 					$file = $this->attemptsPath.$f;
-					if(is_file($file)&&time()>filemtime($file)+$this->blockedWait){
+					if(is_file($file)&&(
+						(substr($f,-12)=='.regenerated'&&time()-filemtime($file)>30)||
+						time()>filemtime($file)+$this->blockedWait
+					)){
 						unlink($file);
 					}
 				}
