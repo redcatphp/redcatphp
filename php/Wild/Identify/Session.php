@@ -8,7 +8,7 @@ class Session{
 	private $cookiePath;
 	private $cookieDomain;
 	protected $attemptsPath;
-	protected $idLength = 100;
+	protected $idLength = 200;
 	protected $data = [];
 	protected $origin = [];
 	protected $saveRoot;
@@ -22,6 +22,8 @@ class Session{
 	protected $SessionHandler;
 	protected $Cookie;
 	protected $handled;
+	protected $localId;
+	protected $cookieId;
     
     protected $baseHref;
 	protected $suffixHref;
@@ -53,20 +55,25 @@ class Session{
 		$this->garbageCollector();
 		
 	}
+	function setId($id){
+		$this->id = $id;
+		$this->localId = hash('sha512',$id);
+		$this->cookieId = urlencode($id);
+	}
 	function handle($reload=false){
 		if($this->handled&&(!$reload||!$this->handled))
 			return;
 		$this->handled = true;
 		$this->SessionHandler->open($this->savePath,$this->name);
 		if($this->clientExist()){
-			$this->id = $this->clientId();
+			$this->setId($this->clientId());
 			$this->key = $this->clientKey();
 			if($this->serverExist()){
-				$this->origin = $this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->id));
+				$this->origin = $this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->localId));
 				$this->autoRegenerateId();
 			}
 			else{
-				$this->id = null;
+				$this->setId(null);
 				$this->key = null;
 				$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 				$this->addAttempt();
@@ -93,7 +100,7 @@ class Session{
 	}
 	function destroy(){
 		if($this->id)
-			$this->SessionHandler->destroy($this->getPrefix().$this->id);
+			$this->SessionHandler->destroy($this->getPrefix().$this->localId);
 		$this->SessionHandler->close();
 		$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
 		return true;
@@ -114,9 +121,9 @@ class Session{
 			$this->key = $key;
 		}
 		if(!$this->id)
-			$this->id = $this->clientId();
+			$this->setId($this->clientId());
 		if(!$this->id)
-			$this->id = $this->generateId();
+			$this->setId($this->generateId());
 		if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
 			$this->writeCookie();
 		}
@@ -124,7 +131,7 @@ class Session{
 	function regenerateId(){
 		$old = $this->serverExist()?$this->serverFile():false;
 		do{
-			$this->id = $this->generateId();
+			$this->setId($this->generateId());
 			$new = $this->serverFile();
 		}
 		while(file_exists($new));
@@ -141,7 +148,7 @@ class Session{
 		if($now>$mtime+$this->maxLifetime){
 			$this->destroy();
 			$this->reset();
-			$this->id = $this->generateId();
+			$this->setId($this->generateId());
 			$this->writeCookie();
 		}
 		elseif($now>$mtime+$this->regeneratePeriod||$this->get('_FP_')!=$this->getClientFP()){
@@ -158,12 +165,13 @@ class Session{
 		$this->handle(true);
 	}
 	function serverFile(){
-		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
+		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->localId;
 		return $id?$this->savePath.$id:false;
 	}
 	function serverExist(){
-		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->id;
-		return is_file($this->serverFile($id));
+		$id = func_num_args()?func_get_arg(0):$this->getPrefix().$this->localId;
+		$file = $this->serverFile($id);
+		return $file&&is_file($file);
 	}
 	function cookie(){
 		return isset($this->Cookie[$this->name])?$this->Cookie[$this->name]:null;
@@ -171,8 +179,11 @@ class Session{
 	function clientId(){
 		$cookie = $this->cookie();
 		$pos = strpos($cookie,$this->splitter);
-		if($cookie)
-			return $pos===false?$cookie:substr($cookie,$pos+strlen($this->splitter));
+		if($cookie){
+			$id = $pos===false?$cookie:substr($cookie,$pos+strlen($this->splitter));
+			$id = urldecode($id);
+			return $id;
+		}
 	}
 	function clientKey(){
 		$cookie = $this->cookie();
@@ -207,20 +218,20 @@ class Session{
 	function __destruct(){
 		if($this->isModified()){
 			if(!$this->id)
-				$this->id = $this->generateId();
+				$this->setId($this->generateId());
 			if($this->clientPrefix().$this->clientId()!=$this->getPrefix().$this->id){
 				$this->writeCookie();
 			}
-			$this->SessionHandler->write($this->getPrefix().$this->id,serialize($this->data));
+			$this->SessionHandler->write($this->getPrefix().$this->localId,serialize($this->data));
 		}
 		else{
 			if($this->id)
-				$this->SessionHandler->touch($this->getPrefix().$this->id);
+				$this->SessionHandler->touch($this->getPrefix().$this->localId);
 		}
 		$this->SessionHandler->close();
 	}
 	function generateId(){
-		return hash('sha512',(new RandomLib\Factory())->getMediumStrengthGenerator()->generate($this->idLength));
+		return bin2hex((new RandomLib\Factory())->getMediumStrengthGenerator()->generate(round($this->idLength/2)));
 	}
 	function getIp(){
 		return $this->server['REMOTE_ADDR'];
@@ -262,7 +273,7 @@ class Session{
 	function writeCookie(){
 		$this->setCookie(
 			$this->name,
-			$this->getPrefix().$this->id,
+			$this->getPrefix().$this->cookieId,
 			($this->cookieLifetime?time()+$this->cookieLifetime:0),
 			$this->cookiePath,
 			$this->cookieDomain,
