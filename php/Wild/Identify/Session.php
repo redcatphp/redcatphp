@@ -60,6 +60,26 @@ class Session{
 		$this->localId = hash('sha512',$id);
 		$this->cookieId = urlencode($id);
 	}
+	function followRegeneration(){
+		$sf = func_num_args()?$this->serverFile(func_get_arg(0)):$this->serverFile();
+		$old = $sf.'.regenerated';
+		if(is_file($old)){
+			if(filemtime($old)+30>time()){
+				$fid = file_get_contents($old);
+				$this->setId($fid);
+				if($this->serverExist()){
+					$this->origin = $this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->localId));
+					return true;
+				}
+				else{
+					return $this->followRegeneration($fid);
+				}
+			}
+			else{
+				unlink($old);
+			}
+		}
+	}
 	function handle($reload=false){
 		if($this->handled&&(!$reload||!$this->handled))
 			return;
@@ -68,16 +88,19 @@ class Session{
 		if($this->clientExist()){
 			$this->setId($this->clientId());
 			$this->key = $this->clientKey();
+			
 			if($this->serverExist()){
 				$this->origin = $this->data = (array)unserialize($this->SessionHandler->read($this->getPrefix().$this->localId));
 				$this->autoRegenerateId();
 			}
 			else{
-				$this->setId(null);
-				$this->key = null;
-				$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
-				$this->addAttempt();
-				$this->checkBlocked();
+				if(!$this->followRegeneration()){
+					$this->setId(null);
+					$this->key = null;
+					$this->removeCookie($this->name,$this->cookiePath,$this->cookieDomain,false,true);
+					$this->addAttempt();
+					$this->checkBlocked();
+				}
 			}
 		}
 		if(!isset($this->data['_FP_'])){
@@ -137,6 +160,7 @@ class Session{
 		while(file_exists($new));
 		if($old)
 			rename($old,$new);
+		file_put_contents($old.'.regenerated',$this->id);
 		$this->writeCookie();
 	}
 	function getClientFP(){
@@ -216,6 +240,8 @@ class Session{
 		return $this->origin!==$this->data;
 	}
 	function __destruct(){
+		if($this->lockFile)
+			unlink($this->lockFile);
 		if($this->isModified()){
 			if(!$this->id)
 				$this->setId($this->generateId());
@@ -301,14 +327,14 @@ class Session{
 			unset($this->data[$k]);
 		}
 	}
-	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false, $global=true){
+	function setCookie($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=true, $global=true){
 		if($expire&&isset($this->Cookie[$name]))
 			$this->removeCookie($name, $path, $domain, $secure, $httponly);
 		if($global)
 			$this->Cookie[$name] = $value;
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
-    function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=false){
+    function removeCookie($name, $path = '', $domain='', $secure=false, $httponly=true){
 		if(isset($this->Cookie[$name]))
 			unset($this->Cookie[$name]);
         return setcookie($name, null, -1, $path, $domain, $secure, $httponly);
