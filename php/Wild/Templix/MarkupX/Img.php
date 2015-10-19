@@ -2,7 +2,7 @@
 namespace Wild\Templix\MarkupX;
 use Wild\Templix\MarkupHtml5\Img as MarkupHtml5_Img;
 class Img extends MarkupHtml5_Img{
-	function loaded(){
+	function load(){
 		if($this->src&&strpos($this->src,'://')===false){
 			if(!($this->height&&$this->width)){
 				$size = @getimagesize($this->src);
