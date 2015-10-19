@@ -74,7 +74,7 @@ class TemplixL10n extends Templix{
 		if($this->autoWrapL10n){
 			$aggr = [];
 			$TML('*[ni18n] *,script,style,code')->data('i18n',false);
-			$inlineEls = ['br','i','b','u','em','strong','abbr','a'];
+			$inlineEls = ['br','i','b','u','em','strong','abbr','a'];			
 			$inlineStr = implode(',',$inlineEls);
 			$inlineElsCheck = $inlineEls;
 			$inlineElsCheck[] = 'TEXT';
@@ -82,19 +82,23 @@ class TemplixL10n extends Templix{
 				if($el->data('i18n')===false)
 					return;
 				if(
-					$el->previousSibling&&$el->previousSibling->nodeName=='TEXT'
-					||($el->nextSibling&&in_array($el->nextSibling->nodeName,$inlineElsCheck))
+					($el->previousSibling&&($el->previousSibling->nodeName=='TEXT'||in_array($el->previousSibling->nodeName,$inlineElsCheck)))
+					||($el->nextSibling&&($el->nextSibling->nodeName=='TEXT'||in_array($el->nextSibling->nodeName,$inlineElsCheck)))
 				){
 					$id = '{{.-;-:-'.uniqid('translateAggr',true).'-:-;-.}}';
 					$t = (string)$el;
 					$t = preg_replace('/(?:\s\s+|\n|\t|\r)/', ' ', $t);
 					$aggr[$id] = $t;
 					$el('*')->data('i18n',false);
+					
 					$el->clear();
 					$el->write($id);
+					$el->selfClosed = false;
 					$el->nodeName = 'TEXT';
+					//$el->replaceWith($id);
 				}
 			});
+			
 			$aggr = array_reverse($aggr);
 			$aggrK = array_keys($aggr);
 			$aggrV = array_values($aggr);
