@@ -260,7 +260,8 @@ class Session{
 		$this->SessionHandler->close();
 	}
 	function generateId(){
-		return bin2hex((new RandomLib\Factory())->getMediumStrengthGenerator()->generate(round($this->idLength/2)));
+		//return bin2hex((new RandomLib\Factory())->getMediumStrengthGenerator()->generate(round($this->idLength/2)));
+		return self::hex2setstring(bin2hex((new RandomLib\Factory())->getMediumStrengthGenerator()->generate(round($this->idLength))));
 	}
 	function getIp(){
 		return $this->server['REMOTE_ADDR'];
@@ -435,5 +436,29 @@ class Session{
 			}
 		}
 		return $ref;
+	}
+	private static function hex2setstring($hex){
+		$chars = 'abcdefghijklmnopqrstuwvxyzABCDEFGHIJKLMNOPQRSTUWVXYZ0123456789';
+		$setbase=strlen($chars);    
+		$answer = '';   
+		while (!empty($hex) && ($hex !== 0) && ($hex !== dechex(0))) {  
+			$hex_result = '';
+			$hex_remain = '';       
+			// divide by base in hex:
+			for ($i=0;$i<strlen($hex);$i+=1){
+				$hex_remain = $hex_remain . $hex[$i];           
+				$dec_remain = hexdec($hex_remain);
+				// small partial divide in decimals:
+				$dec_result = (int)($dec_remain/$setbase);          
+				if (!empty($hex_result) || ($dec_result > 0))
+					$hex_result = $hex_result . dechex($dec_result);
+
+				$dec_remain = $dec_remain - $setbase*$dec_result;
+				$hex_remain = dechex($dec_remain);
+			}
+			$answer = $chars[$dec_remain] . $answer;
+			$hex = $hex_result;
+		}
+		return $answer;
 	}
 }
