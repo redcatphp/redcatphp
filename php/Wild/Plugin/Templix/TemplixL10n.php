@@ -150,7 +150,7 @@ class TemplixL10n extends Templix{
 			if($markup->data('i18n')===false)
 				return;
 			foreach($markup->attributes as $k=>$v){
-				if($k=='title'||($k=='href'&&$markup->nodeName=='a')){
+				if($k=='title'||($k=='href'&&$markup->nodeName=='a')||($k=='value'&&$markup->nodeName=='input'&&$markup->type=='submit')){
 					if(strpos($v,'<?')===false)
 						$markup->attr($k,$this->i18nWrapCode($v));
 				}
