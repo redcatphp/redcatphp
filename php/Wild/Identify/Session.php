@@ -1,4 +1,5 @@
-<?php namespace Wild\Identify;
+<?php
+namespace Wild\Identify;
 class Session{
 	private $id;
 	private $key;
@@ -161,9 +162,8 @@ class Session{
 			$new = $this->serverFile();
 		}
 		while(file_exists($new));
-		if($old)
-			rename($old,$new);
-		file_put_contents($old.'.regenerated',$this->id);
+		if($old&&@rename($old,$new))
+			file_put_contents($old.'.regenerated',$this->id);
 		$this->writeCookie();
 	}
 	function getClientFP(){
@@ -297,7 +297,7 @@ class Session{
 	}
 	function deleteAttempts(){
 		$ip = $this->getIpHash();
-		return is_file($this->attemptsPath.$ip)&&unlink($this->attemptsPath.$ip);
+		return is_file($this->attemptsPath.$ip)&&@unlink($this->attemptsPath.$ip);
 	}
 	function writeCookie(){
 		$this->setCookie(
