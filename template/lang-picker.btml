@@ -1,11 +1,11 @@
 <?
 	$langDir = SURIKAT_CWD.'langs/';
 	$di = Wild\Kinetic\Di::getInstance();
-	$lgD = 'en';
-	$lgC = $di->create('Wild\Localize\Translator')->getLangCode();
-	if(!$lgC)
-		$lgC = $lgD;
-	$langs = [$lgD];
+	$defaultLanguage = 'en';
+	$currentLanguage = $di->create('Wild\Localize\Translator')->getLangCode();
+	if(!$currentLanguage)
+		$currentLanguage = $defaultLanguage;
+	$langs = [$defaultLanguage];
 	foreach(glob($langDir.'*.ini') as $langFile)
 		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
 	$url = $di->create('Wild\Route\Url');
@@ -15,9 +15,9 @@
 		$language = Wild\Localize\Punic\Language::getName($lg,$lg);
 		$language = Wild\Localize\Strings::ucfirst($language);
 		$lcPath = $URI;
-		if($lg!=$lgC){
-			if($lg==$lgD){
-				$langMap = parse_ini_file($langDir.$lgC.'.ini');
+		if($lg!=$currentLanguage){
+			if($lg==$defaultLanguage){
+				$langMap = parse_ini_file($langDir.$currentLanguage.'.ini');
 				if(isset($langMap[$lcPath]))
 					$lcPath = $langMap[$lcPath];
 			}
@@ -27,11 +27,11 @@
 					$lcPath = $k;
 			}
 		}
-		$lcLink = $url->getSubdomainHref($lg!=$lgD?$lg:null);
+		$lcLink = $url->getSubdomainHref($lg!=$defaultLanguage?$lg:null);
 		$lcLink .= $lcPath;
 	?>
 	<li>
-		<if "$lg==$lgC">
+		<if "$lg==$currentLanguage">
 			<span><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></span>
 		<else>
 			<a href="<?=$lcLink?>" rel="alternate" hreflang="<?=$lg?>" lang="<?=$lg?>"><abbr title="Lang: <?=$language?>"><?=$lg?></abbr></a>

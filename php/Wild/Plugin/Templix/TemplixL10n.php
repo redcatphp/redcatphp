@@ -53,6 +53,10 @@ class TemplixL10n extends Templix{
 			},true);
 		}
 		
+		$this->onCompile(function($TML)use($cdn){
+			$TML('*')->removeAttr('ni18n');
+			$TML('*')->removeAttr('i18n');
+		});
 		
 		return $this->query($file);
 	}
