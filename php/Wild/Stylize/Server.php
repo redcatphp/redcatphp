@@ -4,7 +4,7 @@ namespace Wild\Stylize;
  * Css Preprocessor using Scss syntax ( SASS 3.2 ) ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp
  *
  * @package Stylize
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Stylize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

@@ -3,7 +3,7 @@
  * Route - Modular Router for Mvc with prefix
  *
  * @package Mvc
- * @version 1.2
+ * @version 1.3
  * @link http://github.com/surikat/Mvc/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

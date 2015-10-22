@@ -8,7 +8,7 @@
  *   PSR-0 convention - for details: see http://www.php-fig.org/psr/psr-0/
  *
  * @package Autoload
- * @version 2.0
+ * @version 2.1
  * @link http://github.com/surikat/Autoload/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

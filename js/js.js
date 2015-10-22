@@ -2,7 +2,7 @@
 	$js - asynchronous module definition framework
 			or just simple lightweight javascript dependencies manager
 	
-	@version 2.2
+	@version 2.3
 	@link http://github.com/surikat/js/
 	@author Jo Surikat <jo@surikat.pro>
 	@website http://wildsurikat.com

@@ -3,7 +3,7 @@
  * ErrorHandler - Error and Exception hanlder with syntax highlighting
  *
  * @package Debug
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Debug/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

@@ -3,7 +3,7 @@
  * Router - A mirco-framework for manage entry point of applications
  *
  * @package Router
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Router/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

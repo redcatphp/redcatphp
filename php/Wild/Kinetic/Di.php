@@ -12,7 +12,7 @@
  *		full registry implementation, freeze optimisation
  * 
  * @package Kinetic
- * @version 1.2
+ * @version 1.3
  * @link http://github.com/surikat/Kinetic/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

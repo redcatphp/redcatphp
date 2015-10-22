@@ -50,7 +50,7 @@ namespace Wild\Stylize;
  */
 class Compiler
 {
-    const Stylize_VERSION = 'v1.0';
+    const Stylize_VERSION = 'v1.2';
     const Scss_VERSION = 'v0.1.1';
 
     static protected $operatorNames = array(

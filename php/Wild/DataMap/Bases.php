@@ -7,7 +7,7 @@
  *   due to following DataMapper Pattern
  *
  * @package DataMap
- * @version 1.2
+ * @version 1.3
  * @link http://github.com/surikat/DataMap/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

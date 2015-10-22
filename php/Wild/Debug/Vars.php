@@ -3,7 +3,7 @@
  * Vars - Lighter alternative to var_dump() with backtrace of the call and syntax highlighting
  *
  * @package Debug
- * @version 1.0
+ * @version 1.2
  * @link http://github.com/surikat/Debug/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
