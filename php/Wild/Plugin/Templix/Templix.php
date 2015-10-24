@@ -50,7 +50,7 @@ class Templix extends \Wild\Templix\Templix{
 		$vars = array_merge([
 			'URI'=>$path,
 		],$vars);
-		if(!pathinfo($path,PATHINFO_EXTENSION))
+		if(pathinfo($path,PATHINFO_EXTENSION)!='tml')
 			$path .= '.tml';
 		
 		if($this->setPath($path)||$this->setPath('404.tml')){
