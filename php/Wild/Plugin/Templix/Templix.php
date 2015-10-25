@@ -47,9 +47,15 @@ class Templix extends \Wild\Templix\Templix{
 		$this->httpEtag = $etag;
 	}
 	function query($path=null,$vars=[]){
-		$vars = array_merge([
-			'URI'=>$path,
-		],$vars);
+		$this['URI'] = $path;
+		
+		if(isset($this->di['versioning'])){
+			$this['VERSIONING'] = (string)$this->di->objectify($this->di['versioning']);
+		}
+		else{
+			$this['VERSIONING'] = '';
+		}
+		
 		if(pathinfo($path,PATHINFO_EXTENSION)!='tml')
 			$path .= '.tml';
 		
