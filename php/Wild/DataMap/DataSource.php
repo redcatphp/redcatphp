@@ -502,8 +502,9 @@ abstract class DataSource implements \ArrayAccess{
 		if($max&&strlen($text)>$max)
 			$text = substr($text,0,$max).$sep;
 		$x = explode(' ',$query);
-		foreach($x as $q)
-			$text = str_replace($q,$start.$q.$end,$text);
+		foreach($x as $q){
+			$text = preg_replace('#'.preg_quote($q).'#iu',$start.'$0'.$end,$text);
+		}
 		return $text;
 	}
 	
