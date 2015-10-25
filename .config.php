@@ -18,6 +18,7 @@ return [
 		'databaseMap'=>[],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
+		'versioning'=>'new:Wild\Plugin\Versioning\Number',
 	],
 	'rules'=>[
 		'Wild\DataMap\Bases'	=> [
