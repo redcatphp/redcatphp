@@ -629,8 +629,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			}
 			elseif($lc&&($lc->spaceAfterClose||$lc->spaceAfterOpen)){
 				if($lc->hiddenWrap){
-					if($lc->nodeName!='TEXT')
+					if($lc->nodeName!='TEXT'&&$lc->nodeName){
 						$str .= ' ';
+					}
 				}
 				else{
 					$str .= $this->indentationTab();
