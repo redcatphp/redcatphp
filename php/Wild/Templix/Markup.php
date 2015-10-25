@@ -624,12 +624,12 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		
 		if(!$this->selfClosed){
 			$lc = end($this->childNodes);
-			if(!$lc&&(($this->nextSibling&&($this->nextSibling->spaceAfterOpen||$this->nextSibling->spaceAfterClose)))){
+			if(!$lc&&$this->nextSibling&&$this->nextSibling->spaceAfterOpen){
 				$str .= $this->indentationTab();
 			}
-			elseif($lc&&($lc->spaceAfterOpen||$lc->spaceAfterClose)){
+			elseif($lc&&($lc->spaceAfterClose||$lc->spaceAfterOpen)){
 				if($lc->hiddenWrap){
-					if($lc->spaceAfterOpen)
+					if($lc->nodeName!='TEXT')
 						$str .= ' ';
 				}
 				else{
@@ -679,15 +679,14 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
 		
-		
 		if(!$this->selfClosed){
 			$lc = end($this->childNodes);
-			if(!$lc&&(($this->nextSibling&&($this->nextSibling->spaceAfterOpen||$this->nextSibling->spaceAfterClose)))){
+			if(!$lc&&$this->nextSibling&&$this->nextSibling->spaceAfterOpen){
 				$str .= ' ';
 			}
-			elseif($lc&&($lc->spaceAfterOpen||$lc->spaceAfterClose)){
+			elseif($lc&&($lc->spaceAfterClose||$lc->spaceAfterOpen)){
 				if($lc->hiddenWrap){
-					if($lc->spaceAfterOpen)
+					if($lc->nodeName!='TEXT')
 						$str .= ' ';
 				}
 				else{
