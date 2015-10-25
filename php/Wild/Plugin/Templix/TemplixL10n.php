@@ -23,6 +23,9 @@ class TemplixL10n extends Templix{
 	}
 	function __invoke($file){
 		list($lang,$langMap,$file) = (array)$file;
+		
+		$this['LANG'] = $lang;
+		
 		if(is_array($file)){
 			list($hook,$file) = (array)$file;
 			if(substr($hook,0,8)=='surikat/')
