@@ -493,7 +493,18 @@ abstract class DataSource implements \ArrayAccess{
 			$results[] = $line[0];
 		$result = implode($sep, $results);
 		$result = preg_replace('#'.$words.'#iu', $start.'$0'.$end, $result);
-		return $sep.$result.$sep;
+		return $result?$sep.$result.$sep:$text;
+	}
+	
+	static function snippet2($text,$query,$max=60,$start='<b>',$end='</b>',$sep=' <b>...</b> '){
+		if(!trim($text))
+			return '';
+		if($max&&strlen($text)>$max)
+			$text = substr($text,0,$max).$sep;
+		$x = explode(' ',$query);
+		foreach($x as $q)
+			$text = str_replace($q,$start.$q.$end,$text);
+		return $text;
 	}
 	
 	function one2manyDelete($obj,$k,$except=[]){
