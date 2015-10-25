@@ -621,12 +621,25 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		}
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
-		if(!$this->selfClosed&&!$this->hiddenWrap){
-			if(!($lc=end($this->childNodes))||$lc->spaceAfterClose){
+		
+		if(!$this->selfClosed){
+			$lc = end($this->childNodes);
+			if(!$lc&&(($this->nextSibling&&($this->nextSibling->spaceAfterOpen||$this->nextSibling->spaceAfterClose)))){
 				$str .= $this->indentationTab();
 			}
-			$str .= '</'.$this->nodeName.'>';
+			elseif($lc&&($lc->spaceAfterOpen||$lc->spaceAfterClose)){
+				if($lc->hiddenWrap){
+					if($lc->spaceAfterOpen)
+						$str .= ' ';
+				}
+				else{
+					$str .= $this->indentationTab();
+				}
+			}
+			if(!$this->hiddenWrap)
+				$str .= '</'.$this->nodeName.'>';
 		}
+		
 		$str = $head.$str.$foot;
 		return $str;
 	}
@@ -666,11 +679,23 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
 		
-		if(!$this->selfClosed&&!$this->hiddenWrap){
-			if(!($lc=end($this->childNodes))||$lc->spaceAfterClose){
+		
+		if(!$this->selfClosed){
+			$lc = end($this->childNodes);
+			if(!$lc&&(($this->nextSibling&&($this->nextSibling->spaceAfterOpen||$this->nextSibling->spaceAfterClose)))){
 				$str .= ' ';
 			}
-			$str .= '</'.$this->nodeName.'>';
+			elseif($lc&&($lc->spaceAfterOpen||$lc->spaceAfterClose)){
+				if($lc->hiddenWrap){
+					if($lc->spaceAfterOpen)
+						$str .= ' ';
+				}
+				else{
+					$str .= ' ';
+				}
+			}
+			if(!$this->hiddenWrap)
+				$str .= '</'.$this->nodeName.'>';
 		}
 		
 		$str = $head.$str.$foot;

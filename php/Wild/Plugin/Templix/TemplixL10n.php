@@ -119,6 +119,7 @@ class TemplixL10n extends Templix{
 		$TML('t, TEXT:hasnt(PHP)')->each(function($el)use($cache,&$aggrK,&$aggrV,&$TML){
 			if($el->data('i18n')===false)
 				return;
+			
 			if($el->nodeName=='t')
 				$rw = $el->getInner();
 			else
@@ -127,6 +128,10 @@ class TemplixL10n extends Templix{
 			if($this->autoWrapL10n){
 				$rw = str_replace($aggrK,$aggrV,$rw);
 			}
+			
+			$trw = trim($rw);
+			if(!$trw)
+				return;
 			
 			$l = strlen($rw);
 			$left = $l-strlen(ltrim($rw));
@@ -139,9 +144,8 @@ class TemplixL10n extends Templix{
 				$right = substr($rw,-1*$right);
 			else
 				$right = '';
-			$rw = trim($rw);
-			if(!$rw)
-				return;
+			$rw = $trw;
+			
 			if(!$el->parent||$el->parent->nodeName!='pre')
 				$rw = preg_replace('/(?:\s\s+|\n|\t|\r)/', ' ', $rw);
 			$rw = $this->i18nWrapCode($rw,$cache);
