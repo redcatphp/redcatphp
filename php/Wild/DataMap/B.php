@@ -77,6 +77,10 @@ class B{
 		return self::$currentDataSource->execute($sql,$binds);
 	}
 	
+	static function exec($sql,$binds=[]){
+		return self::$currentDataSource->execute($sql,$binds);
+	}
+	
 	static function getDatabase(){
 		return self::$currentDataSource;
 	}
