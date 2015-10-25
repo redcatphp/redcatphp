@@ -41,7 +41,7 @@ class B{
 		return self::$currentDataSource = self::$bases[$key];
 	}
 	static function __callStatic($f,$args){
-		self::_initialiaze();
+		self::_init();
 		if(!isset(self::$currentDataSource))
 			throw new Exception('Use '.__CLASS__.'::setup() first');
 		return call_user_func_array([self::$currentDataSource,$f],$args);
