@@ -628,8 +628,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			$str .= '</'.$this->nodeName.'>';
 		}
 		$str = $head.$str.$foot;
-		if($this->spaceAfterClose)
-			$str .= ' ';
 		return $str;
 	}
 	
@@ -637,6 +635,16 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$str = '';
 		$head = implode('',$this->head);
 		if(!$this->hiddenWrap){
+			if($this->previousSibling){
+				if($this->previousSibling->spaceAfterClose){
+					$str .= ' ';
+				}
+			}
+			elseif($this->parent){
+				if($this->parent->spaceAfterOpen){
+					$str .= ' ';
+				}
+			}
 			$str .= '<'.$this->nodeName;
 			foreach($this->metaAttribution as $k=>$v){
 				if(is_integer($k)){
@@ -657,11 +665,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		}
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
-		if(!$this->selfClosed&&!$this->hiddenWrap)
+		
+		if(!$this->selfClosed&&!$this->hiddenWrap){
+			if(!($lc=end($this->childNodes))||$lc->spaceAfterClose){
+				$str .= ' ';
+			}
 			$str .= '</'.$this->nodeName.'>';
+		}
+		
 		$str = $head.$str.$foot;
-		if($this->spaceAfterClose)
-			$str .= ' ';
 		return $str;
 	}
 	function getTemplix(){
