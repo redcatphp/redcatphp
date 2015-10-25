@@ -50,7 +50,7 @@ class Templix extends \Wild\Templix\Templix{
 		$this['URI'] = $path;
 		
 		if(isset($this->di['versioning'])){
-			$this['VERSIONING'] = (string)$this->di->objectify($this->di['versioning']);
+			$this['VERSIONING'] = '.up'.(string)$this->di->objectify($this->di['versioning']);
 		}
 		else{
 			$this['VERSIONING'] = '';

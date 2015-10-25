@@ -11,7 +11,7 @@
 		$js.min=true;
 	<?endif;?>
 	<?if(is_file(SURIKAT_CWD.'js/script.js')):?>
-		$js('script');
+		$js('script<?=$VERSIONING?>');
 	<?endif;?>
 	<?if(Wild\Kinetic\Di::getInstance()->dev['chrono']):
 		$chrono = microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'];
