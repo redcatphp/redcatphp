@@ -191,6 +191,9 @@ RewriteRule ^(.*)$ - [L,R=404]
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^.*$ - [E=SURIKAT_URI:%2]
 
+#Versioned ressources
+RewriteRule ^(.*)\.up([a-z0-9]{1,9})\.(js|css)$ $1.$3 [L]
+
 #Tmp min
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{DOCUMENT_ROOT}%{ENV:SURIKAT_URI}.tmp/min/$1.min.$2 -f
