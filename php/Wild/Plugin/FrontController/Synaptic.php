@@ -49,6 +49,7 @@ class Synaptic {
 			http_response_code(403);
 			exit;
 		}
+		$k = preg_replace('#(.*).up[a-z0-9]{1,9}.(min.|)(js|css)#','$1.$2$3',$k);
 		switch($extension){
 			case 'js':
 				foreach($this->dirs as $d){
