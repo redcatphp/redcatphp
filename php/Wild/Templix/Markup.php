@@ -222,9 +222,9 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 				call_user_func($callback);
 		if($this->preventLoad)
 			return;
+		$this->preventLoad = true;
 		foreach($this->childNodes as $c)
 			$c->triggerLoaded();
-		$this->preventLoad = true;
 		$this->loaded();
 		foreach(array_keys($this->metaAttribution) as $k){
 			$key = is_integer($k)?$this->metaAttribution[$k]:$k;
@@ -1572,8 +1572,8 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			foreach($matches[1] as $i=>$eve)
 				$arg = substr($arg,0,$pos=strpos($arg,$matches[0][$i],$pos)).$this->evalue($eve).substr($arg,$pos+strlen($matches[0][$i]));
 		$this->parseML($arg);
-		if($n<3||!func_get_arg(2))
-			$this->triggerLoaded();
+		//if($n<3||!func_get_arg(2))
+			//$this->triggerLoaded();
 	}
 	function make($arg){
 		if(is_string($arg)){

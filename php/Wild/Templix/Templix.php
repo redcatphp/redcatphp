@@ -199,9 +199,11 @@ class Templix implements \ArrayAccess {
 		$node = new Markup();
 		$node->setTemplix($this);		
 		$node->parse(file_get_contents($file));
+		$node->triggerLoaded();
 		ksort($this->compile);
 		foreach($this->compile as $callback)
 			call_user_func($callback,$node);
+		
 		$this->removeTmp($node);
 		$this->childNodes[] = $node;
 		$this->compilePHP($this->dirCompile.$this->dirCompileSuffix.$file,(string)$node);
