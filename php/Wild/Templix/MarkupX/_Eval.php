@@ -2,6 +2,14 @@
 namespace Wild\Templix\MarkupX;
 class _Eval extends \Wild\Templix\CallerMarkup{
 	function load(){
+		if(!$this->after)
+			$this->replaceWithEvalued();
+	}
+	function loaded(){
+		if($this->after)
+			$this->replaceWithEvalued();
+	}
+	private function replaceWithEvalued(){
 		$vars = isset($this->templix)?$this->templix->getVars():null;
 		$this->replaceWith($this->evalue($this,$vars));
 	}
