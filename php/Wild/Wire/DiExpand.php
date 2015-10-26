@@ -2,13 +2,13 @@
 /*
  * DiExpand - Dependencies lazy loader
  *
- * @package Kinetic
+ * @package Wire
  * @version 1.0
- * @link http://github.com/surikat/Kinetic/
+ * @link http://github.com/surikat/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
  */
-namespace Wild\Kinetic;
+namespace Wild\Wire;
 class DiExpand{
 	private $x;
 	function __construct($x,$params=[]){

@@ -4,7 +4,7 @@ use Wild\Identify\Auth;
 use Wild\Identify\Session;
 use Wild\Autoload\Autoload;
 use Wild\Route\Router;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Backoffice extends \Wild\Route\FrontController{
 	public $pathFS = 'plugin/backoffice';
 	function __construct(Router $router,Di $di){

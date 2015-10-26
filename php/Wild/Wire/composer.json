@@ -1,15 +1,15 @@
 {
-	"name": "surikat/kinetic",
+	"name": "surikat/wire",
 	"type": "library",
-	"description": "Kinetic - Dependency Injection Made Universal",
-	"keywords": ["Kinetic","Dependency Injection","Configuration","Inversion of Control"],
+	"description": "Wire - Dependency Injection Made Universal",
+	"keywords": ["Wire","Dependency Injection","Configuration","Inversion of Control"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
-	"homepage": "https://github.com/surikat/Kinetic",
+	"homepage": "https://github.com/surikat/Wire",
 	"authors": [
 		{
 			"name": "Jo Surikat",
 			"email": "jo@surikat.pro",
-			"homepage": "http://wildsurikat.com/kinetic-dependency-injection",
+			"homepage": "http://wildsurikat.com/wire-dependency-injection",
 			"role": "Developer"
 		}
 	],
@@ -18,7 +18,7 @@
 	},
 	"autoload": {
 		"psr-4":{
-			"Wild\\Kinetic\\": ""
+			"Wild\\Wire\\": ""
 		}
 	},
 	"minimum-stability": "dev",

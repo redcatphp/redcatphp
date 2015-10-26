@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Plugin\Templix;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Templix extends \Wild\Templix\Templix{
 	private $di;
 	

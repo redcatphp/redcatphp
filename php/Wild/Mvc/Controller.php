@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Mvc;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 abstract class Controller {
 	protected $model;
 	protected $di;

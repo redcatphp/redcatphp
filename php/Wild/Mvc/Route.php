@@ -9,7 +9,7 @@
  * @website http://wildsurikat.com
  */
 namespace Wild\Mvc;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Route implements \ArrayAccess,\Iterator,\Countable{
 	private $model;
 	private $view;

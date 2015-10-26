@@ -3,11 +3,11 @@ namespace Wild\DataMap;
 class B{
 	protected static $bases;
 	protected static $currentDataSource;
-	static $useKineticDi = true;
+	static $useWireDi = true;
 	static function _init(){
 		if(!isset(self::$bases)){
-			if(class_exists('Wild\Kinetic\Di')&&self::$useKineticDi){
-				self::$bases = \Wild\Kinetic\Di::getInstance()->create('Wild\DataMap\Bases');
+			if(class_exists('Wild\Wire\Di')&&self::$useWireDi){
+				self::$bases = \Wild\Wire\Di::getInstance()->create('Wild\DataMap\Bases');
 				if(isset(self::$bases[0]))
 					self::selectDatabase(0);
 			}

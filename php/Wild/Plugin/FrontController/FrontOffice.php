@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Plugin\FrontController;
 use Wild\Route\Router;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class FrontOffice extends \Wild\Route\FrontController{
 	protected $l10n;
 	function __construct(Router $router,Di $di,$l10n=null){

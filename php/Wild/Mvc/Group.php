@@ -9,7 +9,7 @@
  * @website http://wildsurikat.com
  */
 namespace Wild\Mvc;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Group extends Route{
 	function __construct($namespace, $templateEngine = null, Di $di){
 		$model = $namespace.'\\Model';

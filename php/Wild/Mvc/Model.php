@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Mvc;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Model implements \ArrayAccess,\Iterator,\Countable{
 	protected $data = [];
 	protected $getter;

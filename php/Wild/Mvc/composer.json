@@ -23,6 +23,6 @@
 	},
 	"minimum-stability": "dev",
 	"suggest": {
-		"surikat/kinetic": "Use Dependency Injection Container for registry"
+		"surikat/wire": "Use Dependency Injection Container for registry"
 	}
 }

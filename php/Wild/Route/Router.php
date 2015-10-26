@@ -9,7 +9,7 @@
  * @website http://wildsurikat.com
  */
 namespace Wild\Route;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class Router implements \ArrayAccess{
 	private $routes = [];
 	private $route;

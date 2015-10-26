@@ -1,7 +1,7 @@
 <?php
 namespace Wild\Plugin\Templix;
 use Wild\Localize\Translator;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class TemplixL10n extends Templix{
 	protected $Translator;
 	protected $autoWrapL10n = true;

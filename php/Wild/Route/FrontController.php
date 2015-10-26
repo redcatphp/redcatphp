@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Route;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class FrontController implements \ArrayAccess{
 	private $router;
 	protected $di;

@@ -1,6 +1,6 @@
 <?php
 /*
- * Kinetic - Dependency Injection Made Universal
+ * Wire - Dependency Injection Made Universal
  * 
  * inspired from a fusion of
  * Dice 2.0-Transitional - 2012-2015 Tom Butler <tom@r.je> | http://r.je/dice.html
@@ -11,14 +11,14 @@
  *		for powerfull API, lazy load cascade rules resolution,
  *		full registry implementation, freeze optimisation
  * 
- * @package Kinetic
+ * @package Wire
  * @version 1.3
- * @link http://github.com/surikat/Kinetic/
+ * @link http://github.com/surikat/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
  */
 
-namespace Wild\Kinetic;
+namespace Wild\Wire;
 
 class Di implements \ArrayAccess{
 	private $values = [];

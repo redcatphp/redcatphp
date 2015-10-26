@@ -41,8 +41,8 @@ class Translator {
 	}
 	static function getInstance(){
 		if(!isset(self::$instance)){
-			if(class_exists('Wild\Kinetic\Di'))
-				self::$instance = \Wild\Kinetic\Di::getInstance()->create(__CLASS__);
+			if(class_exists('Wild\Wire\Di'))
+				self::$instance = \Wild\Wire\Di::getInstance()->create(__CLASS__);
 			else
 				self::$instance = new self;
 		}

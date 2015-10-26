@@ -1,6 +1,6 @@
 <?php
 namespace Wild\Mvc;
-use Wild\Kinetic\Di;
+use Wild\Wire\Di;
 class View {
 	protected $model;
 	protected $templateEngine;
