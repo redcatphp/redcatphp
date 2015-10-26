@@ -3,7 +3,7 @@
  * DiExpand - Dependencies lazy loader
  *
  * @package Wire
- * @version 1.0
+ * @version 1.4
  * @link http://github.com/surikat/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com

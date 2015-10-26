@@ -12,7 +12,7 @@
  *		full registry implementation, freeze optimisation
  * 
  * @package Wire
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/surikat/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://wildsurikat.com
