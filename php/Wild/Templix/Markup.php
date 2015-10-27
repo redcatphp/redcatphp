@@ -43,8 +43,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected $selfClosed;
 	protected $__closed;
 	protected $noParseContent;
-	protected $spaceAfterOpen;
-	protected $spaceAfterClose;
 	protected $foot = [];
 	protected $head = [];
 	protected $innerFoot = [];
@@ -580,135 +578,35 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		return implode('',$this->innerHead).implode('',$this->childNodes).implode('',$this->innerFoot);
 	}
 	
-	protected function indentationIndex(){
-		return ($this->parent?$this->parent->indentationIndex()+($this->nodeName&&!$this->hiddenWrap?1:0):0);
-	}
-	protected function indentationTab(){
-		return "\n".str_repeat("\t",$this->indentationIndex());
-	}
-	
-	function toStringIndented(){
-		$str = '';
-		$head = implode('',$this->head);
-		if(!$this->hiddenWrap){
-			if($this->previousSibling){
-				if($this->previousSibling->spaceAfterClose){
-					$str .= $this->indentationTab();
-				}
-			}
-			elseif($this->parent){
-				if($this->parent->spaceAfterOpen){
-					$str .= $this->indentationTab();
-				}
-			}
-			$str .= '<'.$this->nodeName;
-			foreach($this->metaAttribution as $k=>$v){
-				if(is_integer($k)){
-					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
-						$str .= ' '.$v.'="'.$v.'"';
-					else
-						$str .= ' '.$v;
-				}
-				else{
-					$str .= ' '.$k.'="'.$v.'"';
-				}
-			}
-			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
-				$str .= ' /';
-			$str .= '>';
-			if($this->spaceAfterOpen)
-				$str .= ' ';
-		}
-		$str .= $this->getInner();
-		$foot = implode('',$this->foot);
-		
-		if(!$this->selfClosed){
-			$lc = end($this->childNodes);
-			if(!$lc&&$this->nextSibling&&$this->nextSibling->spaceAfterOpen){
-				$str .= $this->indentationTab();
-			}
-			elseif($lc&&($lc->spaceAfterClose||$lc->spaceAfterOpen)){
-				if($lc->hiddenWrap){
-					if($lc->nodeName!='TEXT'&&$lc->nodeName){
-						$str .= ' ';
-					}
-				}
-				else{
-					$str .= $this->indentationTab();
-				}
-			}
-			if(!$this->hiddenWrap)
-				$str .= '</'.$this->nodeName.'>';
-		}
-		
-		$str = $head.$str.$foot;
-		return $str;
-	}
-	
-	function toString(){
-		$str = '';
-		$head = implode('',$this->head);
-		if(!$this->hiddenWrap){
-			if($this->previousSibling){
-				if($this->previousSibling->spaceAfterClose){
-					$str .= ' ';
-				}
-			}
-			elseif($this->parent){
-				if($this->parent->spaceAfterOpen){
-					$str .= ' ';
-				}
-			}
-			$str .= '<'.$this->nodeName;
-			foreach($this->metaAttribution as $k=>$v){
-				if(is_integer($k)){
-					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
-						$str .= ' '.$v.'="'.$v.'"';
-					else
-						$str .= ' '.$v;
-				}
-				else{
-					$str .= ' '.$k.'="'.$v.'"';
-				}
-			}
-			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
-				$str .= ' /';
-			$str .= '>';
-			if($this->spaceAfterOpen)
-				$str .= ' ';
-		}
-		$str .= $this->getInner();
-		$foot = implode('',$this->foot);
-		
-		if(!$this->selfClosed){
-			$lc = end($this->childNodes);
-			if(!$lc&&$this->nextSibling&&$this->nextSibling->spaceAfterOpen){
-				$str .= ' ';
-			}
-			elseif($lc&&($lc->spaceAfterClose||$lc->spaceAfterOpen)){
-				if($lc->hiddenWrap){
-					if($lc->nodeName!='TEXT')
-						$str .= ' ';
-				}
-				else{
-					$str .= ' ';
-				}
-			}
-			if(!$this->hiddenWrap)
-				$str .= '</'.$this->nodeName.'>';
-		}
-		
-		$str = $head.$str.$foot;
-		return $str;
-	}
 	function getTemplix(){
 		return $this->templix?$this->templix:($this->parent?$this->parent->getTemplix():($this->constructor?$this->constructor->getTemplix():null));
 	}
 	function __toString(){
-		if(($t=$this->getTemplix())&&$t->devTemplate)
-			return $this->toStringIndented();
-		else
-			return $this->toString();
+		$str = '';
+		$head = implode('',$this->head);
+		if(!$this->hiddenWrap){
+			$str .= '<'.$this->nodeName;
+			foreach($this->metaAttribution as $k=>$v){
+				if(is_integer($k)){
+					if($this->templix&&$this->templix->isXhtml&&isset($this->attributes[$v])&&$v==$this->attributes[$v])
+						$str .= ' '.$v.'="'.$v.'"';
+					else
+						$str .= ' '.$v;
+				}
+				else{
+					$str .= ' '.$k.'="'.$v.'"';
+				}
+			}
+			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
+				$str .= ' /';
+			$str .= '>';
+		}
+		$str .= $this->getInner();
+		$foot = implode('',$this->foot);
+		if(!$this->selfClosed&&!$this->hiddenWrap)
+			$str .= '</'.$this->nodeName.'>';		
+		$str = $head.$str.$foot;
+		return $str;
 	}
 	function clear(){
 		$this->clearInner();
@@ -1524,27 +1422,8 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$this->addToCurrent('COMMENT',$comment,true);
 	}
 	private function fireCharacterData($text){
-		if($text){
-			if(trim($text)){
-				$node = $this->addToCurrent('TEXT',$text,true);
-				$f = substr($text,0,1);
-				$l = substr($text,-1);
-				if($l==" "||$l=="\t"||$l=="\0"||$l=="\x0B"||$l=="\n"){
-					$node->spaceAfterClose = true;
-				}
-				if(!$node->previousSibling&&($f==" "||$f=="\t"||$f=="\0"||$f=="\x0B"||$f=="\n")){
-					$this->currentTag->spaceAfterOpen = true;
-				}
-			}
-			elseif($this->currentTag){
-				if($node=end($this->currentTag->childNodes)){
-					$node->spaceAfterClose = true;
-				}
-				else{
-					$this->currentTag->spaceAfterOpen = true;
-				}
-			}
-		}
+		if($text)
+			$node = $this->addToCurrent('TEXT',$text,true);
 	}
 	private function fireCDataSection($text){
 		$this->addToCurrent('CDATA',$text,true);
@@ -1572,8 +1451,6 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			foreach($matches[1] as $i=>$eve)
 				$arg = substr($arg,0,$pos=strpos($arg,$matches[0][$i],$pos)).$this->evalue($eve).substr($arg,$pos+strlen($matches[0][$i]));
 		$this->parseML($arg);
-		//if($n<3||!func_get_arg(2))
-			//$this->triggerLoaded();
 	}
 	function make($arg){
 		if(is_string($arg)){
