@@ -37,6 +37,8 @@ class Templix implements \ArrayAccess {
 	public $devCss;
 	public $devImg;
 	
+	public $autoIndent;
+	
 	function __construct($file=null,$vars=null,
 		$devTemplate=true,$devJs=true,$devCss=true,$devImg=false
 	){
@@ -190,7 +192,19 @@ class Templix implements \ArrayAccess {
 		$this->devRegeneration();
 		if((!isset($this->forceCompile)&&$this->devTemplate)||!is_file($this->dirCompile.$this->dirCompileSuffix.$file))
 			$this->writeCompile();
+		
+		$autoIndent = isset($this->autoIndent)?$this->autoIndent:$this->devTemplate;
+		if($autoIndent)
+			ob_start();
+		
 		$this->includeVars($this->dirCompile.$this->dirCompileSuffix.$file,$this->vars);
+		
+		if($autoIndent){
+			$buffer = ob_get_clean();
+			$beautify = new BeautifyHtml();
+			$buffer = $beautify->beautify($buffer);
+			echo $buffer;
+		}
 		return $this;
 	}
 	
