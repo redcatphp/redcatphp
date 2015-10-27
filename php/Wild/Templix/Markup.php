@@ -43,6 +43,8 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 	protected $selfClosed;
 	protected $__closed;
 	protected $noParseContent;
+	protected $spaceAfterOpen;
+	protected $spaceAfterClose;
 	protected $foot = [];
 	protected $head = [];
 	protected $innerFoot = [];
@@ -600,11 +602,15 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 			if($this->selfClosed>1||($this->selfClosed&&$this->templix&&$this->templix->isXhtml))
 				$str .= ' /';
 			$str .= '>';
+			if($this->spaceAfterOpen)
+				$str .= ' ';
 		}
 		$str .= $this->getInner();
 		$foot = implode('',$this->foot);
 		if(!$this->selfClosed&&!$this->hiddenWrap)
-			$str .= '</'.$this->nodeName.'>';		
+			$str .= '</'.$this->nodeName.'>';
+		if($this->spaceAfterClose)
+			$str .= ' ';
 		$str = $head.$str.$foot;
 		return $str;
 	}
@@ -1422,8 +1428,17 @@ class Markup implements \ArrayAccess,\IteratorAggregate{
 		$this->addToCurrent('COMMENT',$comment,true);
 	}
 	private function fireCharacterData($text){
-		if($text)
+		//if($text)
+			//$node = $this->addToCurrent('TEXT',$text,true);
+		if(trim($text)){
 			$node = $this->addToCurrent('TEXT',$text,true);
+		}
+		elseif($this->currentTag){
+			if($node=end($this->currentTag->childNodes))
+				$node->spaceAfterClose = true;
+			else
+				$this->currentTag->spaceAfterOpen = true;
+		}
 	}
 	private function fireCDataSection($text){
 		$this->addToCurrent('CDATA',$text,true);
