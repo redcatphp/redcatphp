@@ -48,6 +48,12 @@
 									?>margin-right:0;<?
 								}
 							}
+							else{
+								?>
+								margin-left:0;
+								margin-right:0;
+								<?
+							}
 							?>width: <?=$w?$w.'%':'auto'?>;<?
 						?>
 					}
