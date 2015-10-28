@@ -37,9 +37,15 @@
 									?>margin-left:<?=$margin_left?>%;<?
 									$tt += $margin_left;
 								}
+								else{
+									?>margin-left:0;<?
+								}
 								if($margin_right){
 									?>margin-right:<?=$margin_right?>%;<?
 									$tt += $margin_right;
+								}
+								else{
+									?>margin-right:0;<?
 								}
 							}
 							?>width: <?=$w?$w.'%':'auto'?>;<?
