@@ -7,7 +7,11 @@ class Link extends \Wild\Templix\MarkupHtml5\Link{
 		if(
 			$this->templix&&$this->href&&strpos($this->href,'://')===false&&strpos($this->href,'_t=')===false&&
 			($this->templix->devCss&&pathinfo($this->href,PATHINFO_EXTENSION)=='css')
-			||($this->templix->devImg&&pathinfo($this->href,PATHINFO_EXTENSION)=='ico')
+			||($this->templix->devImg&&
+				(
+					($e=pathinfo($this->href,PATHINFO_EXTENSION))=='ico'
+					||$e=='png'
+				))
 		){
 			if(strpos(str_replace(['<?','?>'],'',$this->href),'?')===false)
 				$this->href .= '?';
