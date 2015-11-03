@@ -5,7 +5,7 @@
 	@version 2.3
 	@link http://github.com/surikat/js/
 	@author Jo Surikat <jo@surikat.pro>
-	@website http://wildsurikat.com
+	@website http://redcatphp.com
 */
 (function(w,d){
 	var indexOf = Array.prototype.indexOf?function(a,obj,start){

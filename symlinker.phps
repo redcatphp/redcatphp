@@ -1,3 +1,3 @@
 <?php
-if(!is_dir('surikat')&&is_dir('../surikat'))
-	symlink('../surikat','surikat');
+if(!is_dir('redcat')&&is_dir('../redcat'))
+	symlink('../redcat','redcat');

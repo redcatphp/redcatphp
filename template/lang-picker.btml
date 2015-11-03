@@ -1,19 +1,19 @@
 <?
-	$langDir = SURIKAT_CWD.'langs/';
-	$di = Wild\Wire\Di::getInstance();
+	$langDir = REDCAT_CWD.'langs/';
+	$di = RedCat\Wire\Di::getInstance();
 	$defaultLanguage = 'en';
-	$currentLanguage = $di->create('Wild\Localize\Translator')->getLangCode();
+	$currentLanguage = $di->create('RedCat\Localize\Translator')->getLangCode();
 	if(!$currentLanguage)
 		$currentLanguage = $defaultLanguage;
 	$langs = [$defaultLanguage];
 	foreach(glob($langDir.'*.ini') as $langFile)
 		$langs[] = pathinfo($langFile,PATHINFO_FILENAME);
-	$url = $di->create('Wild\Route\Url');
+	$url = $di->create('RedCat\Route\Url');
 ?>
 <foreach "$langs as $lg">
 	<?
-		$language = Wild\Localize\Punic\Language::getName($lg,$lg);
-		$language = Wild\Localize\Strings::ucfirst($language);
+		$language = RedCat\Localize\Punic\Language::getName($lg,$lg);
+		$language = RedCat\Localize\Strings::ucfirst($language);
 		$lcPath = $URI;
 		if($lg!=$currentLanguage){
 			if($lg==$defaultLanguage){

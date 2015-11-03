@@ -28,7 +28,7 @@ Let's work together !
 The Developement Theorem
 ------------------------
 
- Surikat paradigm: See Away, Be Light, Run Fast - like the [Meerkat](https://en.wikipedia.org/wiki/Meerkat) behavior
+ Surikat paradigm: See Away, Be Light, Run Fast
 
 ### See Away
 -	Scalabilty (durability)
@@ -63,4 +63,4 @@ About
 
 Surikat-Framework, designed with madness and love by a [web developer](http://jo-developer.ninja) for web developers !
 
-[continue to documentation](http://wildsurikat.com/overview)
+[continue to documentation](http://redcatphp.com/overview)

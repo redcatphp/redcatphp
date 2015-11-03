@@ -18,10 +18,10 @@ return [
 		'databaseMap'=>[],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
-		'versioning'=>'new:Wild\Plugin\Versioning\Number',
+		'versioning'=>'new:RedCat\Plugin\Versioning\Number',
 	],
 	'rules'=>[
-		'Wild\DataMap\Bases'	=> [
+		'RedCat\DataMap\Bases'	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',
@@ -30,7 +30,7 @@ return [
 				'entityClassDefault'=>'stdClass',
 			],
 		],
-		'Wild\Identify\Auth'=>[
+		'RedCat\Identify\Auth'=>[
 			'construct'=>[
 				'$rootLogin' => 'superRoot.login',
 				'$rootPassword' => 'superRoot.password',
@@ -49,43 +49,43 @@ return [
 				'mailSecure' => 'tls',
 			],
 		],
-		'Wild\Identify\Session'=>[
+		'RedCat\Identify\Session'=>[
 			'shared'=>true,
-			'newInstances'=>'Wild\Identify\SessionHandlerInterface',
+			'newInstances'=>'RedCat\Identify\SessionHandlerInterface',
 			'substitutions'=>[
-				'Wild\Identify\SessionHandlerInterface'=>'Wild\Identify\SessionHandler',
+				'RedCat\Identify\SessionHandlerInterface'=>'RedCat\Identify\SessionHandler',
 			],
 			'construct'=>[
 				'name'=>'surikat',
-				'saveRoot'=>SURIKAT_CWD.'.tmp/sessions/',
+				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'Wild\Plugin\FrontController\FrontOffice'=>[
+		'RedCat\Plugin\FrontController\FrontOffice'=>[
 			'construct'=>[
 				'$l10n'=>'l10n',
 			],
 		],
-		'Wild\Plugin\RouteMatch\ByTmlL10n'=>[
+		'RedCat\Plugin\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		'Wild\Plugin\Templix\TemplixL10n'=>[
+		'RedCat\Plugin\Templix\TemplixL10n'=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		'Wild\Localize\Translator'=>[
+		'RedCat\Localize\Translator'=>[
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
 				'$dev'=>'dev.l10n',
 			],
 		],
-		'Wild\Debug\ErrorHandler'=>[
+		'RedCat\Debug\ErrorHandler'=>[
 			'shared'=>true,
 		],
-		'Wild\Templix\Templix'=>[
+		'RedCat\Templix\Templix'=>[
 			'construct'=>[
 				'$devTemplate'=>'dev.tml',
 				'$devCss'=>'dev.css',
@@ -93,23 +93,23 @@ return [
 				'$devImg'=>'dev.img',
 			],
 		],
-		'Wild\Plugin\Templix\Templix'=>[
+		'RedCat\Plugin\Templix\Templix'=>[
 			'call'=>[
-				'addPluginPrefix'=>'Wild\Plugin\Templix\Markup\\',
+				'addPluginPrefix'=>'RedCat\Plugin\Templix\Markup\\',
 			],
 		],
-		'Wild\Plugin\FrontController\Synaptic'=>[
+		'RedCat\Plugin\FrontController\Synaptic'=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
 			],
 		],
-		'Wild\Stylize\Server' => [
+		'RedCat\Stylize\Server' => [
 			'construct'=>[
 				'$cache'=>'dev.css',
 			],
 		],
-		'Wild\Route\Url' => [
+		'RedCat\Route\Url' => [
 			'shared'=>true,
 		],
 		'Banago\PHPloy\PHPloy' => [

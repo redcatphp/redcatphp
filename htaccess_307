@@ -8,7 +8,7 @@ RewriteRule ^.*$ - [E=CWD:%2]
 #RewriteCond %{REMOTE_ADDR} !^127.0.0.1
 
 RewriteCond %{REQUEST_URI} !^/maintenance$
-RewriteCond %{REQUEST_URI} !^/surikat/maintenance.php$
+RewriteCond %{REQUEST_URI} !^/redcat/maintenance.php$
 RewriteRule ^(.*)$ %{ENV:CWD}maintenance [R=307,L]
 
-RewriteRule ^maintenance$ %{ENV:CWD}surikat/maintenance.php [L]
+RewriteRule ^maintenance$ %{ENV:CWD}redcat/maintenance.php [L]

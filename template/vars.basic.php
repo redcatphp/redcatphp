@@ -1,4 +1,4 @@
 <?php
 return [
-	'BASE_HREF'		=> Wild\Wire\Di::getInstance()->create('Wild\Route\Url')->getBaseHref(),
+	'BASE_HREF'		=> RedCat\Wire\Di::getInstance()->create('RedCat\Route\Url')->getBaseHref(),
 ];

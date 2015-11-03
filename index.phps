@@ -1,4 +1,4 @@
 <?php
-//define('SURIKAT_FREEZE_DI',true);
-require_once __DIR__.'/surikat/surikat.php';
-$surikat->create('Wild\Plugin\FrontController\FrontOffice')->runFromGlobals();
+//define('REDCAT_FREEZE_DI',true);
+require_once __DIR__.'/redcat/redcat.php';
+$surikat->create('RedCat\Plugin\FrontController\FrontOffice')->runFromGlobals();

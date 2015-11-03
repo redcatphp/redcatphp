@@ -10,10 +10,10 @@
 	<?else:?>
 		$js.min=true;
 	<?endif;?>
-	<?if(is_file(SURIKAT_CWD.'js/script.js')):?>
+	<?if(is_file(REDCAT_CWD.'js/script.js')):?>
 		$js('script<?=$VERSIONING?>');
 	<?endif;?>
-	<?if(Wild\Wire\Di::getInstance()->dev['chrono']):
+	<?if(RedCat\Wire\Di::getInstance()->dev['chrono']):
 		$chrono = microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'];
 		$chrono = sprintf("%.2f", ($chrono>=1?$chrono:$chrono*(float)1000)).' '.($chrono>=1?'s':'ms');
 		$memory = memory_get_peak_usage();
