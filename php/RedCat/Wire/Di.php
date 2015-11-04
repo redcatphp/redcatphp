@@ -7,7 +7,7 @@
  *		for clean decoupled dependencies resolution
  * and Pimple 3 - 2009 Fabien Potencier | http://pimple.sensiolabs.org
  *		for arbitrary data and manual hook
- * with lot of Surikat's improvements, addons and remixs
+ * with lot of RedCat's improvements, addons and remixs
  *		for powerfull API, lazy load cascade rules resolution,
  *		full registry implementation, freeze optimisation
  * 
