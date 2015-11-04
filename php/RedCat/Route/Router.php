@@ -4,7 +4,7 @@
  *
  * @package Router
  * @version 1.2
- * @link http://github.com/surikat/Router/
+ * @link http://github.com/redcatphp/Router/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

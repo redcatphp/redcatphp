@@ -5,7 +5,7 @@ namespace RedCat\Stylize;
  *
  * @package Stylize
  * @version 1.2
- * @link http://github.com/surikat/Stylize/
+ * @link http://github.com/redcatphp/Stylize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

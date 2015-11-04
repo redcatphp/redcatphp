@@ -4,7 +4,7 @@
  *
  * @package Wire
  * @version 1.4
- * @link http://github.com/surikat/Wire/
+ * @link http://github.com/redcatphp/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

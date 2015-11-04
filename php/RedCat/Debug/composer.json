@@ -1,10 +1,10 @@
 {
-	"name": "surikat/debug",
+	"name": "redcatphp/debug",
 	"type": "library",
 	"description": "Debug - Common vars dump helpers and error handler for debugging purpose",
 	"keywords": ["Debug","Error Hanlder","var dump helpers","Dev"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
-	"homepage": "https://github.com/surikat/Debug",
+	"homepage": "https://github.com/redcatphp/Debug",
 	"authors": [
 		{
 			"name": "Jo Surikat",

@@ -7,13 +7,13 @@
  *		for clean decoupled dependencies resolution
  * and Pimple 3 - 2009 Fabien Potencier | http://pimple.sensiolabs.org
  *		for arbitrary data and manual hook
- * with lot of Surikat improvements, addons and remixs
+ * with lot of Surikat's improvements, addons and remixs
  *		for powerfull API, lazy load cascade rules resolution,
  *		full registry implementation, freeze optimisation
  * 
  * @package Wire
  * @version 1.4
- * @link http://github.com/surikat/Wire/
+ * @link http://github.com/redcatphp/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

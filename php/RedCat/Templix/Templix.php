@@ -4,7 +4,7 @@
  *
  * @package Templix
  * @version 1.6
- * @link http://github.com/surikat/Templix/
+ * @link http://github.com/redcatphp/Templix/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */
@@ -52,7 +52,7 @@ class Templix implements \ArrayAccess {
 		$this->setDirSync('.tmp/sync/');
 		$this->addDirCwd([
 			'template/',
-			'surikat/template/',
+			'redcat/template/',
 		]);
 		$this->setPluginPrefix(self::getPluginPrefixDefault());
 		if(isset($file))

@@ -1,10 +1,10 @@
 {
-	"name": "surikat/route",
+	"name": "redcatphp/route",
 	"type": "library",
 	"description": "Route - A mirco-framework for manage entry point of applications ",
 	"keywords": ["Route","Mirco Framework","Front Controller","Dispatcher"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
-	"homepage": "https://github.com/surikat/Route",
+	"homepage": "https://github.com/redcatphp/Route",
 	"authors": [
 		{
 			"name": "Jo Surikat",
@@ -23,6 +23,6 @@
 	},
 	"minimum-stability": "dev",
 	"suggest": {
-		"surikat/wire": "Use Dependency Injection Container for registry"
+		"redcatphp/wire": "Use Dependency Injection Container for registry"
 	}
 }

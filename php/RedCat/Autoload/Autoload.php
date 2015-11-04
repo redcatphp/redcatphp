@@ -9,7 +9,7 @@
  *
  * @package Autoload
  * @version 2.1
- * @link http://github.com/surikat/Autoload/
+ * @link http://github.com/redcatphp/Autoload/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

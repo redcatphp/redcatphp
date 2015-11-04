@@ -4,7 +4,7 @@
  *
  * @package Debug
  * @version 1.2
- * @link http://github.com/surikat/Debug/
+ * @link http://github.com/redcatphp/Debug/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

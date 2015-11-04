@@ -3,7 +3,7 @@
 			or just simple lightweight javascript dependencies manager
 	
 	@version 2.3
-	@link http://github.com/surikat/js/
+	@link http://github.com/redcatphp/js/
 	@author Jo Surikat <jo@surikat.pro>
 	@website http://redcatphp.com
 */

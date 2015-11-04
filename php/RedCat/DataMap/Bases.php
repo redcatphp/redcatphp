@@ -8,7 +8,7 @@
  *
  * @package DataMap
  * @version 1.3
- * @link http://github.com/surikat/DataMap/
+ * @link http://github.com/redcatphp/DataMap/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

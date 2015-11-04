@@ -4,7 +4,7 @@
  *
  * @package Identify
  * @version 1.3
- * @link http://github.com/surikat/Identify/
+ * @link http://github.com/redcatphp/Identify/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

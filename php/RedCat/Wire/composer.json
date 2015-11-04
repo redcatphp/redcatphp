@@ -1,10 +1,10 @@
 {
-	"name": "surikat/wire",
+	"name": "redcatphp/wire",
 	"type": "library",
 	"description": "Wire - Dependency Injection Made Universal",
 	"keywords": ["Wire","Dependency Injection","Configuration","Inversion of Control"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
-	"homepage": "https://github.com/surikat/Wire",
+	"homepage": "https://github.com/redcatphp/Wire",
 	"authors": [
 		{
 			"name": "Jo Surikat",
@@ -23,6 +23,6 @@
 	},
 	"minimum-stability": "dev",
 	"suggest": {
-		"surikat/autoload": "Enable autoloading of classes"
+		"redcatphp/autoload": "Enable autoloading of classes"
 	}
 }

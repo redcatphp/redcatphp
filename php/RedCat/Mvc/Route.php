@@ -4,7 +4,7 @@
  *
  * @package Mvc
  * @version 1.3
- * @link http://github.com/surikat/Mvc/
+ * @link http://github.com/redcatphp/Mvc/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */

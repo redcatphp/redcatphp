@@ -56,7 +56,7 @@ return [
 				'RedCat\Identify\SessionHandlerInterface'=>'RedCat\Identify\SessionHandler',
 			],
 			'construct'=>[
-				'name'=>'surikat',
+				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],

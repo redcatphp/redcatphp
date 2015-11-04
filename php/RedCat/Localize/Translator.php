@@ -5,7 +5,7 @@ namespace RedCat\Localize;
  *
  * @package Localize
  * @version 1.3
- * @link http://github.com/surikat/Localize/
+ * @link http://github.com/redcatphp/Localize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
  */
