@@ -129,7 +129,10 @@ class TemplixL10n extends Templix{
 				$rw = (string)$el;
 				
 			if($this->autoWrapL10n){
-				$rw = str_replace($aggrK,$aggrV,$rw);
+				do{
+					$rw = str_replace($aggrK,$aggrV,$rw);
+				}
+				while(strpos($rw,'{{.-;-:-translateAggr')!==false);
 			}
 			
 			$trw = trim($rw);
