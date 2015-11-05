@@ -112,10 +112,5 @@ return [
 		'RedCat\Route\Url' => [
 			'shared'=>true,
 		],
-		'Banago\PHPloy\PHPloy' => [
-			'construct'=>[
-				'$map' => 'gitDeploy',
-			],
-		],
 	],
 ];
