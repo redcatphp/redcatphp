@@ -166,6 +166,7 @@ class TemplixL10n extends Templix{
 					||($k=='href'&&$markup->nodeName=='a')
 					||($k=='value'&&$markup->nodeName=='input'&&$markup->type=='submit')
 					||($k=='placeholder'&&$markup->nodeName=='input')
+					||($k=='content'&&$markup->nodeName=='meta'&&$markup->attr('name')=='description')
 				){
 					if(strpos($v,'<?')===false)
 						$markup->attr($k,$this->i18nWrapCode($v));
