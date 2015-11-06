@@ -56,7 +56,7 @@ class Templix extends \RedCat\Templix\Templix{
 			$this['VERSIONING'] = '';
 		}
 		
-		if(pathinfo($path,PATHINFO_EXTENSION)!='tml')
+		if(!in_array(pathinfo($path,PATHINFO_EXTENSION),['tml','atml']))
 			$path .= '.tml';
 		
 		if($this->setPath($path)||$this->setPath('404.tml')){
