@@ -49,10 +49,45 @@ class Url {
 		}
 		return $this->suffixHref;
 	}
-	function getLocation(){
-		return $this->getBaseHref().ltrim($this->server['REQUEST_URI'],'/');
+	function getUriPath(){
+		return parse_url($this->server['REQUEST_URI'], \PHP_URL_PATH);
 	}
-	
+	function getUri(){
+		return ltrim($this->server['REQUEST_URI'],'/');
+	}
+	function getLocation(){
+		return $this->getBaseHref().$this->getUri();
+	}
+	function getDomain(){
+		$x = explode('.',$this->getServerHref());
+		$e = array_pop($x);
+		return end($x).'.'.$e;
+	}
+	function getCanonical($domains=null,$httpSubstitution=false,$isStatic=false){
+		if(empty($domains))
+			$domains = $this->getDomain();
+		if(!is_array($domains))
+			$domains = (array)$domains;
+		reset($domains);
+		$mainDomain = current($domains);
+		$serverHref = $this->getServerHref();
+		$canonical = $this->getProtocolHref();
+		if(in_array($serverHref,$domains))
+			$canonical .= $serverHref;
+		else
+			$canonical .= $mainDomain;
+		$canonical .= $this->getPortHref().'/'.$this->getSuffixHref();
+		if($httpSubstitution&&http_response_code()!==200){
+			$canonical .= http_response_code();
+		}
+		else{
+			if($isStatic)
+				$canonical .= $this->getUriPath();
+			else
+				$canonical .= $this->getUri();
+		}
+		return $canonical;
+	}
 	function getSubdomainHref($sub=''){
 		$lg = $this->getSubdomainLang();
 		$server = $this->getServerHref();
