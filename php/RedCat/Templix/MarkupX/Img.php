@@ -4,7 +4,7 @@ use RedCat\Templix\MarkupHtml5\Img as MarkupHtml5_Img;
 class Img extends MarkupHtml5_Img{
 	function load(){
 		if($this->src&&strpos($this->src,'://')===false){
-			if(!($this->height&&$this->width)){
+			if(!$this->height&&!$this->width){
 				$size = @getimagesize($this->src);
 				if(isset($size[0])&&isset($size[1])){
 					$this->width =  $size[0];
