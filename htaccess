@@ -273,6 +273,8 @@ RewriteRule ^robots\.txt$ %{ENV:REDCAT_URI}redcat/robots_ssl.txt [L]
 #RewriteRule ^robots\.txt$ %{ENV:REDCAT_URI}redcat/robots_cdn.txt [L]
 
 #Domain - Canonicalize domain
-#RewriteCond %{HTTP_HOST} !my-canonical-domain.com$ [NC]
-#RewriteCond %{HTTP_HOST} !my-canonical-domain.dev$ [NC]
+#RewriteCond %{HTTP_HOST} !^my-canonical-domain.com$ [NC]
+#RewriteCond %{HTTP_HOST} !^my-canonical-domain.dev$ [NC]
+#CDN allow static extensions
+#RewriteCond %{REQUEST_URI} !.*\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|woff2|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)
 #RewriteRule ^(.*)$ http://my-canonical-domain.com/$1 [L,R=301]
