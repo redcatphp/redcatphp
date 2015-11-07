@@ -77,7 +77,10 @@ class Url {
 		else
 			$canonical .= $mainDomain;
 		$canonical .= $this->getPortHref().'/'.$this->getSuffixHref();
-		if($httpSubstitution&&http_response_code()!==200){
+		if(is_string($httpSubstitution)){
+			$canonical .= $httpSubstitution;
+		}
+		elseif($httpSubstitution&&http_response_code()!==200){
 			$canonical .= http_response_code();
 		}
 		else{
