@@ -50,7 +50,7 @@ class Url {
 		return $this->suffixHref;
 	}
 	function getUriPath(){
-		return parse_url($this->server['REQUEST_URI'], \PHP_URL_PATH);
+		return parse_url(ltrim($this->server['REQUEST_URI'],'/'), \PHP_URL_PATH);
 	}
 	function getUri(){
 		return ltrim($this->server['REQUEST_URI'],'/');
