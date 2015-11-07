@@ -194,12 +194,12 @@ class TemplixL10n extends Templix{
 		if($langMap&&isset($langMap[$path])){
 			$xPath = $langMap[$path];
 		}
-		$head->append('<link rel="alternate" href="'.$this->getSubdomainHref().$xPath.'" hreflang="x-default" />');
+		$head->append('<link rel="alternate" href="'.$this->getSubdomainHref().$xPath.'" hreflang="x-default">');
 		foreach(glob('langs/*.ini') as $langFile){
 			$lg = pathinfo($langFile,PATHINFO_FILENAME);
 			$langMap = parse_ini_file($langFile);
 			$lcPath = ($k=array_search($xPath,$langMap))?$k:$xPath;
-			$head->append('<link rel="alternate" href="'.$this->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'" />');
+			$head->append('<link rel="alternate" href="'.$this->getSubdomainHref($lg).$lcPath.'" hreflang="'.$lg.'">');
 		}
 	}
 	
