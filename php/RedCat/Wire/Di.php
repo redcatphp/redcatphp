@@ -12,7 +12,7 @@
  *		full registry implementation, freeze optimisation
  * 
  * @package Wire
- * @version 1.4
+ * @version 1.5
  * @link http://github.com/redcatphp/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

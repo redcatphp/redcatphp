@@ -1,13 +1,4 @@
 <?php
-/*
- * Route - Modular Router for Mvc
- *
- * @package Mvc
- * @version 1.3
- * @link http://github.com/redcatphp/Mvc/
- * @author Jo Surikat <jo@surikat.pro>
- * @website http://redcatphp.com
- */
 namespace RedCat\Mvc;
 use RedCat\Wire\Di;
 class Route implements \ArrayAccess,\Iterator,\Countable{

@@ -8,7 +8,7 @@
  *   PSR-0 convention - for details: see http://www.php-fig.org/psr/psr-0/
  *
  * @package Autoload
- * @version 2.1
+ * @version 2.2
  * @link http://github.com/redcatphp/Autoload/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

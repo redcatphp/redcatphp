@@ -7,7 +7,7 @@
  *   due to following DataMapper Pattern
  *
  * @package DataMap
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/redcatphp/DataMap/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

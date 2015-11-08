@@ -4,7 +4,7 @@ namespace RedCat\Stylize;
  * Css Preprocessor using Scss syntax ( SASS 3.2 ) ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp
  *
  * @package Stylize
- * @version 1.2
+ * @version 1.3
  * @link http://github.com/redcatphp/Stylize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

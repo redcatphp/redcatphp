@@ -3,7 +3,7 @@
  * Route - Modular Router for Mvc with prefix
  *
  * @package Mvc
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/redcatphp/Mvc/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

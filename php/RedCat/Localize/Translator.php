@@ -4,7 +4,7 @@ namespace RedCat\Localize;
  * Translator - gettext wrapper
  *
  * @package Localize
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/redcatphp/Localize/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com

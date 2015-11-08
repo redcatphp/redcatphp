@@ -1,13 +1,4 @@
 <?php
-/*
- * DiExpand - Dependencies lazy loader
- *
- * @package Wire
- * @version 1.4
- * @link http://github.com/redcatphp/Wire/
- * @author Jo Surikat <jo@surikat.pro>
- * @website http://redcatphp.com
- */
 namespace RedCat\Wire;
 class DiExpand{
 	private $x;
