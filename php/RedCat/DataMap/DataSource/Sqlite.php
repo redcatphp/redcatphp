@@ -15,6 +15,8 @@ class Sqlite extends SQL{
 	protected $concatenator = "cast(X'1D' as text)";
 	protected $unknownDatabaseCode = 14;
 	
+	protected $foreignKeyEnabled;
+	
 	function construct(array $config=[]){
 		parent::construct($config);
 		$this->typeno_sqltype = [
@@ -287,6 +289,33 @@ class Sqlite extends SQL{
 	function getFtsTableSuffix(){
 		return $this->ftsTableSuffix;
 	}
+	function enableForeignKeys(){
+		$this->connect();
+		$this->pdo->exec('PRAGMA foreign_keys = ON');
+		$this->foreignKeyEnabled = true;
+	}
+	function disableForeignKeys(){
+		$this->connect();
+		$this->pdo->exec('PRAGMA foreign_keys = OFF');
+		$this->foreignKeyEnabled = false;
+	}
+	
+	function deleteQuery($type,$id,$primaryKey='id',$uniqTextKey='uniq'){
+		if(!$this->foreignKeyEnabled)
+			$this->enableForeignKeys();
+		return parent::deleteQuery($type,$id,$primaryKey,$uniqTextKey);
+	}
+	function updateQuery($type,$properties,$id=null,$primaryKey='id',$uniqTextKey='uniq',$cast=[],$func=[]){
+		if(!$this->foreignKeyEnabled)
+			$this->enableForeignKeys();
+		return parent::updateQuery($type,$properties,$id,$primaryKey,$uniqTextKey,$cast,$func);
+	}
+	function createQuery($type,$properties,$primaryKey='id',$uniqTextKey='uniq',$cast=[],$func=[]){
+		if(!$this->foreignKeyEnabled)
+			$this->enableForeignKeys();
+		return parent::createQuery($type,$properties,$primaryKey,$uniqTextKey,$cast,$func);
+	}
+	
 	function makeFtsTable($type,$columns=[],$primaryKey='id',$uniqTextKey='uniq',$fullTextSearchLocale=null){
 		$ftsTable = $this->escTable($type.$this->ftsTableSuffix);
 		$table = $this->escTable($type);
