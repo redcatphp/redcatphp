@@ -203,7 +203,10 @@ abstract class DataSource implements \ArrayAccess{
 						else
 							$oneNew[$t][] = $v;
 						$rc = $k.'_'.$pk;
-						$properties[$rc] = $obj->$rc = $v->$pk;
+						
+						$obj->$rc = &$v->$pk;
+						$properties[$rc] = &$obj->$rc;
+						
 						$addFK = [$type,$t,$rc,$pk,$xclusive];
 						if(!in_array($addFK,$fk))
 							$fk[] = $addFK;
