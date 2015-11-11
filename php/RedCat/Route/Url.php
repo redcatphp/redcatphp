@@ -85,9 +85,11 @@ class Url {
 		}
 		else{
 			if($isStatic)
-				$canonical .= $this->getUriPath();
+				$uri = $this->getUriPath();
 			else
-				$canonical .= $this->getUri();
+				$uri = $this->getUri();
+			$uri = substr($uri,strlen($this->getSuffixHref()));
+			$canonical .= $uri;
 		}
 		return $canonical;
 	}
