@@ -1,6 +1,6 @@
 <?php
 namespace RedCat\DataMap;
-class EntityModel implements Observer{
+class EntityModel implements Observer,\Iterator{
 	protected $__data = [];
 	public $_modified;
 	function beforeRecursive(){}
@@ -28,5 +28,20 @@ class EntityModel implements Observer{
 	}
 	function __unset($k){
 		unset($this->__data[$k]);
+	}
+	function rewind(){
+		reset($this->__data);
+	}
+	function current(){
+		return current($this->__data);
+	}
+	function key(){
+		return key($this->__data);
+	}
+	function next(){
+		return next($this->__data);
+	}
+	function valid(){
+		return key($this->__data)!==null;
 	}
 }
