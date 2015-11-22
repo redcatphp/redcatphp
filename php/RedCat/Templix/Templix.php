@@ -50,10 +50,7 @@ class Templix implements \ArrayAccess {
 		$this->setDirCompile('.tmp/templix/compile/');
 		$this->setDirCache('.tmp/templix/cache/');
 		$this->setDirSync('.tmp/sync/');
-		$this->addDirCwd([
-			'template/',
-			'redcat/template/',
-		]);
+		
 		$this->setPluginPrefix(self::getPluginPrefixDefault());
 		if(isset($file))
 			$this->setPath($file);
