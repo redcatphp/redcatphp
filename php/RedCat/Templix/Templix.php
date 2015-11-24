@@ -47,10 +47,6 @@ class Templix implements \ArrayAccess {
 		$this->devJs = $devJs;
 		$this->devImg = $devImg;
 		
-		$this->setDirCompile('.tmp/templix/compile/');
-		$this->setDirCache('.tmp/templix/cache/');
-		$this->setDirSync('.tmp/sync/');
-		
 		$this->setPluginPrefix(self::getPluginPrefixDefault());
 		if(isset($file))
 			$this->setPath($file);

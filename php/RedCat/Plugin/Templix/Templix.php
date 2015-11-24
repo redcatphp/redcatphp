@@ -24,6 +24,10 @@ class Templix extends \RedCat\Templix\Templix{
 			'redcat/template/',
 		]);
 		
+		$this->setDirCompile('.tmp/templix/compile/');
+		$this->setDirCache('.tmp/templix/cache/');
+		$this->setDirSync('.tmp/sync/');
+		
 		$this->httpMtime = $httpMtime;
 		$this->httpEtag = $httpEtag;
 		$this->httpExpireTime = $httpExpireTime;
