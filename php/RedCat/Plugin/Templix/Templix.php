@@ -19,15 +19,6 @@ class Templix extends \RedCat\Templix\Templix{
 		parent::__construct($file,$vars,$devTemplate,$devJs,$devCss,$devImg);
 		$this->di = $di;
 		
-		$this->addDirCwd([
-			'template/',
-			'redcat/template/',
-		]);
-		
-		$this->setDirCompile('.tmp/templix/compile/');
-		$this->setDirCache('.tmp/templix/cache/');
-		$this->setDirSync('.tmp/sync/');
-		
 		$this->httpMtime = $httpMtime;
 		$this->httpEtag = $httpEtag;
 		$this->httpExpireTime = $httpExpireTime;
