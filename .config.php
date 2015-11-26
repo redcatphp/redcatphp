@@ -96,10 +96,10 @@ return [
 		'RedCat\Plugin\Templix\Templix'=>[
 			'call'=>[
 				'addPluginPrefix'=>'RedCat\Plugin\Templix\Markup\\',
-				'addDirCwd'=>[
+				'addDirCwd'=>[[
 					'template/',
 					'redcat/template/',
-				],
+				]],
 				'setDirCompile'=>'.tmp/templix/compile/',
 				'setDirCache'=>'.tmp/templix/cache/',
 				'setDirSync'=>'.tmp/sync/',
