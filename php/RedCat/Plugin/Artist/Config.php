@@ -73,9 +73,6 @@ class Config extends Artist{
 		}
 		$output->writeln($print);
 	}
-	private static function floatvalue($value) {
-		return floatval(preg_replace('#^([-]*[0-9\.,\' ]+?)((\.|,){1}([0-9-]{1,2}))*$#e', "str_replace(array('.', ',', \"'\", ' '), '', '\\1') . '.\\4'", $value));
-	}
 	private static function var_export($var, $indent=0){
 		switch(gettype($var)){
 			case 'string':
