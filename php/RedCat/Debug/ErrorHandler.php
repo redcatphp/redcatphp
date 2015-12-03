@@ -20,13 +20,13 @@ class ErrorHandler{
 	public $html_errors;
 	public $loadFunctions;
 	function __construct(
-		$html_errors=false,
+		$html_errors=null,
 		$debugLines=5,
 		$debugStyle='<style>code br{line-height:0.1em;}pre.error{display:block;position:relative;z-index:99999;}pre.error span:first-child{color:#d00;}</style>',
 		$debugWrapInlineCSS='margin:4px;padding:4px;border:solid 1px #ccc;border-radius:5px;overflow-x:auto;background-color:#fff;',
 		$loadFunctions=true
 	){
-		$this->html_errors = $html_errors;
+		$this->html_errors = isset($html_errors)?$html_errors:php_sapi_name()!='cli';
 		$this->debugLines = $debugLines;
 		$this->debugStyle = $debugStyle;
 		$this->debugWrapInlineCSS = $debugWrapInlineCSS;
@@ -49,7 +49,7 @@ class ErrorHandler{
 	}
 	function catchException($e){
 		$html = false;
-		if(!headers_sent()){
+		if(!headers_sent()&&$this->html_errors){
 			header("Content-Type: text/html; charset=utf-8");
 			$html = true;
 		}
@@ -74,7 +74,7 @@ class ErrorHandler{
 		if(!$this->handle||!ini_get('error_reporting'))
 			return;
 		$html = false;
-		if(!headers_sent()){
+		if(!headers_sent()&&$this->html_errors){
 			header("Content-Type: text/html; charset=utf-8");
 			$html = true;
 		}
