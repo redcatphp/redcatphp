@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+//[How to create a Console Command](https://symfony.com/doc/current/cookbook/console/console_command.html)
+
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
+require_once __DIR__.'/redcat.php';
+require_once __DIR__.'/php/Symfony/Polyfill/Mbstring/bootstrap.php';
+$app = $redcat->create('Symfony\Component\Console\Application');
+
+
+$commands = [];
+
+foreach(glob(REDCAT.'php/RedCat/Plugin/Artist/*.php') as $com){
+	$class = 'RedCat\Plugin\Artist\\'.pathinfo($com,PATHINFO_FILENAME);
+	$reflectionClass = new ReflectionClass($class);
+	if($reflectionClass->IsInstantiable())
+		$commands[] = $class;
+}
+
+foreach($commands as $command)
+	$app->add($redcat->create($command));
+
+$app->run();
