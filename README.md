@@ -25,7 +25,7 @@ Let's work together !
 
  For sum up, RedCat can be used as wrapper, to work on top of your application, as well as a library of awesome components.
 
-The Developement Theorem
+The right developement Theory
 ------------------------
 
  RedCat paradigm: See Away, Be Light, Run Fast
