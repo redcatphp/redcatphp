@@ -3,7 +3,7 @@
  * Vars - Lighter alternative to var_dump() with backtrace of the call and syntax highlighting
  *
  * @package Debug
- * @version 1.3
+ * @version 1.4
  * @link http://github.com/redcatphp/Debug/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
@@ -18,20 +18,31 @@ abstract class Vars{
 			echo self::debug_html_return($v);
 		}
 	}
+	static function debugsCLI(){
+		if(!headers_sent())
+			header('Content-Type: text/plain; charset=utf-8');
+		echo self::debug_backtrace_cli(),"\n";
+		foreach(func_get_args() as $v)
+			echo self::debug_cli_return($v),"\n";
+	}
 	static function dbugs(){
 		if(!headers_sent())
 			header('Content-Type: text/plain; charset=utf-8');
 		echo self::debug_backtrace();
-		foreach(func_get_args() as $v){
-			echo self::debug_return($v);
-			echo "\n";
-		}
+		foreach(func_get_args() as $v)
+			echo self::debug_return($v),"\n";
 	}
-	static function debug_html($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
+	static function debug_html($variable,$strlen=1000,$width=25,$depth=10){
 		if(!headers_sent())
 			header('Content-Type: text/html; charset=utf-8');
 		echo self::debug_backtrace_html();
-		echo self::debug_html_return($variable,$strlen,$width,$depth,$i,$objects);
+		echo self::debug_html_return($variable,$strlen,$width,$depth);
+	}
+	static function debug_cli($variable,$strlen=1000,$width=25,$depth=10){
+		if(!headers_sent())
+			header('Content-Type: text/html; charset=utf-8');
+		echo self::debug_backtrace_cli();
+		echo self::debug_cli_return($variable,$strlen,$width,$depth);
 	}
 	static function debug_html_return($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
 		$search = ['&',"\r", "\n", ' ','"',"'",'<','>'];
@@ -100,7 +111,7 @@ abstract class Vars{
 				$c = get_class($variable);
 				$id = array_search($variable,$objects,true);
 				if ($id!==false)
-					$string.='object('.$c.')'.'#'.($id+1).'{...}';
+					$string.='object('.$c.')#'.($id+1).'{...}';
 				else if($i==$depth)
 					$string.='object('.$c.'){...}';
 				else {
@@ -138,8 +149,19 @@ abstract class Vars{
 			'object2'    => '/object\((?P<class>[a-z_\\\]+)\)/i',
 		];
 		foreach($maps as $function => $pattern)
-			$string = preg_replace_callback($pattern, array('self', '_process' . ucfirst($function)), $string);
+			$string = preg_replace_callback($pattern, ['self', '_process'.ucfirst($function)], $string);
 		$string = '<div style="border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
+		return $string;
+	}
+	static function debug_cli_return($variable,$strlen=1000,$width=25,$depth=10){
+		$string = self::debug_return($variable,$strlen,$width,$depth);
+		$maps = [
+			'countable' => '/(?P<type>array|int|string)\((?P<count>\d+)\)/',
+			'object'    => '/object\((?P<class>[a-z_\\\]+)\)\#(?P<id>\d+)/i',
+			'object2'    => '/object\((?P<class>[a-z_\\\]+)\)/i',
+		];
+		foreach($maps as $function => $pattern)
+			$string = preg_replace_callback($pattern, ['self', '_process'.ucfirst($function).'CLI'], $string);
 		return $string;
 	}
 	static function debug($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
@@ -203,14 +225,15 @@ abstract class Vars{
 			break;
 			case 'object':
 				$id = array_search($variable,$objects,true);
+				$c = get_class($variable);
 				if ($id!==false)
-					$string.=get_class($variable).'#'.($id+1).' {...}';
+					$string .= 'object('.$c.')#'.($id+1).' {...}';
 				else if($i==$depth)
-					$string.=get_class($variable).' {...}';
+					$string .= 'object('.$c.'){...}';
 				else {
 					$id = array_push($objects,$variable);
 					$spaces = str_repeat(' ',$i*2);
-					$string.= get_class($variable)."#$id\n".$spaces.'{';
+					$string.= 'object('.$c.')'."#$id\n".$spaces.'{';
 					$array = (array)$variable;
 					foreach($array as $property=>$value) {
 						$name = str_replace("\0",':',trim($property));
@@ -230,6 +253,13 @@ abstract class Vars{
 		if($caller)
 			return '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
 	}
+	static function debug_backtrace_cli(){
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		do $caller = array_shift($backtrace);
+			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__||$caller['file']===__DIR__.'/functions.inc.php'));
+		if($caller)
+			return CliColors::wrap($caller['file'],'light_green').' : '.CliColors::wrap($caller['line'],'light_red');
+	}
 	static function debug_backtrace(){
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		do $caller = array_shift($backtrace);
@@ -240,13 +270,23 @@ abstract class Vars{
 	private static function _processCountable(array $matches){
 		$type = '<span style="color: #0000FF;">' . $matches['type'] . '</span>';
 		$count = '(<span style="color: #1287DB;">' . $matches['count'] . '</span>)';
- 
-		return $type . $count;
+		return $type.$count;
 	}
 	private static function _processObject(array $matches){
 		return '<span style="color: #0000FF;">object</span>(<span style="color: #4D5D94;">' . $matches['class'] . '</span>)#' . $matches['id'];
 	}
 	private static function _processObject2(array $matches){
 		return '<span style="color: #0000FF;">object</span>(<span style="color: #4D5D94;">' . $matches['class'] . '</span>)';
+	}
+	private static function _processCountableCLI(array $matches){
+		$type = CliColors::wrap($matches['type'],'light_blue');
+		$count = '('.CliColors::wrap($matches['count'],'light_purple').')';
+		return $type.$count;
+	}
+	private static function _processObjectCLI(array $matches){
+		return self::_processObject2CLI($matches).'#'.$matches['id'];
+	}
+	private static function _processObject2CLI(array $matches){
+		return CliColors::wrap('object','light_blue').'('.CliColors::wrap($matches['class'],'light_purple').')';
 	}
 }
