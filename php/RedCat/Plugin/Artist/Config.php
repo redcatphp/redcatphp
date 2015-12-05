@@ -11,20 +11,21 @@ class Config extends Artist{
 	];
 	
 	protected $opts = [
-		"constant"=>"If set, it will set value as constant",
-		"cast"=>"If set, it will cast the value as specified: int, string, float",
+		'constant'=>"If set, it will set value as constant",
+		'cast'=>"If set, it will cast the value as specified: int, string, float",
 	];
 	
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$key = $input->getArgument('key');
 		$value = $input->getArgument('value');
+		
 		$path = $this->cwd.'.config.php';
 		$config = include($path);
 		
 		if(!$key){
 			$print = self::var_export($config['$']);
 		}
-		elseif(!$value){
+		elseif(!isset($value)){
 			$ref = self::dotOffset($key,$config['$']);
 			$print = self::var_export($ref);
 		}
