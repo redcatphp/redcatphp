@@ -45,8 +45,8 @@ abstract class Vars{
 		echo self::debug_cli_return($variable,$strlen,$width,$depth);
 	}
 	static function debug_html_return($variable,$strlen=1000,$width=25,$depth=10,$i=0,&$objects = []){
-		$search = ['&',"\r", "\n", ' ','"',"'",'<','>'];
-		$replace = ['&#039;',"<br />", "<br />", '&nbsp;','&#34;','&#39;','&lt;','&gt;'];
+		$search = ['&','<','>','"',"'"];
+		$replace = ['&#039;','&lt;','&gt;','&#34;','&#39;'];
 		$string = '';
 		switch(gettype($variable)){
 			case 'boolean':
@@ -150,7 +150,7 @@ abstract class Vars{
 		];
 		foreach($maps as $function => $pattern)
 			$string = preg_replace_callback($pattern, ['self', '_process'.ucfirst($function)], $string);
-		$string = '<div style="border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
+		$string = '<div style="white-space:pre;border:1px solid #bbb;border-radius:4px;font-size:12px;line-height:1.4em;margin:3px;padding:4px;">' . $string . '</div>';
 		return $string;
 	}
 	static function debug_cli_return($variable,$strlen=1000,$width=25,$depth=10){
@@ -251,7 +251,7 @@ abstract class Vars{
 		do $caller = array_shift($backtrace);
 			while ($caller && (!isset($caller['file'])||$caller['file']===__FILE__||$caller['file']===__DIR__.'/functions.inc.php'));
 		if($caller)
-			return '<div style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</div>';
+			return '<span style="color: #50a800;font-size:12px;">'.$caller['file'].'</span>:<span style="color: #ff0000;font-size:12px;">'.$caller['line'].'</span>';
 	}
 	static function debug_backtrace_cli(){
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
