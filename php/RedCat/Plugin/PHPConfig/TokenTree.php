@@ -6,13 +6,13 @@ use Pharborist\Filter;
 
 use Pharborist\Types\ArrayNode;
 use Pharborist\Types\ArrayPairNode;
-use Pharborist\Types\StringNode;
+use Pharborist\WhitespaceNode;
 
 class TokenTree implements \ArrayAccess{
 	private $data = [];
-	private $tokens;
+	private $tree;
 	function __construct($filename){
-		$tree = Parser::parseFile($filename);
+		$this->tree = Parser::parseFile($filename);
 		$collectArrayR = function(ArrayNode $node,&$a=null)use(&$collectArrayR){
 			$keys = [];
 			$vals = [];
@@ -21,7 +21,6 @@ class TokenTree implements \ArrayAccess{
 				if($el instanceof ArrayPairNode){
 					$k = (string)$el->getKey();
 					$k = trim($k,'"\'');
-					$keys[] = $k;
 					$v = $el->getValue();
 					if($v instanceof ArrayNode){
 						$v = $collectArrayR($v);
@@ -29,16 +28,17 @@ class TokenTree implements \ArrayAccess{
 					else{
 						$v = (string)$v;
 					}
+					$keys[] = $k;
 					$vals[] = $v;
 				}
 				elseif($el instanceof ArrayNode){
-					$vals[] = $collectArrayR($el);
 					$keys[] = $i;
+					$vals[] = $collectArrayR($el);
 					$i++;
 				}
 				else{
-					$vals[] = (string)$el;
 					$keys[] = $i;
+					$vals[] = (string)$el;
 					$i++;
 				}
 			}
@@ -47,7 +47,7 @@ class TokenTree implements \ArrayAccess{
 			
 		};
 		$found = false;
-		$tree->walk(function($node)use(&$found,&$collectArrayR,&$a){
+		$this->tree->walk(function($node)use(&$found,&$collectArrayR,&$a){
 			if($found)
 				return;
 			if($node instanceof ArrayNode){
@@ -102,11 +102,127 @@ class TokenTree implements \ArrayAccess{
 			return "[\n" . implode(",\n", $r) . "\n" . str_repeat("\t",$indent) . "]";
 		}
 		else{
-			return $var;
+			return (string)$var;
 		}
 	}
+	
+	function update(){
+		$collectRefR = function(ArrayNode $node,$data)use(&$collectRefR){
+			$i = 0;
+			foreach($node->getElements() as $el){
+				if($el instanceof ArrayPairNode){
+					$k = (string)$el->getKey();
+					$k = trim($k,'"\'');
+					$v = $el->getValue();
+					if(!isset($data[$k])){
+						$next = $el->next();
+						if($next&&$next->getType()===',')
+							$next->remove();
+						while(($next=$el->next()) instanceof WhitespaceNode){
+							$next->remove();
+						}
+						$el->remove();
+					}
+					else{
+						if($v instanceof ArrayNode){
+							$v = $collectRefR($v,$data[$k]);
+							unset($data[$k]);
+						}
+						else{
+							$v->replaceWith(Parser::parseExpression($data[$k]));
+							unset($data[$k]);
+						}
+					}
+				}
+				elseif($el instanceof ArrayNode){
+					if(!isset($data[$i])){
+						$el->remove();
+					}
+					else{
+						$collectRefR($el,$data[$i]);
+						unset($data[$i]);
+						$i++;
+					}
+				}
+				else{
+					if(!isset($data[$i])){
+						$el->remove();
+					}
+					else{
+						$el->replaceWith(Parser::parseExpression($data[$i]));
+						unset($data[$i]);
+						$i++;
+					}
+				}
+			}
+			
+			foreach($data as $key=>$val){
+				if(is_integer($key)){
+					if(is_array($val)){
+						$collectRefR($node,$val);
+					}
+					else{
+						$node->append(Parser::parseExpression($val));
+					}
+				}
+				else{
+					if(is_array($val)){
+						$i = 0;
+						foreach($node->getElements() as $el){
+							if($el instanceof ArrayPairNode){
+								$k = (string)$el->getKey();
+								$k = trim($k,'"\'');
+								$v = $el->getValue();
+								$v->replaceWith(Parser::parseExpression($data[$k]));
+							}
+							elseif($el instanceof ArrayNode){
+								$el->replaceWith(Node::fromValue($data[$i]));
+								$i++;
+							}
+							else{
+								$el->replaceWith(Parser::parseExpression($data[$i]));
+								$i++;
+							}
+						}
+					}
+					else{
+						$pair = ArrayPairNode::create($key,$val);
+						$node->append($pair);
+					}
+				}
+			}
+		};
+		
+		$found = false;
+		$this->tree->walk(function($node)use(&$found,&$collectRefR){
+			if($found) return;
+			if($node instanceof ArrayNode){
+				$collectRefR($node,$this->data);
+				$found = true;
+			}
+		});
+		
+	}
+	
+	static function dotOffset($dotKey,&$config,$value=null){
+		$dotKey = explode('.',$dotKey);
+		$k = array_shift($dotKey);
+		if(!isset($config[$k]))
+			return;
+		$v = &$config[$k];
+		while($k = array_shift($dotKey)){
+			if(!isset($v[$k]))
+				return;
+			$v = &$v[$k];
+		}
+		if(func_num_args()>2)
+			$v = $value;
+		return $v;
+	}
+	
 	function __toString(){
-		$str = self::var_codify($this->data);;
+		$this->update();
+		$str = (string)$this->tree;
 		return $str;
 	}
 }
