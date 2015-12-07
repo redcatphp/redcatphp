@@ -10,6 +10,11 @@ class Config extends Artist{
 		'key'=>"The key in '$' associative array, recursive access with dot, eg: dev.php for 'dev'=>['php'=>...]",
 		'value'=>"The value to assign",
 	];
+	protected $opts = [
+		'unset'=>'unset a key in array',
+		'push'=>'append a value in array',
+		'unshift'=>'prepend a value in array',
+	];
 	
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$key = $input->getArgument('key');
@@ -20,13 +25,37 @@ class Config extends Artist{
 			$print = $config->var_codify($config['$']);
 		}
 		elseif(!isset($value)){
-			$ref = $config->dot('$.'.$key);
-			$print = $config->var_codify($ref);
+			$unset = $input->getOption('unset');
+			if($unset){
+				unset($config['$.'.$key]);
+				$print = "$key unsetted in $path";
+			}
+			else{
+				$print = $config->var_codify($config['$.'.$key]);
+			}
 		}
 		else{
-			$ref = $config->dot('$.'.$key,$value);
+			$push = $input->getOption('push');
+			$unshift = $input->getOption('unshift');
+			$ref = &$config['$.'.$key];
+			if($push){
+				if(!is_array($ref))
+					$ref = (array)$ref;
+				array_push($ref,$value);
+				d($ref);
+				$print = "$value appened to $key in $path";
+			}
+			if($unshift){
+				if(!is_array($ref))
+					$ref = (array)$ref;
+				array_unshift($ref,$value);
+				$print = "$value prepended to $key in $path";
+			}
+			if(!$push&&!$unshift){
+				$config['$.'.$key] = $value;
+				$print = "$key setted to $value in $path";
+			}
 			file_put_contents($path,(string)$config);
-			$print = "$key setted to $value in $path";
 		}
 		$output->writeln($print);
 	}	
