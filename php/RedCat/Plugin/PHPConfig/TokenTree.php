@@ -10,7 +10,7 @@ use Pharborist\WhitespaceNode;
 use Pharborist\Types\ArrayNode;
 use Pharborist\Types\ArrayPairNode;
 
-class TokenTree{
+class TokenTree implements \ArrayAccess{
 	private $data = [];
 	private $tree;
 	private $once;
@@ -97,7 +97,7 @@ class TokenTree{
 					$el->remove();
 				}
 				else{
-					if($v instanceof ArrayNode){
+					if($v instanceof ArrayNode&&is_array($data[$k])){
 						$v = $this->updateArray($v,$data[$k]);
 						unset($data[$k]);
 					}
@@ -135,7 +135,6 @@ class TokenTree{
 			if(!is_integer($key)){
 				$v = ArrayPairNode::create(Node::fromValue($key),$v);
 			}
-			$prev = $el->previous();
 			$comma = false;
 			$list = $node->getElementList();
 			$children = [];
@@ -143,13 +142,18 @@ class TokenTree{
 				$children[] = $child;
 			}
 			$prev = end($children);
-			do{
-				if((string)$prev===','){
-					$comma = true;
-					break;
+			if($prev){
+				do{
+					if((string)$prev===','){
+						$comma = true;
+						break;
+					}
 				}
+				while(is_object($prev)&&($prev=$prev->previous()) instanceof WhitespaceNode);
 			}
-			while(($prev=$prev->previous()) instanceof WhitespaceNode);
+			else{
+				$comma = true;
+			}
 			
 			$indent = 0;
 			$prev = end($children);
@@ -188,27 +192,59 @@ class TokenTree{
 		$this->tree->walk([$this,'onceUpdate']);
 	}
 	
-	function dot($dotKey,$value=null){
-		$dotKey = explode('.',$dotKey);
-		$k = array_shift($dotKey);
-		$set = func_num_args()>1;
-		if(!isset($this->data[$k])&&!$set)
-			return;
-		$v = &$this->data[$k];
-		while($k = array_shift($dotKey)){
-			if(!isset($v[$k])&&!$set)
-				return;
-			$v = &$v[$k];
-		}
-		if($set)
-			$v = $value;
-		return $v;
-	}
-	
 	function __toString(){
 		$this->update();
 		$str = (string)$this->tree;
 		return $str;
+	}
+	
+	function offsetExists($k){
+		$dotKey = explode('.',$dotKey);
+		$k = array_shift($dotKey);
+		if(!isset($this->data[$k]))
+			return false;
+		$v = &$this->data[$k];
+		while($k = array_shift($dotKey)){
+			if(!isset($v[$k]))
+				return false;
+			$v = &$v[$k];
+		}
+		return true;
+	}
+	function &offsetGet($key){
+		$dotKey = explode('.',$key);
+		$k = array_shift($dotKey);
+		$v = &$this->data[$k];
+		while($k = array_shift($dotKey)){
+			$v = &$v[$k];
+		}
+		return $v;
+	}
+	function offsetSet($key,$value){
+		$dotKey = explode('.',$key);
+		$k = array_shift($dotKey);
+		$v = &$this->data[$k];
+		while($k = array_shift($dotKey)){
+			$v = &$v[$k];
+		}
+		$v = $value;
+	}
+	function offsetUnset($key){
+		$dotKey = explode('.',$key);
+		$k = array_shift($dotKey);
+		if(!isset($this->data[$k]))
+			return;
+		$v = &$this->data[$k];
+		while($k = array_shift($dotKey)){
+			if(!isset($v[$k]))
+				return;
+			if(count($dotKey)==1){
+				unset($v[$k]);
+			}
+			else{
+				$v = &$v[$k];
+			}
+		}
 	}
 	
 	static function var_codify($var, $indent=0){
