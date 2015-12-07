@@ -47,11 +47,39 @@ class FormatterFactory {
   }
 
   public static function getDrupalFormatter() {
-    return static::createFormatter(dirname(__DIR__) . '/config/drupal.json');
+    //return static::createFormatter(dirname(__DIR__) . '/config/drupal.json');
+    return new Formatter(json_decode('{
+  "formatter": {
+    "nl": "\n",
+    "indent": 2,
+    "soft_limit": 80,
+    "boolean_null_upper": true,
+    "force_array_new_style": true,
+    "else_newline": true,
+    "declaration_brace_newline": false,
+    "list_keep_wrap": false,
+    "list_wrap_if_long": false,
+    "blank_lines_around_class_body": 1
+  }
+}',true));
   }
 
   public static function getPsr2Formatter() {
-    return static::createFormatter(dirname(__DIR__) . '/config/psr2.json');
+    //return static::createFormatter(dirname(__DIR__) . '/config/psr2.json');
+    return new Formatter(json_decode('{
+  "formatter": {
+    "nl": "\n",
+    "indent": 4,
+    "soft_limit": 80,
+    "boolean_null_upper": false,
+    "force_array_new_style": true,
+    "else_newline": false,
+    "declaration_brace_newline": true,
+    "list_keep_wrap": true,
+    "list_wrap_if_long": true,
+    "blank_lines_around_class_body": 0
+  }
+}',true));
   }
 
   /**
