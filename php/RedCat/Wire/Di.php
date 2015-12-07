@@ -12,7 +12,7 @@
  *		full registry implementation, freeze optimisation
  * 
  * @package Wire
- * @version 1.5
+ * @version 1.6
  * @link http://github.com/redcatphp/Wire/
  * @author Jo Surikat <jo@surikat.pro>
  * @website http://redcatphp.com
@@ -205,6 +205,8 @@ class Di implements \ArrayAccess{
 		else
 			$rule = [];
 		if($push){
+			if(!isset($rule[$key]))
+				$rule[$key] = [];
 			if(is_array($value)){
 				$rule[$key] = array_merge($rule[$key],$value);
 			}
@@ -265,7 +267,8 @@ class Di implements \ArrayAccess{
 				$instance = $name.':'.self::hashArguments($args);
 		}
 		if(!$forceNewInstance&&isset($this->instances[$instance])) return $this->instances[$instance];
-		if(empty($this->cache[$name])) $this->cache[$name] = $this->getClosure($name, $this->getRule($name), $instance);
+		if(empty($this->cache[$name]))
+			$this->cache[$name] = $this->getClosure($name, $this->getRule($name), $instance);
 		return $this->cache[$name]($args, $share);
 	}
 	
@@ -278,34 +281,57 @@ class Di implements \ArrayAccess{
 	}
 	
 	private function getClosure($name, array $rule, $instance){
-		$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
-		$constructor = $class->getConstructor();
-		$params = $constructor ? $this->getParams($constructor, $rule) : null;
-		if($rule['shared']){
-			$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
-				$this->instances[$instance] = $class->newInstanceWithoutConstructor();
-				if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
-				return $this->instances[$instance];
-			};
-		}
-		else if ($params){
-			$closure = function (array $args, array $share) use ($class, $params, $class){
-				return $class->newInstanceArgs($params($args, $share));
+		if(isset($rule['instanceOf'])&&is_object($rule['instanceOf'])){
+			return function(array $args)use($rule,$instance){
+				$object = $rule['instanceOf'];
+				if($object instanceof DiExpand)
+					$object = $object($this,$args);
+				$class = new \ReflectionClass(get_class($object));
+				if($rule['shared'])
+					$this->instances[$instance] = $object;
+				if(!empty($rule['call'])){
+					foreach ($rule['call'] as $k=>$call){
+						if(!is_integer($k)){
+							$call = [$k,(array)$call];
+						}
+						call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
+					}
+				}
+				return $object;
 			};
 		}
 		else{
-			$closure = function () use ($class) { return new $class->name;	};
-		}
-		return !empty($rule['call']) ? function (array $args, array $share) use ($closure, $class, $rule) {
-			$object = $closure($args, $share);
-			foreach ($rule['call'] as $k=>$call){
-				if(!is_integer($k)){
-					$call = [$k,(array)$call];
-				}
-				call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
+			$class = new \ReflectionClass(isset($rule['instanceOf']) ? $rule['instanceOf'] : $name);
+			$constructor = $class->getConstructor();
+			$params = $constructor ? $this->getParams($constructor, $rule) : null;
+			if($rule['shared']){
+				$closure = function (array $args, array $share) use ($class, $name, $constructor, $params, $instance) {
+					$this->instances[$instance] = $class->newInstanceWithoutConstructor();
+					if ($constructor) $constructor->invokeArgs($this->instances[$instance], $params($args, $share));
+					return $this->instances[$instance];
+				};
 			}
-			return $object;
-		} : $closure;
+			elseif ($params){
+				$closure = function(array $args, array $share)use($class, $params, $class){
+					return $class->newInstanceArgs($params($args, $share));
+				};
+			}
+			else{
+				$closure = function()use($class){
+					return new $class->name;
+				};
+			}
+			return !empty($rule['call']) ? function (array $args, array $share) use ($closure, $class, $rule) {
+				$object = $closure($args, $share);
+				foreach ($rule['call'] as $k=>$call){
+					if(!is_integer($k)){
+						$call = [$k,(array)$call];
+					}
+					call_user_func_array([$object,$call[0]],$this->getParams($class->getMethod($call[0]), $rule)->__invoke($this->expand(isset($call[1])?$call[1]:[])));
+				}
+				return $object;
+			} : $closure;
+		}
 	}
 
 	private function expand($param, array $share = []) {
@@ -326,8 +352,17 @@ class Di implements \ArrayAccess{
 			try{
 				$classObject = $param->getClass();
 				$class = $classObject ? $classObject->name : null;
-				if($class&&!array_key_exists($class, $rule['substitutions'])&&!$classObject->isInstantiable())
-					$class = null;
+				if($class&&!array_key_exists($class, $rule['substitutions'])){
+					$classRule = $this->getRule($class);
+					if(isset($classRule['instanceOf'])){
+						if(is_string($classRule['instanceOf']))
+							$classObject = new \ReflectionClass($class);
+						$rule['substitutions'][$class] = $classRule['instanceOf'];
+					}
+					elseif(!$classObject->isInstantiable()){
+						$class = null;
+					}
+				}
 			}
 			catch(\ReflectionException $e){
 				if($param->allowsNull()) $class = null;
@@ -442,7 +477,7 @@ class Di implements \ArrayAccess{
 		return $php;
 	}
 	function defineClass($class,$rule){
-		if(isset($rule['instanceOf']))
+		if(isset($rule['instanceOf'])&&is_string($rule['instanceOf']))
 			$rule['instanceOf'] = str_replace('/','\\',$rule['instanceOf']);
 		if(isset($rule['newInstances'])&&is_string($rule['newInstances']))
 			$rule['newInstances'] = explode(',',str_replace('/','\\',$rule['newInstances']));
@@ -452,7 +487,7 @@ class Di implements \ArrayAccess{
 			$substitutions = $rule['substitutions'];
 			$rule['substitutions'] = [];
 			foreach ($substitutions as $as=>$use)
-				$rule['substitutions'][str_replace('/','\\',$as)] = str_replace('/','\\',$use);
+				$rule['substitutions'][str_replace('/','\\',$as)] = is_string($use)?str_replace('/','\\',$use):$use;
 		}
 		if(isset($rule['construct'])){
 			$construct = $rule['construct'];
