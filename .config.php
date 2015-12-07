@@ -1,4 +1,6 @@
 <?php
+use RedCat\Wire\DiExpand;
+use Zend\Diactoros\ServerRequestFactory;
 return [
 	'$'=>[
 		'dev'=>[
@@ -21,6 +23,18 @@ return [
 		'versioning'=>'new:RedCat\Plugin\Versioning\Number',
 	],
 	'rules'=>[
+		'Psr\Http\Message\ServerRequestInterface'	=> [
+			'shared'=>true,
+			'instanceOf'=>new DiExpand(function(){
+				return ServerRequestFactory::fromGlobals(
+					$_SERVER,
+					$_GET,
+					$_POST,
+					$_COOKIE,
+					$_FILES
+				);
+			}),
+		],
 		'RedCat\DataMap\Bases'	=> [
 			'shared'=>true,
 			'construct' => [
