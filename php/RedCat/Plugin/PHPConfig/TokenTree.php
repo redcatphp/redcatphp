@@ -158,7 +158,9 @@ class TokenTree implements \ArrayAccess{
 				}
 			}
 			
+			
 			foreach($data as $key=>$val){
+				
 				$v = Parser::parseExpression($val);
 				if(!is_integer($key)){
 					$v = ArrayPairNode::create(Node::fromValue($key),$v);
@@ -223,7 +225,7 @@ class TokenTree implements \ArrayAccess{
 			return;
 		$v = &$config[$k];
 		while($k = array_shift($dotKey)){
-			if(!isset($v[$k]))
+			if(!isset($v[$k])&&func_num_args()<3)
 				return;
 			$v = &$v[$k];
 		}
