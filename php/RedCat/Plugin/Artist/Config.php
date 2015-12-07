@@ -20,11 +20,11 @@ class Config extends Artist{
 			$print = $config->var_codify($config['$']);
 		}
 		elseif(!isset($value)){
-			$ref = $config->dotOffset($key,$config['$']);
+			$ref = $config->dot('$.'.$key);
 			$print = $config->var_codify($ref);
 		}
 		else{
-			$ref = $config->dotOffset($key,$config['$'],$value);
+			$ref = $config->dot('$.'.$key,$value);
 			file_put_contents($path,(string)$config);
 			$print = "$key setted to $value in $path";
 		}

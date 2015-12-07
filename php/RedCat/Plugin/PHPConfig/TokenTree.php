@@ -160,8 +160,7 @@ class TokenTree implements \ArrayAccess{
 			
 			
 			foreach($data as $key=>$val){
-				
-				$v = Parser::parseExpression($val);
+				$v = Parser::parseExpression(self::var_codify($val));
 				if(!is_integer($key)){
 					$v = ArrayPairNode::create(Node::fromValue($key),$v);
 				}
@@ -218,19 +217,21 @@ class TokenTree implements \ArrayAccess{
 		
 	}
 	
-	static function dotOffset($dotKey,&$config,$value=null){
+	function dot($dotKey,$value=null){
 		$dotKey = explode('.',$dotKey);
 		$k = array_shift($dotKey);
-		if(!isset($config[$k])&&func_num_args()<3)
+		$set = func_num_args()>1;
+		if(!isset($this->data[$k])&&!$set)
 			return;
-		$v = &$config[$k];
+		$v = &$this->data[$k];
 		while($k = array_shift($dotKey)){
-			if(!isset($v[$k])&&func_num_args()<3)
+			if(!isset($v[$k])&&!$set)
 				return;
 			$v = &$v[$k];
 		}
-		if(func_num_args()>2)
+		if($set)
 			$v = $value;
+		//dd($this->data);
 		return $v;
 	}
 	
