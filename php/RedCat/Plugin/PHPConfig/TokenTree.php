@@ -80,129 +80,112 @@ class TokenTree{
 				return var_export($var, true);
 		}
 	}
-	static function var_codify($var, $indent=0){
-		if(is_array($var)){
-			$indexed = array_keys($var) === range(0, count($var) - 1);
-			$r = [];
-			foreach($var as $key => $value){
-				$r[] = str_repeat("\t",$indent+1)
-					 .($indexed?'':"'".addcslashes($key, '\'')."'".' => ')
-					 .self::var_codify($value, $indent+1);
-			}
-			return "[\n" . implode(",\n", $r) . "\n" . str_repeat("\t",$indent) . "]";
-		}
-		else{
-			return (string)$var;
-		}
-	}
-	
-	function update(){
-		$collectRefR = function(ArrayNode $node,$data)use(&$collectRefR){
-			$i = 0;
-			foreach($node->getElements() as $el){
-				if($el instanceof ArrayPairNode){
-					$k = (string)$el->getKey();
-					$k = trim($k,'"\'');
-					$v = $el->getValue();
-					if(!isset($data[$k])){
-						$next = $el->next();
-						if($next&&$next->getType()===',')
-							$next->remove();
-						while(($next=$el->next()) instanceof WhitespaceNode){
-							$next->remove();
-						}
-						$el->remove();
+	private function updateArray(ArrayNode $node,$data){
+		$i = 0;
+		foreach($node->getElements() as $el){
+			if($el instanceof ArrayPairNode){
+				$k = (string)$el->getKey();
+				$k = trim($k,'"\'');
+				$v = $el->getValue();
+				if(!isset($data[$k])){
+					$next = $el->next();
+					if($next&&$next->getType()===',')
+						$next->remove();
+					while(($next=$el->next()) instanceof WhitespaceNode){
+						$next->remove();
 					}
-					else{
-						if($v instanceof ArrayNode){
-							$v = $collectRefR($v,$data[$k]);
-							unset($data[$k]);
-						}
-						else{
-							$v->replaceWith(Parser::parseExpression($data[$k]));
-							unset($data[$k]);
-						}
-					}
-				}
-				elseif($el instanceof ArrayNode){
-					if(!isset($data[$i])){
-						$el->remove();
-					}
-					else{
-						$collectRefR($el,$data[$i]);
-						unset($data[$i]);
-						$i++;
-					}
+					$el->remove();
 				}
 				else{
-					if(!isset($data[$i])){
-						$el->remove();
+					if($v instanceof ArrayNode){
+						$v = $this->updateArray($v,$data[$k]);
+						unset($data[$k]);
 					}
 					else{
-						$el->replaceWith(Parser::parseExpression($data[$i]));
-						unset($data[$i]);
-						$i++;
+						$v->replaceWith(Parser::parseExpression($data[$k]));
+						unset($data[$k]);
 					}
 				}
 			}
-			
-			
-			foreach($data as $key=>$val){
-				$v = Parser::parseExpression(self::var_codify($val));
-				if(!is_integer($key)){
-					$v = ArrayPairNode::create(Node::fromValue($key),$v);
+			elseif($el instanceof ArrayNode){
+				if(!isset($data[$i])){
+					$el->remove();
 				}
-				$prev = $el->previous();
-				$comma = false;
-				$list = $node->getElementList();
-				$children = [];
-				foreach($list->children() as $child){
-					$children[] = $child;
+				else{
+					$this->updateArray($el,$data[$i]);
+					unset($data[$i]);
+					$i++;
 				}
-				$prev = end($children);
-				do{
-					if((string)$prev===','){
-						$comma = true;
+			}
+			else{
+				if(!isset($data[$i])){
+					$el->remove();
+				}
+				else{
+					$el->replaceWith(Parser::parseExpression($data[$i]));
+					unset($data[$i]);
+					$i++;
+				}
+			}
+		}
+		
+		
+		foreach($data as $key=>$val){
+			$v = Parser::parseExpression(self::var_codify($val));
+			if(!is_integer($key)){
+				$v = ArrayPairNode::create(Node::fromValue($key),$v);
+			}
+			$prev = $el->previous();
+			$comma = false;
+			$list = $node->getElementList();
+			$children = [];
+			foreach($list->children() as $child){
+				$children[] = $child;
+			}
+			$prev = end($children);
+			do{
+				if((string)$prev===','){
+					$comma = true;
+					break;
+				}
+			}
+			while(($prev=$prev->previous()) instanceof WhitespaceNode);
+			
+			$indent = 0;
+			$prev = end($children);
+			while($prev&&strpos($prev,"\n")===false){
+				$prev = $prev->previous();
+			}
+			$indent = '';
+			if($prev){
+				$prev = explode("\n",(string)$prev);
+				$prev = array_pop($prev);
+				for($i=0; $i<strlen($prev); $i++){
+					if(in_array($prev[$i],["\t",' ']))
+						$indent .= $prev[$i];
+					else
 						break;
-					}
 				}
-				while(($prev=$prev->previous()) instanceof WhitespaceNode);
-				
-				$indent = 0;
-				$prev = end($children);
-				while($prev&&strpos($prev,"\n")===false){
-					$prev = $prev->previous();
-				}
-				$indent = '';
-				if($prev){
-					$prev = explode("\n",(string)$prev);
-					$prev = array_pop($prev);
-					for($i=0; $i<strlen($prev); $i++){
-						if(in_array($prev[$i],["\t",' ']))
-							$indent .= $prev[$i];
-						else
-							break;
-					}
-				}
-				if(!$comma){
-					$list->append(Token::comma());
-				}
-				$list->append(Token::newline());
-				if($indent)
-					$list->append(WhitespaceNode::create($indent));
-				$list->append($v);
 			}
-		};
-		
+			if(!$comma){
+				$list->append(Token::comma());
+			}
+			$list->append(Token::newline());
+			if($indent)
+				$list->append(WhitespaceNode::create($indent));
+			$list->append($v);
+		}
+	}
+	function onceUpdate($node){
+		if($this->once) return;
+		if($node instanceof ArrayNode){
+			$this->updateArray($node,$this->data);
+			$this->once = true;
+		}
+	}
+	function update(){
 		$this->once = false;
-		$this->tree->walk(function($node)use(&$collectRefR){
-			if($this->once) return;
-			if($node instanceof ArrayNode){
-				$collectRefR($node,$this->data);
-				$this->once = true;
-			}
-		});
-		
+		$this->tree->walk([$this,'onceUpdate']);
 	}
 	
 	function dot($dotKey,$value=null){
@@ -226,5 +209,21 @@ class TokenTree{
 		$this->update();
 		$str = (string)$this->tree;
 		return $str;
+	}
+	
+	static function var_codify($var, $indent=0){
+		if(is_array($var)){
+			$indexed = array_keys($var) === range(0, count($var) - 1);
+			$r = [];
+			foreach($var as $key => $value){
+				$r[] = str_repeat("\t",$indent+1)
+					 .($indexed?'':"'".addcslashes($key, '\'')."'".' => ')
+					 .self::var_codify($value, $indent+1);
+			}
+			return "[\n" . implode(",\n", $r) . "\n" . str_repeat("\t",$indent) . "]";
+		}
+		else{
+			return (string)$var;
+		}
 	}
 }
