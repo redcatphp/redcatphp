@@ -19,30 +19,30 @@ class Config extends Artist{
 	protected function execute(InputInterface $input, OutputInterface $output){
 		$key = $input->getArgument('key');
 		$value = $input->getArgument('value');
+		
+		$unset = $input->getOption('unset');
+		$push = $input->getOption('push');
+		$unshift = $input->getOption('unshift');
+		
 		$path = $this->cwd.'.config.php';
 		$config = new TokenTree($path);
 		if(!$key){
 			$print = $config->var_codify($config['$']);
 		}
+		elseif($unset){
+			unset($config['$.'.$key]);
+			$print = "$key unsetted in $path";
+			file_put_contents($path,(string)$config);
+		}
 		elseif(!isset($value)){
-			$unset = $input->getOption('unset');
-			if($unset){
-				unset($config['$.'.$key]);
-				$print = "$key unsetted in $path";
-			}
-			else{
-				$print = $config->var_codify($config['$.'.$key]);
-			}
+			$print = $config->var_codify($config['$.'.$key]);
 		}
 		else{
-			$push = $input->getOption('push');
-			$unshift = $input->getOption('unshift');
 			$ref = &$config['$.'.$key];
 			if($push){
 				if(!is_array($ref))
 					$ref = (array)$ref;
 				array_push($ref,$value);
-				d($ref);
 				$print = "$value appened to $key in $path";
 			}
 			if($unshift){

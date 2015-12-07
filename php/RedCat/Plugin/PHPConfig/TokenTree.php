@@ -80,6 +80,19 @@ class TokenTree implements \ArrayAccess{
 				return var_export($var, true);
 		}
 	}
+	private function cleanAround($el){
+		$next = $el;
+		while(($next=$el->next()) instanceof WhitespaceNode){
+			$next->remove();
+		}
+		if($next&&$next->getType()===',')
+			$next->remove();
+		$prev = $el;
+		while(($prev=$prev->previous()) instanceof WhitespaceNode){
+			$prev->remove();
+		}		
+		$el->remove();
+	}
 	private function updateArray(ArrayNode $node,$data){
 		$i = 0;
 		foreach($node->getElements() as $el){
@@ -88,13 +101,7 @@ class TokenTree implements \ArrayAccess{
 				$k = trim($k,'"\'');
 				$v = $el->getValue();
 				if(!isset($data[$k])){
-					$next = $el->next();
-					if($next&&$next->getType()===',')
-						$next->remove();
-					while(($next=$el->next()) instanceof WhitespaceNode){
-						$next->remove();
-					}
-					$el->remove();
+					$this->cleanAround($el);
 				}
 				else{
 					if($v instanceof ArrayNode&&is_array($data[$k])){
@@ -109,7 +116,7 @@ class TokenTree implements \ArrayAccess{
 			}
 			elseif($el instanceof ArrayNode){
 				if(!isset($data[$i])){
-					$el->remove();
+					$this->cleanAround($el);
 				}
 				else{
 					$this->updateArray($el,$data[$i]);
@@ -119,7 +126,7 @@ class TokenTree implements \ArrayAccess{
 			}
 			else{
 				if(!isset($data[$i])){
-					$el->remove();
+					$this->cleanAround($el);
 				}
 				else{
 					$el->replaceWith(Parser::parseExpression($data[$i]));
@@ -204,7 +211,7 @@ class TokenTree implements \ArrayAccess{
 		if(!isset($this->data[$k]))
 			return false;
 		$v = &$this->data[$k];
-		while($k = array_shift($dotKey)){
+		while(false!==$k=array_shift($dotKey)){
 			if(!isset($v[$k]))
 				return false;
 			$v = &$v[$k];
@@ -215,7 +222,7 @@ class TokenTree implements \ArrayAccess{
 		$dotKey = explode('.',$key);
 		$k = array_shift($dotKey);
 		$v = &$this->data[$k];
-		while($k = array_shift($dotKey)){
+		while(false!==$k=array_shift($dotKey)){
 			$v = &$v[$k];
 		}
 		return $v;
@@ -224,7 +231,7 @@ class TokenTree implements \ArrayAccess{
 		$dotKey = explode('.',$key);
 		$k = array_shift($dotKey);
 		$v = &$this->data[$k];
-		while($k = array_shift($dotKey)){
+		while(false!==$k=array_shift($dotKey)){
 			$v = &$v[$k];
 		}
 		$v = $value;
@@ -235,10 +242,10 @@ class TokenTree implements \ArrayAccess{
 		if(!isset($this->data[$k]))
 			return;
 		$v = &$this->data[$k];
-		while($k = array_shift($dotKey)){
+		while(false!==$k=array_shift($dotKey)){
 			if(!isset($v[$k]))
 				return;
-			if(count($dotKey)==1){
+			if(empty($dotKey)){
 				unset($v[$k]);
 			}
 			else{
