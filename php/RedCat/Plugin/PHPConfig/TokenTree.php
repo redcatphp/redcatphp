@@ -4,9 +4,11 @@ use Pharborist\Parser;
 use Pharborist\Namespaces\NamespaceNode;
 use Pharborist\Filter;
 
+use Pharborist\Node;
+use Pharborist\Token;
+use Pharborist\WhitespaceNode;
 use Pharborist\Types\ArrayNode;
 use Pharborist\Types\ArrayPairNode;
-use Pharborist\WhitespaceNode;
 
 class TokenTree implements \ArrayAccess{
 	private $data = [];
@@ -157,39 +159,49 @@ class TokenTree implements \ArrayAccess{
 			}
 			
 			foreach($data as $key=>$val){
-				if(is_integer($key)){
-					if(is_array($val)){
-						$collectRefR($node,$val);
-					}
-					else{
-						$node->append(Parser::parseExpression($val));
+				$v = Parser::parseExpression($val);
+				if(!is_integer($key)){
+					$v = ArrayPairNode::create(Node::fromValue($key),$v);
+				}
+				$prev = $el->previous();
+				$comma = false;
+				$list = $node->getElementList();
+				$children = [];
+				foreach($list->children() as $child){
+					$children[] = $child;
+				}
+				$prev = end($children);
+				do{
+					if((string)$prev===','){
+						$comma = true;
+						break;
 					}
 				}
-				else{
-					if(is_array($val)){
-						$i = 0;
-						foreach($node->getElements() as $el){
-							if($el instanceof ArrayPairNode){
-								$k = (string)$el->getKey();
-								$k = trim($k,'"\'');
-								$v = $el->getValue();
-								$v->replaceWith(Parser::parseExpression($data[$k]));
-							}
-							elseif($el instanceof ArrayNode){
-								$el->replaceWith(Node::fromValue($data[$i]));
-								$i++;
-							}
-							else{
-								$el->replaceWith(Parser::parseExpression($data[$i]));
-								$i++;
-							}
-						}
-					}
-					else{
-						$pair = ArrayPairNode::create($key,$val);
-						$node->append($pair);
+				while(($prev=$prev->previous()) instanceof WhitespaceNode);
+				
+				$indent = 0;
+				$prev = end($children);
+				while($prev&&strpos($prev,"\n")===false){
+					$prev = $prev->previous();
+				}
+				$indent = '';
+				if($prev){
+					$prev = explode("\n",(string)$prev);
+					$prev = array_pop($prev);
+					for($i=0; $i<strlen($prev); $i++){
+						if(in_array($prev[$i],["\t",' ']))
+							$indent .= $prev[$i];
+						else
+							break;
 					}
 				}
+				if(!$comma){
+					$list->append(Token::comma());
+				}
+				$list->append(Token::newline());
+				if($indent)
+					$list->append(WhitespaceNode::create($indent));
+				$list->append($v);
 			}
 		};
 		
@@ -207,7 +219,7 @@ class TokenTree implements \ArrayAccess{
 	static function dotOffset($dotKey,&$config,$value=null){
 		$dotKey = explode('.',$dotKey);
 		$k = array_shift($dotKey);
-		if(!isset($config[$k]))
+		if(!isset($config[$k])&&func_num_args()<3)
 			return;
 		$v = &$config[$k];
 		while($k = array_shift($dotKey)){
