@@ -10,66 +10,54 @@ use Pharborist\WhitespaceNode;
 use Pharborist\Types\ArrayNode;
 use Pharborist\Types\ArrayPairNode;
 
-class TokenTree implements \ArrayAccess{
+class TokenTree{
 	private $data = [];
 	private $tree;
+	private $once;
 	function __construct($filename){
 		$this->tree = Parser::parseFile($filename);
-		$collectArrayR = function(ArrayNode $node,&$a=null)use(&$collectArrayR){
-			$keys = [];
-			$vals = [];
-			$i = 0;
-			foreach($node->getElements() as $el){
-				if($el instanceof ArrayPairNode){
-					$k = (string)$el->getKey();
-					$k = trim($k,'"\'');
-					$v = $el->getValue();
-					if($v instanceof ArrayNode){
-						$v = $collectArrayR($v);
-					}
-					else{
-						$v = (string)$v;
-					}
-					$keys[] = $k;
-					$vals[] = $v;
-				}
-				elseif($el instanceof ArrayNode){
-					$keys[] = $i;
-					$vals[] = $collectArrayR($el);
-					$i++;
+		$this->once = false;
+		$this->tree->walk([$this,'onceArray']);
+	}
+	function onceArray(Node $node){
+		if($this->once)
+			return;
+		if($node instanceof ArrayNode){
+			$this->collectArray($node,$this->data);
+			$this->once = true;
+		}
+	}
+	private function collectArray(ArrayNode $node,&$a=null){
+		$keys = [];
+		$vals = [];
+		$i = 0;
+		foreach($node->getElements() as $el){
+			if($el instanceof ArrayPairNode){
+				$k = (string)$el->getKey();
+				$k = trim($k,'"\'');
+				$v = $el->getValue();
+				if($v instanceof ArrayNode){
+					$v = $this->collectArray($v);
 				}
 				else{
-					$keys[] = $i;
-					$vals[] = (string)$el;
-					$i++;
+					$v = (string)$v;
 				}
+				$keys[] = $k;
+				$vals[] = $v;
 			}
-			$a = array_combine($keys,$vals);
-			return $a;
-			
-		};
-		$found = false;
-		$this->tree->walk(function($node)use(&$found,&$collectArrayR,&$a){
-			if($found)
-				return;
-			if($node instanceof ArrayNode){
-				$collectArrayR($node,$a);
-				$found = true;
+			elseif($el instanceof ArrayNode){
+				$keys[] = $i;
+				$vals[] = $this->collectArray($el);
+				$i++;
 			}
-		});
-		$this->data = $a;
-	}
-	function offsetSet($k,$v){
-		$this->data[$k] = $v;
-	}
-	function offsetExists($k){
-		return isset($this->data[$k]);
-	}
-	function &offsetGet($k){
-		return $this->data[$k];
-	}
-	function offsetUnset($k){
-		unset($this->data[$k]);
+			else{
+				$keys[] = $i;
+				$vals[] = (string)$el;
+				$i++;
+			}
+		}
+		$a = array_combine($keys,$vals);
+		return $a;
 	}
 	private static function var_export($var, $indent=0){
 		switch(gettype($var)){
@@ -206,12 +194,12 @@ class TokenTree implements \ArrayAccess{
 			}
 		};
 		
-		$found = false;
-		$this->tree->walk(function($node)use(&$found,&$collectRefR){
-			if($found) return;
+		$this->once = false;
+		$this->tree->walk(function($node)use(&$collectRefR){
+			if($this->once) return;
 			if($node instanceof ArrayNode){
 				$collectRefR($node,$this->data);
-				$found = true;
+				$this->once = true;
 			}
 		});
 		
@@ -231,7 +219,6 @@ class TokenTree implements \ArrayAccess{
 		}
 		if($set)
 			$v = $value;
-		//dd($this->data);
 		return $v;
 	}
 	
