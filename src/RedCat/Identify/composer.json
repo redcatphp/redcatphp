@@ -1,0 +1,28 @@
+{
+	"name": "redcatphp/identify",
+	"type": "library",
+	"description": "Identify - Complete Authentication System, Session Management and Cryptographic libraries",
+	"keywords": ["Identify","Authentication","Session","Cryptography","Security","Bruteforce protection","Cookie"],
+	"license": ["LGPL-3.0+","CC0-1.0"],
+	"homepage": "https://github.com/redcatphp/Identify",
+	"authors": [
+		{
+			"name": "Jo Surikat",
+			"email": "jo@surikat.pro",
+			"homepage": "http://redcatphp.com/identify-user",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0"
+	},
+	"autoload": {
+		"psr-4":{
+			"RedCat\\Identify\\": ""
+		}
+	},
+	"minimum-stability": "dev",
+	"suggest": {
+		"redcatphp/datamap": "Allows to use a database instead or in addition of a single configured user"
+	}
+}
