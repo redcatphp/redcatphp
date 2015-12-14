@@ -1,0 +1,15 @@
+/.tmp/*
+/redcat/*
+/shared/*
+*.min.css
+*.min.css.gz
+*.min.js
+*.min.js.gz
+*.log
+*~
+*.lock
+*.DS_Store
+Thumbs.db
+*.swp
+*.out
+*.git.*
