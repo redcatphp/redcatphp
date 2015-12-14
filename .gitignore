@@ -1,5 +1,6 @@
+#/shared
+#/vendor
 /.tmp
-/redcat
 *.min.css
 *.min.js
 *.log

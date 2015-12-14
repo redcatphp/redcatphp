@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once __DIR__.'/redcat.php';
-require_once __DIR__.'/php/Symfony/Polyfill/Mbstring/bootstrap.php';
+//require_once __DIR__.'/src/Symfony/Polyfill/Mbstring/bootstrap.php';
 $app = $redcat->create('Symfony\Component\Console\Application');
 foreach(glob(REDCAT.'php/RedCat/Plugin/Artist/*.php') as $com){
 	$class = 'RedCat\Plugin\Artist\\'.pathinfo($com,PATHINFO_FILENAME);

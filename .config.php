@@ -71,7 +71,7 @@ return [
 			],
 			'construct'=>[
 				'name'=>'redcatphp',
-				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
+				'saveRoot'=>REDCAT_PUBLIC.'.tmp/sessions/',
 			],
 		],
 		'RedCat\Plugin\FrontController\FrontOffice'=>[
@@ -112,7 +112,7 @@ return [
 				'addPluginPrefix'=>'RedCat\Plugin\Templix\Markup\\',
 				'addDirCwd'=>[[
 					'template/',
-					'redcat/template/',
+					'shared/template/',
 				]],
 				'setDirCompile'=>'.tmp/templix/compile/',
 				'setDirCache'=>'.tmp/templix/cache/',
