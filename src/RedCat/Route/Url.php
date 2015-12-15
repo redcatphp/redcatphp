@@ -12,15 +12,21 @@ class Url {
 	function setBaseHref($href){
 		$this->baseHref = $href;
 	}
+	function getServerHttps(){
+		return isset($this->server['HTTPS'])?$this->server['HTTPS']:null;
+	}
+	function getServerPort(){
+		return isset($this->server['SERVER_PORT'])?$this->server['SERVER_PORT']:null;
+	}
 	function getProtocolHref(){
-		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
+		return 'http'.($this->getServerHttps()=="on"?'s':'').'://';
 	}
 	function getServerHref(){
 		return $this->server['SERVER_NAME'];
 	}
 	function getPortHref(){
-		$ssl = @$this->server["HTTPS"]=="on";
-		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
+		$ssl = $this->getServerHttps()=="on";
+		return $this->getServerPort()&&((!$ssl&&(int)$this->getServerPort()!=80)||($ssl&&(int)$this->getServerPort()!=443))?':'.$this->getServerPort():'';
 	}
 	function getBaseHref(){
 		if(!isset($this->baseHref)){

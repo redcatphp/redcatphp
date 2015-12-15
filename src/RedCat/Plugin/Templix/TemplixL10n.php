@@ -203,18 +203,25 @@ class TemplixL10n extends Templix{
 		}
 	}
 	
+	function getServerHttps(){
+		return isset($this->server['HTTPS'])?$this->server['HTTPS']:null;
+	}
+	function getServerPort(){
+		return isset($this->server['SERVER_PORT'])?$this->server['SERVER_PORT']:null;
+	}
 	function setBaseHref($href){
 		$this->baseHref = $href;
 	}
 	function getProtocolHref(){
-		return 'http'.(@$this->server["HTTPS"]=="on"?'s':'').'://';
+		return 'http'.($this->getServerHttps()=="on"?'s':'').'://';
 	}
 	function getServerHref(){
 		return $this->server['SERVER_NAME'];
 	}
 	function getPortHref(){
-		$ssl = @$this->server['HTTPS']==='on';
-		return @$this->server['SERVER_PORT']&&((!$ssl&&(int)$this->server['SERVER_PORT']!=80)||($ssl&&(int)$this->server['SERVER_PORT']!=443))?':'.$this->server['SERVER_PORT']:'';
+		$ssl = $this->getServerHttps()=='on';
+		$port = $this->getServerPort();
+		return $port&&((!$ssl&&(int)$port!=80)||($ssl&&(int)$port!=443))?':'.$port:'';
 	}
 	function getBaseHref(){
 		if(!isset($this->baseHref)){
