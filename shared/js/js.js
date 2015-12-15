@@ -684,7 +684,7 @@
 		
 		var ev = '';
 		var keys = keysOf(y).reverse();
-		for(var u in keys){
+		for(var u=0; u < keys.length; u++){
 			u = keys[u];
 			var keys2 = keysOf(y[u]).reverse();
 			var ev2 = '';
