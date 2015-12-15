@@ -71,7 +71,7 @@ class ErrorHandler{
 		return false;
 	}
 	function errorHandle($code, $message, $file, $line){
-		if(!$this->handle||!ini_get('error_reporting'))
+		if(!$this->handle||error_reporting()==0)
 			return;
 		$html = false;
 		if(!headers_sent()&&$this->html_errors){
