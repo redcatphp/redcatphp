@@ -1,5 +1,5 @@
 {
-	"name": "redcatphp/php",
+	"name": "redcatphp/framework",
 	"type": "library",
 	"description": "PHP Framework - Complete set of RedCat's PHP Components",
 	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "RAD", "MVC"],
