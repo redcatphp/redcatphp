@@ -1,5 +1,5 @@
 {
-	"name": "redcatphp/fullstack",
+	"name": "redcatphp/redcat",
 	"type": "framework",
 	"description": "RedCat - Full-Stack Web Framework",
 	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "RAD", "MVC"],
