@@ -1,5 +1,5 @@
 #/shared
-#/vendor
+/vendor
 /.tmp
 *.min.css
 *.min.js

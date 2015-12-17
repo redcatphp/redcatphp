@@ -1,20 +1,24 @@
 {
-	"name": "redcatphp/php-components",
+	"name": "redcatphp/fullstack",
 	"type": "library",
-	"description": "PHP Framework - Complete set of RedCat's PHP Components",
+	"description": "RedCat - Full-Stack Web Framework",
 	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "RAD", "MVC"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
-	"homepage": "https://github.com/redcatphp/php-redcat-components",
+	"homepage": "https://github.com/redcatphp/",
 	"authors": [
 		{
 			"name": "Jo Surikat",
 			"email": "jo@surikat.pro",
-			"homepage": "http://redcatphp.com/php-framework-components",
+			"homepage": "http://redcatphp.com",
 			"role": "Developer"
 		}
 	],
 	"require": {
-		"php": ">=5.4.0"
+		"php": ">=5.4.0",
+		"grom358/pharborist": "dev-master",
+		"zendframework/zend-diactoros": "^1.3",
+		"psr/http-message": "^1.0",
+		"symfony/console": "^3.0"
 	},
 	"autoload": {
 		"psr-4":{
