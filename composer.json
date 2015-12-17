@@ -15,14 +15,11 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"grom358/pharborist": "dev-master",
-		"zendframework/zend-diactoros": "^1.3",
-		"psr/http-message": "^1.0",
-		"symfony/console": "^3.0"
+		"redcatphp/framework": "*"
 	},
 	"autoload": {
 		"psr-4":{
-			"RedCat\\": ""
+			"RedCat\\": "src/RedCat"
 		}
 	},
 	"minimum-stability": "dev"
