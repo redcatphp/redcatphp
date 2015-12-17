@@ -1,9 +1,0 @@
-<extend>
-	<attr selector="main" addClass="home">
-	<write main>
-		<article>
-			<h1>Hello World !!!</h1>
-			<loremipsum 150>
-		</article>
-	</write>
-</extend>

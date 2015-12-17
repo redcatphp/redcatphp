@@ -1,6 +1,0 @@
-@mixin scaleY($ratio) {
-	-webkit-transform: scaleY($ratio);
-	-ms-transform: scaleY($ratio); // IE9 only
-	-o-transform: scaleY($ratio);
-	transform: scaleY($ratio);
-}

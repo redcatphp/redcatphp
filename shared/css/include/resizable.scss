@@ -1,4 +1,0 @@
-@mixin resizable($direction) {
-	resize: $direction; // Options: horizontal, vertical, both
-	overflow: auto; // Safari fix
-}
