@@ -32,13 +32,13 @@ class ErrorHandler{
 		$this->debugWrapInlineCSS = $debugWrapInlineCSS;
 		$this->loadFunctions = $loadFunctions;
 	}
-	function handle(){
+	function handle($force=false){
 		$this->handle = true;
 		error_reporting(-1);
 		ini_set('display_startup_errors',true);
 		ini_set('display_errors','stdout');
 		ini_set('html_errors',$this->html_errors);
-		if(!$this->registeredErrorHandler){
+		if(!$this->registeredErrorHandler||$force){
 			$this->registeredErrorHandler = true;
 			set_error_handler([$this,'errorHandle']);
 			register_shutdown_function([$this,'fatalErrorHandle']);
