@@ -1,0 +1,12 @@
+<extend>
+	<attr selector="body" addClass="home">
+	<append title> - Code with agility</append>
+	<write main>
+		<article class="redcat-demo">
+			<h1>
+				<span class="red">RED</span><span class="cat">CAT</span>
+			</h1>
+			<div class="paw"></div>
+		</article>
+	</write>
+</extend>

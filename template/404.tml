@@ -1,0 +1,24 @@
+<?
+http_response_code(404);
+if(in_array(strtolower(pathinfo(@$_SERVER['PATH_INFO'],PATHINFO_EXTENSION)),array(
+	'js','css','png','jpg','jpeg','gif','svg','ttf','otf','woff','eot',
+)))
+	exit;
+?>
+<extend>
+	<attr selector="main" addClass="not-found">
+	<main>
+		<article>
+			<h1>Oops!</h1>
+			<div>
+				<h2>Page introuvable</h2>
+				<div class="error-details">
+					Sorry, an error has occured, Requested page not found!
+				</div>
+				<div class="error-actions">
+					<a href="">Go back to home</a>
+				</div>
+			</div>
+		</article>
+	</main>
+</extend>

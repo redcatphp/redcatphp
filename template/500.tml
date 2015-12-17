@@ -1,0 +1,24 @@
+<?
+http_response_code(500);
+?>
+<extend>
+	<attr selector="main" addClass="not-found">
+	<main>
+		<article>
+			<h1>Internal Server Error</h1>
+			<div>
+				<h2>what 's going on ?</h2>
+				<div class="error-details">
+					The server encountered an internal error or misconfiguration and was unable to complete your request.
+					<br><br>
+					Please contact the server administrator at <?=$_SERVER['SERVER_ADMIN']?> to inform them of the time this error occurred, and the actions you performed just before this error.
+					<br><br>
+					More information about this error may be available in the server error log.
+				</div>
+				<div class="error-actions">
+					<a href="">Go back to home</a>
+				</div>
+			</div>
+		</article>
+	</main>
+</extend>

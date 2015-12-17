@@ -1,0 +1,12 @@
+<?
+global $relativity,$img,$font;
+$relativity = str_repeat('../',substr_count(ltrim(@$_SERVER['PATH_INFO'],'/'),'/'));
+
+if(!isset($img))
+	$img = $relativity.'img/';
+if(!isset($font))
+	$font = $relativity.'font/';
+
+?>
+$img: '<?=$img?>' !default;
+$font: '<?=$font?>' !default;

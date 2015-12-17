@@ -1,0 +1,26 @@
+<vars basic />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>RedCat</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<base href="<?=$BASE_HREF?>">
+	<link href="css/style<?=$VERSIONING?>.css" rel="stylesheet" type="text/css">
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+</head>
+<body>
+	<header>
+		
+	</header>
+	<nav>
+		
+	</nav>
+	<main></main>
+	<footer>
+		<incorpore "redcat-powered.btml">
+	</footer>
+	<incorpore "js.btml">
+</body>
+</html>

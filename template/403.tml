@@ -1,0 +1,20 @@
+<?
+http_response_code(403);
+?>
+<extend>
+	<attr selector="main" addClass="not-found">
+	<main>
+		<article>
+			<h1>Forbidden!</h1>
+			<div>
+				<h2>You should not be here</h2>
+				<div class="error-details">
+					You don't have permission to access this ressource on this server.
+				</div>
+				<div class="error-actions">
+					<a href="">Go back to home</a>
+				</div>
+			</div>
+		</article>
+	</main>
+</extend>
