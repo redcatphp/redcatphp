@@ -38,7 +38,9 @@ AddType text/x-vcard                   vcf
 	<FilesMatch "(?<!\.min)\.js$">
 		AddHandler server-parsed js
 		Options +Includes
-		AddOutputFilterByType INCLUDES application/javascript application/json
+		<IfModule filter_module>
+			AddOutputFilterByType INCLUDES application/javascript application/json
+		</IfModule>
 		SetOutputFilter INCLUDES
 		<IfModule mod_headers.c>
 			Header merge Cache-Control max-age=604800
@@ -101,7 +103,7 @@ AddType text/x-vcard                   vcf
 			FilterProtocol  COMPRESS  DEFLATE byteranges=no
 		</IfModule>
 	</IfVersion>
-	<IfModule !mod_filter.c>
+	<IfModule filter_module>
 		AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
 		AddOutputFilterByType DEFLATE application/javascript
 		AddOutputFilterByType DEFLATE text/xml application/xml text/x-component
