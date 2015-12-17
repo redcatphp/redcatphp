@@ -1,6 +1,6 @@
 {
 	"name": "redcatphp/fullstack",
-	"type": "library",
+	"type": "framework",
 	"description": "RedCat - Full-Stack Web Framework",
 	"keywords": ["Framework", "Full-Stack", "Agile", "SOLID", "RAD", "MVC"],
 	"license": ["LGPL-3.0+","CC0-1.0"],
@@ -16,11 +16,6 @@
 	"require": {
 		"php": ">=5.4.0",
 		"redcatphp/framework": "*"
-	},
-	"autoload": {
-		"psr-4":{
-			"RedCat\\": "src/RedCat"
-		}
 	},
 	"minimum-stability": "dev"
 }
