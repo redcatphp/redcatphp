@@ -5,21 +5,8 @@ if(!defined('REDCAT_PUBLIC'))
 	define('REDCAT_PUBLIC',getcwd().'/');
 if(!defined('REDCAT_SHARED'))
 	define('REDCAT_SHARED',REDCAT.'shared/');
-if(!defined('REDCAT_SRC'))
-	define('REDCAT_SRC',REDCAT.'src/');
 
-if(is_file(REDCAT.'vendor/autoload.php'))
-	require_once REDCAT.'vendor/autoload.php';
-
-require_once REDCAT_SRC.'RedCat/Autoload/Autoload.php';
-RedCat\Autoload\Autoload::register([
-	REDCAT_PUBLIC.'src',
-	REDCAT_PUBLIC.'shared/src',
-	REDCAT_SRC,
-	REDCAT_PUBLIC.'vendor',
-	REDCAT_PUBLIC.'shared/vendor',
-	REDCAT.'vendor',
-]);
+require_once REDCAT.'vendor/autoload.php';
 
 $redcat = RedCat\Wire\Di::load(
 	[

@@ -3,7 +3,7 @@
 require_once __DIR__.'/redcat.php';
 //require_once __DIR__.'/src/Symfony/Polyfill/Mbstring/bootstrap.php';
 $app = $redcat->create('Symfony\Component\Console\Application');
-foreach(glob(REDCAT.'php/RedCat/Plugin/Artist/*.php') as $com){
+foreach(glob(REDCAT.'vendor/redcatphp/framework/Plugin/Artist/*.php') as $com){
 	$class = 'RedCat\Plugin\Artist\\'.pathinfo($com,PATHINFO_FILENAME);
 	$reflectionClass = new ReflectionClass($class);
 	if($reflectionClass->IsInstantiable())
