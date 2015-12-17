@@ -44,3 +44,5 @@ else{
 			header('Location: /500',true,302);
 	});
 }
+
+return $redcat;
