@@ -15,7 +15,7 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"redcatphp/framework": ">=1.8"
+		"redcatphp/framework": "@dev"
 	},
 	"minimum-stability": "dev"
 }
