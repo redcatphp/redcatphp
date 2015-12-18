@@ -1,22 +1,14 @@
 <?php
-if(!defined('REDCAT'))
-	define('REDCAT',__DIR__.'/');
-if(!defined('REDCAT_PUBLIC'))
-	define('REDCAT_PUBLIC',getcwd().'/');
-if(!defined('REDCAT_SHARED'))
-	define('REDCAT_SHARED',REDCAT.'shared/');
+define('REDCAT',__DIR__.'/');
+define('REDCAT_CWD',getcwd().'/');
 
-require_once REDCAT.'vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-$redcat = RedCat\Wire\Di::load(
-	[
-		REDCAT.'.config.php',
-		REDCAT_SHARED.'.config.php',
-		REDCAT_PUBLIC.'.config.php'
-	],
-	(defined('REDCAT_FREEZE_DI')?REDCAT_FREEZE_DI:false),
-	REDCAT_PUBLIC.'.tmp/redcat.svar'
-);
+$configMap = [REDCAT.'.config.php'];
+if(REDCAT!=REDCAT_CWD)
+	$configMap[] = REDCAT_CWD.'.config.php';
+
+$redcat = RedCat\Wire\Di::load($configMap);
 
 if($redcat['dev']['php']){
 	$redcat->create('RedCat\Debug\ErrorHandler')->handle();

@@ -71,7 +71,7 @@ return [
 			],
 			'construct'=>[
 				'name'=>'redcatphp',
-				'saveRoot'=>REDCAT_PUBLIC.'.tmp/sessions/',
+				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],
 		'RedCat\Plugin\FrontController\FrontOffice'=>[

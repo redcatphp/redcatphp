@@ -1,4 +1,4 @@
-#/shared
+/composer.lock
 /vendor
 /.tmp
 *.min.css
@@ -10,4 +10,4 @@
 Thumbs.db
 *.swp
 *.out
-*.git.*
+/.project

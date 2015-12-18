@@ -10,7 +10,7 @@
 	<?else:?>
 		$js.min=true;
 	<?endif;?>
-	<?if(is_file(REDCAT_PUBLIC.'js/script.js')):?>
+	<?if(is_file(REDCAT_CWD.'js/script.js')):?>
 		$js('script<?=$VERSIONING?>');
 	<?endif;?>
 	<?if(RedCat\Wire\Di::getInstance()->dev['chrono']):
