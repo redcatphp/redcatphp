@@ -35,6 +35,9 @@ return [
 				);
 			}),
 		],
+		'RedCat\Wire\Di'	=> [
+			'instanceOf'=>'RedCat\App',
+		],
 		'RedCat\DataMap\Bases'	=> [
 			'shared'=>true,
 			'construct' => [
