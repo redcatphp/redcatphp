@@ -204,7 +204,6 @@ RewriteRule ^(.*)\.min\.(js|css)$ %{ENV:REDCAT_URI}.tmp/min/$1.min.$2 [L]
 #Shared Mirror
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_URI} !^/shared/
-#RewriteCond %{REQUEST_URI} !^/$
 #RewriteCond %{DOCUMENT_ROOT}%{ENV:REDCAT_URI}shared/$1.$2 -f
 #RewriteRule ^(.*)\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|php|txt|xml|html|swf)$ %{ENV:REDCAT_URI}shared/$1.$2 [L,QSA]
 
@@ -238,6 +237,7 @@ RewriteRule ^(.*)\.min\.(js|css)$ $1.min.$2.gz [L]
 #Shared Mirror for directory to index.php
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_URI} !^/shared/
+#RewriteCond %{REQUEST_URI} !^/$
 #RewriteCond %{DOCUMENT_ROOT}%{ENV:REDCAT_URI}shared/%{REQUEST_URI}/index.php -f
 #RewriteRule ^(.*)$ %{ENV:REDCAT_URI}shared/$1/index.php [L,QSA]
 
