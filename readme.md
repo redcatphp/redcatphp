@@ -20,4 +20,4 @@ $ composer create-project redcatphp/redcatphp
 
 ### License
 
-The Laravel framework is open-sourced software licensed under the [Creative Commons Zero 1.0 Universal license](http://creativecommons.org/publicdomain/zero/1.0/)
+The RedCat framework is open-sourced software licensed under the [Creative Commons Zero 1.0 Universal license](http://creativecommons.org/publicdomain/zero/1.0/)
