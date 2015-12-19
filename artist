@@ -1,12 +1,11 @@
 #!/usr/bin/env php
 <?php
-require_once __DIR__.'/redcat.php';
-//require_once __DIR__.'/src/Symfony/Polyfill/Mbstring/bootstrap.php';
-$app = $redcat->create('Symfony\Component\Console\Application');
-foreach(glob(REDCAT.'vendor/redcatphp/framework/Plugin/Artist/*.php') as $com){
-	$class = 'RedCat\Plugin\Artist\\'.pathinfo($com,PATHINFO_FILENAME);
+$redcat = require_once __DIR__.'/redcat.php';
+$application = $redcat->create('Symfony\Component\Console\Application');
+foreach(glob(REDCAT.'vendor/redcatphp/framework/Artist/*.php') as $com){
+	$class = 'RedCat\Framework\Artist\\'.pathinfo($com,PATHINFO_FILENAME);
 	$reflectionClass = new ReflectionClass($class);
 	if($reflectionClass->IsInstantiable())
-		$app->add($redcat->create($class));
+		$application->add($redcat->create($class));
 }
-$app->run();
+$application->run();

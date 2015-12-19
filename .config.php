@@ -20,7 +20,7 @@ return [
 		'databaseMap'=>[],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
-		'versioning'=>'new:RedCat\Plugin\Versioning\Number',
+		'versioning'=>'new:RedCat\Framework\Versioning\Number',
 	],
 	'rules'=>[
 		'Psr\Http\Message\ServerRequestInterface'	=> [
@@ -36,7 +36,7 @@ return [
 			}),
 		],
 		'RedCat\Wire\Di'	=> [
-			'instanceOf'=>'RedCat\App',
+			'instanceOf'=>'RedCat\Framework\App',
 		],
 		'RedCat\DataMap\Bases'	=> [
 			'shared'=>true,
@@ -77,17 +77,17 @@ return [
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'RedCat\Plugin\FrontController\FrontOffice'=>[
+		'RedCat\Framework\FrontController\FrontOffice'=>[
 			'construct'=>[
 				'$l10n'=>'l10n',
 			],
 		],
-		'RedCat\Plugin\RouteMatch\ByTmlL10n'=>[
+		'RedCat\Framework\RouteMatch\ByTmlL10n'=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		'RedCat\Plugin\Templix\TemplixL10n'=>[
+		'RedCat\Framework\Templix\TemplixL10n'=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
@@ -110,9 +110,9 @@ return [
 				'$devImg'=>'dev.img',
 			],
 		],
-		'RedCat\Plugin\Templix\Templix'=>[
+		'RedCat\Framework\Templix\Templix'=>[
 			'call'=>[
-				'addPluginPrefix'=>'RedCat\Plugin\Templix\Markup\\',
+				'addPluginPrefix'=>'RedCat\Framework\Templix\Markup\\',
 				'addDirCwd'=>[[
 					'template/',
 					'shared/template/',
@@ -122,7 +122,7 @@ return [
 				'setDirSync'=>'.tmp/sync/',
 			],
 		],
-		'RedCat\Plugin\FrontController\Synaptic'=>[
+		'RedCat\Framework\FrontController\Synaptic'=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
