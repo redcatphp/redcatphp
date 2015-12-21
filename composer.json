@@ -19,13 +19,13 @@
 	},
 	 "scripts": {
         "post-install-cmd": [
-            "php -r \"mkdir('.tmp');chmod('.tmp',0777);\""
+            "php artist install:end"
         ],
         "post-update-cmd": [
             "php artist clearcache"
         ],
         "post-create-project-cmd": [
-            "php -r \"mkdir('.tmp');chmod('.tmp',0777);\""
+            "php artist install:end"
         ]
     },
 	"minimum-stability": "dev"
