@@ -23,7 +23,7 @@ return [
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
 	],
 	'rules'=>[
-		'Psr\Http\Message\ServerRequestInterface'	=> [
+		Psr\Http\Message\ServerRequestInterface::class	=> [
 			'shared'=>true,
 			'instanceOf'=>new DiExpand(function(){
 				return ServerRequestFactory::fromGlobals(
@@ -35,10 +35,10 @@ return [
 				);
 			}),
 		],
-		'RedCat\Wire\Di'	=> [
-			'instanceOf'=>'RedCat\Framework\App',
+		RedCat\Wire\Di::class	=> [
+			'instanceOf'=> RedCat\Framework\App::class,
 		],
-		'RedCat\DataMap\Bases'	=> [
+		RedCat\DataMap\Bases::class	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',
@@ -47,7 +47,7 @@ return [
 				'entityClassDefault'=>'stdClass',
 			],
 		],
-		'RedCat\Identify\Auth'=>[
+		RedCat\Identify\Auth::class => [
 			'construct'=>[
 				'$rootLogin' => 'superRoot.login',
 				'$rootPassword' => 'superRoot.password',
@@ -66,43 +66,43 @@ return [
 				'mailSecure' => 'tls',
 			],
 		],
-		'RedCat\Identify\Session'=>[
+		RedCat\Identify\Session::class => [
 			'shared'=>true,
-			'newInstances'=>'RedCat\Identify\SessionHandlerInterface',
+			'newInstances'=>RedCat\Identify\SessionHandlerInterface::class,
 			'substitutions'=>[
-				'RedCat\Identify\SessionHandlerInterface'=>'RedCat\Identify\SessionHandler',
+				RedCat\Identify\SessionHandlerInterface::class => RedCat\Identify\SessionHandler::class,
 			],
 			'construct'=>[
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],
-		'RedCat\Framework\FrontController\FrontOffice'=>[
+		RedCat\Framework\FrontController\FrontOffice::class =>[
 			'construct'=>[
 				'$l10n'=>'l10n',
 			],
 		],
-		'RedCat\Framework\RouteMatch\ByTmlL10n'=>[
+		RedCat\Framework\RouteMatch\ByTmlL10n::class =>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		'RedCat\Framework\Templix\TemplixL10n'=>[
+		RedCat\Framework\Templix\TemplixL10n::class =>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		'RedCat\Localize\Translator'=>[
+		RedCat\Localize\Translator::class =>[
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
 				'$dev'=>'dev.l10n',
 			],
 		],
-		'RedCat\Debug\ErrorHandler'=>[
+		RedCat\Debug\ErrorHandler::class =>[
 			'shared'=>true,
 		],
-		'RedCat\Templix\Templix'=>[
+		RedCat\Templix\Templix::class=>[
 			'construct'=>[
 				'$devTemplate'=>'dev.tml',
 				'$devCss'=>'dev.css',
@@ -110,7 +110,7 @@ return [
 				'$devImg'=>'dev.img',
 			],
 		],
-		'RedCat\Framework\Templix\Templix'=>[
+		RedCat\Framework\Templix\Templix::class=>[
 			'call'=>[
 				'addPluginPrefix'=>'RedCat\Framework\Templix\Markup\\',
 				'addDirCwd'=>[[
@@ -122,18 +122,18 @@ return [
 				'setDirSync'=>'.tmp/sync/',
 			],
 		],
-		'RedCat\Framework\FrontController\Synaptic'=>[
+		RedCat\Framework\FrontController\Synaptic::class=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
 			],
 		],
-		'RedCat\Stylize\Server' => [
+		RedCat\Stylize\Server::class => [
 			'construct'=>[
 				'$cache'=>'dev.css',
 			],
 		],
-		'RedCat\Route\Url' => [
+		RedCat\Route\Url::class => [
 			'shared'=>true,
 		],
 	],
