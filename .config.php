@@ -21,8 +21,17 @@ return [
 		'l10n'=>false,
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
+		'router'=>RedCat\Framework\FrontController\FrontOffice::class,
 	],
 	'rules'=>[
+		'#router'=>[
+			'$instanceOf'=>'router'
+		],
+		RedCat\Framework\Artist\RouteList::class	=> [
+			'substitutions'=>[
+				'$'.RedCat\Framework\FrontController\RouterInterface::class => 'router',
+			],
+		],
 		Psr\Http\Message\ServerRequestInterface::class	=> [
 			'shared'=>true,
 			'instanceOf'=>new DiExpand(function(){
