@@ -1,4 +1,6 @@
 <?php
 //define('REDCAT_FREEZE_DI',true);
 $redcat = require_once 'redcat.php';
-$redcat->create(RedCat\Framework\FrontController\FrontOffice::class)->runFromGlobals();
+$route = $redcat->create(RedCat\Framework\FrontController\FrontOffice::class);
+$route->load();
+$route->runFromGlobals();
