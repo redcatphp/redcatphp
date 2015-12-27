@@ -30,5 +30,9 @@
             "php -r \"chmod('.tmp',0777');\""
         ]
     },
+    "config": {
+		"vendor_dir": "packages",
+		"bin-dir": "packages/bin"
+    },
 	"minimum-stability": "dev"
 }

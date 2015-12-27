@@ -2,7 +2,7 @@
 <?php
 $redcat = require_once __DIR__.'/redcat.php';
 $application = $redcat->create('Symfony\Component\Console\Application');
-foreach(glob(REDCAT.'vendor/redcatphp/framework/Artist/*.php') as $com){
+foreach(glob(REDCAT.'packages/redcatphp/framework/Artist/*.php') as $com){
 	$class = 'RedCat\Framework\Artist\\'.pathinfo($com,PATHINFO_FILENAME);
 	$reflectionClass = new ReflectionClass($class);
 	if($reflectionClass->IsInstantiable())

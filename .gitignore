@@ -1,5 +1,5 @@
 /composer.lock
-/vendor
+/packages
 /.tmp
 *.min.css
 *.min.js
