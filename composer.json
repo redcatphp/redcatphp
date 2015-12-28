@@ -20,18 +20,18 @@
 	 "scripts": {
         "post-install-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777');\""
+            "php -r \"chmod('.tmp',0777);\""
         ],
         "post-update-cmd": [
             "php artist clearcache"
         ],
         "post-create-project-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777');\""
+            "php -r \"chmod('.tmp',0777);\""
         ]
     },
     "config": {
-		"vendor_dir": "packages",
+		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
     },
 	"minimum-stability": "dev"
