@@ -25,7 +25,10 @@ return [
 	],
 	'rules'=>[
 		'#router'=>[
-			'$instanceOf'=>'router'
+			'$instanceOf'=>'router',
+			'construct'=>[
+				'$l10n'=>'l10n',
+			],
 		],
 		RedCat\Framework\Artist\RouteList::class	=> [
 			'substitutions'=>[
@@ -84,11 +87,6 @@ return [
 			'construct'=>[
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
-			],
-		],
-		RedCat\Framework\FrontController\FrontOffice::class =>[
-			'construct'=>[
-				'$l10n'=>'l10n',
 			],
 		],
 		RedCat\Framework\RouteMatch\ByTmlL10n::class =>[
