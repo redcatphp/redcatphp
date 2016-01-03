@@ -1,8 +1,6 @@
 /composer.lock
 /packages
 /.tmp
-*.min.css
-*.min.js
 *.log
 *~
 *.lock
