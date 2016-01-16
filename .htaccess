@@ -1,5 +1,5 @@
 #cross-browser compatibility
-<IfModule mod_headers.c>
+<IfModule headers_module>
 	Header set X-UA-Compatible "IE=Edge,chrome=1"
 	<FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|woff2|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)$" >
 		Header unset X-UA-Compatible
@@ -33,7 +33,7 @@ AddType application/octet-stream       safariextz
 AddType text/x-vcard                   vcf
 
 #SSI (enable Server-Side-Include)
-<IfModule mod_include.c>
+<IfModule include_module>
 	SSILastModified on
 	<FilesMatch "(?<!\.min)\.js$">
 		AddHandler server-parsed js
@@ -42,16 +42,16 @@ AddType text/x-vcard                   vcf
 			AddOutputFilterByType INCLUDES application/javascript application/json
 		</IfModule>
 		SetOutputFilter INCLUDES
-		<IfModule mod_headers.c>
+		<IfModule headers_module>
 			Header merge Cache-Control max-age=604800
 		</IfModule>
 	</FilesMatch>
 </IfModule>
 
 #Compress on the fly
-<IfModule mod_deflate.c>
-	<IfModule mod_setenvif.c>
-		<IfModule mod_headers.c>
+<IfModule deflate_module>
+	<IfModule setenvif_module>
+		<IfModule headers_module>
 			SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
 			RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
 		</IfModule>
@@ -115,7 +115,7 @@ AddType text/x-vcard                   vcf
 </IfModule>
 
 #Add expire headers
-<IfModule mod_expires.c>
+<IfModule expires_module>
 	ExpiresActive on
 	ExpiresDefault                          "access plus 1 month"
 	ExpiresByType text/cache-manifest       "access plus 0 seconds"
@@ -144,14 +144,14 @@ AddType text/x-vcard                   vcf
 	ExpiresByType text/css                  "access plus 1 year"
 	ExpiresByType application/javascript    "access plus 1 year"
 	ExpiresByType text/javascript    		  "access plus 1 year"
-	<IfModule mod_headers.c>
+	<IfModule headers_module>
 		Header append Cache-Control "public"
 	</IfModule>
 </IfModule>
 
 #Disable Etag
 <FilesMatch "\.(css|js|png|jpg|gif|ico|ttf|ttc|otf|eot|woff|woff2|txt|xml|html|swf)(\.gz)?$">
-	<IfModule mod_headers.c>
+	<IfModule headers_module>
 		Header unset ETag
 	</IfModule>
 	FileETag None
