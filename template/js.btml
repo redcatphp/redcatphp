@@ -1,4 +1,4 @@
-<script type="text/javascript" src="js/js.pack.js"></script>
+<script type="text/javascript" src="js/js.min.js"></script>
 <script type="text/javascript">
 	<?if($this->devCss):?>
 		$css.dev=true;
