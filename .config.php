@@ -1,5 +1,5 @@
 <?php
-use RedCat\Wire\DiExpand;
+use RedCat\Ding\Expander;
 use Zend\Diactoros\ServerRequestFactory;
 return [
 	'$'=>[
@@ -37,7 +37,7 @@ return [
 		],
 		Psr\Http\Message\ServerRequestInterface::class	=> [
 			'shared'=>true,
-			'instanceOf'=>new DiExpand(function(){
+			'instanceOf'=>new Expander(function(){
 				return ServerRequestFactory::fromGlobals(
 					$_SERVER,
 					$_GET,
@@ -47,7 +47,7 @@ return [
 				);
 			}),
 		],
-		RedCat\Wire\Di::class	=> [
+		RedCat\Ding\Di::class	=> [
 			'instanceOf'=> RedCat\Framework\App::class,
 		],
 		RedCat\DataMap\Bases::class	=> [

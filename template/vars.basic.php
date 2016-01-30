@@ -1,4 +1,6 @@
 <?php
+global $redcat;
 return [
-	'BASE_HREF'		=> RedCat\Framework\App::getInstance()->create(RedCat\Route\Url::class)->getBaseHref(),
+	'BASE_HREF'		=> $redcat(RedCat\Route\Url::class)->getBaseHref(),
+	'redcat'		=> $redcat,
 ];
