@@ -2,7 +2,7 @@
 	"name": "redcatphp/redcatphp",
 	"type": "framework",
 	"description": "RedCat - Code with agility",
-	"keywords": ["Framework", "RAD", "Best-Practices", "Full-Stack", "SOLID", , "MVC"],
+	"keywords": ["PHP", "Framework", "RAD", "Best-Practices", "Full-Stack", "SOLID", "MVC"],
 	"license": ["CC0-1.0"],
 	"homepage": "https://github.com/redcatphp/redcatphp",
 	"authors": [
