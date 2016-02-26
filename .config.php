@@ -21,7 +21,7 @@ return [
 		'l10n'=>false,
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
-		'router'=>RedCat\Framework\FrontController\FrontOffice::class,
+		'router'=>RedCat\Framework\Route::class,
 	],
 	'rules'=>[
 		'#router'=>[
