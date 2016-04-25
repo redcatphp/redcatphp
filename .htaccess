@@ -193,6 +193,7 @@ RewriteRule ^.*$ - [E=REDCAT_URI:%2]
 
 #Block access to dot prefixed files and directories with exceptions
 RewriteCond %{REQUEST_URI} !^(.*)\.jml
+RewriteCond %{REQUEST_URI} !^(.*)\.js
 RewriteCond %{REQUEST_URI} !(^|/)\.tmp/min/(.*)
 RewriteCond %{REQUEST_URI} (^|/)\.
 RewriteRule ^(.*)$ %{ENV:REDCAT_URI}403 [L,R=302]
