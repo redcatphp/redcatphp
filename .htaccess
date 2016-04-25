@@ -186,14 +186,15 @@ ErrorDocument 500 /500
 #Enable Rewrite Engine
 RewriteEngine On
 
-#Block access to dot prefixed files and directories
-RewriteCond %{THE_REQUEST} "(^|/)\."
-RewriteCond %{REQUEST_URI} !/404
-RewriteRule ^(.*)$ - [L,R=404]
-
 #Get the current CWD
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^.*$ - [E=REDCAT_URI:%2]
+
+#Block access to dot prefixed files and directories with exceptions
+RewriteCond %{REQUEST_URI} !^(.*)\.jml
+RewriteCond %{REQUEST_URI} !(^|/)\.tmp/min/(.*)
+RewriteCond %{REQUEST_URI} (^|/)\.
+RewriteRule ^(.*)$ %{ENV:REDCAT_URI}403 [L,R=302]
 
 #Versioned ressources
 RewriteRule ^(.*)\.up([a-z0-9]{1,9})\.(|min.)(js|css)$ $1.$3$4 [L]
