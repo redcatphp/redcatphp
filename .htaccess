@@ -167,7 +167,7 @@ DirectorySlash Off
 DirectoryIndex index.php
 ServerSignature Off
 AddDefaultCharset utf-8
-AddCharset utf-8 .html .css .js .xml .json .rss .atom
+AddCharset utf-8 .html .css .js .xml .json .rss .atom .jml
 <IfModule php5_module>
 	php_value session.cookie_httponly true
 </IfModule>
