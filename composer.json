@@ -20,14 +20,16 @@
 	 "scripts": {
         "post-install-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777);\""
+            "php -r \"chmod('.tmp',0777); mkdir('.data');chmod('.data',0777); mkdir('content');chmod('content',0777);\"",
+            "php -r \"copy('config.env.phps','config.env.php');\""
         ],
         "post-update-cmd": [
             "php artist clearcache"
         ],
         "post-create-project-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777);\""
+            "php -r \"chmod('.tmp',0777); mkdir('.data');chmod('.data',0777); mkdir('content');chmod('content',0777);\"",
+            "php -r \"copy('config.env.phps','config.env.php');\""
         ]
     },
     "config": {

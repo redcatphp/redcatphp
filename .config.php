@@ -1,40 +1,105 @@
 <?php
+use RedCat\Ding\Di;
 use RedCat\Ding\Expander;
+use RedCat\Ding\Factory;
 use Zend\Diactoros\ServerRequestFactory;
+use MyApp\Route\Route;
 return [
 	'$'=>[
 		'dev'=>[
-			'php'	=>true,
-			'tml'	=>true,
-			'js'	=>true,
-			'css'	=>true,
-			'img'	=>false,
-			'chrono'=>true,
-			'l10n'	=>true,
-			'db'	=>false,
+			'php'	=>1,
+			'tml'	=>1,
+			'js'	=>1,
+			'css'	=>1,
+			'img'	=>0,
+			'chrono'=>1,
+			'l10n'	=>0,
+			//'db'	=>1,
+			'smtp'	=>0,
 		],
 		'superRoot'=>[
-			'login'=>'root',
-			'password'=>'root',
+			//'email'=>'',
+			'login'=>'demo',
+			'password'=>'demo',
 		],
-		'databaseMap'=>[],
+		'databaseMap'=>[
+			0 => [
+				'$type'=>'db.type',
+				'$host'=>'db.host',
+				'$name'=>'db.name',
+				'$user'=>'db.user',
+				'$password'=>'db.password',
+				'primaryKey'=>'id',
+				'uniqTextKey'=>'uniq',
+				'uniqTextKeys'=>[
+					'user'=>'email',
+				],
+				'modelClassPrefix'=> ['MyApp\Model\Entity\\'],
+				//'frozen'=>true,
+			],
+		],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
-		'router'=>RedCat\Framework\Route::class,
+		'autoload'=>[
+			[__DIR__.'/php','MyApp'],
+			[__DIR__.'/model','MyApp\Model'],
+			[__DIR__.'/controller','MyApp\Controller'],
+			[__DIR__.'/plugins/artist','MyApp\Artist'],
+			[__DIR__.'/plugins/templix','MyApp\Templix'],
+			[__DIR__.'/route','MyApp\Route'],
+		],
+		'prependConfig'=>['.config.env.php'],
+		'router'=>Route::class,
+		'artist'=>[
+			'pluginDirsMap'=>[
+				__DIR__.'/plugins/artist'=>'MyApp\\Artist',
+			]
+		],
 	],
+	
 	'rules'=>[
 		'#router'=>[
 			'$instanceOf'=>'router',
+			'shared'=>true
+		],
+		RedCat\Framework\FrontController\RouterInterface::class => [
+			'instanceOf'=>'#router',
+		],
+		RedCat\Route\Request::class => [
+			'shared'=>true,
+		],
+		RedCat\Identify\PHPMailer::class => [
+			'shared'=>true,
 			'construct'=>[
-				'$l10n'=>'l10n',
-			],
+				/*
+					'fromEmail'=>'demo@redcatphp.com',
+					'fromName'=>'MyApp - MySociety',
+					'replyEmail'=>'answer@redcatphp.com',
+					'replyName'=>'MyApp - MySociety',
+					
+					'host'=>'smtp.gmail.com',
+					'port'=>25,
+					'username'=>'me@gmail.com',
+					'password'=>'d3v3loper',
+					'secure'=>null,
+					'sendmail'=>false,
+					'$debug'=>'dev.smtp',
+					'exceptions'=>false,
+					
+					'SMTPOptions'=>[
+						'ssl' => [ //not secure - enable for dev
+							'verify_peer' => false,
+							'verify_peer_name' => false,
+							'allow_self_signed' => true
+						]
+					],
+				*/
+			]
+			
 		],
-		RedCat\Framework\Artist\RouteList::class	=> [
-			'substitutions'=>[
-				'$'.RedCat\Framework\FrontController\RouterInterface::class => 'router',
-			],
-		],
+		
+	
 		Psr\Http\Message\ServerRequestInterface::class	=> [
 			'shared'=>true,
 			'instanceOf'=>new Expander(function(){
@@ -48,65 +113,56 @@ return [
 			}),
 		],
 		RedCat\Ding\Di::class	=> [
-			'instanceOf'=> RedCat\Framework\App::class,
+			'instanceOf'=>RedCat\Framework\App::class,
 		],
 		RedCat\DataMap\Bases::class	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',
 				'$debug'=>'dev.db',
-				'entityClassPrefix'=>'EntityModel\\',
-				'entityClassDefault'=>'stdClass',
+				'modelClassPrefix'=>'MyApp\Model\Entity\\',
+				'entityClassDefault'=>'MyApp\Model\Entity',
 			],
+			'call'=>[
+				'setEntityFactory'=>[new Factory(function($type,$db,Di $di){
+					return $di($db->findEntityClass($type),['data'=>[],'type'=>$type,'db'=>$db,'table'=>$db[$type]]);
+				})],
+			]
 		],
-		RedCat\Identify\Auth::class => [
-			'construct'=>[
-				'$rootLogin' => 'superRoot.login',
-				'$rootPassword' => 'superRoot.password',
-				'rootName'	=> 'Developer',
-				'siteLoginUri' => 'Login',
-				'siteActivateUri' => 'Signin',
-				'siteResetUri' => 'Signin',
-				'tableUsers' => 'user',
-				'tableRequests' => 'request',
-				'algo' => PASSWORD_DEFAULT,
-				'mailSendmail' => true,
-				'mailHost' => null,
-				'mailUsername' => null,
-				'mailPassword' => null,
-				'mailPort' => 25,
-				'mailSecure' => 'tls',
-			],
-		],
-		RedCat\Identify\Session::class => [
+		RedCat\Identify\Session::class=>[
 			'shared'=>true,
-			'newInstances'=>RedCat\Identify\SessionHandlerInterface::class,
+			'newInstances'=>'RedCat\Identify\SessionHandlerInterface',
 			'substitutions'=>[
-				RedCat\Identify\SessionHandlerInterface::class => RedCat\Identify\SessionHandler::class,
+				'RedCat\Identify\SessionHandlerInterface'=>'RedCat\Identify\SessionHandler',
 			],
 			'construct'=>[
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 			],
 		],
-		RedCat\Framework\RouteMatch\ByTmlL10n::class =>[
+		RedCat\Framework\FrontController\FrontOffice::class=>[
+			'construct'=>[
+				'$l10n'=>'l10n',
+			],
+		],
+		RedCat\Framework\RouteMatch\ByTmlL10n::class=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		RedCat\Framework\Templix\TemplixL10n::class =>[
+		RedCat\Framework\Templix\TemplixL10n::class=>[
 			'construct'=>[
 				'$langDefault'=>'l10nDefault',
 			],
 		],
-		RedCat\Localize\Translator::class =>[
+		RedCat\Localize\Translator::class=>[
 			'shared'=>true,
 			'construct'=>[
 				'timezone'=>'Europe/Paris',
 				'$dev'=>'dev.l10n',
 			],
 		],
-		RedCat\Debug\ErrorHandler::class =>[
+		RedCat\Debug\ErrorHandler::class=>[
 			'shared'=>true,
 		],
 		RedCat\Templix\Templix::class=>[
@@ -119,9 +175,9 @@ return [
 		],
 		RedCat\Framework\Templix\Templix::class=>[
 			'call'=>[
-				'addPluginPrefix'=>'RedCat\Framework\Templix\Markup\\',
+				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','MyApp\Templix\Markup\\']],
 				'addDirCwd'=>[[
-					'template/',
+					'view/',
 					'shared/template/',
 				]],
 				'setDirCompile'=>'.tmp/templix/compile/',
