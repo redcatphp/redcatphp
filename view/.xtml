@@ -21,6 +21,24 @@
 	<footer>
 		<incorpore "redcat-powered.btml">
 	</footer>
-	<incorpore "js.btml">
+	<script type="text/javascript" src="js/js.min.js"></script>
+	<script type="text/javascript">
+		<?if($this->devCss):?>
+			$css.dev=true;
+		<?else:?>
+			$css.min=true;
+		<?endif;?>
+		<?if($this->devJs):?>
+			$js.dev=true;
+		<?else:?>
+			$js.min=true;
+		<?endif;?>
+		<?if(is_file(REDCAT_CWD.'js/script.js')):?>
+			$js('script<?=$VERSIONING?>');
+		<?endif;?>
+		<?if($redcat->dev['chrono']):?>
+			if(console) console.info('<?=RedCat\Debug\Chrono::output()?>');
+		<?endif;?>
+	</script>
 </body>
 </html>
