@@ -44,7 +44,11 @@ AddType application/x-xpinstall        xpi
 AddType application/octet-stream       safariextz
 AddType text/x-vcard                   vcf
 AddType text/html                      jml
+AddType text/html                      xjml
 <FilesMatch "\.jml$">
+    ForceType text/html
+</FilesMatch>
+<FilesMatch "\.xjml$">
     ForceType text/html
 </FilesMatch>
 <FilesMatch "\.js$">
@@ -185,7 +189,7 @@ DirectorySlash Off
 DirectoryIndex index.php
 ServerSignature Off
 AddDefaultCharset utf-8
-AddCharset utf-8 .html .css .js .xml .json .rss .atom .jml
+AddCharset utf-8 .html .css .js .xml .json .rss .atom .jml .xjml
 <IfModule php5_module>
 	php_value session.cookie_httponly true
 </IfModule>
@@ -211,6 +215,7 @@ RewriteRule ^.*$ - [E=REDCAT_URI:%2]
 
 #Block access to dot prefixed files and directories with exceptions
 RewriteCond %{REQUEST_URI} !^(.*)\.jml
+RewriteCond %{REQUEST_URI} !^(.*)\.xjml
 RewriteCond %{REQUEST_URI} !^(.*)\.js
 RewriteCond %{REQUEST_URI} !(^|/)\.tmp/min/(.*)
 RewriteCond %{REQUEST_URI} (^|/)\.
