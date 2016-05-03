@@ -1,13 +1,24 @@
 #cross-browser compatibility
 <IfModule headers_module>
+	Header set Connection keep-alive
 	Header set X-UA-Compatible "IE=Edge,chrome=1"
-    Header set Connection keep-alive
+	Header set X-Frame-Options SAMEORIGIN
+	Header set X-XSS-Protection "1; mode=block"
 	<FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|woff2|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)$" >
 		Header unset X-UA-Compatible
+		Header unset X-Frame-Options
+		Header unset X-XSS-Protection
 	</FilesMatch>
 	<FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2)$">
 		Header set Access-Control-Allow-Origin "*"
 	</FilesMatch>
+	
+	#Content-Security-Policy protection
+	#Header set Content-Security-Policy "script-src 'self'; object-src 'self'"
+	#<FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+	#	Header unset Content-Security-Policy
+	#</FilesMatch>
+	
 </IfModule>
 
 #mime types
