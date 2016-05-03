@@ -238,8 +238,14 @@ RewriteRule ^favicon.ico$ %{ENV:REDCAT_URI}img/favicon.ico [L]
 AddEncoding gzip .gz .tgz
 <IfModule version_module>
 	<IfVersion < 2.4.4>
+		<Files *.js>
+			ForceType application/javascript
+		</Files>
+		<Files *.css>
+			ForceType text/css
+		</Files>
 		<Files *.js.gz>
-			ForceType text/javascript
+			ForceType application/javascript
 		</Files>
 		<Files *.css.gz>
 			ForceType text/css
@@ -247,7 +253,7 @@ AddEncoding gzip .gz .tgz
 	</IfVersion>
 	<IfVersion >= 2.4.4>	
 		<Files *.js.gz>
-			ForceType "text/javascript; charset=UTF-8"
+			ForceType "application/javascript; charset=UTF-8"
 		</Files>
 		<Files *.css.gz>
 			ForceType "text/css; charset=UTF-8"
