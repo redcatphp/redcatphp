@@ -88,7 +88,9 @@ class Route extends FrontController{
 		else{
 			$data = ['error'=>404];
 		}
-		header('Content-type:application/json;charset=utf-8');
+		if(!headers_sent()){
+			header('Content-type:application/json;charset=utf-8');
+		}
 		echo json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
 	}
 	function outputJsonp($params){
@@ -100,7 +102,9 @@ class Route extends FrontController{
 		else{
 			$data = ['error'=>404];
 		}
-		header('Content-type:application/javascript;charset=utf-8');
+		if(!headers_sent()){
+			header('Content-type:application/javascript;charset=utf-8');
+		}
 		echo $callback.'('.json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT).');';
 	}
 	
