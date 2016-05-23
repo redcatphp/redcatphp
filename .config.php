@@ -3,7 +3,7 @@ use RedCat\Ding\Di;
 use RedCat\Ding\Expander;
 use RedCat\Ding\Factory;
 use Zend\Diactoros\ServerRequestFactory;
-use MyApp\Route\Route;
+$MyApp = 'MyApp';
 return [
 	'$'=>[
 		'dev'=>[
@@ -34,7 +34,7 @@ return [
 				'uniqTextKeys'=>[
 					'user'=>'email',
 				],
-				'modelClassPrefix'=> ['MyApp\Model\Entity\\'],
+				'modelClassPrefix'=> [$MyApp.'\Model\Entity\\'],
 				//'frozen'=>true,
 			],
 		],
@@ -42,18 +42,18 @@ return [
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
 		'autoload'=>[
-			[__DIR__.'/php','MyApp'],
-			[__DIR__.'/model','MyApp\Model'],
-			[__DIR__.'/controller','MyApp\Controller'],
-			[__DIR__.'/plugins/artist','MyApp\Artist'],
-			[__DIR__.'/plugins/templix','MyApp\Templix'],
-			[__DIR__.'/route','MyApp\Route'],
+			[__DIR__.'/php',$MyApp],
+			[__DIR__.'/model',$MyApp.'\Model'],
+			[__DIR__.'/controller',$MyApp.'\Controller'],
+			[__DIR__.'/plugins/artist',$MyApp.'\Artist'],
+			[__DIR__.'/plugins/templix',$MyApp.'\Templix'],
+			[__DIR__.'/route',$MyApp.'\Route'],
 		],
 		'prependConfig'=>['.config.env.php'],
-		'router'=>Route::class,
+		'router'=>$MyApp.'\Route\Route',
 		'artist'=>[
 			'pluginDirsMap'=>[
-				__DIR__.'/plugins/artist'=>'MyApp\\Artist',
+				__DIR__.'/plugins/artist'=>$MyApp.'\Artist',
 			]
 		],
 	],
@@ -120,8 +120,8 @@ return [
 			'construct' => [
 				'$map' => 'databaseMap',
 				'$debug'=>'dev.db',
-				'modelClassPrefix'=>'MyApp\Model\Entity\\',
-				'entityClassDefault'=>'MyApp\Model\Entity',
+				'modelClassPrefix'=>$MyApp.'\Model\Entity\\',
+				'entityClassDefault'=>$MyApp.'\Model\Entity',
 			],
 			'call'=>[
 				'setEntityFactory'=>[new Factory(function($type,$db,Di $di){
@@ -175,7 +175,7 @@ return [
 		],
 		RedCat\Framework\Templix\Templix::class=>[
 			'call'=>[
-				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','MyApp\Templix\Markup\\']],
+				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\',$MyApp.'\Templix\Markup\\']],
 				'addDirCwd'=>[[
 					'view/',
 					'shared/template/',
