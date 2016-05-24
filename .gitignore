@@ -1,12 +1,13 @@
 /composer.lock
 /composer
 /packages
+/packages-nav
+/.project
 /.tmp
 *.log
 *~
 *.lock
 *.DS_Store
-Thumbs.db
 *.swp
 *.out
-/.project
+Thumbs.db
