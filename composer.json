@@ -20,7 +20,7 @@
 	 "scripts": {
         "post-install-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777); mkdir('.data');chmod('.data',0777); mkdir('content');chmod('content',0777);\"",
+            "php -r \"array_walk(['.tmp','.data','content'],function($dir){ mkdir($dir);chmod($dir,0777); });\"",
             "php -r \"copy('.config.env.phps','.config.env.php');\""
         ],
         "post-update-cmd": [
@@ -28,7 +28,7 @@
         ],
         "post-create-project-cmd": [
             "php artist install:end",
-            "php -r \"chmod('.tmp',0777); mkdir('.data');chmod('.data',0777); mkdir('content');chmod('content',0777);\"",
+            "php -r \"array_walk(['.tmp','.data','content'],function($dir){ mkdir($dir);chmod($dir,0777); });\"",
             "php -r \"copy('.config.env.phps','.config.env.php');\""
         ]
     },
