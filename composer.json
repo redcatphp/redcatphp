@@ -19,17 +19,13 @@
 	},
 	 "scripts": {
         "post-install-cmd": [
-            "php artist install:end",
-            "php -r \"array_walk(['.tmp','.data','content'],function($dir){ mkdir($dir);chmod($dir,0777); });\"",
-            "php -r \"copy('.config.env.phps','.config.env.php');\""
+            "php artist install:end"
         ],
         "post-update-cmd": [
             "php artist clearcache"
         ],
         "post-create-project-cmd": [
-            "php artist install:end",
-            "php -r \"array_walk(['.tmp','.data','content'],function($dir){ mkdir($dir);chmod($dir,0777); });\"",
-            "php -r \"copy('.config.env.phps','.config.env.php');\""
+            "php artist install:end"
         ]
     },
     "config": {
