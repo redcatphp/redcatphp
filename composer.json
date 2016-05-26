@@ -22,7 +22,6 @@
             "php artist install:end"
         ],
         "post-update-cmd": [
-            "php artist clearcache"
         ],
         "post-create-project-cmd": [
             "php artist install:end"
