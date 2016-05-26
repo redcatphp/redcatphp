@@ -8,8 +8,8 @@ use RedCat\Route\Router;
 use RedCat\Route\Url;
 use RedCat\Framework\FrontController\Synaptic;
 use RedCat\Framework\FrontController\FrontController;
+use RedCat\Framework\FrontController\RenderInterface;
 
-use MyApp\Controller\RenderInterface;
 use MyApp\Templix\Templix;
 
 class Route extends FrontController{
