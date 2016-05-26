@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
-if(!is_file('redcat.php'))
+if(!is_file($rc='redcat.php')&&!is_file($rc=__DIR__.'/redcat.php'))
 	throw new Exception('No RedCat installation found in the current directory, you can make one using composer with this command:"composer create-project redcatphp/redcatphp"');
-$redcat = require_once 'redcat.php';
+$redcat = require_once $rc;
 $application = $redcat->create(Symfony\Component\Console\Application::class);
 $commandPaths = [
 	REDCAT.'packages/redcatphp/framework/Artist'=>'RedCat\Framework\Artist',
