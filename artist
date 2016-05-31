@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+if(!is_dir('packages')) require_once 'install.php';
+
 if(is_file('redcat.php')){
 	$redcat = require_once 'redcat.php';
 	$packagesPath = REDCAT.'packages/redcatphp';
