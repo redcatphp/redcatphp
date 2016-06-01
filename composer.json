@@ -19,9 +19,9 @@
 	},
 	 "scripts": {
         "post-install-cmd": [
-            "php artist install:end"
         ],
         "post-update-cmd": [
+            "php artist install:end"
         ],
         "post-create-project-cmd": [
             "php artist install:end"
