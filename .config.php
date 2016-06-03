@@ -49,7 +49,7 @@ return [
 			[__DIR__.'/plugins/templix',$MyApp.'\Templix'],
 			[__DIR__.'/route',$MyApp.'\Route'],
 		],
-		'prependConfig'=>['.config.env.php'],
+		'mergeConfig'=>['.config.env.php'],
 		'router'=>$MyApp.'\Route\Route',
 		'artist'=>[
 			'pluginDirsMap'=>[
