@@ -2,6 +2,8 @@
 <?php
 if(!is_dir('packages')) require_once 'install.php';
 
+
+
 if(is_file('redcat.php')){
 	$redcat = require_once 'redcat.php';
 	$packagesPath = REDCAT.'packages/redcatphp';
@@ -16,11 +18,35 @@ elseif(is_file(__DIR__.'/redcat.php')){
 else{
 	throw new Exception('No RedCat installation found in the current directory, you can make one using composer with this command:"composer create-project redcatphp/redcatphp"');
 }
+
+$localCMD = [
+	'plugins'=>function($plugin)use($redcat){
+		if(!$redcat['artist.pluginDirsMap']) $redcat['artist.pluginDirsMap'] = [];
+		$x = explode('=',$plugin);
+		list($dir,$namespace) = $x;
+		$redcat['artist.pluginDirsMap'][$dir] = $namespace;
+	}
+];
+$modified = false;
+for($i=1,$c=count($argv);$i<$c;$i++){
+	if(false===$p=strpos($argv[$i],'=')) break;
+	$k = trim(substr($argv[$i],0,$p),'-');
+	$v = substr($argv[$i],$p+1);
+	if(isset($localCMD[$k]))
+		$localCMD[$k]($v);
+	unset($argv[$i]);
+	$modified = true;
+}
+if($modified) $_SERVER['argv'] = $argv = array_values($argv);
+
 $application = $redcat->create(Symfony\Component\Console\Application::class);
 $commandPaths = [
 	$packagesPath.'/framework/Artist'=>'RedCat\Framework\Artist',
 ];
 if($redcat['artist.pluginDirsMap']){
+	foreach($redcat['artist.pluginDirsMap'] as $dir=>$namespace){
+		$redcat->autoload($dir,$namespace);
+	}
 	$commandPaths = array_merge($commandPaths,$redcat['artist.pluginDirsMap']);
 }
 foreach($commandPaths as $dir=>$ns){
