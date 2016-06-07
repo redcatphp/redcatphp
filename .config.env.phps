@@ -9,4 +9,7 @@ return [
 			'type'=>'mysql',
 		],
 	],
+	'rules'=>[
+		
+	]
 ];
