@@ -25,7 +25,7 @@ $localCMD = [
 		if(!$redcat['artist.pluginDirsMap']) $redcat['artist.pluginDirsMap'] = [];
 		$x = explode('=',$plugin);
 		list($dir,$namespace) = $x;
-		$redcat['artist.pluginDirsMap'][$dir] = $namespace;
+		$redcat['artist.pluginDirsMap'][$dir] = trim($namespace,'"\'');
 	}
 ];
 $modified = false;
