@@ -19,6 +19,7 @@ else{
 	throw new Exception('No RedCat installation found in the current directory, you can make one using composer with this command:"composer create-project redcatphp/redcatphp"');
 }
 
+global $argv;
 $localCMD = [
 	'plugins'=>function($plugin)use($redcat){
 		if(!$redcat['artist.pluginDirsMap']) $redcat['artist.pluginDirsMap'] = [];
