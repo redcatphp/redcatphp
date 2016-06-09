@@ -15,7 +15,7 @@ return [
 			'chrono'=>1,
 			'l10n'	=>0,
 			//'db'	=>1,
-			'smtp'	=>0,
+			'mail'	=>0,
 		],
 		'superRoot'=>[
 			//'email'=>'',
@@ -72,6 +72,7 @@ return [
 		RedCat\Identify\PHPMailer::class => [
 			'shared'=>true,
 			'construct'=>[
+				'$debug'=>'dev.mail',
 				/*
 					'fromEmail'=>'demo@redcatphp.com',
 					'fromName'=>'MyApp - MySociety',
@@ -84,7 +85,6 @@ return [
 					'password'=>'d3v3loper',
 					'secure'=>null,
 					'sendmail'=>false,
-					'$debug'=>'dev.smtp',
 					'exceptions'=>false,
 					
 					'SMTPOptions'=>[
