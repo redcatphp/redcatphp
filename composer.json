@@ -33,7 +33,7 @@
 		"pre-dependencies-solving":[],
 		"post-dependencies-solving":[]
 	},
-    "bin":"artist",
+    "bin": ["artist"],
     "config": {
 		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
