@@ -17,16 +17,22 @@
 		"php": ">=5.6.0",
 		"redcatphp/framework": ">=2.0"
 	},
-	 "scripts": {
-        "post-install-cmd": [
-        ],
-        "post-update-cmd": [
-            "php artist install:end"
-        ],
-        "post-create-project-cmd": [
-            "php artist install:end"
-        ]
-    },
+	"scripts": {
+		"command":[],
+		"pre-install-cmd":[],
+		"post-install-cmd":["RedCat\\Framework\\ComposerScript::postInstall"],
+		"pre-update-cmd":[],
+		"post-update-cmd":["RedCat\\Framework\\ComposerScript::postUpdateCmd"],
+		"post-status-cmd":["RedCat\\Framework\\ComposerScript::postStatusCmd"],
+		"pre-archive-cmd":["RedCat\\Framework\\ComposerScript::preArchiveCmd"],
+		"post-archive-cmd":["RedCat\\Framework\\ComposerScript::postArchiveCmd"],
+		"pre-autoload-dump":[],
+		"post-autoload-dump":["RedCat\\Framework\\ComposerScript::postAutoloadDump"],
+		"post-root-package-install":["RedCat\\Framework\\ComposerScript::postRootPackageInstall"],
+		"post-create-project-cmd":["RedCat\\Framework\\ComposerScript::postCreateProjectCmd"],
+		"pre-dependencies-solving":[],
+		"post-dependencies-solving":[]
+	},
     "bin":"artist",
     "config": {
 		"vendor-dir": "packages",
