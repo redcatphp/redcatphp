@@ -27,6 +27,7 @@
             "php artist install:end"
         ]
     },
+    "bin":"artist",
     "config": {
 		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
