@@ -139,6 +139,7 @@ return [
 			'construct'=>[
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
+				'$bruteforceProtection'=>'dev.security',
 			],
 		],
 		RedCat\Framework\FrontController\FrontOffice::class=>[
@@ -200,10 +201,5 @@ return [
 		RedCat\Route\Url::class => [
 			'shared'=>true,
 		],
-		RedCat\Identify\Session::class=>[
-			'construct'=>[
-				'$bruteforceProtection'=>'dev.security'
-			]
-		]
 	],
 ];
