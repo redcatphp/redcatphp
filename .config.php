@@ -3,7 +3,6 @@ use RedCat\Ding\Di;
 use RedCat\Ding\Expander;
 use RedCat\Ding\Factory;
 use Zend\Diactoros\ServerRequestFactory;
-$MyApp = 'MyApp';
 return [
 	'$'=>[
 		'dev'=>[
