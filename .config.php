@@ -3,7 +3,7 @@ use RedCat\Ding\Di;
 use RedCat\Ding\Expander;
 use RedCat\Ding\Factory;
 use Zend\Diactoros\ServerRequestFactory;
-return [
+return function($MyApp){ return [
 	'$'=>[
 		'dev'=>[
 			'php'       =>1,
@@ -173,4 +173,4 @@ return [
 			'shared'=>true,
 		],
 	],
-];
+]; };
