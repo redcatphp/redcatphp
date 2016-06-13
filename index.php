@@ -1,5 +1,5 @@
 <?php
-//define('REDCAT_DING_FREEZE',true);
+//define('REDCAT_DEV_CONFIG',false);
 $redcat = require_once 'redcat.php';
 $route = $redcat->create('#router');
 $route->load();
