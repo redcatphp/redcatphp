@@ -14,14 +14,9 @@ return [
 			'img'       =>0,
 			'chrono'    =>1,
 			'l10n'      =>0,
-			//'db'      =>'on',
+			'db'        =>1,
 			'mail'      =>0,
 			'security'  =>0,
-		],
-		'superRoot'=>[
-			//'email'=>'',
-			'login'=>'demo',
-			'password'=>'demo',
 		],
 		'databaseMap'=>[
 			0 => [
@@ -36,7 +31,6 @@ return [
 					'user'=>'email',
 				],
 				'modelClassPrefix'=> [$MyApp.'\Model\Entity\\'],
-				//'frozen'=>true,
 			],
 		],
 		'l10n'=>false,
@@ -73,29 +67,7 @@ return [
 		RedCat\Identify\PHPMailer::class => [
 			'shared'=>true,
 			'construct'=>[
-				'$debug'=>'dev.mail',
-				/*
-					'fromEmail'=>'demo@redcatphp.com',
-					'fromName'=>'MyApp - MySociety',
-					'replyEmail'=>'answer@redcatphp.com',
-					'replyName'=>'MyApp - MySociety',
-					
-					'host'=>'smtp.gmail.com',
-					'port'=>25,
-					'username'=>'me@gmail.com',
-					'password'=>'d3v3loper',
-					'secure'=>null,
-					'sendmail'=>false,
-					'exceptions'=>false,
-					
-					'SMTPOptions'=>[
-						'ssl' => [ //not secure - enable for dev
-							'verify_peer' => false,
-							'verify_peer_name' => false,
-							'allow_self_signed' => true
-						]
-					],
-				*/
+				'$debug'=>'dev.mail'
 			]
 			
 		],
