@@ -23,7 +23,7 @@
 	</footer>
 	<script type="text/javascript" src="js/js.min.js"></script>
 	<script type="text/javascript">
-		<?if($this->devJs):?>$js.dev=true;<?endif;?>$js.min=true;
+		<?if($templix->devJs):?>$js.dev=true;<?endif;?>$js.min=true;
 		<?if(is_file(REDCAT_CWD.'js/script.js')):?>
 			$js('script<?=$VERSIONING?>');
 		<?endif;?>
