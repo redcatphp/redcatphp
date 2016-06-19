@@ -158,7 +158,7 @@ return function($MyApp){ return [
 				'setDirSync'=>'.tmp/sync/',
 			],
 		],
-		RedCat\Framework\FrontController\Synaptic::class=>[
+		RedCat\Framework\FrontController\AssetLoader::class=>[
 			'construct'=>[
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
