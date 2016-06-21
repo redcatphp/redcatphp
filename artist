@@ -135,8 +135,10 @@ class RedCatInstaller{
 			];
 		}
 		
-		if(is_dir($json['vendor-dir'])){
-			if(!is_writable($json['vendor-dir'])){
+		$vendorDir = isset($json['config']['vendor-dir'])?$json['config']['vendor-dir']:'vendor';
+		
+		if(is_dir($vendorDir)){
+			if(!is_writable($vendorDir)){
 				echo "vendor-dir is not writeable\n\n";
 				return;
 			}
