@@ -108,7 +108,7 @@ class RedCatInstaller{
 			return;
 		}
 		$composer = $this->getComposerBin();
-		passthru("$composer update 2>&1");
+		passthru("$composer update -vvv 2>&1");
 		if(is_file('.git')){
 			passthru("git pull 2>&1");
 		}
@@ -159,16 +159,16 @@ class RedCatInstaller{
 			}
 			$json['require'] = (object)[];
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-			echo "composer require fxp/composer-asset-plugin\n";
-			passthru("$composer require fxp/composer-asset-plugin 2>&1");
+			echo "composer require fxp/composer-asset-plugin -vvv\n";
+			passthru("$composer require fxp/composer-asset-plugin -vvv 2>&1");
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
 			unset($json['extra']['artist']['tmp-require']);
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-			passthru("$composer update 2>&1");
+			passthru("$composer update -vvv 2>&1");
 		}
 		else{
-			passthru("$composer require fxp/composer-asset-plugin 2>&1");
+			passthru("$composer require fxp/composer-asset-plugin -vvv 2>&1");
 		}
 		
 		
