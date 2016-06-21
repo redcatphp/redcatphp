@@ -5,6 +5,7 @@ class EventsHandler{
 		$GLOBALS['ioDialogRedCat'] = $event->getIO();
 		$php = 'packages/redcatphp/redcatphp/artist';
 		$_SERVER['argv'] = $GLOBALS['argv'] = [$php,'install:end'];
+		ob_start();
 		include $php;
 	}
 	static function postUpdateCmd($event){
