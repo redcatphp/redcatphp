@@ -164,6 +164,9 @@ class RedCatInstaller{
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
 			unset($json['extra']['artist']['tmp-require']);
+			if(empty($json['extra']['artist'])){
+				$json['extra']['artist'] = (object)[];
+			}
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			passthru("$composer update -vvv --profile 2>&1");
 		}
