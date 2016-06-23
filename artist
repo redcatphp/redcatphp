@@ -76,6 +76,7 @@ class RedCatInstaller{
 	protected $composerJson;
 	protected $verbose = '';
 	protected $profile = '';
+	protected $installComposerAssetPlugin = false;
 	function __construct(){
 		$this->loadOptions();
 		$this->startOutput();
@@ -99,6 +100,12 @@ class RedCatInstaller{
 				case 'chrono':
 				case 'time':
 					$this->profile = '--profile';
+				break;
+				case 'fxp/composer-asset-plugin':
+				case 'composer-asset-plugin':
+				case 'asset-plugin':
+				case 'asset':
+					$this->installComposerAssetPlugin = true;
 				break;
 			}
 		}
@@ -185,6 +192,21 @@ class RedCatInstaller{
 			}
 		}
 		
+		if($this->installComposerAssetPlugin){
+			$this->installComposerAssetPlugin();
+		}
+		else{
+			$this->cmd("$composer install {$this->verbose} {$this->profile}");
+		}
+		
+		
+		if(is_file($installFile='install.php')&&!rename($installFile,$installFile.'s')){
+			echo 'Unable to rename installation script, you should rename or remove it manually';
+		}
+	}
+
+	protected function installComposerAssetPlugin(){
+		$composer = $this->getComposerBin();
 		$json = $this->getComposerJson();
 		if(isset($json['require'])){
 			if(isset($json['extra']['artist']['tmp-require'])){
@@ -213,13 +235,7 @@ class RedCatInstaller{
 			$this->cmd("$composer require fxp/composer-asset-plugin {$this->verbose} {$this->profile}");
 			$this->cmd("$composer require hirak/prestissimo {$this->verbose} {$this->profile}");
 		}
-		
-		
-		if(is_file($installFile='install.php')&&!rename($installFile,$installFile.'s')){
-			echo 'Unable to rename installation script, you should rename or remove it manually';
-		}
 	}
-
 	protected function cmd($command){
 		echo "$command\n";
 		$command .= ' 2>&1';
