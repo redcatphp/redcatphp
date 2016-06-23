@@ -21,7 +21,6 @@
 	],
 	"require": {
 		"php": ">=5.6.0",
-		"fxp/composer-asset-plugin": "^1.1",
 		"redcatphp/framework": ">=2.0"
 	},
 	"scripts": {
