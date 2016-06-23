@@ -9,6 +9,7 @@
 #/install.phps
 #/robots_cdn.txt
 #/robots_ssl.txt
+#/.config.env.phps
 
 # RedCat env config #
 /.config.env.php
