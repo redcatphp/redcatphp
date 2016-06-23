@@ -110,10 +110,10 @@ class RedCatInstaller{
 		}
 		$composer = $this->getComposerBin();
 		
-		$this->cmd("$composer update -vvv --profile 2>&1");
+		$this->cmd("$composer update -vvv --profile");
 
 		if(is_file('.git')){
-			$this->cmd("git pull 2>&1");
+			$this->cmd("git pull");
 		}
 		
 	}
@@ -172,8 +172,8 @@ class RedCatInstaller{
 			$json['require'] = (object)[];
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
-			$this->cmd("$composer require hirak/prestissimo -vvv --profile 2>&1");
+			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile");
+			$this->cmd("$composer require hirak/prestissimo -vvv --profile");
 
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
@@ -183,11 +183,11 @@ class RedCatInstaller{
 			}
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$this->cmd("$composer update -vvv --profile 2>&1");
+			$this->cmd("$composer update -vvv --profile");
 		}
 		else{
-			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
-			$this->cmd("$composer require hirak/prestissimo -vvv --profile 2>&1");
+			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile");
+			$this->cmd("$composer require hirak/prestissimo -vvv --profile");
 		}
 		
 		
@@ -197,7 +197,8 @@ class RedCatInstaller{
 	}
 
 	protected function cmd($command){
-		echo $command;
+		echo "$command\n";
+		$command .= ' 2>&1';
 		$desc = [
 			0 => ['file', 'php://stdin', 'r'],
 			1 => ['file', 'php://stdout', 'w'],
@@ -267,7 +268,7 @@ class RedCatInstaller{
 			return;
 		}
 		
-		$this->cmd('php '.$composerSetup.' 2>&1');
+		$this->cmd('php '.$composerSetup.'');
 		
 		unlink($composerSetup);
 		if(!file_exists($composerPhar)){
