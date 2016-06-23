@@ -74,10 +74,34 @@ $application->run();
 
 class RedCatInstaller{
 	protected $composerJson;
+	protected $verbose = '';
+	protected $profile = '';
 	function __construct(){
+		$this->loadOptions();
 		$this->startOutput();
 		$this->init();
 		$this->installComposer();
+	}
+	protected function loadOptions(){
+		global $argv;
+		$options = $argv;
+		array_shift($options);
+		array_shift($options);
+		foreach($options as $arg){
+			$arg = trim('-',$arg);
+			switch($arg){
+				case 'verbose':
+				case 'v':
+				case 'vvv':
+					$this->verbose = '-vvv';
+				break;
+				case 'profile':
+				case 'chrono':
+				case 'time':
+					$this->profile = '--profile';
+				break;
+			}
+		}
 	}
 	protected function init(){
 		$this->tmpDir = getcwd().'/.tmp/artist/';
@@ -110,7 +134,7 @@ class RedCatInstaller{
 		}
 		$composer = $this->getComposerBin();
 		
-		$this->cmd("$composer update -vvv --profile");
+		$this->cmd("$composer update {$this->verbose} {$this->profile}");
 
 		if(is_file('.git')){
 			$this->cmd("git pull");
@@ -172,8 +196,8 @@ class RedCatInstaller{
 			$json['require'] = (object)[];
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile");
-			$this->cmd("$composer require hirak/prestissimo -vvv --profile");
+			$this->cmd("$composer require fxp/composer-asset-plugin {$this->verbose} {$this->profile}");
+			$this->cmd("$composer require hirak/prestissimo {$this->verbose} {$this->profile}");
 
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
@@ -183,11 +207,11 @@ class RedCatInstaller{
 			}
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$this->cmd("$composer update -vvv --profile");
+			$this->cmd("$composer update {$this->verbose} {$this->profile}");
 		}
 		else{
-			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile");
-			$this->cmd("$composer require hirak/prestissimo -vvv --profile");
+			$this->cmd("$composer require fxp/composer-asset-plugin {$this->verbose} {$this->profile}");
+			$this->cmd("$composer require hirak/prestissimo {$this->verbose} {$this->profile}");
 		}
 		
 		
