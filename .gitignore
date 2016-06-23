@@ -39,7 +39,26 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
+
+# CLI generated files #
+*~
+*#
+*.out
+*.swp
+*.swo
+*.un~
 
 # IDE generated files #
-/.project
-/.idea
+nbproject
+.~lock.*
+.buildpath
+.project
+.settings
+.classpath
+.metadata
+*.iml
+*.ipr
+*.sublime-workspace
+/.idea/workspace.xml
+/.idea/tasks.xml
