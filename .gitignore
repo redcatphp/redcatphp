@@ -1,3 +1,15 @@
+# Project Specific
+
+
+# RedCat Project #
+#/artist
+#/redcat.php
+#/index.php
+#/.config.php
+#/install.phps
+#/robots_cdn.txt
+#/robots_ssl.txt
+
 # RedCat env config #
 /.config.env.php
 
