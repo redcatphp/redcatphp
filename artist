@@ -73,6 +73,7 @@ $application->run();
 
 
 class RedCatInstaller{
+	protected $composerJson;
 	function __construct(){
 		$this->startOutput();
 		$this->init();
@@ -95,7 +96,7 @@ class RedCatInstaller{
 	}
 	function setup(){
 		$this->run();
-		if(!is_file('composer.lock')){
+		if(!is_file($this->getVendorDir().'/autoload.php')){
 			$this->install();
 		}
 		else{
@@ -103,31 +104,22 @@ class RedCatInstaller{
 		}
 	}
 	function update(){
-		if(!is_file('composer.lock')){
+		if(!is_file($this->getVendorDir().'/autoload.php')){
 			$this->install();
 			return;
 		}
 		$composer = $this->getComposerBin();
 		
-		$cmd = "$composer update -vvv --profile 2>&1";
-		echo $cmd;
-		passthru($cmd);
-		
+		$this->cmd("$composer update -vvv --profile 2>&1");
+
 		if(is_file('.git')){
-			$cmd = "git pull 2>&1";
-			echo $cmd;
-			passthru($cmd);
+			$this->cmd("git pull 2>&1");
 		}
 		
 	}
-	function install(){
-		$composer = $this->getComposerBin();
-		
-		if(is_file('composer.lock')){
-			echo "Install allready done, run :'artist update' instead\n\n";
-			return;
-		}
-		
+	protected function getComposerJson(){
+		if($this->composerJson)
+			return $this->composerJson;
 		if(is_file('composer.json')){
 			$json = json_decode(file_get_contents('composer.json'),true);
 		}
@@ -140,9 +132,22 @@ class RedCatInstaller{
 				]
 			];
 		}
-		
+		return $this->composerJson = $json;
+	}
+	protected function getVendorDir(){
+		$json = $this->getComposerJson();
 		$vendorDir = isset($json['config']['vendor-dir'])?$json['config']['vendor-dir']:'vendor';
+		return $vendorDir;
+	}
+	function install(){
+		$composer = $this->getComposerBin();
 		
+		if(is_file($this->getVendorDir().'/autoload.php')){
+			echo "Install allready done, run :'artist update' instead\n\n";
+			return;
+		}
+		
+		$vendorDir = $this->getVendorDir();
 		if(is_dir($vendorDir)){
 			if(!is_writable($vendorDir)){
 				echo "vendor-dir is not writeable\n\n";
@@ -156,6 +161,7 @@ class RedCatInstaller{
 			}
 		}
 		
+		$json = $this->getComposerJson();
 		if(isset($json['require'])){
 			if(isset($json['extra']['artist']['tmp-require'])){
 				$json['extra']['artist']['tmp-require'] = $json['require']+$json['extra']['artist']['tmp-require'];
@@ -166,10 +172,9 @@ class RedCatInstaller{
 			$json['require'] = (object)[];
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$cmd = "$composer require fxp/composer-asset-plugin -vvv --profile 2>&1";
-			echo $cmd;
-			passthru($cmd);
-			
+			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
+			$this->cmd("$composer require hirak/prestissimo -vvv --profile 2>&1");
+
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
 			unset($json['extra']['artist']['tmp-require']);
@@ -178,18 +183,11 @@ class RedCatInstaller{
 			}
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 			
-			$cmd = "$composer update -vvv --profile 2>&1";
-			echo $cmd;
-			passthru($cmd);
+			$this->cmd("$composer update -vvv --profile 2>&1");
 		}
 		else{
-			$cmd = "$composer require fxp/composer-asset-plugin -vvv --profile 2>&1";
-			echo $cmd;
-			passthru($cmd);
-			
-			$cmd = "$composer require hirak/prestissimo -vvv --profile 2>&1";
-			echo $cmd;
-			passthru($cmd);
+			$this->cmd("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
+			$this->cmd("$composer require hirak/prestissimo -vvv --profile 2>&1");
 		}
 		
 		
@@ -198,6 +196,20 @@ class RedCatInstaller{
 		}
 	}
 
+	protected function cmd($command){
+		echo $command;
+		$desc = [
+			0 => ['file', 'php://stdin', 'r'],
+			1 => ['file', 'php://stdout', 'w'],
+			2 => ['file', 'php://stderr', 'w'],
+		];
+		$proc = proc_open( $command, $desc, $pipes );
+
+		do {
+			sleep(1);
+			$status = proc_get_status($proc);
+		} while ($status['running']);
+	}
 	protected function startOutput(){
 		ignore_user_abort(false);
 		set_time_limit(0);
@@ -255,9 +267,7 @@ class RedCatInstaller{
 			return;
 		}
 		
-		$cmd = 'php '.$composerSetup.' 2>&1';
-		echo $cmd;
-		passthru($cmd);
+		$this->cmd('php '.$composerSetup.' 2>&1');
 		
 		unlink($composerSetup);
 		if(!file_exists($composerPhar)){
