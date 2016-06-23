@@ -108,9 +108,15 @@ class RedCatInstaller{
 			return;
 		}
 		$composer = $this->getComposerBin();
-		passthru("$composer update -vvv --profile 2>&1");
+		
+		$cmd = "$composer update -vvv --profile 2>&1";
+		echo $cmd;
+		passthru($cmd);
+		
 		if(is_file('.git')){
-			passthru("git pull 2>&1");
+			$cmd = "git pull 2>&1";
+			echo $cmd;
+			passthru($cmd);
 		}
 		
 	}
@@ -159,20 +165,31 @@ class RedCatInstaller{
 			}
 			$json['require'] = (object)[];
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-			echo "composer require fxp/composer-asset-plugin -vvv --profile\n";
-			passthru("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
+			
+			$cmd = "$composer require fxp/composer-asset-plugin -vvv --profile 2>&1";
+			echo $cmd;
+			passthru($cmd);
+			
 			$json = json_decode(file_get_contents('composer.json'),true);
 			$json['require'] += $json['extra']['artist']['tmp-require'];
 			unset($json['extra']['artist']['tmp-require']);
 			if(empty($json['extra']['artist'])){
-				$json['extra']['artist'] = (object)[];
+				unset($json['extra']['artist']);
 			}
 			file_put_contents('composer.json',json_encode($json,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-			passthru("$composer update -vvv --profile 2>&1");
+			
+			$cmd = "$composer update -vvv --profile 2>&1";
+			echo $cmd;
+			passthru($cmd);
 		}
 		else{
-			passthru("$composer require fxp/composer-asset-plugin -vvv --profile 2>&1");
-			passthru("$composer require hirak/prestissimo -vvv --profile 2>&1");
+			$cmd = "$composer require fxp/composer-asset-plugin -vvv --profile 2>&1";
+			echo $cmd;
+			passthru($cmd);
+			
+			$cmd = "$composer require hirak/prestissimo -vvv --profile 2>&1";
+			echo $cmd;
+			passthru($cmd);
 		}
 		
 		
@@ -237,7 +254,10 @@ class RedCatInstaller{
 			echo "An error occured, unable to write composer installer, it\'s probably a rights problem\n";
 			return;
 		}
-		passthru('php '.$composerSetup.' 2>&1');
+		
+		$cmd = 'php '.$composerSetup.' 2>&1';
+		echo $cmd;
+		passthru($cmd);
 		
 		unlink($composerSetup);
 		if(!file_exists($composerPhar)){
