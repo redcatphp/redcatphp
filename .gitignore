@@ -1,5 +1,4 @@
 /.config.env.php
-/composer.lock
 /composer
 /packages
 /.project
