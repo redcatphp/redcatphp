@@ -47,7 +47,7 @@ return function($MyApp){ return [
 		'router'=>$MyApp.'\Route\Route',
 		'artist'=>[
 			'pluginDirsMap'=>[
-				REDCAT_CWD.'/plugins/artist'=>$MyApp.'\Artist',
+				REDCAT_CWD.'plugins/artist'=>$MyApp.'\Artist',
 			]
 		],
 	],
