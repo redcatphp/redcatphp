@@ -36,18 +36,18 @@ return function($MyApp){ return [
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
 		'autoload'=>[
-			[__DIR__.'/php',$MyApp],
-			[__DIR__.'/model',$MyApp.'\Model'],
-			[__DIR__.'/controller',$MyApp.'\Controller'],
-			[__DIR__.'/plugins/artist',$MyApp.'\Artist'],
-			[__DIR__.'/plugins/templix',$MyApp.'\Templix'],
-			[__DIR__.'/route',$MyApp.'\Route'],
+			[REDCAT_CWD.'php',$MyApp],
+			[REDCAT_CWD.'model',$MyApp.'\Model'],
+			[REDCAT_CWD.'controller',$MyApp.'\Controller'],
+			[REDCAT_CWD.'plugins/artist',$MyApp.'\Artist'],
+			[REDCAT_CWD.'plugins/templix',$MyApp.'\Templix'],
+			[REDCAT_CWD.'route',$MyApp.'\Route'],
 		],
 		'mergeConfig'=>['.config.env.php'],
 		'router'=>$MyApp.'\Route\Route',
 		'artist'=>[
 			'pluginDirsMap'=>[
-				__DIR__.'/plugins/artist'=>$MyApp.'\Artist',
+				REDCAT_CWD.'/plugins/artist'=>$MyApp.'\Artist',
 			]
 		],
 	],
