@@ -29,7 +29,7 @@
 	"scripts": {
 		"command":[],
 		"pre-install-cmd":[],
-		"post-install-cmd":["RedCat\\Framework\\ComposerScript::postInstall"],
+		"post-install-cmd":["RedCat\\Framework\\ComposerScript::postInstallCmd"],
 		"pre-update-cmd":[],
 		"post-update-cmd":["RedCat\\Framework\\ComposerScript::postUpdateCmd"],
 		"post-status-cmd":["RedCat\\Framework\\ComposerScript::postStatusCmd"],
