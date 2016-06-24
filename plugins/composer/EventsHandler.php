@@ -8,6 +8,9 @@ class EventsHandler{
 		ob_start();
 		include $php;
 	}
+	static function postInstallCmd($event){
+		return self::setup($event);
+	}
 	static function postUpdateCmd($event){
 		return self::setup($event);
 	}
