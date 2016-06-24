@@ -6,11 +6,10 @@ if(!isset($img))
 	$img = $relativity.'img/';
 if(!isset($font))
 	$font = $relativity.'font/';
+if(!isset($root))
+	$root = $relativity;
 
 ?>
+$root: '<?=$root?>' !default;
 $img: '<?=$img?>' !default;
 $font: '<?=$font?>' !default;
-
-$color-main:				 #e80505 !default;
-$color-light:				 #ffffff !default;
-$color-dark:				 #ab0000 !default;
