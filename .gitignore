@@ -2,9 +2,9 @@
 
 
 # RedCat Project #
+/artist
 #/bin/artist.phar
 #/bin/artist.phar.pubkey
-#/artist
 #/redcat.php
 #/index.php
 #/.config.php
