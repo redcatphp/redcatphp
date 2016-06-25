@@ -3,7 +3,7 @@ namespace MyApp\Composer;
 class EventsHandler{
 	static function setup($event){
 		$GLOBALS['ioDialogRedCat'] = $event->getIO();
-		$php = 'artist';
+		$php = 'bin/artist.phar';
 		$_SERVER['argv'] = $GLOBALS['argv'] = [$php,'install:end'];
 		ob_start();
 		include $php;
