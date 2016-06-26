@@ -4,7 +4,7 @@ class EventsHandler{
 	static function setup($event){
 		$GLOBALS['ioDialogRedCat'] = $event->getIO();
 		$php = 'bin/artist.phar';
-		$_SERVER['argv'] = $GLOBALS['argv'] = [$php,'--plugins=plugins/artist="MyApp\\Artist"','setup'];
+		$_SERVER['argv'] = $GLOBALS['argv'] = [$php,'setup'];
 		ob_start();
 		include $php;
 	}
