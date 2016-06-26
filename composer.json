@@ -27,10 +27,23 @@
 		"bower-asset/font-awesome": "@dev"
 	},
 	"scripts": {
-		"post-install-cmd":["php packages/bin/artist setup"],
-		"post-update-cmd":["php packages/bin/artist setup"],
-		"post-create-project-cmd":["php packages/bin/artist setup"]
-	},
+        "post-install-cmd": [
+             Artist\ComposerEvents::postInstallCmd"
+        ],
+        "post-update-cmd": [
+             Artist\ComposerEvents::postUpdateCmd"
+        ],
+        "post-create-project-cmd": [
+             Artist\ComposerEvents::createProjectCmd"
+        ]
+    },
+    "extra":{
+		"artist":{
+			"scripts":{
+				"class":"MyApp/Artist/Setup"
+			}
+		}
+    },
     "config": {
 		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
