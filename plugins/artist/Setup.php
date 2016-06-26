@@ -1,7 +1,6 @@
 <?php
 namespace MyApp\Artist;
 use RedCat\Artist\ArtistPlugin;
-use RedCat\Framework\PHPConfig\TokenTree;
 class Setup extends ArtistPlugin{
 	protected $description = "Finalize installation";
 	protected $args = [];
