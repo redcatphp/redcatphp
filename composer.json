@@ -28,13 +28,13 @@
 	},
 	"scripts": {
         "post-install-cmd": [
-             "Artist\ComposerEvents::postInstallCmd"
+             "Artist\\ComposerEvents::postInstallCmd"
         ],
         "post-update-cmd": [
-             "Artist\ComposerEvents::postUpdateCmd"
+             "Artist\\ComposerEvents::postUpdateCmd"
         ],
         "post-create-project-cmd": [
-             "Artist\ComposerEvents::createProjectCmd"
+             "Artist\\ComposerEvents::createProjectCmd"
         ]
     },
     "extra":{
