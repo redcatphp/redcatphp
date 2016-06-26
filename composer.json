@@ -29,15 +29,12 @@
 	},
 	"scripts": {
         "post-install-cmd": [
-             "export SHELL_INTERACTIVE=true",
              "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-update-cmd": [
-             "export SHELL_INTERACTIVE=true",
              "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-create-project-cmd": [
-             "export SHELL_INTERACTIVE=true",
              "RedCat\\Artist\\ComposerArtist::setup"
         ]
     },
