@@ -28,13 +28,13 @@
 	},
 	"scripts": {
         "post-install-cmd": [
-             "Artist\\ComposerEvents::postInstallCmd"
+             "RedCat\\Artist\\ComposerEvents::postInstallCmd"
         ],
         "post-update-cmd": [
-             "Artist\\ComposerEvents::postUpdateCmd"
+             "RedCat\\Artist\\ComposerEvents::postUpdateCmd"
         ],
         "post-create-project-cmd": [
-             "Artist\\ComposerEvents::createProjectCmd"
+             "RedCat\\Artist\\ComposerEvents::createProjectCmd"
         ]
     },
     "extra":{
