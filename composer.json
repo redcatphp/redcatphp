@@ -27,20 +27,9 @@
 		"bower-asset/font-awesome": "@dev"
 	},
 	"scripts": {
-		"command":[],
-		"pre-install-cmd":[],
-		"post-install-cmd":["RedCat\\Framework\\ComposerScript::postInstallCmd"],
-		"pre-update-cmd":[],
-		"post-update-cmd":["RedCat\\Framework\\ComposerScript::postUpdateCmd"],
-		"post-status-cmd":["RedCat\\Framework\\ComposerScript::postStatusCmd"],
-		"pre-archive-cmd":["RedCat\\Framework\\ComposerScript::preArchiveCmd"],
-		"post-archive-cmd":["RedCat\\Framework\\ComposerScript::postArchiveCmd"],
-		"pre-autoload-dump":[],
-		"post-autoload-dump":["RedCat\\Framework\\ComposerScript::postAutoloadDump"],
-		"post-root-package-install":["RedCat\\Framework\\ComposerScript::postRootPackageInstall"],
-		"post-create-project-cmd":["RedCat\\Framework\\ComposerScript::postCreateProjectCmd"],
-		"pre-dependencies-solving":[],
-		"post-dependencies-solving":[]
+		"post-install-cmd":["php artist setup"],
+		"post-update-cmd":["php artist setup"],
+		"post-create-project-cmd":["php artist setup"]
 	},
     "bin": ["artist"],
     "config": {
