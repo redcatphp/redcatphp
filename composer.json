@@ -28,21 +28,14 @@
 	},
 	"scripts": {
         "post-install-cmd": [
-             "RedCat\\Artist\\ComposerEvents::postInstallCmd"
+             "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-update-cmd": [
-             "RedCat\\Artist\\ComposerEvents::postUpdateCmd"
+             "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-create-project-cmd": [
-             "RedCat\\Artist\\ComposerEvents::createProjectCmd"
+             "RedCat\\Artist\\ComposerArtist::setup"
         ]
-    },
-    "extra":{
-		"artist":{
-			"scripts":{
-				"class":"MyApp/Artist/Setup"
-			}
-		}
     },
     "autoload": {
         "psr-4": {
