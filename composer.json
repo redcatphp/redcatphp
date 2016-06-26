@@ -38,11 +38,6 @@
              "RedCat\\Artist\\ComposerArtist::setup"
         ]
     },
-    "autoload": {
-        "psr-4": {
-            "RedCat\\Artist\\": "packages/redcatphp/artist/src"
-        }
-    },
     "config": {
 		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
