@@ -21,6 +21,7 @@
 	],
 	"require": {
 		"php": ">=5.6.0",
+		"redcatphp/artist": "@dev",
 		"redcatphp/framework": ">=2.0",
 		"bower-asset/js": "@dev",
 		"bower-asset/easyfont-source-code-pro": "@dev",
