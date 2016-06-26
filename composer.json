@@ -27,9 +27,9 @@
 		"bower-asset/font-awesome": "@dev"
 	},
 	"scripts": {
-		"post-install-cmd":["php artist setup"],
-		"post-update-cmd":["php artist setup"],
-		"post-create-project-cmd":["php artist setup"]
+		"post-install-cmd":["php bin/artist.phar setup"],
+		"post-update-cmd":["php bin/artist.phar setup"],
+		"post-create-project-cmd":["php bin/artist.phar setup"]
 	},
     "bin": ["artist"],
     "config": {
