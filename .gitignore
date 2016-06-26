@@ -3,8 +3,8 @@
 
 # RedCat Project #
 /artist
-#/bin/artist.phar
-#/bin/artist.phar.pubkey
+/bin/artist.phar
+/bin/artist.phar.pubkey
 #/redcat.php
 #/index.php
 #/.config.php
