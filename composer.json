@@ -29,12 +29,15 @@
 	},
 	"scripts": {
         "post-install-cmd": [
+             "RedCat\\Artist\\ComposerArtist::installRedcatphp",
              "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-update-cmd": [
+             "RedCat\\Artist\\ComposerArtist::installRedcatphp",
              "RedCat\\Artist\\ComposerArtist::setup"
         ],
         "post-create-project-cmd": [
+             "RedCat\\Artist\\ComposerArtist::installRedcatphp",
              "RedCat\\Artist\\ComposerArtist::setup"
         ]
     },
