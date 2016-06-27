@@ -110,7 +110,7 @@ return function($MyApp){ return [
 			'construct'=>[
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
-				'$bruteforceProtection'=>'dev.security',
+				'$disableBruteforceProtection'=>'dev.security',
 			],
 		],
 		RedCat\Framework\FrontController\FrontOffice::class=>[
