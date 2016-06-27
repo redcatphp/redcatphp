@@ -2,13 +2,10 @@
 namespace MyApp\Artist;
 use RedCat\Artist\ArtistPlugin;
 class Setup extends ArtistPlugin{
-	protected $description = "Finalize installation";
+	protected $description = "My custom setups goes here";
 	protected $args = [];
-	protected $opts = ['force'];
-	protected $mainDbnameDefault = "redcat-db";
-	protected $gitEmailDefault = "";
-	protected $gitNameDefault = "";
+	protected $opts = [];
 	protected function exec(){
-		$this->runCmd('install:redcatphp');
+
 	}
 }
