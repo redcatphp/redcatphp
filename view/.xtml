@@ -3,16 +3,22 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	
 	<title>RedCat</title>
+	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<base href="<?=$BASE_HREF?>">
+	
 	<link href="packages/bower-asset/easyfont-source-code-pro/css/source-code-pro.css" rel="stylesheet" type="text/css">
 	<link href="packages/bower-asset/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+	<link href="css/redcat-demo.css" rel="stylesheet" type="text/css">
+	
 	<if "is_file(REDCAT_CWD.'css/style.css')||is_file(REDCAT_CWD.'css/style.scss')">
 		<link href="css/style<?=$VERSIONING?>.css" rel="stylesheet" type="text/css">
 	</if>
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	
 </head>
 <body>
 	<header>

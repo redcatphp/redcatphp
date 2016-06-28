@@ -84,7 +84,9 @@ p{
 		text-align:center;
 		width:100%;
 		h1{
-			padding-top:2.5em;
+			&:first-child{
+				padding-top:2.5em;
+			}
 			clear:both;
 			margin:0 auto;
 			position:relative;
