@@ -7,15 +7,15 @@
 /bin/artist.phar.pubkey
 #/redcat.php
 #/index.php
-#/.config.php
 #/install.php
 #/install.phps
 #/robots_cdn.txt
 #/robots_ssl.txt
-#/.config.env.phps
+#/config/default.php
+#/config/env.phps
 
 # RedCat env config #
-/.config.env.php
+/config/env.php
 
 # Local composer
 /composer
