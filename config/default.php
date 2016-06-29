@@ -43,7 +43,6 @@ return function($MyApp){ return [
 			[REDCAT_CWD.'plugins/templix',$MyApp.'\\Templix\\'],
 			[REDCAT_CWD.'route',$MyApp.'\\Route\\'],
 		],
-		'router'=>$MyApp.'\Route\Route',
 		'artist'=>[
 			'pluginDirsMap'=>[
 				REDCAT_CWD.'plugins/artist'=>$MyApp.'\Artist',
@@ -53,8 +52,11 @@ return function($MyApp){ return [
 	
 	'rules'=>[
 		'#router'=>[
-			'$instanceOf'=>'router',
+			'instanceOf'=>$MyApp.'\Route\Route',
 			'shared'=>true
+		],
+		$MyApp.'\Route\Route'=>[
+			'instanceOf'=>'#router',
 		],
 		RedCat\Framework\FrontController\RouterInterface::class => [
 			'instanceOf'=>'#router',
