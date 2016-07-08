@@ -1,6 +1,5 @@
 #cross-browser compatibility
 <IfModule headers_module>
-	Header set Connection keep-alive
 	Header set X-UA-Compatible "IE=Edge,chrome=1"
 	Header set X-Frame-Options SAMEORIGIN
 	Header set X-XSS-Protection "1; mode=block"
