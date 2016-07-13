@@ -5,6 +5,7 @@
 /artist
 /bin/artist.phar
 /bin/artist.phar.pubkey
+/js/js.alias-asset.js
 #/redcat.php
 #/index.php
 #/install.php

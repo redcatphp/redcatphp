@@ -36,6 +36,7 @@
 		</div>
 	</footer>
 	<script type="text/javascript" src="packages/bower-asset/js/js.js"></script>
+	<script type="text/javascript" src="packages/bower-asset/js/js.alias-asset.js"></script>
 	<script type="text/javascript">
 		<?if($templix->devJs):?>$js.dev=true;<?endif;?>$js.min=true;
 		<?if(is_file(REDCAT_CWD.'js/script.js')):?>
