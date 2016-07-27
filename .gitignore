@@ -23,6 +23,7 @@
 
 # RedCat vendor-dir #
 /packages
+/packages-shared
 
 # RedCat temp-dir #
 /.tmp

@@ -21,6 +21,7 @@
 	],
 	"require": {
 		"php": ">=5.6.0",
+		"letudiant/composer-shared-package-plugin": "^3.1",
 		"redcatphp/artist": "@dev",
 		"redcatphp/framework": ">=2.3.4",
 		"bower-asset/js": "@dev",
@@ -45,5 +46,14 @@
 		"vendor-dir": "packages",
 		"bin-dir": "packages/bin"
     },
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"extra": {
+		"shared-package": {
+			"vendor-dir": "packages-shared",
+			"symlink-dir": "packages",
+			"package-list": [
+				"*"
+			]
+		}
+    }
 }
