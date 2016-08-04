@@ -64,6 +64,9 @@ return function($MyApp){ return [
 		RedCat\Route\Request::class => [
 			'shared'=>true,
 		],
+		RedCat\Route\SilentProcess::class => [
+			'shared'=>true,
+		],
 		RedCat\Identify\PHPMailer::class => [
 			'shared'=>true,
 			'construct'=>[
