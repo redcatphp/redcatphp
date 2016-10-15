@@ -49,6 +49,7 @@
 	"minimum-stability": "dev",
 	"extra": {
 		"shared-package": {
+			"symlink-base-path": "./packages-shared",
 			"vendor-dir": "packages-shared",
 			"symlink-dir": "packages",
 			"package-list": [
