@@ -28,6 +28,9 @@
 		"bower-asset/easyfont-source-code-pro": "@dev",
 		"bower-asset/font-awesome": "@dev"
 	},
+	"require-dev": {
+		"redcatphp/debug": "@dev",
+	},
 	"scripts": {
         "post-install-cmd": [
              "RedCat\\Artist\\ComposerArtist::installRedcatphp",
