@@ -53,7 +53,10 @@ return function($MyApp){ return [
 	'rules'=>[
 		'#router'=>[
 			'instanceOf'=>$MyApp.'\Route\Route',
-			'shared'=>true
+			'shared'=>true,
+			'construct'=>[
+				'$l10n'=>'l10n',
+			]
 		],
 		$MyApp.'\Route\Route'=>[
 			'instanceOf'=>'#router',
@@ -115,11 +118,6 @@ return function($MyApp){ return [
 				'name'=>'redcatphp',
 				'saveRoot'=>REDCAT_CWD.'.tmp/sessions/',
 				'$disableBruteforceProtection'=>'dev.security',
-			],
-		],
-		RedCat\Framework\FrontController\FrontOffice::class=>[
-			'construct'=>[
-				'$l10n'=>'l10n',
 			],
 		],
 		RedCat\Framework\RouteMatch\ByTmlL10n::class=>[
