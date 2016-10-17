@@ -29,7 +29,7 @@
 		"bower-asset/font-awesome": "@dev"
 	},
 	"require-dev": {
-		"redcatphp/debug": "@dev",
+		"redcatphp/debug": "@dev"
 	},
 	"scripts": {
         "post-install-cmd": [
