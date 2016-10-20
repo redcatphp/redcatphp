@@ -64,5 +64,10 @@
 			],
 			"disable-on-windows":true
 		}
+    },
+    "autoload": {
+        "psr-4": {
+            "RedCat\\Artist\\": "packages/redcatphp/artist/src"
+        }
     }
 }
