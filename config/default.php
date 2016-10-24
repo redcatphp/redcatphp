@@ -2,7 +2,6 @@
 use RedCat\Strategy\Di;
 use RedCat\Strategy\Expander;
 use RedCat\Strategy\Factory;
-use Zend\Diactoros\ServerRequestFactory;
 return function($MyApp){ return [
 	'$'=>[
 		'dev'=>[
@@ -76,20 +75,6 @@ return function($MyApp){ return [
 				'$debug'=>'dev.mail'
 			]
 			
-		],
-		
-	
-		Psr\Http\Message\ServerRequestInterface::class	=> [
-			'shared'=>true,
-			'instanceOf'=>new Expander(function(){
-				return ServerRequestFactory::fromGlobals(
-					$_SERVER,
-					$_GET,
-					$_POST,
-					$_COOKIE,
-					$_FILES
-				);
-			}),
 		],
 		RedCat\Strategy\Di::class	=> [
 			'instanceOf'=>RedCat\Framework\App::class,
