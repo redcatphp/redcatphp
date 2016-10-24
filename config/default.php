@@ -1,7 +1,7 @@
 <?php
-use RedCat\Ding\Di;
-use RedCat\Ding\Expander;
-use RedCat\Ding\Factory;
+use RedCat\Strategy\Di;
+use RedCat\Strategy\Expander;
+use RedCat\Strategy\Factory;
 use Zend\Diactoros\ServerRequestFactory;
 return function($MyApp){ return [
 	'$'=>[
@@ -91,10 +91,10 @@ return function($MyApp){ return [
 				);
 			}),
 		],
-		RedCat\Ding\Di::class	=> [
+		RedCat\Strategy\Di::class	=> [
 			'instanceOf'=>RedCat\Framework\App::class,
 		],
-		RedCat\DataMap\Bases::class	=> [
+		FoxORM\Bases::class	=> [
 			'shared'=>true,
 			'construct' => [
 				'$map' => 'databaseMap',

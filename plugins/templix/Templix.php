@@ -1,6 +1,6 @@
 <?php
 namespace MyApp\Templix;
-use RedCat\Ding\Di;
+use RedCat\Strategy\Di;
 use MyApp\Route\Route;
 class Templix extends \RedCat\Framework\Templix\Templix{
 	function __construct(
