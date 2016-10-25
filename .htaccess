@@ -208,6 +208,9 @@ ErrorDocument 500 /500
 #Enable Rewrite Engine
 RewriteEngine On
 
+#Let's Encrypt Free SSL/TLS Certificates
+#RewriteRule ^(\.well-known/.*)$ $1 [L]
+
 #Get the current CWD
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^.*$ - [E=REDCAT_URI:%2]
