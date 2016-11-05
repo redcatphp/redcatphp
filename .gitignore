@@ -21,7 +21,8 @@
 # Local composer
 /composer
 
-# RedCat vendor-dir #
+# Composer vendor-dir #
+/vendor
 /packages
 /packages-shared
 
