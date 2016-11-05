@@ -50,15 +50,13 @@
         ]
     },
     "config": {
-		"vendor-dir": "packages",
-		"bin-dir": "packages/bin"
     },
 	"minimum-stability": "dev",
 	"extra": {
 		"shared-package": {
-			"symlink-base-path": "./packages-shared",
-			"vendor-dir": "packages-shared",
-			"symlink-dir": "packages",
+			"symlink-base-path": "./vendor/composer.shared",
+			"vendor-dir": "vendor/composer.shared",
+			"symlink-dir": "vendor",
 			"package-list": [
 				"*"
 			],
