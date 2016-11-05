@@ -23,8 +23,6 @@
 
 # Composer vendor-dir #
 /vendor
-/packages
-/packages-shared
 
 # RedCat temp-dir #
 /.tmp
