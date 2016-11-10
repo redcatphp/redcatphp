@@ -37,6 +37,8 @@ p{
 
 
 .redcat-powered {
+	background: transparent url("#{$img}favicon.png") no-repeat scroll 132px 3px;
+	padding-right: 24px;
 	float:right;
 	clear:both;
 	margin-right:0.6em;
