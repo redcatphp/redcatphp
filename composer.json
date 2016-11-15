@@ -25,9 +25,9 @@
 	],
 	"require": {
 		"php": ">=5.6.0",
-		"letudiant/composer-shared-package-plugin": "@dev",
-		"redcatphp/artist": "@dev",
-		"redcatphp/framework": ">=2.3.4",
+		"letudiant/composer-shared-package-plugin": "^3.1",
+		"redcatphp/artist": "^2.0",
+		"redcatphp/framework": "^2.5",
 		"bower-asset/js": "@dev",
 		"bower-asset/easyfont-source-code-pro": "@dev",
 		"bower-asset/font-awesome": "@dev"
