@@ -91,6 +91,11 @@ return function($MyApp){ return [
 				'setEntityFactory'=>[new Factory(function($type,$db,Di $di){
 					return $di($db->findEntityClass($type),['data'=>[],'type'=>$type,'db'=>$db,'table'=>$db[$type]]);
 				})],
+				'setTableWapperFactory'=>[new Factory(function($name,$db,$dataTable,$tableWrapper,Di $di){
+					$c = $db->findTableWrapperClass($name,$tableWrapper);
+					if($c)
+						return $di($c,[$name,$db,$dataTable]);
+				})],
 			]
 		],
 		RedCat\Identify\Session::class=>[
