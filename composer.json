@@ -1,6 +1,6 @@
 {
 	"name": "redcatphp/redcatphp",
-	"type": "framework",
+	"type": "project",
 	"description": "RedCat - Code with agility",
 	"keywords": ["PHP", "Framework", "RAD", "Best-Practices", "Full-Stack", "SOLID", "MVC"],
 	"license": ["CC0-1.0"],
