@@ -58,10 +58,10 @@ return function($MyApp){ return [
 			]
 		],
 		$MyApp.'\Route\Route'=>[
-			'instanceOf'=>'#router',
+			'alias'=>'#router',
 		],
 		RedCat\Framework\FrontController\RouterInterface::class => [
-			'instanceOf'=>'#router',
+			'alias'=>'#router',
 		],
 		RedCat\Route\Request::class => [
 			'shared'=>true,
