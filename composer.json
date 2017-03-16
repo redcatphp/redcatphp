@@ -70,6 +70,6 @@
 			"MyApp\\Controller\\": "app",
 			"MyApp\\Templix\\": "plugins/templix",
 			"MyApp\\Route\\": "route"
-        },
+        }
     }
 }
