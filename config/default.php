@@ -2,7 +2,7 @@
 use RedCat\Strategy\Di;
 use RedCat\Strategy\Expander;
 use RedCat\Strategy\Factory;
-return function($MyApp){ return [
+return return [
 	'$'=>[
 		'dev'=>[
 			'php'       =>1,
@@ -28,36 +28,31 @@ return function($MyApp){ return [
 				'uniqTextKeys'=>[
 					'user'=>'email',
 				],
-				'modelClassPrefix'=> [$MyApp.'\Model\Entity\\'],
+				'modelClassPrefix'=> ['MyApp\Model\Entity\\'],
 			],
 		],
 		'l10n'=>false,
 		'l10nDefault'=>'en',
 		'versioning'=>'new:RedCat\Framework\Versioning\Number',
 		'autoload'=>[
-			[REDCAT_CWD.'php',$MyApp.'\\'],
-			[REDCAT_CWD.'model',$MyApp.'\\Model\\'],
-			[REDCAT_CWD.'controller',$MyApp.'\\Controller\\'],
-			[REDCAT_CWD.'plugins/artist',$MyApp.'\\Artist\\'],
-			[REDCAT_CWD.'plugins/templix',$MyApp.'\\Templix\\'],
-			[REDCAT_CWD.'route',$MyApp.'\\Route\\'],
+			
 		],
 		'artist'=>[
 			'pluginDirsMap'=>[
-				REDCAT_CWD.'plugins/artist'=>$MyApp.'\Artist',
+				REDCAT_CWD.'plugins/artist'=>'MyApp\Artist',
 			]
 		],
 	],
 	
 	'rules'=>[
 		'#router'=>[
-			'instanceOf'=>$MyApp.'\Route\Route',
+			'instanceOf'=>'MyApp\Route\Route',
 			'shared'=>true,
 			'construct'=>[
 				'$l10n'=>'l10n',
 			]
 		],
-		$MyApp.'\Route\Route'=>[
+		'MyApp\Route\Route'=>[
 			'alias'=>'#router',
 		],
 		RedCat\Framework\FrontController\RouterInterface::class => [
@@ -84,8 +79,8 @@ return function($MyApp){ return [
 			'construct' => [
 				'$map' => 'databaseMap',
 				'$debug'=>'dev.db',
-				'modelClassPrefix'=>$MyApp.'\Model\Entity\\',
-				'entityClassDefault'=>$MyApp.'\Model\Entity',
+				'modelClassPrefix'=>'MyApp\Model\Entity\\',
+				'entityClassDefault'=>'MyApp\Model\Entity',
 			],
 			'call'=>[
 				'setEntityFactory'=>[new Factory(function($type,$db,Di $di){
@@ -140,7 +135,7 @@ return function($MyApp){ return [
 		],
 		RedCat\Framework\Templix\Templix::class=>[
 			'call'=>[
-				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\',$MyApp.'\Templix\Markup\\']],
+				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','MyApp\Templix\Markup\\']],
 				'addDirCwd'=>[[
 					'view/',
 					'shared/template/',
@@ -165,4 +160,4 @@ return function($MyApp){ return [
 			'shared'=>true,
 		],
 	],
-]; };
+];

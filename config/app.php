@@ -1,5 +1,4 @@
 <?php
-$MyApp = 'MyApp';
 return [
 	'$'=>[
 		
