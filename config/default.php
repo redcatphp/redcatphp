@@ -2,7 +2,7 @@
 use RedCat\Strategy\Di;
 use RedCat\Strategy\Expander;
 use RedCat\Strategy\Factory;
-return return [
+return [
 	'$'=>[
 		'dev'=>[
 			'php'       =>1,
