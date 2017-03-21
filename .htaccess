@@ -224,7 +224,7 @@ RewriteCond %{REQUEST_URI} (^|/)\.
 RewriteRule ^(.*)$ %{ENV:REDCAT_URI}403 [L,R=302]
 
 #Versioned ressources
-RewriteRule ^(.*)\.up([a-z0-9]{1,9})\.(|min.)(js|css)$ $1.$3$4 [L]
+RewriteRule ^(.*)\.redcat-deploy-([a-z0-9]{1,9})\.(|min.)(js|css)$ $1.$3$4 [L]
 
 #Tmp min
 RewriteCond %{REQUEST_FILENAME} !-f
