@@ -137,8 +137,7 @@ return [
 			'call'=>[
 				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','MyApp\Templix\Markup\\']],
 				'addDirCwd'=>[[
-					'view/',
-					'shared/template/',
+					'app/',
 				]],
 				'setDirCompile'=>'.tmp/templix/compile/',
 				'setDirCache'=>'.tmp/templix/cache/',
