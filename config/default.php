@@ -1,4 +1,5 @@
 <?php
+/* this file is a part of redcatphp framework and is auto-upgraded on "composer update", don't modify it, any change will be lost, instead, use config/app.php to override */
 use RedCat\Strategy\Di;
 use RedCat\Strategy\Expander;
 use RedCat\Strategy\Factory;
