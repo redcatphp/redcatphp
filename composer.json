@@ -28,6 +28,7 @@
 		"letudiant/composer-shared-package-plugin": "^3.1",
 		"redcatphp/artist": "^2.1",
 		"redcatphp/framework": "^2.5",
+		"redcatphp/autoload": "@dev",
 		"bower-asset/js": "@dev",
 		"bower-asset/easyfont-source-code-pro": "@dev",
 		"bower-asset/font-awesome": "@dev"
@@ -66,10 +67,7 @@
     "autoload": {
         "psr-4": {
             "RedCat\\Artist\\": "vendor/redcatphp/artist/src",
-			"MyApp\\Model\\": "model",
-			"MyApp\\Controller\\": "app",
-			"MyApp\\Templix\\": "plugins/templix",
-			"MyApp\\Route\\": "route"
+			"App\\Templix\\": "plugins/templix",
         }
     }
 }
