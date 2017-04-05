@@ -67,7 +67,7 @@
     "autoload": {
         "psr-4": {
             "RedCat\\Artist\\": "vendor/redcatphp/artist/src",
-			"App\\Templix\\": "plugins/templix",
+			"App\\Templix\\": "plugins/templix"
         }
     }
 }
