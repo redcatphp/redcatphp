@@ -29,7 +29,7 @@ return [
 				'uniqTextKeys'=>[
 					'user'=>'email',
 				],
-				'modelClassPrefix'=> ['MyApp\Model\Entity\\'],
+				'modelClassPrefix'=> ['App\Model\Entity\\'],
 			],
 		],
 		'l10n'=>false,
@@ -40,20 +40,20 @@ return [
 		],
 		'artist'=>[
 			'pluginDirsMap'=>[
-				REDCAT_CWD.'plugins/artist'=>'MyApp\Artist',
+				REDCAT_CWD.'plugins/artist'=>'App\Artist',
 			]
 		],
 	],
 	
 	'rules'=>[
 		'#router'=>[
-			'instanceOf'=>'MyApp\Route\Route',
+			'instanceOf'=>'App\Route\Route',
 			'shared'=>true,
 			'construct'=>[
 				'$l10n'=>'l10n',
 			]
 		],
-		'MyApp\Route\Route'=>[
+		'App\Route\Route'=>[
 			'alias'=>'#router',
 		],
 		RedCat\Framework\FrontController\RouterInterface::class => [
@@ -80,8 +80,8 @@ return [
 			'construct' => [
 				'$map' => 'databaseMap',
 				'$debug'=>'dev.db',
-				'modelClassPrefix'=>'MyApp\Model\Entity\\',
-				'entityClassDefault'=>'MyApp\Model\Entity',
+				'modelClassPrefix'=>'App\Model\Entity\\',
+				'entityClassDefault'=>'App\Model\Entity',
 			],
 			'call'=>[
 				'setEntityFactory'=>[new Factory(function($type,$db,Di $di){
@@ -136,7 +136,7 @@ return [
 		],
 		RedCat\Framework\Templix\Templix::class=>[
 			'call'=>[
-				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','MyApp\Templix\Markup\\']],
+				'addPluginPrefix'=>[['RedCat\Framework\Templix\Markup\\','App\Templix\Markup\\']],
 				'addDirCwd'=>[[
 					'app/',
 				]],
