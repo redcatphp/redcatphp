@@ -132,6 +132,7 @@ return [
 				'$devCss'=>'dev.css',
 				'$devJs'=>'dev.js',
 				'$devImg'=>'dev.img',
+				'notFoundAlt'=>'app/errors/404.tml',
 			],
 		],
 		RedCat\Framework\Templix\Templix::class=>[

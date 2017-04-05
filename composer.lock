@@ -1,0 +1,1613 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "6c12d9c8bfc3c9406323caa6b9d0c7d6",
+    "content-hash": "af96a8b7a588b9843e83e321e7587f2e",
+    "packages": [
+        {
+            "name": "bower-asset/easyfont-source-code-pro",
+            "version": "9999999-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/easyfont/source-code-pro.git",
+                "reference": "19f170d9652863453e1a76408f726dab64ce18dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/easyfont/source-code-pro/zipball/19f170d9652863453e1a76408f726dab64ce18dc",
+                "reference": "19f170d9652863453e1a76408f726dab64ce18dc",
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "bower-asset/font-awesome",
+            "version": "9999999-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "d0b376a812fe844170585145a9950914383b4f30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/d0b376a812fe844170585145a9950914383b4f30",
+                "reference": "d0b376a812fe844170585145a9950914383b4f30",
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "bower-asset/js",
+            "version": "9999999-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/js.git",
+                "reference": "02a842c58c83ea53506180bb755f15a0a6442fc5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/js/zipball/02a842c58c83ea53506180bb755f15a0a6442fc5",
+                "reference": "02a842c58c83ea53506180bb755f15a0a6442fc5",
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "erusev/parsedown",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
+                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parsedown": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2015-10-04 16:44:32"
+        },
+        {
+            "name": "foxorm/foxorm",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/foxorm/foxorm.git",
+                "reference": "12b34e809aeb54ee05b29abf1129b31bba51dec5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/foxorm/foxorm/zipball/12b34e809aeb54ee05b29abf1129b31bba51dec5",
+                "reference": "12b34e809aeb54ee05b29abf1129b31bba51dec5",
+                "shasum": ""
+            },
+            "require": {
+                "jdorn/sql-formatter": "^1.2",
+                "php": ">=5.5.9"
+            },
+            "suggest": {
+                "redcatphp/debug": "For pretty debug",
+                "redcatphp/strategy": "Use Dependency Injection Container for registry"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FoxORM\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "FoxORM - The PHP full-featured ORM",
+            "homepage": "http://foxorm.com",
+            "keywords": [
+                "FoxORM",
+                "database",
+                "datamapper",
+                "model",
+                "nosql",
+                "orm",
+                "rdbms",
+                "relational"
+            ],
+            "time": "2016-11-04 14:03:40"
+        },
+        {
+            "name": "grom358/pharborist",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grom358/pharborist.git",
+                "reference": "0db9e51299a80e95b06857ed1809f59bbbab1af6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grom358/pharborist/zipball/0db9e51299a80e95b06857ed1809f59bbbab1af6",
+                "reference": "0db9e51299a80e95b06857ed1809f59bbbab1af6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "phpdocumentor/reflection-docblock": "2.0.*"
+            },
+            "require-dev": {
+                "apigen/apigen": "2.8.*",
+                "phpunit/phpunit": "4.2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Pharborist\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Zemek",
+                    "role": "lead"
+                }
+            ],
+            "description": "Pharborist builds a syntax tree for PHP that can be traversed and manipulated.",
+            "keywords": [
+                "standards",
+                "syntax"
+            ],
+            "time": "2015-09-20 22:14:29"
+        },
+        {
+            "name": "ircmaxell/random-lib",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ircmaxell/RandomLib.git",
+                "reference": "e9e0204f40e49fa4419946c677eccd3fa25b8cf4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ircmaxell/RandomLib/zipball/e9e0204f40e49fa4419946c677eccd3fa25b8cf4",
+                "reference": "e9e0204f40e49fa4419946c677eccd3fa25b8cf4",
+                "shasum": ""
+            },
+            "require": {
+                "ircmaxell/security-lib": "^1.1",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.11",
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^4.8|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "RandomLib": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anthony Ferrara",
+                    "email": "ircmaxell@ircmaxell.com",
+                    "homepage": "http://blog.ircmaxell.com"
+                }
+            ],
+            "description": "A Library For Generating Secure Random Numbers",
+            "homepage": "https://github.com/ircmaxell/RandomLib",
+            "keywords": [
+                "cryptography",
+                "random",
+                "random-numbers",
+                "random-strings"
+            ],
+            "time": "2016-09-07 15:52:06"
+        },
+        {
+            "name": "ircmaxell/security-lib",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ircmaxell/SecurityLib.git",
+                "reference": "f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ircmaxell/SecurityLib/zipball/f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5",
+                "reference": "f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.1.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "SecurityLib": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anthony Ferrara",
+                    "email": "ircmaxell@ircmaxell.com",
+                    "homepage": "http://blog.ircmaxell.com"
+                }
+            ],
+            "description": "A Base Security Library",
+            "homepage": "https://github.com/ircmaxell/SecurityLib",
+            "time": "2015-03-20 14:31:23"
+        },
+        {
+            "name": "jdorn/sql-formatter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdorn/sql-formatter.git",
+                "reference": "7ef9b85961956aa572413693e1194b60f50ab9ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/7ef9b85961956aa572413693e1194b60f50ab9ab",
+                "reference": "7ef9b85961956aa572413693e1194b60f50ab9ab",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "bin": [
+                "bin/sql-formatter"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "lib"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Dorn",
+                    "email": "jeremy@jeremydorn.com",
+                    "homepage": "http://jeremydorn.com/"
+                }
+            ],
+            "description": "a PHP SQL highlighting library",
+            "homepage": "https://github.com/jdorn/sql-formatter/",
+            "keywords": [
+                "highlight",
+                "sql"
+            ],
+            "time": "2015-08-30 16:36:01"
+        },
+        {
+            "name": "leafo/scssphp",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leafo/scssphp.git",
+                "reference": "894cf70bdee7688734d9fdccf3b19aa48891da60"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leafo/scssphp/zipball/894cf70bdee7688734d9fdccf3b19aa48891da60",
+                "reference": "894cf70bdee7688734d9fdccf3b19aa48891da60",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "kherge/box": "~2.5",
+                "phpunit/phpunit": "~3.7",
+                "squizlabs/php_codesniffer": "~2.5"
+            },
+            "bin": [
+                "bin/pscss"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Leafo\\ScssPhp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Leaf Corcoran",
+                    "email": "leafot@gmail.com",
+                    "homepage": "http://leafo.net"
+                }
+            ],
+            "description": "scssphp is a compiler for SCSS written in PHP.",
+            "homepage": "http://leafo.github.io/scssphp/",
+            "keywords": [
+                "css",
+                "less",
+                "sass",
+                "scss",
+                "stylesheet"
+            ],
+            "time": "2016-11-04 18:37:08"
+        },
+        {
+            "name": "letudiant/composer-shared-package-plugin",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/composer-shared-package-plugin.git",
+                "reference": "b8218fe25eb2a56bd556133873c8a64342e54a7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/composer-shared-package-plugin/zipball/b8218fe25eb2a56bd556133873c8a64342e54a7b",
+                "reference": "b8218fe25eb2a56bd556133873c8a64342e54a7b",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "~1.0",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "composer/composer": "dev-master",
+                "phpunit/phpunit": "~4.7",
+                "symfony/var-dumper": "~2.7"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "LEtudiant\\Composer\\SharedPackagePlugin",
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "LEtudiant\\Composer\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "Test\\Unit\\LEtudiant\\Composer\\": "tests/unit"
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sylvain Lorinet",
+                    "email": "sylvain.lorinet@gmail.com"
+                }
+            ],
+            "description": "This composer plugin allows you to share selected packages between your projects with symlinks.",
+            "support": {
+                "issues": "https://github.com/letudiant/composer-shared-package-plugin/issues",
+                "source": "https://github.com/redcatphp/composer-shared-package-plugin/tree/master"
+            },
+            "time": "2016-10-18 13:51:17"
+        },
+        {
+            "name": "neitanod/forceutf8",
+            "version": "2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/neitanod/forceutf8.git",
+                "reference": "2c1b21e00ed16b2b083ae4e27901cb5f2856db90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/neitanod/forceutf8/zipball/2c1b21e00ed16b2b083ae4e27901cb5f2856db90",
+                "reference": "2c1b21e00ed16b2b083ae4e27901cb5f2856db90",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ForceUTF8\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Sebastián Grignoli",
+                    "email": "grignoli@gmail.com"
+                }
+            ],
+            "description": "PHP Class Encoding featuring popular Encoding::toUTF8() function --formerly known as forceUTF8()-- that fixes mixed encoded strings.",
+            "homepage": "https://github.com/neitanod/forceutf8",
+            "time": "2015-05-07 16:37:23"
+        },
+        {
+            "name": "padraic/humbug_get_contents",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/padraic/file_get_contents.git",
+                "reference": "1bfe28c32ad08093917a527114150d0a155c319b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/padraic/file_get_contents/zipball/1bfe28c32ad08093917a527114150d0a155c319b",
+                "reference": "1bfe28c32ad08093917a527114150d0a155c319b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Humbug\\": "src/Humbug/"
+                },
+                "files": [
+                    "src/function.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Pádraic Brady",
+                    "email": "padraic.brady@gmail.com",
+                    "homepage": "http://blog.astrumfutura.com"
+                }
+            ],
+            "description": "Secure wrapper for accessing HTTPS resources with file_get_contents for PHP 5.3+",
+            "homepage": "https://github.com/padraic/file_get_contents",
+            "keywords": [
+                "download",
+                "file_get_contents",
+                "http",
+                "https",
+                "ssl",
+                "tls"
+            ],
+            "time": "2015-04-24 19:31:03"
+        },
+        {
+            "name": "padraic/phar-updater",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/padraic/phar-updater.git",
+                "reference": "c17eeb3887dc4269d1b4837dc875d39e9f8149a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/padraic/phar-updater/zipball/c17eeb3887dc4269d1b4837dc875d39e9f8149a8",
+                "reference": "c17eeb3887dc4269d1b4837dc875d39e9f8149a8",
+                "shasum": ""
+            },
+            "require": {
+                "padraic/humbug_get_contents": "^1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Humbug\\SelfUpdate\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Pádraic Brady",
+                    "email": "padraic.brady@gmail.com",
+                    "homepage": "http://blog.astrumfutura.com"
+                }
+            ],
+            "description": "A thing to make PHAR self-updating easy and secure.",
+            "keywords": [
+                "humbug",
+                "phar",
+                "self-update",
+                "update"
+            ],
+            "time": "2016-01-05 23:08:01"
+        },
+        {
+            "name": "phpdocumentor/reflection-docblock",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
+                "reference": "d68dbdc53dc358a816f00b300704702b2eaff7b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/d68dbdc53dc358a816f00b300704702b2eaff7b8",
+                "reference": "d68dbdc53dc358a816f00b300704702b2eaff7b8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "dflydev/markdown": "~1.0",
+                "erusev/parsedown": "~1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "phpDocumentor": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike van Riel",
+                    "email": "mike.vanriel@naenius.com"
+                }
+            ],
+            "time": "2015-02-03 12:10:50"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "6.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "281170a26a88a776617725ec5f037ebcb4bdf927"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/281170a26a88a776617725ec5f037ebcb4bdf927",
+                "reference": "281170a26a88a776617725ec5f037ebcb4bdf927",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": "4.*"
+            },
+            "suggest": {
+                "ext-mbstring": "Needed to send email in multibyte encoding charset",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "time": "2016-10-26 20:11:23"
+        },
+        {
+            "name": "phpseclib/phpseclib",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpseclib/phpseclib.git",
+                "reference": "e837cc2054c0f9961f65d142d79715828276fac0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/e837cc2054c0f9961f65d142d79715828276fac0",
+                "reference": "e837cc2054c0f9961f65d142d79715828276fac0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phing/phing": "~2.7",
+                "phpunit/phpunit": "~4.0",
+                "sami/sami": "~2.0",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "suggest": {
+                "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
+                "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
+                "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
+                "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "phpseclib/bootstrap.php"
+                ],
+                "psr-4": {
+                    "phpseclib\\": "phpseclib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Wigginton",
+                    "email": "terrafrost@php.net",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Patrick Monnerat",
+                    "email": "pm@datasphere.ch",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Andreas Fischer",
+                    "email": "bantu@phpbb.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Hans-Jürgen Petrich",
+                    "email": "petrich@tronic-media.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Graham Campbell",
+                    "email": "graham@alt-three.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
+            "homepage": "http://phpseclib.sourceforge.net",
+            "keywords": [
+                "BigInteger",
+                "aes",
+                "asn.1",
+                "asn1",
+                "blowfish",
+                "crypto",
+                "cryptography",
+                "encryption",
+                "rsa",
+                "security",
+                "sftp",
+                "signature",
+                "signing",
+                "ssh",
+                "twofish",
+                "x.509",
+                "x509"
+            ],
+            "time": "2016-11-04 07:25:56"
+        },
+        {
+            "name": "psr/http-message",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2016-08-06 14:39:51"
+        },
+        {
+            "name": "punic/punic",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/punic/punic.git",
+                "reference": "01c1eff51ec4011d72c65869817fc9c0a69580cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/punic/punic/zipball/01c1eff51ec4011d72c65869817fc9c0a69580cb",
+                "reference": "01c1eff51ec4011d72c65869817fc9c0a69580cb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "replace": {
+                "punic/calendar": "*",
+                "punic/common": "*"
+            },
+            "require-dev": {
+                "apigen/apigen": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Punic\\": "code/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michele Locati",
+                    "email": "mlocati@gmail.com",
+                    "role": "developer"
+                },
+                {
+                    "name": "Remo Laubacher",
+                    "email": "remo.laubacher@gmail.com",
+                    "role": "Collaborator, motivator and perfectionist supporter"
+                }
+            ],
+            "description": "PHP-Unicode CLDR",
+            "homepage": "https://github.com/punic/punic",
+            "keywords": [
+                "calendar",
+                "cldr",
+                "date",
+                "date-time",
+                "i18n",
+                "internationalization",
+                "l10n",
+                "localization",
+                "php",
+                "time",
+                "translate",
+                "translations",
+                "unicode"
+            ],
+            "time": "2016-01-09 22:34:08"
+        },
+        {
+            "name": "redcatphp/artist",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/artist.git",
+                "reference": "e818cefeb9f2c2511bbde15f065acf622590bc12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/artist/zipball/e818cefeb9f2c2511bbde15f065acf622590bc12",
+                "reference": "e818cefeb9f2c2511bbde15f065acf622590bc12",
+                "shasum": ""
+            },
+            "require": {
+                "grom358/pharborist": "dev-master",
+                "neitanod/forceutf8": "^2.0",
+                "padraic/phar-updater": "^1.0",
+                "seld/jsonlint": "^1.4",
+                "symfony/console": "3.1",
+                "tedivm/jshrink": "^1.1"
+            },
+            "suggest": {
+                "kherge/box": "^2.7"
+            },
+            "bin": [
+                "bin/artist"
+            ],
+            "type": "cli",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Artist\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "jo",
+                    "email": "jo@surikat.pro"
+                }
+            ],
+            "homepage": "https://github.com/redcatphp/artist",
+            "time": "2016-11-05 15:18:37"
+        },
+        {
+            "name": "redcatphp/debug",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/debug.git",
+                "reference": "1a06591782271ea41c5f4063c0bd82addbd10f71"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/debug/zipball/1a06591782271ea41c5f4063c0bd82addbd10f71",
+                "reference": "1a06591782271ea41c5f4063c0bd82addbd10f71",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Debug\\": ""
+                },
+                "files": [
+                    "functions.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Debug - Common vars dump helpers and error handler for debugging purpose",
+            "homepage": "http://redcatphp.com/debug-php",
+            "keywords": [
+                "Error Hanlder",
+                "debug",
+                "dev",
+                "var dump helpers"
+            ],
+            "time": "2016-10-17 15:20:39"
+        },
+        {
+            "name": "redcatphp/framework",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/framework.git",
+                "reference": "64e7eb796481ba5617072ae15cdb90b9522d829f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/framework/zipball/64e7eb796481ba5617072ae15cdb90b9522d829f",
+                "reference": "64e7eb796481ba5617072ae15cdb90b9522d829f",
+                "shasum": ""
+            },
+            "require": {
+                "erusev/parsedown": "^1.6",
+                "foxorm/foxorm": "dev-master",
+                "php": ">=5.6.0",
+                "psr/http-message": ">=1.0",
+                "redcatphp/artist": "dev-master",
+                "redcatphp/debug": "dev-master",
+                "redcatphp/identify": "dev-master",
+                "redcatphp/localize": "dev-master",
+                "redcatphp/route": "dev-master",
+                "redcatphp/strategy": "dev-master",
+                "redcatphp/stylize": "dev-master",
+                "redcatphp/templix": "dev-master",
+                "symfony/console": "^3.0",
+                "tedivm/jshrink": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Framework\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP Framework - Complete set of RedCat's PHP Components",
+            "homepage": "http://redcatphp.com",
+            "keywords": [
+                "Agile",
+                "framework",
+                "full-stack",
+                "mvc",
+                "rad",
+                "solid"
+            ],
+            "time": "2016-11-05 15:19:04"
+        },
+        {
+            "name": "redcatphp/identify",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/identify.git",
+                "reference": "155fb0bef5aff0a904206ae26999e82cea0d16ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/identify/zipball/155fb0bef5aff0a904206ae26999e82cea0d16ef",
+                "reference": "155fb0bef5aff0a904206ae26999e82cea0d16ef",
+                "shasum": ""
+            },
+            "require": {
+                "foxorm/foxorm": "dev-master",
+                "ircmaxell/random-lib": "^1.1",
+                "php": ">=5.4.0",
+                "phpmailer/phpmailer": "^6.0.0rc2",
+                "phpseclib/phpseclib": "^2.0",
+                "redcatphp/strategy": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Identify\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Identify - Complete Authentication System, Session Management and Cryptographic libraries",
+            "homepage": "http://redcatphp.com/identify-user",
+            "keywords": [
+                "Authentication",
+                "Bruteforce protection",
+                "cookie",
+                "cryptography",
+                "identify",
+                "security",
+                "session"
+            ],
+            "time": "2016-11-05 15:19:51"
+        },
+        {
+            "name": "redcatphp/localize",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/localize.git",
+                "reference": "22e5e5fdc8b7bb44e99f9fc5c69a71b18033c94b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/localize/zipball/22e5e5fdc8b7bb44e99f9fc5c69a71b18033c94b",
+                "reference": "22e5e5fdc8b7bb44e99f9fc5c69a71b18033c94b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "punic/punic": "@dev"
+            },
+            "suggest": {
+                "redcatphp/strategy": "Use Dependency Injection Container for registry"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Localize\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Localize - Internationalization Toolbox with Gettext wrapper, Extractors, Unicode Common Locale Data Repository",
+            "homepage": "http://redcatphp.com/localize-i18n",
+            "keywords": [
+                "Common Locale Data Repository",
+                "cldr",
+                "gettext",
+                "i18n",
+                "internationalization",
+                "l10n",
+                "localization",
+                "localize"
+            ],
+            "time": "2016-10-24 15:44:35"
+        },
+        {
+            "name": "redcatphp/route",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/route.git",
+                "reference": "5fa10b2c368935290d35c34b7470c85800d08410"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/route/zipball/5fa10b2c368935290d35c34b7470c85800d08410",
+                "reference": "5fa10b2c368935290d35c34b7470c85800d08410",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "suggest": {
+                "redcatphp/strategy": "Use Dependency Injection Container for registry"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Route\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Route - A mirco-framework for manage entry point of applications ",
+            "homepage": "http://redcatphp.com/route-url",
+            "keywords": [
+                "Mirco Framework",
+                "dispatcher",
+                "front controller",
+                "route"
+            ],
+            "time": "2016-10-24 15:45:37"
+        },
+        {
+            "name": "redcatphp/strategy",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/strategy.git",
+                "reference": "42f051368583ef4365e065bc96a893bcd16da698"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/strategy/zipball/42f051368583ef4365e065bc96a893bcd16da698",
+                "reference": "42f051368583ef4365e065bc96a893bcd16da698",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "suggest": {
+                "redcatphp/autoload": "Classes autoload with PSR-4, PSR-0 and classes map features"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Strategy\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Strategy - Dependency Injection Made Universal",
+            "homepage": "http://redcatphp.com/strategy-dependency-injection",
+            "keywords": [
+                "configuration",
+                "dependency injection",
+                "inversion of control",
+                "strategy"
+            ],
+            "time": "2016-10-24 15:01:45"
+        },
+        {
+            "name": "redcatphp/stylize",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/stylize.git",
+                "reference": "a766d7c939b6f508429b88c60c89c18edcf05b04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/stylize/zipball/a766d7c939b6f508429b88c60c89c18edcf05b04",
+                "reference": "a766d7c939b6f508429b88c60c89c18edcf05b04",
+                "shasum": ""
+            },
+            "require": {
+                "leafo/scssphp": "@dev",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Stylize\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Stylize - Css Preprocessor using Scss syntax ( SASS 3.x ) ported to PHP with added supports: php imbrication, php mixin, mixin autoload, extend autoload, font autoload - derived from leafo-scssphp",
+            "homepage": "http://redcatphp.com/stylize-scss",
+            "keywords": [
+                "Stylize",
+                "autoload",
+                "css",
+                "css preprocessor",
+                "font",
+                "mixin",
+                "sass",
+                "scss",
+                "style",
+                "stylesheet"
+            ],
+            "time": "2016-07-12 12:55:56"
+        },
+        {
+            "name": "redcatphp/templix",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcatphp/templix.git",
+                "reference": "6823413bfb06f61acf33c4778d2e7c4ad659553f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcatphp/templix/zipball/6823413bfb06f61acf33c4778d2e7c4ad659553f",
+                "reference": "6823413bfb06f61acf33c4778d2e7c4ad659553f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RedCat\\Templix\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0+",
+                "CC0-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jo Surikat",
+                    "email": "jo@surikat.pro",
+                    "homepage": "http://surikat.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Templix - HTML5 based Template Engine with Recursive Extends and CSS3 Selectors to work on DOM like with Jquery",
+            "homepage": "http://redcatphp.com/templix-template-engine",
+            "keywords": [
+                "CSS3 Selectors",
+                "HTML5",
+                "Recursive Extends",
+                "Template Motor",
+                "Templix",
+                "dom",
+                "jquery",
+                "template",
+                "template engine",
+                "xml"
+            ],
+            "time": "2016-10-24 16:27:07"
+        },
+        {
+            "name": "seld/jsonlint",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/jsonlint.git",
+                "reference": "e827b5254d3e58c736ea2c5616710983d80b0b70"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Seldaek/jsonlint/zipball/e827b5254d3e58c736ea2c5616710983d80b0b70",
+                "reference": "e827b5254d3e58c736ea2c5616710983d80b0b70",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3 || ^7.0"
+            },
+            "bin": [
+                "bin/jsonlint"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Seld\\JsonLint\\": "src/Seld/JsonLint/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "JSON Linter",
+            "keywords": [
+                "json",
+                "linter",
+                "parser",
+                "validator"
+            ],
+            "time": "2016-09-14 15:17:56"
+        },
+        {
+            "name": "symfony/console",
+            "version": "v3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/console.git",
+                "reference": "f62db5b8afec27073a4609b8c84b1f9936652259"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/console/zipball/f62db5b8afec27073a4609b8c84b1f9936652259",
+                "reference": "f62db5b8afec27073a4609b8c84b1f9936652259",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "symfony/polyfill-mbstring": "~1.0"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/event-dispatcher": "~2.8|~3.0",
+                "symfony/process": "~2.8|~3.0"
+            },
+            "suggest": {
+                "psr/log": "For using the console logger",
+                "symfony/event-dispatcher": "",
+                "symfony/process": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Console\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Console Component",
+            "homepage": "https://symfony.com",
+            "time": "2016-05-30 06:58:39"
+        },
+        {
+            "name": "symfony/polyfill-mbstring",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "53ad9faffe141fbe8f98cd6a7fd9a5e84513f56c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/53ad9faffe141fbe8f98cd6a7fd9a5e84513f56c",
+                "reference": "53ad9faffe141fbe8f98cd6a7fd9a5e84513f56c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "time": "2016-08-30 17:06:17"
+        },
+        {
+            "name": "tedivm/jshrink",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tedious/JShrink.git",
+                "reference": "688527a2e854d7935f24f24c7d5eb1b604742bf9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tedious/JShrink/zipball/688527a2e854d7935f24f24c7d5eb1b604742bf9",
+                "reference": "688527a2e854d7935f24f24c7d5eb1b604742bf9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "0.4.0",
+                "phpunit/phpunit": "4.0.*",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JShrink": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Hafner",
+                    "email": "tedivm@tedivm.com"
+                }
+            ],
+            "description": "Javascript Minifier built in PHP",
+            "homepage": "http://github.com/tedious/JShrink",
+            "keywords": [
+                "javascript",
+                "minifier"
+            ],
+            "time": "2015-07-04 07:35:09"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "letudiant/composer-shared-package-plugin": 20,
+        "redcatphp/artist": 20,
+        "bower-asset/js": 20,
+        "bower-asset/easyfont-source-code-pro": 20,
+        "bower-asset/font-awesome": 20,
+        "redcatphp/debug": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.6.0"
+    },
+    "platform-dev": []
+}
