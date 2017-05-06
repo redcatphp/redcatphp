@@ -5,7 +5,6 @@
 /artist
 /bin/artist.phar
 /bin/artist.phar.pubkey
-/js/js.alias-asset.js
 #/redcat.php
 #/index.php
 #/install.php
@@ -21,8 +20,10 @@
 # Local composer
 /composer
 
-# Composer vendor-dir #
+# vendor-dir #
 /vendor
+/node_modules
+/bower_components
 
 # RedCat temp-dir #
 /.tmp
