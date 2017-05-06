@@ -35,13 +35,10 @@
 			</a>
 		</div>
 	</footer>
-	<script type="text/javascript" src="vendor/bower-asset/js/js.js"></script>
-	<script type="text/javascript" src="js/js.alias-asset.js"></script>
+	<script type="text/javascript">var APP_DEV_MODE = true;</script>
+	<script type="text/javascript" src="vendor/bower-asset/requirejs/require.js"></script>
+	<script type="text/javascript" src="app/require-config.js"></script>
 	<script type="text/javascript">
-		<?if($templix->devJs):?>$js.dev=true;<?endif;?>$js.min=true;
-		<?if(is_file(REDCAT_CWD.'js/script.js')):?>
-			$js('js/script<?=$VERSIONING?>');
-		<?endif;?>
 		<?if($redcat->dev['chrono']):?>
 			if(console) console.info('<?=RedCat\Debug\Chrono::output()?>');
 		<?endif;?>

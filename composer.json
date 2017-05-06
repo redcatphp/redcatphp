@@ -29,7 +29,7 @@
 		"redcatphp/artist": "^2.1",
 		"redcatphp/framework": "^2.5",
 		"redcatphp/autoload": "@dev",
-		"bower-asset/js": "@dev",
+		"bower-asset/requirejs": "@dev",
 		"bower-asset/easyfont-source-code-pro": "@dev",
 		"bower-asset/font-awesome": "@dev"
 	},
