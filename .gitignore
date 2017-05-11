@@ -1,7 +1,7 @@
 # Project Specific
 
-
 # RedCat Project #
+/dist
 /artist
 /bin/artist.phar
 /bin/artist.phar.pubkey
@@ -16,9 +16,6 @@
 
 # RedCat env config #
 /config/env.php
-
-# Local composer
-/composer
 
 # vendor-dir #
 /vendor
