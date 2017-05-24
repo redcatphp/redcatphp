@@ -38,16 +38,13 @@
 	},
 	"scripts": {
         "post-install-cmd": [
-             "RedCat\\Artist\\ComposerArtist::redcatInstall",
-             "RedCat\\Artist\\ComposerArtist::mySetup"
+             "RedCat\\Artist\\ComposerArtist::redcatInstall"
         ],
         "post-update-cmd": [
-             "RedCat\\Artist\\ComposerArtist::redcatInstall",
-             "RedCat\\Artist\\ComposerArtist::mySetup"
+             "RedCat\\Artist\\ComposerArtist::redcatInstall"
         ],
         "post-create-project-cmd": [
-             "RedCat\\Artist\\ComposerArtist::redcatInstall",
-             "RedCat\\Artist\\ComposerArtist::mySetup"
+             "RedCat\\Artist\\ComposerArtist::redcatInstall"
         ]
     },
     "config": {
@@ -66,8 +63,7 @@
     },
     "autoload": {
         "psr-4": {
-            "RedCat\\Artist\\": "vendor/redcatphp/artist/src",
-            "App\\Artist\\": "plugins/artist"
+            "RedCat\\Artist\\": "vendor/redcatphp/artist/src"
         }
     }
 }
