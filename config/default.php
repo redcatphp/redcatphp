@@ -40,7 +40,7 @@ return [
 		],
 		'artist'=>[
 			'pluginDirsMap'=>[
-				REDCAT_CWD.'plugins/artist'=>'App\Artist',
+				REDCAT_CWD.'app/artist'=>'App\Artist',
 			]
 		],
 	],
